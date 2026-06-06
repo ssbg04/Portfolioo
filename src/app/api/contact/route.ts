@@ -84,37 +84,41 @@ export async function POST(request: Request) {
     // 3. Log Submission
     await supabase.from('email_submissions').insert([{ ip_address: ip }]);
 
-    // 4. Forward to FormSubmit
-    const contactEmail = process.env.CONTACT_EMAIL || 'crischarlesgarcia345@gmail.com';
-    const formSubmitUrl = `https://formsubmit.co/ajax/${contactEmail}`;
-
-    const formSubmitParams = new URLSearchParams();
-    formSubmitParams.append('name', name?.toString() || '');
-    formSubmitParams.append('email', email?.toString() || '');
-    formSubmitParams.append('subject', subject?.toString() || '');
-    formSubmitParams.append('message', message?.toString() || '');
-    formSubmitParams.append('_captcha', 'false'); // FormSubmit captcha disabled since we have reCAPTCHA
-
-    const formSubmitResult = await fetch(formSubmitUrl, {
-      method: 'POST',
-      body: formSubmitParams,
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'Origin': new URL(request.url).origin,
-        'Referer': request.headers.get('referer') || request.url
-      }
-    });
-
-    if (!formSubmitResult.ok) {
-      console.error('FormSubmit HTTP error:', formSubmitResult.status);
-      return NextResponse.redirect(new URL(`/?status=error&msg=Failed to send message (HTTP ${formSubmitResult.status}). Please try again later.#contact`, request.url), 303);
+    // 4. Forward to Web3Forms (Replaces FormSubmit)
+    const web3formsAccessKey = process.env.WEB3FORMS_ACCESS_KEY || '';
+    if (!web3formsAccessKey) {
+      console.error("Missing WEB3FORMS_ACCESS_KEY");
+      return NextResponse.redirect(new URL('/?status=error&msg=Email service configuration error. Please try again later.#contact', request.url), 303);
     }
 
-    const formSubmitData = await formSubmitResult.json();
-    if (formSubmitData.success === 'false') {
-      console.error('FormSubmit API error:', formSubmitData.message);
-      return NextResponse.redirect(new URL('/?status=error&msg=Email service rejected the request. Please verify your email configuration.#contact', request.url), 303);
+    const web3formsUrl = 'https://api.web3forms.com/submit';
+    const payload = {
+      access_key: web3formsAccessKey,
+      name: name?.toString() || '',
+      email: email?.toString() || '',
+      subject: subject?.toString() || '',
+      message: message?.toString() || '',
+      from_name: 'Portfolio Contact Form'
+    };
+
+    const mailResult = await fetch(web3formsUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify(payload)
+    });
+
+    if (!mailResult.ok) {
+      console.error('Web3Forms HTTP error:', mailResult.status);
+      return NextResponse.redirect(new URL(`/?status=error&msg=Failed to send message (HTTP ${mailResult.status}). Please try again later.#contact`, request.url), 303);
+    }
+
+    const mailData = await mailResult.json();
+    if (!mailData.success) {
+      console.error('Web3Forms API error:', mailData.message);
+      return NextResponse.redirect(new URL('/?status=error&msg=Email service rejected the request. Please verify your Web3Forms configuration.#contact', request.url), 303);
     }
 
     return NextResponse.redirect(new URL('/?status=success#contact', request.url), 303);
