@@ -100,12 +100,21 @@ export async function POST(request: Request) {
       body: formSubmitParams,
       headers: {
         'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded'
+        'Content-Type': 'application/x-www-form-urlencoded',
+        'Origin': new URL(request.url).origin,
+        'Referer': request.headers.get('referer') || request.url
       }
     });
 
     if (!formSubmitResult.ok) {
+      console.error('FormSubmit HTTP error:', formSubmitResult.status);
       return NextResponse.redirect(new URL('/?status=error&msg=Failed to send message via mail service. Please try again later.#contact', request.url), 303);
+    }
+
+    const formSubmitData = await formSubmitResult.json();
+    if (formSubmitData.success === 'false') {
+      console.error('FormSubmit API error:', formSubmitData.message);
+      return NextResponse.redirect(new URL('/?status=error&msg=Email service rejected the request. Please verify your email configuration.#contact', request.url), 303);
     }
 
     return NextResponse.redirect(new URL('/?status=success#contact', request.url), 303);
