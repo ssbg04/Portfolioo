@@ -15,35 +15,37 @@ export async function POST(request: Request) {
       return NextResponse.redirect(new URL('/?status=error&msg=Please complete the reCAPTCHA verification.#contact', request.url), 303);
     }
 
-    // 1. Verify Google reCAPTCHA using Enterprise SDK
+    // 1. Verify Google reCAPTCHA using Enterprise REST API
     const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY || '6LfVNBAtAAAAAFn8Wh8T8cleAHiT3R3cAJEQITFc';
     const projectID = process.env.RECAPTCHA_PROJECT_ID || 'portfolio-1773375323575';
+    const apiKey = process.env.RECAPTCHA_API_KEY || ''; // Requires an API key starting with AIza
     const ip = request.headers.get('x-forwarded-for') || 'unknown';
 
-    try {
-      const client = new RecaptchaEnterpriseServiceClient({
-        credentials: {
-          client_email: process.env.GOOGLE_CLIENT_EMAIL,
-          private_key: process.env.GOOGLE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-        }
-      });
-      const projectPath = client.projectPath(projectID);
+    if (!apiKey) {
+      console.error("Missing RECAPTCHA_API_KEY environment variable.");
+      return NextResponse.redirect(new URL('/?status=error&msg=Server configuration error. Please try again later.#contact', request.url), 303);
+    }
 
-      const assessmentRequest = {
-        assessment: {
-          event: {
-            token: recaptchaResponse.toString(),
-            siteKey: recaptchaSiteKey,
-            expectedAction: 'submit',
-          },
-        },
-        parent: projectPath,
+    try {
+      const assessUrl = `https://recaptchaenterprise.googleapis.com/v1/projects/${projectID}/assessments?key=${apiKey}`;
+      const assessBody = {
+        event: {
+          token: recaptchaResponse.toString(),
+          siteKey: recaptchaSiteKey,
+          expectedAction: 'submit'
+        }
       };
 
-      const [response] = await client.createAssessment(assessmentRequest);
+      const assessResult = await fetch(assessUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(assessBody)
+      });
+
+      const response = await assessResult.json();
 
       if (!response.tokenProperties?.valid) {
-        console.error(`CreateAssessment call failed because the token was: ${response.tokenProperties?.invalidReason}`);
+        console.error(`Assessment failed because token was: ${response.tokenProperties?.invalidReason}`);
         return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed (invalid token). Please try again.#contact', request.url), 303);
       }
 
@@ -54,11 +56,11 @@ export async function POST(request: Request) {
           return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed (bot behavior detected). Please try again.#contact', request.url), 303);
         }
       } else {
-        console.error("The action attribute in your reCAPTCHA tag does not match.");
+        console.error("The action attribute does not match.");
         return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed (action mismatch). Please try again.#contact', request.url), 303);
       }
     } catch (err) {
-      console.error("Enterprise assessment error:", err);
+      console.error("Enterprise REST error:", err);
       return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification service unavailable. Please try again later.#contact', request.url), 303);
     }
 
