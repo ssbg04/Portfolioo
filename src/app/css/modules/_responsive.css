@@ -239,4 +239,18 @@
     bottom: 80px;
     height: 60vh;
   }
+
+  /* Toast responsive */
+  .toast {
+    min-width: 260px;
+    max-width: calc(100vw - 48px);
+    padding: 16px 18px;
+  }
+}
+
+/* Hide Google's floating reCAPTCHA badge — we have our own compact badge */
+.grecaptcha-badge {
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
 }

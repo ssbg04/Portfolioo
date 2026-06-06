@@ -62,7 +62,7 @@ export default function Navbar() {
 
       <nav id="main-nav">
         <div className="logo">
-          <Link href="/" className="logo-link">CG</Link>
+          <a href="/#" className="logo-link" onClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>CG</a>
           <Link href="/admin/login" className="logo-dot-link">.</Link>
         </div>
 

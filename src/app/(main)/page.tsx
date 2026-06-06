@@ -223,6 +223,19 @@ export default async function Home() {
 
       <div className="section-divider"></div>
 
+      {/* ===== TOAST NOTIFICATION ===== */}
+      <div className="toast-backdrop" id="toast-backdrop" onClick={() => {}} />
+      <div className="toast-container" id="toast-container" role="alert" aria-live="polite">
+        <div className="toast" id="toast-box">
+          <div className="toast-icon" id="toast-icon"></div>
+          <div className="toast-body">
+            <div className="toast-title" id="toast-title"></div>
+            <div className="toast-msg" id="toast-msg"></div>
+          </div>
+          <button className="toast-close" id="toast-close" aria-label="Close">&times;</button>
+        </div>
+      </div>
+
       {/* ===== CONTACT ===== */}
       <ScrollReveal>
         <section id="contact" className="section-pad">
@@ -261,73 +274,133 @@ export default async function Home() {
               )}
             </div>
 
-            <form action="/api/contact" method="POST" className="email-form" id="contact-form">
+            <form className="email-form" id="contact-form">
               <input type="text" name="name" id="form-name" placeholder="Name" required />
               <input type="email" name="email" id="form-email" placeholder="Your Email" required />
               <input type="text" name="subject" id="form-subject" placeholder="Subject" required />
               <textarea name="message" id="form-message" rows={5} placeholder="Message" required></textarea>
-              
-              {/* reCAPTCHA v3 / Enterprise implementation */}
-              <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" />
+
+              {/* Compact reCAPTCHA badge */}
+              <div className="recaptcha-compact" title="Protected by reCAPTCHA Enterprise">
+                <svg className="recaptcha-shield" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M32 4L8 14v18c0 14 10.7 26.4 24 29 13.3-2.6 24-15 24-29V14L32 4z" fill="#4285F4" opacity="0.8"/>
+                  <path d="M28 38l-8-8 2.8-2.8L28 32.4l13.2-13.2L44 22 28 38z" fill="white"/>
+                </svg>
+                <div className="recaptcha-text">
+                  <span className="recaptcha-protected">Protected by reCAPTCHA</span>
+                  <span className="recaptcha-links">
+                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy</a>
+                    {" · "}
+                    <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms</a>
+                  </span>
+                </div>
+                <div className="recaptcha-logo">re<br/>CAPTCHA</div>
+              </div>
+
+              {/* reCAPTCHA v3 Enterprise — invisible */}
               <script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} async defer></script>
               <script dangerouslySetInnerHTML={{ __html: `
-                document.addEventListener('DOMContentLoaded', function() {
-                  var form = document.getElementById('contact-form');
-                  if (form) {
+                (function() {
+                  function showToast(type, title, msg) {
+                    var container = document.getElementById('toast-container');
+                    var backdrop = document.getElementById('toast-backdrop');
+                    var box = document.getElementById('toast-box');
+                    var icon = document.getElementById('toast-icon');
+                    var titleEl = document.getElementById('toast-title');
+                    var msgEl = document.getElementById('toast-msg');
+                    var closeBtn = document.getElementById('toast-close');
+
+                    box.className = 'toast toast-' + type;
+                    icon.textContent = type === 'success' ? '✓' : '✕';
+                    titleEl.textContent = title;
+                    msgEl.textContent = msg || '';
+
+                    container.classList.add('toast-visible');
+                    backdrop.classList.add('toast-visible');
+
+                    var autoClose;
+                    function dismiss() {
+                      container.classList.remove('toast-visible');
+                      backdrop.classList.remove('toast-visible');
+                      clearTimeout(autoClose);
+                    }
+
+                    closeBtn.onclick = dismiss;
+                    backdrop.onclick = dismiss;
+                    autoClose = setTimeout(dismiss, type === 'success' ? 4000 : 6000);
+                  }
+
+                  // Check URL params for status on load
+                  document.addEventListener('DOMContentLoaded', function() {
+                    var params = new URLSearchParams(window.location.search);
+                    var status = params.get('status');
+                    var msg = params.get('msg');
+                    if (status === 'success') {
+                      showToast('success', 'Message Sent!', 'Thank you for reaching out. I will get back to you soon.');
+                      history.replaceState(null, '', window.location.pathname + window.location.hash);
+                    } else if (status === 'error') {
+                      showToast('error', 'Something went wrong', msg || 'Please try again later.');
+                      history.replaceState(null, '', window.location.pathname + window.location.hash);
+                    }
+
+                    var form = document.getElementById('contact-form');
+                    if (!form) return;
+
                     form.addEventListener('submit', function(event) {
-                      event.preventDefault(); // Stop normal submission
+                      event.preventDefault();
                       var btn = document.getElementById('btn-send-message');
                       var originalText = btn.innerText;
                       btn.innerText = 'Verifying...';
                       btn.disabled = true;
-                      
+
                       grecaptcha.enterprise.ready(async function() {
                         try {
                           const token = await grecaptcha.enterprise.execute('${recaptchaSiteKey}', {action: 'submit'});
-                          
-                          // 1. Verify reCAPTCHA token securely via our backend
+
                           const verifyRes = await fetch('/api/contact', {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ token: token })
                           });
-                          
+
                           const verifyData = await verifyRes.json();
                           if (!verifyData.success) {
                             btn.innerText = originalText;
                             btn.disabled = false;
-                            window.location.href = '/?status=error&msg=' + encodeURIComponent(verifyData.msg) + '#contact';
+                            showToast('error', 'Verification Failed', verifyData.msg);
                             return;
                           }
 
-                          // 2. Token is verified! Send email directly via Web3Forms to bypass Vercel block
+                          btn.innerText = 'Sending...';
                           const formData = new FormData(form);
-                          formData.append("access_key", "${process.env.WEB3FORMS_ACCESS_KEY}");
-                          formData.append("from_name", "Portfolio Contact Form");
-                          
+                          formData.append('access_key', '${process.env.WEB3FORMS_ACCESS_KEY}');
+                          formData.append('from_name', 'Portfolio Contact Form');
+
                           const web3Res = await fetch('https://api.web3forms.com/submit', {
                             method: 'POST',
                             body: formData
                           });
-                          
+
                           const web3Data = await web3Res.json();
+                          btn.innerText = originalText;
+                          btn.disabled = false;
+
                           if (web3Data.success) {
-                            window.location.href = '/?status=success#contact';
+                            form.reset();
+                            showToast('success', 'Message Sent!', 'Thank you for reaching out. I will get back to you soon.');
                           } else {
-                            btn.innerText = originalText;
-                            btn.disabled = false;
-                            window.location.href = '/?status=error&msg=Email service rejected the request.#contact';
+                            showToast('error', 'Something went wrong', 'The email service rejected the request. Please try again.');
                           }
 
                         } catch(err) {
                           btn.innerText = originalText;
                           btn.disabled = false;
-                          alert('reCAPTCHA failed to load or an unexpected error occurred. Please try again.');
+                          showToast('error', 'Unexpected Error', 'reCAPTCHA failed to load. Please refresh and try again.');
                         }
                       });
                     });
-                  }
-                });
+                  });
+                })();
               `}} />
 
               <button type="submit" className="btn primary full-width" id="btn-send-message">Send Message</button>
