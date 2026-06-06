@@ -224,7 +224,7 @@ export default async function Home() {
       <div className="section-divider"></div>
 
       {/* ===== TOAST NOTIFICATION ===== */}
-      <div className="toast-backdrop" id="toast-backdrop" onClick={() => {}} />
+      <div className="toast-backdrop" id="toast-backdrop" />
       <div className="toast-container" id="toast-container" role="alert" aria-live="polite">
         <div className="toast" id="toast-box">
           <div className="toast-icon" id="toast-icon"></div>
