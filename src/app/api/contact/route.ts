@@ -3,15 +3,11 @@ import { supabase } from '@/lib/supabase';
 
 export async function POST(request: Request) {
   try {
-    const formData = await request.formData();
-    const recaptchaResponse = formData.get('g-recaptcha-response');
-    const name = formData.get('name');
-    const email = formData.get('email');
-    const subject = formData.get('subject');
-    const message = formData.get('message');
+    const body = await request.json();
+    const recaptchaResponse = body.token;
 
     if (!recaptchaResponse) {
-      return NextResponse.redirect(new URL('/?status=error&msg=Please complete the reCAPTCHA verification.#contact', request.url), 303);
+      return NextResponse.json({ success: false, msg: 'Please complete the reCAPTCHA verification.' });
     }
 
     // 1. Verify Google reCAPTCHA using Enterprise REST API
@@ -22,7 +18,7 @@ export async function POST(request: Request) {
 
     if (!apiKey) {
       console.error("Missing RECAPTCHA_API_KEY environment variable.");
-      return NextResponse.redirect(new URL('/?status=error&msg=Server configuration error. Please try again later.#contact', request.url), 303);
+      return NextResponse.json({ success: false, msg: 'Server configuration error. Please try again later.' });
     }
 
     try {
@@ -45,22 +41,22 @@ export async function POST(request: Request) {
 
       if (!response.tokenProperties?.valid) {
         console.error(`Assessment failed because token was: ${response.tokenProperties?.invalidReason}`);
-        return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed (invalid token). Please try again.#contact', request.url), 303);
+        return NextResponse.json({ success: false, msg: 'reCAPTCHA verification failed (invalid token). Please try again.' });
       }
 
       if (response.tokenProperties.action === 'submit') {
         const score = response.riskAnalysis?.score || 0;
         if (score < 0.5) {
           console.error(`reCAPTCHA blocked due to low score: ${score}`);
-          return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed (bot behavior detected). Please try again.#contact', request.url), 303);
+          return NextResponse.json({ success: false, msg: 'reCAPTCHA verification failed (bot behavior detected). Please try again.' });
         }
       } else {
         console.error("The action attribute does not match.");
-        return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed (action mismatch). Please try again.#contact', request.url), 303);
+        return NextResponse.json({ success: false, msg: 'reCAPTCHA verification failed (action mismatch). Please try again.' });
       }
     } catch (err) {
       console.error("Enterprise REST error:", err);
-      return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification service unavailable. Please try again later.#contact', request.url), 303);
+      return NextResponse.json({ success: false, msg: 'reCAPTCHA verification service unavailable. Please try again later.' });
     }
 
     // 2. Rate Limiting via Supabase
@@ -71,60 +67,23 @@ export async function POST(request: Request) {
       .from('email_submissions')
       .select('*', { count: 'exact', head: true })
       .eq('ip_address', ip)
-      .gte('submitted_at', oneHourAgo);
+      .gte('created_at', oneHourAgo);
 
     if (countError) {
       console.error('Rate limit check error:', countError);
     }
 
     if (count !== null && count >= rateLimit) {
-      return NextResponse.redirect(new URL(`/?status=error&msg=Rate limit exceeded. You can only send ${rateLimit} emails per hour.#contact`, request.url), 303);
+      return NextResponse.json({ success: false, msg: `Rate limit exceeded. You can only send ${rateLimit} emails per hour.` });
     }
 
     // 3. Log Submission
     await supabase.from('email_submissions').insert([{ ip_address: ip }]);
 
-    // 4. Forward to Web3Forms (Replaces FormSubmit)
-    const web3formsAccessKey = process.env.WEB3FORMS_ACCESS_KEY || '';
-    if (!web3formsAccessKey) {
-      console.error("Missing WEB3FORMS_ACCESS_KEY");
-      return NextResponse.redirect(new URL('/?status=error&msg=Email service configuration error. Please try again later.#contact', request.url), 303);
-    }
-
-    const web3formsUrl = 'https://api.web3forms.com/submit';
-    const payload = {
-      access_key: web3formsAccessKey,
-      name: name?.toString() || '',
-      email: email?.toString() || '',
-      subject: subject?.toString() || '',
-      message: message?.toString() || '',
-      from_name: 'Portfolio Contact Form'
-    };
-
-    const mailResult = await fetch(web3formsUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (!mailResult.ok) {
-      console.error('Web3Forms HTTP error:', mailResult.status);
-      return NextResponse.redirect(new URL(`/?status=error&msg=Failed to send message (HTTP ${mailResult.status}). Please try again later.#contact`, request.url), 303);
-    }
-
-    const mailData = await mailResult.json();
-    if (!mailData.success) {
-      console.error('Web3Forms API error:', mailData.message);
-      return NextResponse.redirect(new URL('/?status=error&msg=Email service rejected the request. Please verify your Web3Forms configuration.#contact', request.url), 303);
-    }
-
-    return NextResponse.redirect(new URL('/?status=success#contact', request.url), 303);
+    return NextResponse.json({ success: true, msg: 'Verification passed.' });
 
   } catch (error) {
     console.error('Contact API error:', error);
-    return NextResponse.redirect(new URL('/?status=error&msg=An unexpected error occurred.#contact', request.url), 303);
+    return NextResponse.json({ success: false, msg: 'An unexpected error occurred.' });
   }
 }

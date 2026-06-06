@@ -284,12 +284,45 @@ export default async function Home() {
                       grecaptcha.enterprise.ready(async function() {
                         try {
                           const token = await grecaptcha.enterprise.execute('${recaptchaSiteKey}', {action: 'submit'});
-                          document.getElementById('g-recaptcha-response').value = token;
-                          form.submit(); // Now submit the form manually
+                          
+                          // 1. Verify reCAPTCHA token securely via our backend
+                          const verifyRes = await fetch('/api/contact', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ token: token })
+                          });
+                          
+                          const verifyData = await verifyRes.json();
+                          if (!verifyData.success) {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                            window.location.href = '/?status=error&msg=' + encodeURIComponent(verifyData.msg) + '#contact';
+                            return;
+                          }
+
+                          // 2. Token is verified! Send email directly via Web3Forms to bypass Vercel block
+                          const formData = new FormData(form);
+                          formData.append("access_key", "${process.env.WEB3FORMS_ACCESS_KEY}");
+                          formData.append("from_name", "Portfolio Contact Form");
+                          
+                          const web3Res = await fetch('https://api.web3forms.com/submit', {
+                            method: 'POST',
+                            body: formData
+                          });
+                          
+                          const web3Data = await web3Res.json();
+                          if (web3Data.success) {
+                            window.location.href = '/?status=success#contact';
+                          } else {
+                            btn.innerText = originalText;
+                            btn.disabled = false;
+                            window.location.href = '/?status=error&msg=Email service rejected the request.#contact';
+                          }
+
                         } catch(err) {
                           btn.innerText = originalText;
                           btn.disabled = false;
-                          alert('reCAPTCHA failed to load. Please try again.');
+                          alert('reCAPTCHA failed to load or an unexpected error occurred. Please try again.');
                         }
                       });
                     });
