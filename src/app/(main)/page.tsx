@@ -262,11 +262,15 @@ export default async function Home() {
             </div>
 
             <form action="/api/contact" method="POST" className="email-form" id="contact-form">
-              <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" />
               <input type="text" name="name" id="form-name" placeholder="Name" required />
               <input type="email" name="email" id="form-email" placeholder="Your Email" required />
               <input type="text" name="subject" id="form-subject" placeholder="Subject" required />
               <textarea name="message" id="form-message" rows={5} placeholder="Message" required></textarea>
+              
+              {/* Google reCAPTCHA Widget */}
+              <div className="g-recaptcha" data-sitekey={recaptchaSiteKey} style={{ marginBottom: '15px' }}></div>
+              <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
               <button type="submit" className="btn primary full-width" id="btn-send-message">Send Message</button>
             </form>
           </div>
