@@ -1,0 +1,89 @@
+/* =====================================================
+   CONTACT SECTION
+   ===================================================== */
+.contact-container {
+  max-width: 620px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.contact-container>p {
+  color: var(--text-muted);
+  margin-bottom: 40px;
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  margin-bottom: 50px;
+}
+
+.social-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50px;
+  height: 50px;
+  border-radius: 13px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  transition: all 0.25s var(--ease);
+  text-decoration: none;
+}
+
+.social-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.social-btn:hover {
+  border-color: var(--border-hover);
+  color: var(--accent-2);
+  transform: translateY(-3px);
+  background: rgba(37, 99, 235, 0.08);
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.15);
+}
+
+.email-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+input,
+textarea {
+  width: 100%;
+  padding: 14px 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-radius: 12px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  transition: border-color 0.25s var(--ease), box-shadow 0.25s var(--ease), background 0.25s;
+  backdrop-filter: blur(10px);
+  outline: none;
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--text-subtle);
+}
+
+input:focus,
+textarea:focus {
+  border-color: var(--border-hover);
+  box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+  background: rgba(37, 99, 235, 0.03);
+}
+
+/* reCAPTCHA centering */
+.g-recaptcha {
+  display: flex;
+  justify-content: center;
+}

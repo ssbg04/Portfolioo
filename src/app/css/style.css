@@ -1,0 +1,15 @@
+/* =====================================================
+   CRIS CHARLES GARCIA PORTFOLIO — v2
+   Main Stylesheet (Entry Point)
+   ===================================================== */
+
+@import url('./modules/_variables.css');
+@import url('./modules/_base.css');
+@import url('./modules/_layout.css');
+@import url('./modules/_nav.css');
+@import url('./modules/_hero.css');
+@import url('./modules/_cards.css');
+@import url('./modules/_contact.css');
+@import url('./modules/_assistant.css');
+@import url('./modules/_utilities.css');
+@import url('./modules/_responsive.css');

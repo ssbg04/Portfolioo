@@ -1,0 +1,58 @@
+/* =====================================================
+   VARIABLES & THEME TOKENS
+   ===================================================== */
+
+/* --- Google Fonts --- */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=Inter:wght@300;400;500;600&display=swap');
+
+/* --- CSS Variables (Dark Mode Default) --- */
+:root {
+  /* Backgrounds */
+  --bg: #090d16;
+  --bg-secondary: #0f172a;
+  --card-bg: rgba(30, 41, 59, 0.4);
+  --card-border: rgba(148, 163, 184, 0.1);
+  --glass-bg: rgba(9, 13, 22, 0.8);
+
+  /* Text */
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --text-subtle: #64748b;
+
+  /* Accents */
+  --accent: #2563eb;
+  --accent-2: #3b82f6;
+  --accent-glow: rgba(37, 99, 235, 0.15);
+  --grad-1: #3b82f6;
+  --grad-2: #2563eb;
+  --grad-3: #1d4ed8;
+
+  /* Borders */
+  --border: rgba(148, 163, 184, 0.12);
+  --border-hover: rgba(37, 99, 235, 0.45);
+
+  /* Shadows */
+  --shadow-card: 0 4px 20px rgba(0, 0, 0, 0.25);
+  --shadow-glow: 0 4px 20px rgba(37, 99, 235, 0.08);
+
+  /* Transitions */
+  --ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* --- Light Mode Overrides --- */
+body:has(#dark-mode-toggle:not(:checked)) {
+  --bg: #f8fafc;
+  --bg-secondary: #f1f5f9;
+  --card-bg: #ffffff;
+  --card-border: rgba(148, 163, 184, 0.15);
+  --glass-bg: rgba(248, 250, 252, 0.85);
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --text-subtle: #94a3b8;
+  --accent: #2563eb;
+  --accent-glow: rgba(37, 99, 235, 0.1);
+  --border: rgba(148, 163, 184, 0.12);
+  --border-hover: rgba(37, 99, 235, 0.4);
+  --shadow-card: 0 4px 12px rgba(15, 23, 42, 0.05);
+  --shadow-glow: 0 4px 12px rgba(37, 99, 235, 0.05);
+}
