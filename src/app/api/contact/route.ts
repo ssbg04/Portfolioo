@@ -108,7 +108,7 @@ export async function POST(request: Request) {
 
     if (!formSubmitResult.ok) {
       console.error('FormSubmit HTTP error:', formSubmitResult.status);
-      return NextResponse.redirect(new URL('/?status=error&msg=Failed to send message via mail service. Please try again later.#contact', request.url), 303);
+      return NextResponse.redirect(new URL(`/?status=error&msg=Failed to send message (HTTP ${formSubmitResult.status}). Please try again later.#contact`, request.url), 303);
     }
 
     const formSubmitData = await formSubmitResult.json();
