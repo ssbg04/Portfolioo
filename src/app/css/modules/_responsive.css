@@ -247,10 +247,12 @@
     padding: 16px 18px;
   }
 }
-
-/* Hide Google's floating reCAPTCHA badge — we have our own compact badge */
-.grecaptcha-badge {
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
+/* Responsive floating reCAPTCHA badge */
+@media (max-width: 768px) {
+  .grecaptcha-badge {
+    bottom: 12px !important;
+    left: 12px !important;
+    transform: scale(0.8) !important;
+    transform-origin: bottom left !important;
+  }
 }

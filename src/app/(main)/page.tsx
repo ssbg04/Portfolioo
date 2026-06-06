@@ -280,22 +280,6 @@ export default async function Home() {
               <input type="text" name="subject" id="form-subject" placeholder="Subject" required />
               <textarea name="message" id="form-message" rows={5} placeholder="Message" required></textarea>
 
-              {/* Compact reCAPTCHA badge */}
-              <div className="recaptcha-compact" title="Protected by reCAPTCHA Enterprise">
-                <svg className="recaptcha-shield" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M32 4L8 14v18c0 14 10.7 26.4 24 29 13.3-2.6 24-15 24-29V14L32 4z" fill="#4285F4" opacity="0.8"/>
-                  <path d="M28 38l-8-8 2.8-2.8L28 32.4l13.2-13.2L44 22 28 38z" fill="white"/>
-                </svg>
-                <div className="recaptcha-text">
-                  <span className="recaptcha-protected">Protected by reCAPTCHA</span>
-                  <span className="recaptcha-links">
-                    <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Privacy</a>
-                    {" · "}
-                    <a href="https://policies.google.com/terms" target="_blank" rel="noopener">Terms</a>
-                  </span>
-                </div>
-                <div className="recaptcha-logo">re<br/>CAPTCHA</div>
-              </div>
 
               {/* reCAPTCHA v3 Enterprise — invisible */}
               <script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} async defer></script>

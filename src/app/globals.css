@@ -1617,6 +1617,14 @@ textarea:focus {
   .section-divider {
     margin: 0 4%;
   }
+
+  /* Responsive floating reCAPTCHA badge */
+  .grecaptcha-badge {
+    bottom: 12px !important;
+    left: 12px !important;
+    transform: scale(0.8) !important;
+    transform-origin: bottom left !important;
+  }
 }
 
 /* =====================================================
