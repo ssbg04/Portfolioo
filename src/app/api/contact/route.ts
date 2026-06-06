@@ -34,8 +34,9 @@ export async function POST(request: Request) {
 
     const verifyData = await verifyResult.json();
 
-    if (!verifyData.success) {
-      return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed. Please try again.#contact', request.url));
+    if (!verifyData.success || (verifyData.score !== undefined && verifyData.score < 0.5)) {
+      console.error('reCAPTCHA failed:', verifyData);
+      return NextResponse.redirect(new URL('/?status=error&msg=reCAPTCHA verification failed (bot behavior detected). Please try again.#contact', request.url));
     }
 
     // 2. Rate Limiting via Supabase

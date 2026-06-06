@@ -267,9 +267,34 @@ export default async function Home() {
               <input type="text" name="subject" id="form-subject" placeholder="Subject" required />
               <textarea name="message" id="form-message" rows={5} placeholder="Message" required></textarea>
               
-              {/* Google reCAPTCHA Widget */}
-              <div className="g-recaptcha" data-sitekey={recaptchaSiteKey} style={{ marginBottom: '15px' }}></div>
-              <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+              {/* reCAPTCHA v3 implementation */}
+              <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" />
+              <script src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
+              <script dangerouslySetInnerHTML={{ __html: `
+                document.addEventListener('DOMContentLoaded', function() {
+                  var form = document.getElementById('contact-form');
+                  if (form) {
+                    form.addEventListener('submit', function(event) {
+                      event.preventDefault(); // Stop normal submission
+                      var btn = document.getElementById('btn-send-message');
+                      var originalText = btn.innerText;
+                      btn.innerText = 'Verifying...';
+                      btn.disabled = true;
+                      
+                      grecaptcha.ready(function() {
+                        grecaptcha.execute('${recaptchaSiteKey}', {action: 'submit'}).then(function(token) {
+                          document.getElementById('g-recaptcha-response').value = token;
+                          form.submit(); // Now submit the form manually
+                        }).catch(function(err) {
+                          btn.innerText = originalText;
+                          btn.disabled = false;
+                          alert('reCAPTCHA failed to load. Please try again.');
+                        });
+                      });
+                    });
+                  }
+                });
+              `}} />
 
               <button type="submit" className="btn primary full-width" id="btn-send-message">Send Message</button>
             </form>
