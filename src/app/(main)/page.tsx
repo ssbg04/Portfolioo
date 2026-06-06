@@ -267,9 +267,9 @@ export default async function Home() {
               <input type="text" name="subject" id="form-subject" placeholder="Subject" required />
               <textarea name="message" id="form-message" rows={5} placeholder="Message" required></textarea>
               
-              {/* reCAPTCHA v3 implementation */}
+              {/* reCAPTCHA v3 / Enterprise implementation */}
               <input type="hidden" name="g-recaptcha-response" id="g-recaptcha-response" />
-              <script src={`https://www.google.com/recaptcha/api.js?render=${recaptchaSiteKey}`} async defer></script>
+              <script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} async defer></script>
               <script dangerouslySetInnerHTML={{ __html: `
                 document.addEventListener('DOMContentLoaded', function() {
                   var form = document.getElementById('contact-form');
@@ -281,15 +281,16 @@ export default async function Home() {
                       btn.innerText = 'Verifying...';
                       btn.disabled = true;
                       
-                      grecaptcha.ready(function() {
-                        grecaptcha.execute('${recaptchaSiteKey}', {action: 'submit'}).then(function(token) {
+                      grecaptcha.enterprise.ready(async function() {
+                        try {
+                          const token = await grecaptcha.enterprise.execute('${recaptchaSiteKey}', {action: 'submit'});
                           document.getElementById('g-recaptcha-response').value = token;
                           form.submit(); // Now submit the form manually
-                        }).catch(function(err) {
+                        } catch(err) {
                           btn.innerText = originalText;
                           btn.disabled = false;
                           alert('reCAPTCHA failed to load. Please try again.');
-                        });
+                        }
                       });
                     });
                   }
