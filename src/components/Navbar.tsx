@@ -79,7 +79,7 @@ export default function Navbar() {
           <a href="/#projects" className="nav-item" onClick={handleLinkClick}>Work</a>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/#certificates" className="nav-item" onClick={handleLinkClick}>Certs</a>
-          <Link href="/blog" className="nav-item" onClick={handleLinkClick}>Blog</Link>
+          <Link href="/#blog" className="nav-item" onClick={handleLinkClick}>Blog</Link>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
           <a href="/#contact" className="nav-item" onClick={handleLinkClick}>Contact</a>
 
