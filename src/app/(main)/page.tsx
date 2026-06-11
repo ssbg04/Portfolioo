@@ -306,7 +306,7 @@ export default async function Home() {
             });
           };
 
-          document.addEventListener('DOMContentLoaded', function() {
+          function initContactForm() {
             var params = new URLSearchParams(window.location.search);
             var status = params.get('status');
             var msg = params.get('msg');
@@ -321,7 +321,7 @@ export default async function Home() {
             var form = document.getElementById('contact-form');
             if (!form) return;
 
-            form.addEventListener('submit', function(event) {
+            form.onsubmit = function(event) {
               event.preventDefault();
               var btn = document.getElementById('btn-send-message');
               var originalText = btn.innerText;
@@ -348,7 +348,7 @@ export default async function Home() {
 
                   btn.innerText = 'Sending...';
                   const formData = new FormData(form);
-                  formData.append('access_key', '${process.env.WEB3FORMS_ACCESS_KEY}');
+                  formData.append('access_key', '${process.env.WEB3FORMS_ACCESS_KEY || ""}');
                   formData.append('from_name', 'Portfolio Contact Form');
 
                   const web3Res = await fetch('https://api.web3forms.com/submit', {
@@ -370,11 +370,17 @@ export default async function Home() {
                 } catch(err) {
                   btn.innerText = originalText;
                   btn.disabled = false;
-                  showToast('error', 'Unexpected Error', 'reCAPTCHA failed to load. Please refresh and try again.');
+                  showToast('error', 'Unexpected Error', 'reCAPTCHA failed to load or an error occurred. Please refresh and try again.');
                 }
               });
-            });
-          });
+            };
+          }
+
+          if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initContactForm);
+          } else {
+            initContactForm();
+          }
         })();
       `}
       </Script>
