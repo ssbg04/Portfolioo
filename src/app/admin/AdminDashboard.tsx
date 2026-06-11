@@ -1,7 +1,30 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import {
+  LayoutDashboard,
+  FolderKanban,
+  Award,
+  BookOpen,
+  Layers,
+  ShieldCheck,
+  LogOut,
+  Moon,
+  Sun,
+  Plus,
+  Edit2,
+  Trash2,
+  MonitorPlay,
+  ZoomIn,
+  ZoomOut,
+  Maximize2,
+  X,
+  Menu,
+  CheckCircle2,
+  AlertCircle
+} from "lucide-react";
+
 import {
   updateSettings,
   upsertProject,
@@ -31,17 +54,18 @@ export default function AdminDashboard({
   initialTechStack: any[];
   username: string;
 }) {
-  const [activeTab, setActiveTab] = useState("profile");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const router = useRouter();
 
   // Dark mode toggle state
-  const [isDark, setIsDark] = useState(() => {
+  const [isDark, setIsDark] = useState(true);
+
+  useEffect(() => {
     if (typeof window !== "undefined") {
-      return localStorage.getItem("theme") !== "light";
+      setIsDark(localStorage.getItem("theme") !== "light");
     }
-    return true;
-  });
+  }, []);
 
   const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     const checked = e.target.checked;
@@ -58,6 +82,10 @@ export default function AdminDashboard({
   const [isProjectModalOpen, setIsProjectModalOpen] = useState(false);
   const [isCertModalOpen, setIsCertModalOpen] = useState(false);
   const [isArticleModalOpen, setIsArticleModalOpen] = useState(false);
+  const [isPreviewModalOpen, setIsPreviewModalOpen] = useState(false);
+  
+  // Preview Zoom state
+  const [previewZoom, setPreviewZoom] = useState(1);
 
   // Form refs for unsaved changes confirmation
   const projectFormRef = useRef<HTMLFormElement>(null);
@@ -148,6 +176,32 @@ export default function AdminDashboard({
         onChange={handleToggle} 
       />
 
+      {/* Floating Toast Notification */}
+      {message.text && (
+        <div style={{
+          position: 'fixed',
+          bottom: '24px',
+          right: '24px',
+          background: message.type === 'success' ? '#065f46' : '#7f1d1d',
+          color: message.type === 'success' ? '#a7f3d0' : '#fecaca',
+          border: `1px solid ${message.type === 'success' ? '#059669' : '#dc2626'}`,
+          padding: '16px 20px',
+          borderRadius: '12px',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '12px',
+          zIndex: 9999,
+          boxShadow: '0 10px 25px rgba(0,0,0,0.3)',
+          animation: 'modalSlideUp 0.3s ease-out'
+        }}>
+          {message.type === 'success' ? <CheckCircle2 size={24} /> : <AlertCircle size={24} />}
+          <div style={{ fontWeight: 600 }}>{message.text}</div>
+          <button onClick={() => setMessage({ type: "", text: "" })} style={{ background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', marginLeft: 'auto' }}>
+            <X size={18} />
+          </button>
+        </div>
+      )}
+
       {/* Mobile Header */}
       <header className="mobile-top-bar">
         <div className="logo-text" style={{ fontSize: "1.25rem" }}>
@@ -157,30 +211,16 @@ export default function AdminDashboard({
         <div 
           className={`hamburger ${isSidebarOpen ? "active" : ""}`} 
           id="hamburger" 
-          aria-label="Toggle menu" 
           role="button" 
           tabIndex={0} 
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
         >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
+          {isSidebarOpen ? <X /> : <Menu />}
         </div>
       </header>
 
       {/* Sidebar Navigation */}
       <div className={`sidebar ${isSidebarOpen ? "open" : ""}`} id="sidebar">
-        <div 
-          className={`hamburger sidebar-close-btn ${isSidebarOpen ? "active" : ""}`} 
-          aria-label="Close menu" 
-          role="button" 
-          tabIndex={0} 
-          onClick={() => setIsSidebarOpen(false)}
-        >
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-        </div>
         <div className="logo-container">
           <div className="logo-text">
             <span>Admin Panel</span>
@@ -188,23 +228,37 @@ export default function AdminDashboard({
           </div>
         </div>
         <div className="sidebar-nav">
-          <button className={`nav-link ${activeTab === "profile" ? "active" : ""}`} onClick={() => switchTab("profile")}>👤 Profile & Stats</button>
-          <button className={`nav-link ${activeTab === "projects" ? "active" : ""}`} onClick={() => switchTab("projects")}>💻 Projects</button>
-          <button className={`nav-link ${activeTab === "certifications" ? "active" : ""}`} onClick={() => switchTab("certifications")}>🏆 Certifications</button>
-          <button className={`nav-link ${activeTab === "articles" ? "active" : ""}`} onClick={() => switchTab("articles")}>📰 Blog Articles</button>
-          <button className={`nav-link ${activeTab === "techstack" ? "active" : ""}`} onClick={() => switchTab("techstack")}>⚡ Tech Stack</button>
-          <button className={`nav-link ${activeTab === "account" ? "active" : ""}`} onClick={() => switchTab("account")}>🔒 Account Security</button>
+          <button className={`nav-link ${activeTab === "dashboard" ? "active" : ""}`} onClick={() => switchTab("dashboard")} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <LayoutDashboard size={18} /> Dashboard Overview
+          </button>
+          <button className={`nav-link ${activeTab === "projects" ? "active" : ""}`} onClick={() => switchTab("projects")} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <FolderKanban size={18} /> Projects ({initialProjects.length})
+          </button>
+          <button className={`nav-link ${activeTab === "certifications" ? "active" : ""}`} onClick={() => switchTab("certifications")} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Award size={18} /> Certifications ({initialCerts.length})
+          </button>
+          <button className={`nav-link ${activeTab === "articles" ? "active" : ""}`} onClick={() => switchTab("articles")} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <BookOpen size={18} /> Blog Articles ({initialArticles.length})
+          </button>
+          <button className={`nav-link ${activeTab === "techstack" ? "active" : ""}`} onClick={() => switchTab("techstack")} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <Layers size={18} /> Tech Stack ({initialTechStack.length})
+          </button>
+          <button className={`nav-link ${activeTab === "account" ? "active" : ""}`} onClick={() => switchTab("account")} style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <ShieldCheck size={18} /> Account Security
+          </button>
         </div>
         <div className="sidebar-footer" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
             <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', fontWeight: '600' }}>THEME</span>
             <label htmlFor="dark-mode-toggle" className="theme-switch" title="Toggle Theme" aria-label="Toggle dark/light mode" style={{ margin: 0, transform: 'scale(0.85)' }}>
               <span className="theme-switch-thumb"></span>
-              <span className="theme-switch-icon icon-moon">🌙</span>
-              <span className="theme-switch-icon icon-sun">☀️</span>
+              <span className="theme-switch-icon icon-moon"><Moon size={14} /></span>
+              <span className="theme-switch-icon icon-sun"><Sun size={14} /></span>
             </label>
           </div>
-          <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)' }}>Logout ➔</button>
+          <button onClick={handleLogout} className="logout-btn" style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--text-muted)', display: 'flex', alignItems: 'center', gap: '6px' }}>
+            <LogOut size={16} /> Logout
+          </button>
         </div>
       </div>
 
@@ -219,23 +273,44 @@ export default function AdminDashboard({
             <h1 id="tab-title-text">{activeTab.toUpperCase()} MANAGEMENT</h1>
             <p>Welcome back, {username}.</p>
           </div>
-          <div className="user-badge">
-            <span className="status-dot"></span>
-            <span>Active Session</span>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            <button 
+              onClick={() => setIsPreviewModalOpen(true)} 
+              className="btn primary" 
+              style={{ display: 'flex', alignItems: 'center', gap: '8px', background: 'var(--accent)' }}
+            >
+              <MonitorPlay size={18} /> Live Preview
+            </button>
+            <div className="user-badge">
+              <span className="status-dot"></span>
+              <span>Active Session</span>
+            </div>
           </div>
         </div>
 
-        {/* System Alerts */}
-        {message.text && (
-          <div className={`alert alert-${message.type === "success" ? "success" : "danger"}`}>
-            <span>{message.type === "success" ? "✓" : "⚠️"}</span>
-            <div>{message.text}</div>
-          </div>
-        )}
-
-        {/* ================= TAB: PROFILE ================= */}
-        {activeTab === "profile" && (
+        {/* ================= TAB: DASHBOARD / PROFILE ================= */}
+        {activeTab === "dashboard" && (
           <div className="tab-pane active">
+            {/* Stats Overview Cards */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+              {[
+                { title: "Total Projects", count: initialProjects.length, icon: <FolderKanban size={24} /> },
+                { title: "Certifications", count: initialCerts.length, icon: <Award size={24} /> },
+                { title: "Blog Articles", count: initialArticles.length, icon: <BookOpen size={24} /> },
+                { title: "Tech Stack", count: initialTechStack.length, icon: <Layers size={24} /> },
+              ].map((stat, i) => (
+                <div key={i} className="card" style={{ marginBottom: 0, padding: '24px', display: 'flex', alignItems: 'center', gap: '16px' }}>
+                  <div style={{ background: 'rgba(37, 99, 235, 0.1)', padding: '12px', borderRadius: '12px', color: 'var(--accent)' }}>
+                    {stat.icon}
+                  </div>
+                  <div>
+                    <div style={{ fontSize: '2rem', fontWeight: '700', fontFamily: 'Outfit' }}>{stat.count}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{stat.title}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <form onSubmit={(e) => { e.preventDefault(); handleAction(updateSettings, new FormData(e.currentTarget), "Settings updated!"); }}>
               <div className="card">
                 <div className="card-title">📝 About Me Bio Copy</div>
@@ -246,24 +321,6 @@ export default function AdminDashboard({
                 <div className="form-group">
                   <label htmlFor="about_text_2">About Paragraph 2</label>
                   <textarea name="about_text_2" id="about_text_2" required defaultValue={initialSettings?.about_text_2} />
-                </div>
-              </div>
-
-              <div className="card">
-                <div className="card-title">📈 Statistics Counters</div>
-                <div className="form-grid">
-                  <div className="form-group">
-                    <label htmlFor="years_coding">Years Coding Count</label>
-                    <input type="text" name="years_coding" id="years_coding" required defaultValue={initialSettings?.years_coding} />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="projects_count">Projects Built Count</label>
-                    <input type="text" name="projects_count" id="projects_count" required defaultValue={initialSettings?.projects_count} />
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="certifications_count">Certifications Count</label>
-                    <input type="text" name="certifications_count" id="certifications_count" required defaultValue={initialSettings?.certifications_count} />
-                  </div>
                 </div>
               </div>
 
@@ -293,7 +350,7 @@ export default function AdminDashboard({
                 </div>
               </div>
 
-              <button type="submit" className="btn primary" disabled={isSubmitting}>Save Changes</button>
+              <button type="submit" className="btn primary" disabled={isSubmitting}>Save Profile Changes</button>
             </form>
           </div>
         )}
@@ -305,13 +362,16 @@ export default function AdminDashboard({
               <button 
                 className="btn primary" 
                 onClick={() => { setEditProject(null); setIsProjectModalOpen(true); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                ➕ Add New Project
+                <Plus size={18} /> Add New Project
               </button>
             </div>
 
             <div className="card">
-              <div className="card-title">📁 Current Projects</div>
+              <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <FolderKanban size={24} /> Current Projects
+              </div>
               <div className="table-container">
                 <table>
                   <thead>
@@ -328,7 +388,9 @@ export default function AdminDashboard({
                         <td>{proj.techstack}</td>
                         <td>
                           <div className="btn-actions">
-                            <button className="btn secondary btn-sm" onClick={() => { setEditProject(proj); setIsProjectModalOpen(true); }}>Edit</button>
+                            <button className="btn secondary btn-sm" onClick={() => { setEditProject(proj); setIsProjectModalOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Edit2 size={14} /> Edit
+                            </button>
                             <button className="btn danger btn-sm" onClick={async () => {
                               if (confirm("Are you sure?")) {
                                 setIsSubmitting(true);
@@ -336,7 +398,9 @@ export default function AdminDashboard({
                                 setIsSubmitting(false);
                                 router.refresh();
                               }
-                            }}>Delete</button>
+                            }} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                              <Trash2 size={14} /> Delete
+                            </button>
                           </div>
                         </td>
                       </tr>
@@ -348,13 +412,13 @@ export default function AdminDashboard({
 
             {/* Project Modal */}
             {isProjectModalOpen && (
-              <div className="modal-overlay" onClick={handleCloseProject}>
-                <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-                  <div className="modal-header">
-                    <h2>{editProject ? "✏️ Edit Project" : "➕ Add New Project"}</h2>
-                    <button className="modal-close" onClick={handleCloseProject}>×</button>
+              <div className="custom-modal-overlay" onClick={handleCloseProject}>
+                <div className="custom-modal-container" onClick={(e) => e.stopPropagation()}>
+                  <div className="custom-modal-header">
+                    <h2>{editProject ? "Edit Project" : "Add New Project"}</h2>
+                    <button className="custom-modal-close" onClick={handleCloseProject}><X size={24} /></button>
                   </div>
-                  <div className="modal-body">
+                  <div className="custom-modal-body">
                     <form ref={projectFormRef} onSubmit={(e) => {
                       e.preventDefault();
                       const form = e.currentTarget;
@@ -375,19 +439,27 @@ export default function AdminDashboard({
                           <input type="text" name="techstack" defaultValue={editProject?.techstack} />
                         </div>
                         <div className="form-group">
-                          <label>Project URL</label>
-                          <input type="text" name="url" defaultValue={editProject?.url} />
-                        </div>
-                        <div className="form-group">
                           <label>Image URL</label>
                           <input type="text" name="img_url" defaultValue={editProject?.img_url} />
                         </div>
+                        <div className="form-group">
+                          <label>Old URL / Extra Link</label>
+                          <input type="text" name="url" defaultValue={editProject?.url} />
+                        </div>
+                        <div className="form-group">
+                          <label>Live Demo URL</label>
+                          <input type="url" name="live_demo_url" defaultValue={editProject?.live_demo_url} />
+                        </div>
+                        <div className="form-group">
+                          <label>Repository URL</label>
+                          <input type="url" name="repo_url" defaultValue={editProject?.repo_url} />
+                        </div>
                         <div className="form-group form-group-full">
                           <label>Description</label>
-                          <textarea name="des" required defaultValue={editProject?.des}></textarea>
+                          <textarea name="des" required defaultValue={editProject?.des} rows={4}></textarea>
                         </div>
                       </div>
-                      <div className="modal-footer" style={{ display: "flex", gap: "12px", marginTop: "20px", padding: "16px 0 0 0", borderTop: "1px solid var(--border-color)" }}>
+                      <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
                         <button type="button" className="btn secondary" onClick={handleCloseProject}>Cancel</button>
                         <button type="submit" className="btn primary" disabled={isSubmitting}>{editProject ? "Update Project" : "Add Project"}</button>
                       </div>
@@ -406,13 +478,16 @@ export default function AdminDashboard({
               <button 
                 className="btn primary" 
                 onClick={() => { setEditCert(null); setIsCertModalOpen(true); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                ➕ Add Certification
+                <Plus size={18} /> Add Certification
               </button>
             </div>
 
             <div className="card">
-              <div className="card-title">🏆 Current Certifications</div>
+              <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Award size={24} /> Current Certifications
+              </div>
               <div className="table-container">
                 <table>
                   <thead>
@@ -426,12 +501,12 @@ export default function AdminDashboard({
                   <tbody>
                     {initialCerts.map(cert => (
                       <tr key={cert.id}>
-                        <td>{cert.icon}</td>
+                        <td>{cert.icon?.includes('fa-') ? <i className={cert.icon}></i> : cert.icon}</td>
                         <td>{cert.title}</td>
                         <td>{cert.issuer}</td>
                         <td>
                           <div className="btn-actions">
-                            <button className="btn secondary btn-sm" onClick={() => { setEditCert(cert); setIsCertModalOpen(true); }}>Edit</button>
+                            <button className="btn secondary btn-sm" onClick={() => { setEditCert(cert); setIsCertModalOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Edit2 size={14} /> Edit</button>
                             <button className="btn danger btn-sm" onClick={async () => {
                               if (confirm("Are you sure?")) {
                                 setIsSubmitting(true);
@@ -439,7 +514,7 @@ export default function AdminDashboard({
                                 setIsSubmitting(false);
                                 router.refresh();
                               }
-                            }}>Delete</button>
+                            }} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Trash2 size={14} /> Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -451,13 +526,13 @@ export default function AdminDashboard({
 
             {/* Certification Modal */}
             {isCertModalOpen && (
-              <div className="modal-overlay" onClick={handleCloseCert}>
-                <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-                  <div className="modal-header">
-                    <h2>{editCert ? "✏️ Edit Certification" : "➕ Add Certification"}</h2>
-                    <button className="modal-close" onClick={handleCloseCert}>×</button>
+              <div className="custom-modal-overlay" onClick={handleCloseCert}>
+                <div className="custom-modal-container" onClick={(e) => e.stopPropagation()}>
+                  <div className="custom-modal-header">
+                    <h2>{editCert ? "Edit Certification" : "Add Certification"}</h2>
+                    <button className="custom-modal-close" onClick={handleCloseCert}><X size={24} /></button>
                   </div>
-                  <div className="modal-body">
+                  <div className="custom-modal-body">
                     <form ref={certFormRef} onSubmit={(e) => {
                       e.preventDefault();
                       const form = e.currentTarget;
@@ -483,10 +558,14 @@ export default function AdminDashboard({
                         </div>
                         <div className="form-group">
                           <label>Icon</label>
-                          <input type="text" name="icon" defaultValue={editCert?.icon || "🏆"} />
+                          <input type="text" name="icon" defaultValue={editCert?.icon || "🏆"} placeholder="Emoji or 'fa-solid fa-award'" />
+                        </div>
+                        <div className="form-group">
+                          <label>Image URL</label>
+                          <input type="text" name="img_url" defaultValue={editCert?.img_url} placeholder="https://example.com/cert.png" />
                         </div>
                       </div>
-                      <div className="modal-footer" style={{ display: "flex", gap: "12px", marginTop: "20px", padding: "16px 0 0 0", borderTop: "1px solid var(--border-color)" }}>
+                      <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
                         <button type="button" className="btn secondary" onClick={handleCloseCert}>Cancel</button>
                         <button type="submit" className="btn primary" disabled={isSubmitting}>{editCert ? "Update" : "Add"}</button>
                       </div>
@@ -505,13 +584,16 @@ export default function AdminDashboard({
               <button 
                 className="btn primary" 
                 onClick={() => { setEditArticle(null); setIsArticleModalOpen(true); }}
+                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
               >
-                ➕ Add Article
+                <Plus size={18} /> Add Article
               </button>
             </div>
 
             <div className="card">
-              <div className="card-title">📰 Current Articles</div>
+              <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <BookOpen size={24} /> Current Articles
+              </div>
               <div className="table-container">
                 <table>
                   <thead>
@@ -530,7 +612,7 @@ export default function AdminDashboard({
                         <td>{art.date_published}</td>
                         <td>
                           <div className="btn-actions">
-                            <button className="btn secondary btn-sm" onClick={() => { setEditArticle(art); setIsArticleModalOpen(true); }}>Edit</button>
+                            <button className="btn secondary btn-sm" onClick={() => { setEditArticle(art); setIsArticleModalOpen(true); }} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Edit2 size={14} /> Edit</button>
                             <button className="btn danger btn-sm" onClick={async () => {
                               if (confirm("Are you sure?")) {
                                 setIsSubmitting(true);
@@ -538,7 +620,7 @@ export default function AdminDashboard({
                                 setIsSubmitting(false);
                                 router.refresh();
                               }
-                            }}>Delete</button>
+                            }} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}><Trash2 size={14} /> Delete</button>
                           </div>
                         </td>
                       </tr>
@@ -550,13 +632,13 @@ export default function AdminDashboard({
 
             {/* Article Modal */}
             {isArticleModalOpen && (
-              <div className="modal-overlay" onClick={handleCloseArticle}>
-                <div className="modal-container" onClick={(e) => e.stopPropagation()}>
-                  <div className="modal-header">
-                    <h2>{editArticle ? "✏️ Edit Article" : "➕ Add Article"}</h2>
-                    <button className="modal-close" onClick={handleCloseArticle}>×</button>
+              <div className="custom-modal-overlay" onClick={handleCloseArticle}>
+                <div className="custom-modal-container" onClick={(e) => e.stopPropagation()}>
+                  <div className="custom-modal-header">
+                    <h2>{editArticle ? "Edit Article" : "Add Article"}</h2>
+                    <button className="custom-modal-close" onClick={handleCloseArticle}><X size={24} /></button>
                   </div>
-                  <div className="modal-body">
+                  <div className="custom-modal-body">
                     <form ref={articleFormRef} onSubmit={(e) => {
                       e.preventDefault();
                       const form = e.currentTarget;
@@ -586,10 +668,10 @@ export default function AdminDashboard({
                         </div>
                         <div className="form-group form-group-full">
                           <label>Excerpt</label>
-                          <textarea name="excerpt" required defaultValue={editArticle?.excerpt}></textarea>
+                          <textarea name="excerpt" required defaultValue={editArticle?.excerpt} rows={4}></textarea>
                         </div>
                       </div>
-                      <div className="modal-footer" style={{ display: "flex", gap: "12px", marginTop: "20px", padding: "16px 0 0 0", borderTop: "1px solid var(--border-color)" }}>
+                      <div style={{ display: "flex", gap: "12px", marginTop: "20px" }}>
                         <button type="button" className="btn secondary" onClick={handleCloseArticle}>Cancel</button>
                         <button type="submit" className="btn primary" disabled={isSubmitting}>{editArticle ? "Update" : "Add"}</button>
                       </div>
@@ -605,7 +687,9 @@ export default function AdminDashboard({
         {activeTab === "techstack" && (
           <div className="tab-pane active">
             <div className="card">
-              <div className="card-title">➕ Add Technology</div>
+              <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Layers size={24} /> Add Technology
+              </div>
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const form = e.currentTarget;
@@ -615,12 +699,16 @@ export default function AdminDashboard({
                   <label>Technology Name</label>
                   <input type="text" name="tech_name" required placeholder="e.g. Next.js, GraphQL, PostgreSQL" />
                 </div>
-                <button type="submit" className="btn primary" disabled={isSubmitting}>Add Tech</button>
+                <button type="submit" className="btn primary" disabled={isSubmitting} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <Plus size={18} /> Add Tech
+                </button>
               </form>
             </div>
 
             <div className="card">
-              <div className="card-title">⚡ Current Technologies</div>
+              <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <Layers size={24} /> Current Technologies
+              </div>
               {initialTechStack.length === 0 ? (
                 <p style={{ color: "var(--text-muted)" }}>No technologies configured.</p>
               ) : (
@@ -648,7 +736,14 @@ export default function AdminDashboard({
         {activeTab === "account" && (
           <div className="tab-pane active">
             <div className="card">
-              <div className="card-title">🔒 Change Admin Credentials</div>
+              <div className="card-title" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <ShieldCheck size={24} /> Change Admin Credentials
+              </div>
+              
+              <div style={{ marginBottom: '24px', paddingBottom: '24px', borderBottom: '1px solid var(--border-color)' }}>
+                <p style={{ color: 'var(--text-muted)' }}>Update your username or set a new password. You will be logged out upon success.</p>
+              </div>
+
               <form onSubmit={async (e) => {
                 e.preventDefault();
                 setIsSubmitting(true);
@@ -665,10 +760,18 @@ export default function AdminDashboard({
                 }
               }}>
                 <div className="form-grid">
-                  <div className="form-group">
+                  <div className="form-group form-group-full">
                     <label>New Username</label>
                     <input type="text" name="new_username" required defaultValue={username} placeholder="Username" />
                   </div>
+                  
+                  {/* Visual Divider */}
+                  <div className="form-group-full" style={{ display: 'flex', alignItems: 'center', gap: '16px', margin: '10px 0 20px' }}>
+                    <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
+                    <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem', fontWeight: 600 }}>PASSWORD</span>
+                    <div style={{ height: '1px', flex: 1, background: 'var(--border-color)' }}></div>
+                  </div>
+
                   <div className="form-group">
                     <label>New Password (leave blank to keep current)</label>
                     <input type="password" name="new_password" placeholder="••••••••" />
@@ -678,7 +781,7 @@ export default function AdminDashboard({
                     <input type="password" name="confirm_password" placeholder="••••••••" />
                   </div>
                 </div>
-                <div style={{ marginTop: "20px" }}>
+                <div style={{ marginTop: "30px" }}>
                   <button type="submit" className="btn primary" disabled={isSubmitting}>
                     Update Credentials
                   </button>
@@ -688,6 +791,44 @@ export default function AdminDashboard({
           </div>
         )}
       </main>
+
+      {/* ================= LIVE PREVIEW MODAL ================= */}
+      {isPreviewModalOpen && (
+        <div className="custom-modal-overlay" style={{ zIndex: 3000, padding: 0 }}>
+          <div className="custom-modal-container" style={{ width: '95vw', maxWidth: '1600px', height: '90vh', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+            <div className="custom-modal-header" style={{ padding: '12px 24px', background: '#090d16', borderBottom: '1px solid #1e293b' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <MonitorPlay size={20} color="#3b82f6" />
+                <h2 style={{ fontSize: '1.2rem' }}>Live Site Preview</h2>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', background: '#1e293b', borderRadius: '8px', padding: '4px' }}>
+                  <button onClick={() => setPreviewZoom(z => Math.max(0.5, z - 0.1))} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px 8px' }} title="Zoom Out"><ZoomOut size={16} /></button>
+                  <span style={{ color: '#f8fafc', fontSize: '0.85rem', width: '45px', textAlign: 'center' }}>{Math.round(previewZoom * 100)}%</span>
+                  <button onClick={() => setPreviewZoom(z => Math.min(1.5, z + 0.1))} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px 8px' }} title="Zoom In"><ZoomIn size={16} /></button>
+                  <button onClick={() => setPreviewZoom(1)} style={{ background: 'none', border: 'none', color: '#94a3b8', cursor: 'pointer', padding: '4px 8px', borderLeft: '1px solid #334155' }} title="Reset Zoom"><Maximize2 size={16} /></button>
+                </div>
+                <button className="custom-modal-close" onClick={() => setIsPreviewModalOpen(false)}><X size={24} /></button>
+              </div>
+            </div>
+            <div style={{ flex: 1, position: 'relative', background: '#0f172a', overflow: 'auto', display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+              <div style={{
+                width: '100%',
+                height: '100%',
+                transform: `scale(${previewZoom})`,
+                transformOrigin: 'top center',
+                transition: 'transform 0.2s ease'
+              }}>
+                <iframe 
+                  src="/" 
+                  style={{ width: '100%', height: '100%', border: 'none', background: '#fff' }} 
+                  title="Portfolio Live Preview"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

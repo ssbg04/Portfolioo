@@ -5,6 +5,8 @@ import { jwtVerify } from "jose";
 
 const SECRET_KEY = process.env.JWT_SECRET || "fallback_secret_key_for_development";
 
+export const dynamic = 'force-dynamic';
+
 export default async function AdminPage() {
     // Check if Supabase is configured
     const isDummy = (process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://dummy.supabase.co') === 'https://dummy.supabase.co';

@@ -1,16 +1,20 @@
 import { supabase } from "@/lib/supabase";
 import ScrollReveal from "@/components/ScrollReveal";
+import FloatingBackButton from "@/components/FloatingBackButton";
 
 export const metadata = {
   title: "All Projects | Cris Charles Garcia",
   description: "All Projects — A complete archive of apps, websites, and experiments built by Cris Charles Garcia.",
 };
 
+export const dynamic = 'force-dynamic';
+
 export default async function ProjectsPage() {
   const { data: projectRows } = await supabase.from('projects').select('*').order('id', { ascending: false });
 
   return (
     <>
+      <FloatingBackButton />
       <ScrollReveal>
         <div className="page-hero">
           <span className="section-label">Projects</span>

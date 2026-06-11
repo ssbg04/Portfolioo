@@ -8,8 +8,8 @@ import { cookies } from "next/headers";
 const SECRET_KEY = process.env.JWT_SECRET || "fallback_secret_key_for_development";
 
 export async function handleLogin(formData: FormData) {
-  const username = formData.get("username")?.toString();
-  const password = formData.get("password")?.toString();
+  const username = formData.get("username")?.toString().trim();
+  const password = formData.get("password")?.toString().trim();
 
   if (!username || !password) {
     return { success: false, error: "Username and password are required" };

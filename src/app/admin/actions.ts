@@ -40,8 +40,10 @@ export async function upsertProject(formData: FormData) {
   const techstack = formData.get('techstack') as string;
   const url = formData.get('url') as string;
   const img_url = formData.get('img_url') as string;
+  const live_demo_url = formData.get('live_demo_url') as string;
+  const repo_url = formData.get('repo_url') as string;
 
-  const payload = { title, des, techstack, url, img_url };
+  const payload = { title, des, techstack, url, img_url, live_demo_url, repo_url };
 
   let result;
   if (id) {
@@ -69,8 +71,9 @@ export async function upsertCertification(formData: FormData) {
   const issuer = formData.get('issuer') as string;
   const date_issued = formData.get('date_issued') as string;
   const icon = formData.get('icon') as string;
+  const img_url = formData.get('img_url') as string;
 
-  const payload = { title, issuer, date_issued, icon };
+  const payload = { title, issuer, date_issued, icon, img_url };
 
   let result;
   if (id) {

@@ -1,6 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
+import { ProjectCard, ArticleCard, CertCard } from "@/components/ClientCardModals";
+
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const recaptchaSiteKey = process.env.RECAPTCHA_SITE_KEY || "";
@@ -140,24 +143,7 @@ export default async function Home() {
           </div>
           <div className="project-grid">
             {projectRows && projectRows.length > 0 ? projectRows.map((project, index) => (
-              <a href={project.url} target="_blank" rel="noopener noreferrer" className="project-card" key={index}>
-                <div className="card-img">
-                  <img src={project.img_url || undefined} alt={project.title} loading="lazy" />
-                  <div className="card-img-overlay"></div>
-                </div>
-                <div className="card-content">
-                  <div className="card-header">
-                    <h3>{project.title}</h3>
-                    <span className="arrow-icon">↗</span>
-                  </div>
-                  <p>{project.des}</p>
-                  <div className="stack-badges">
-                    {project.techstack ? project.techstack.split(',').map((tag: string) => tag.trim()).map((tag: string, i: number) => (
-                      <span className="stack-badge" key={i}>{tag}</span>
-                    )) : null}
-                  </div>
-                </div>
-              </a>
+              <ProjectCard project={project} key={index} />
             )) : <p style={{ color: "var(--text-muted)", gridColumn: "1/-1", textAlign: "center", padding: "40px 0" }}>No projects available.</p>}
           </div>
           <div className="view-all-container">
@@ -175,17 +161,12 @@ export default async function Home() {
             <span className="section-label">Certifications</span>
             <h2 className="section-title">My Certifications</h2>
           </div>
-          <div className="cert-grid">
+          <div className="cert-carousel-container">
             {certRows && certRows.length > 0 ? certRows.map((cert, index) => (
-              <div className="cert-card" key={index}>
-                <div className="cert-icon">{cert.icon || "🏆"}</div>
-                <div className="cert-info">
-                  <h3>{cert.title}</h3>
-                  <p className="issuer">{cert.issuer}</p>
-                  <span className="date">Issued {cert.date_issued}</span>
-                </div>
+              <div className="cert-carousel-item" key={index}>
+                <CertCard cert={cert} />
               </div>
-            )) : <p style={{ color: "var(--text-muted)", gridColumn: "1/-1", textAlign: "center", padding: "40px 0" }}>No certifications available.</p>}
+            )) : <p style={{ color: "var(--text-muted)", width: "100%", textAlign: "center", padding: "40px 0" }}>No certifications available.</p>}
           </div>
           <div className="view-all-container">
             <Link href="/certifications" className="btn secondary" id="btn-all-certs">All Certifications →</Link>
@@ -204,15 +185,7 @@ export default async function Home() {
           </div>
           <div className="blog-grid">
             {articleRows && articleRows.length > 0 ? articleRows.map((article, index) => (
-              <article className="blog-card" key={index}>
-                <div className="blog-meta">
-                  <span className="blog-date">{article.date_published}</span>
-                  {article.tag && <span className="blog-tag">{article.tag}</span>}
-                </div>
-                <h3 className="blog-title">{article.title}</h3>
-                <p className="blog-excerpt">{article.excerpt}</p>
-                <a href={article.url} target="_blank" rel="noopener noreferrer" className="read-more">Read Article →</a>
-              </article>
+              <ArticleCard article={article} key={index} />
             )) : <p style={{ color: "var(--text-muted)", gridColumn: "1/-1", textAlign: "center", padding: "40px 0" }}>No articles available.</p>}
           </div>
           <div className="view-all-container">
