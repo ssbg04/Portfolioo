@@ -108,11 +108,3 @@
   width: 100%;
   justify-content: center;
 }
-
-/* --- Custom reCAPTCHA Badge Styling (Inline) --- */
-.grecaptcha-badge {
-  position: static !important;
-  margin-top: 15px !important;
-  box-shadow: none !important;
-  display: block !important;
-}

@@ -1,8 +1,8 @@
 import { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  // const baseUrl = 'https://crischarles.vercel.app';
-  const baseUrl = 'http://localhost:3000';
+  const baseUrl = 'https://crischarles.vercel.app';
+  // const baseUrl = 'http://localhost:3000';
   const lastMod = '2026-06-11T07:44:07+00:00';
 
   return [

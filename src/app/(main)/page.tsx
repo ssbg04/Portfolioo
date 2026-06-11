@@ -253,132 +253,133 @@ export default async function Home() {
               <input type="email" name="email" id="form-email" placeholder="Your Email" required />
               <input type="text" name="subject" id="form-subject" placeholder="Subject" required />
               <textarea name="message" id="form-message" rows={5} placeholder="Message" required></textarea>
-              <div id="recaptcha-container" style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}></div>
 
 
-              {/* reCAPTCHA v3 Enterprise — invisible */}
-              <Script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} strategy="afterInteractive" />
-              <Script id="recaptcha-inline-script" strategy="afterInteractive">
-                {`
-                (function() {
-                  function showToast(type, title, msg) {
-                    var container = document.getElementById('toast-container');
-                    var backdrop = document.getElementById('toast-backdrop');
-                    var box = document.getElementById('toast-box');
-                    var icon = document.getElementById('toast-icon');
-                    var titleEl = document.getElementById('toast-title');
-                    var msgEl = document.getElementById('toast-msg');
-                    var closeBtn = document.getElementById('toast-close');
-
-                    box.className = 'toast toast-' + type;
-                    icon.textContent = type === 'success' ? '✓' : '✕';
-                    titleEl.textContent = title;
-                    msgEl.textContent = msg || '';
-
-                    container.classList.add('toast-visible');
-                    backdrop.classList.add('toast-visible');
-
-                    var autoClose;
-                    function dismiss() {
-                      container.classList.remove('toast-visible');
-                      backdrop.classList.remove('toast-visible');
-                      clearTimeout(autoClose);
-                    }
-
-                    closeBtn.onclick = dismiss;
-                    backdrop.onclick = dismiss;
-                    autoClose = setTimeout(dismiss, type === 'success' ? 4000 : 6000);
-                  }
-
-                  // Check URL params for status on load
-                  document.addEventListener('DOMContentLoaded', function() {
-                    // Move recaptcha badge inline
-                    var moveBadge = setInterval(function() {
-                      var badge = document.querySelector('.grecaptcha-badge');
-                      var container = document.getElementById('recaptcha-container');
-                      if (badge && container) {
-                        container.appendChild(badge);
-                        clearInterval(moveBadge);
-                      }
-                    }, 500);
-
-                    var params = new URLSearchParams(window.location.search);
-                    var status = params.get('status');
-                    var msg = params.get('msg');
-                    if (status === 'success') {
-                      showToast('success', 'Message Sent!', 'Thank you for reaching out. I will get back to you soon.');
-                      history.replaceState(null, '', window.location.pathname + window.location.hash);
-                    } else if (status === 'error') {
-                      showToast('error', 'Something went wrong', msg || 'Please try again later.');
-                      history.replaceState(null, '', window.location.pathname + window.location.hash);
-                    }
-
-                    var form = document.getElementById('contact-form');
-                    if (!form) return;
-
-                    form.addEventListener('submit', function(event) {
-                      event.preventDefault();
-                      var btn = document.getElementById('btn-send-message');
-                      var originalText = btn.innerText;
-                      btn.innerText = 'Verifying...';
-                      btn.disabled = true;
-
-                      grecaptcha.enterprise.ready(async function() {
-                        try {
-                          const token = await grecaptcha.enterprise.execute('${recaptchaSiteKey}', {action: 'submit'});
-
-                          const verifyRes = await fetch('/api/contact', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ token: token })
-                          });
-
-                          const verifyData = await verifyRes.json();
-                          if (!verifyData.success) {
-                            btn.innerText = originalText;
-                            btn.disabled = false;
-                            showToast('error', 'Verification Failed', verifyData.msg);
-                            return;
-                          }
-
-                          btn.innerText = 'Sending...';
-                          const formData = new FormData(form);
-                          formData.append('access_key', '${process.env.WEB3FORMS_ACCESS_KEY}');
-                          formData.append('from_name', 'Portfolio Contact Form');
-
-                          const web3Res = await fetch('https://api.web3forms.com/submit', {
-                            method: 'POST',
-                            body: formData
-                          });
-
-                          const web3Data = await web3Res.json();
-                          btn.innerText = originalText;
-                          btn.disabled = false;
-
-                          if (web3Data.success) {
-                            form.reset();
-                            showToast('success', 'Message Sent!', 'Thank you for reaching out. I will get back to you soon.');
-                          } else {
-                            showToast('error', 'Something went wrong', 'The email service rejected the request. Please try again.');
-                          }
-
-                        } catch(err) {
-                          btn.innerText = originalText;
-                          btn.disabled = false;
-                          showToast('error', 'Unexpected Error', 'reCAPTCHA failed to load. Please refresh and try again.');
-                        }
-                      });
-                    });
-                  });
-                })();
-              `}
-              </Script>
 
               <button type="submit" className="btn primary full-width" id="btn-send-message">Send Message</button>
             </form>
+            <div id="recaptcha-container" style={{ display: 'flex', justifyContent: 'center', marginTop: '20px' }}></div>
           </div>
         </section>
       </ScrollReveal>
+
+      {/* reCAPTCHA v3 Enterprise — invisible */}
+      <Script src={`https://www.google.com/recaptcha/enterprise.js?render=explicit&onload=onloadRecaptcha`} strategy="afterInteractive" />
+      <Script id="recaptcha-inline-script" strategy="afterInteractive">
+        {`
+        (function() {
+          function showToast(type, title, msg) {
+            var container = document.getElementById('toast-container');
+            var backdrop = document.getElementById('toast-backdrop');
+            var box = document.getElementById('toast-box');
+            var icon = document.getElementById('toast-icon');
+            var titleEl = document.getElementById('toast-title');
+            var msgEl = document.getElementById('toast-msg');
+            var closeBtn = document.getElementById('toast-close');
+
+            box.className = 'toast toast-' + type;
+            icon.textContent = type === 'success' ? '✓' : '✕';
+            titleEl.textContent = title;
+            msgEl.textContent = msg || '';
+
+            container.classList.add('toast-visible');
+            backdrop.classList.add('toast-visible');
+
+            var autoClose;
+            function dismiss() {
+              container.classList.remove('toast-visible');
+              backdrop.classList.remove('toast-visible');
+              clearTimeout(autoClose);
+            }
+
+            closeBtn.onclick = dismiss;
+            backdrop.onclick = dismiss;
+            autoClose = setTimeout(dismiss, type === 'success' ? 4000 : 6000);
+          }
+
+          // Check URL params for status on load
+          window.onloadRecaptcha = function() {
+            grecaptcha.enterprise.ready(function() {
+              window.recaptchaWidgetId = grecaptcha.enterprise.render('recaptcha-container', {
+                sitekey: '${recaptchaSiteKey}',
+                badge: 'inline',
+                size: 'invisible'
+              });
+            });
+          };
+
+          document.addEventListener('DOMContentLoaded', function() {
+            var params = new URLSearchParams(window.location.search);
+            var status = params.get('status');
+            var msg = params.get('msg');
+            if (status === 'success') {
+              showToast('success', 'Message Sent!', 'Thank you for reaching out. I will get back to you soon.');
+              history.replaceState(null, '', window.location.pathname + window.location.hash);
+            } else if (status === 'error') {
+              showToast('error', 'Something went wrong', msg || 'Please try again later.');
+              history.replaceState(null, '', window.location.pathname + window.location.hash);
+            }
+
+            var form = document.getElementById('contact-form');
+            if (!form) return;
+
+            form.addEventListener('submit', function(event) {
+              event.preventDefault();
+              var btn = document.getElementById('btn-send-message');
+              var originalText = btn.innerText;
+              btn.innerText = 'Verifying...';
+              btn.disabled = true;
+
+              grecaptcha.enterprise.ready(async function() {
+                try {
+                  const token = await grecaptcha.enterprise.execute(window.recaptchaWidgetId, {action: 'submit'});
+
+                  const verifyRes = await fetch('/api/contact', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ token: token })
+                  });
+
+                  const verifyData = await verifyRes.json();
+                  if (!verifyData.success) {
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                    showToast('error', 'Verification Failed', verifyData.msg);
+                    return;
+                  }
+
+                  btn.innerText = 'Sending...';
+                  const formData = new FormData(form);
+                  formData.append('access_key', '${process.env.WEB3FORMS_ACCESS_KEY}');
+                  formData.append('from_name', 'Portfolio Contact Form');
+
+                  const web3Res = await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    body: formData
+                  });
+
+                  const web3Data = await web3Res.json();
+                  btn.innerText = originalText;
+                  btn.disabled = false;
+
+                  if (web3Data.success) {
+                    form.reset();
+                    showToast('success', 'Message Sent!', 'Thank you for reaching out. I will get back to you soon.');
+                  } else {
+                    showToast('error', 'Something went wrong', 'The email service rejected the request. Please try again.');
+                  }
+
+                } catch(err) {
+                  btn.innerText = originalText;
+                  btn.disabled = false;
+                  showToast('error', 'Unexpected Error', 'reCAPTCHA failed to load. Please refresh and try again.');
+                }
+              });
+            });
+          });
+        })();
+      `}
+      </Script>
     </>
   );
 }
