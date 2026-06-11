@@ -19,6 +19,24 @@
   .stats-row {
     grid-template-columns: repeat(3, 1fr);
   }
+
+  .project-grid, .blog-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .cert-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  /* Hide trailing items on the main page to keep the grid perfectly rectangular */
+  .main-page-grid.project-grid > :nth-child(n+4),
+  .main-page-grid.blog-grid > :nth-child(n+4) {
+    display: none !important;
+  }
+  
+  .main-page-grid.cert-grid > :nth-child(n+5) {
+    display: none !important;
+  }
 }
 
 /* =====================================================

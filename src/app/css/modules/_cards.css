@@ -3,11 +3,11 @@
    ===================================================== */
 .project-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
 }
 
-a.project-card {
+.project-card {
   text-decoration: none;
   color: inherit;
   display: block;
@@ -19,7 +19,7 @@ a.project-card {
   backdrop-filter: blur(10px);
 }
 
-a.project-card:hover {
+.project-card:hover {
   transform: translateY(-6px);
   border-color: var(--border-hover);
   box-shadow: var(--shadow-glow);
@@ -38,7 +38,7 @@ a.project-card:hover {
   transition: transform 0.5s var(--ease);
 }
 
-a.project-card:hover .card-img img {
+.project-card:hover .card-img img {
   transform: scale(1.05);
 }
 
@@ -78,7 +78,7 @@ a.project-card:hover .card-img img {
   flex-shrink: 0;
 }
 
-a.project-card:hover .arrow-icon {
+.project-card:hover .arrow-icon {
   opacity: 1;
   transform: translate(0, 0);
 }
@@ -112,7 +112,7 @@ a.project-card:hover .arrow-icon {
    ===================================================== */
 .cert-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  grid-template-columns: repeat(6, 1fr);
   gap: 20px;
 }
 
@@ -179,7 +179,7 @@ a.project-card:hover .arrow-icon {
    ===================================================== */
 .blog-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
+  grid-template-columns: repeat(4, 1fr);
   gap: 24px;
 }
 

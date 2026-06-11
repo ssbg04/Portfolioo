@@ -557,7 +557,10 @@ export default function AdminDashboard({
                           <input type="text" name="date_issued" defaultValue={editCert?.date_issued} />
                         </div>
                         <div className="form-group">
-                          <label>Icon</label>
+                          <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <span>Icon</span>
+                            <a href="https://fontawesome.com/search?q=icon&o=r&m=free" target="_blank" rel="noopener noreferrer" style={{ fontSize: '12px', color: 'var(--primary)' }}>Search icons</a>
+                          </label>
                           <input type="text" name="icon" defaultValue={editCert?.icon || "🏆"} placeholder="Emoji or 'fa-solid fa-award'" />
                         </div>
                         <div className="form-group">

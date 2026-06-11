@@ -28,14 +28,7 @@ export default async function CertificationsPage() {
         <section className="section-pad">
           <div className="cert-grid">
             {certRows && certRows.length > 0 ? certRows.map((cert, index) => (
-              <div className="cert-card" key={index}>
-                <div className="cert-icon">{cert.icon || "🎓"}</div>
-                <div className="cert-info">
-                  <h3>{cert.title}</h3>
-                  <p className="issuer">{cert.issuer}</p>
-                  <span className="date">Issued {cert.date_issued}</span>
-                </div>
-              </div>
+              <CertCard cert={cert} key={index} />
             )) : <p style={{ color: "var(--text-muted)", gridColumn: "1/-1", textAlign: "center", padding: "40px 0" }}>No certifications available.</p>}
           </div>
         </section>

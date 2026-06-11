@@ -27,16 +27,16 @@ export default async function Home() {
     const resTech = await supabase.from('techstack').select('tech_name').order('id', { ascending: true });
     techStackRows = resTech.data;
 
-    // Fetch Projects (Limit 3)
-    const resProj = await supabase.from('projects').select('*').order('id', { ascending: false }).limit(3);
+    // Fetch Projects (Limit 4)
+    const resProj = await supabase.from('projects').select('*').order('id', { ascending: false }).limit(4);
     projectRows = resProj.data;
 
-    // Fetch Certifications (Limit 3)
-    const resCert = await supabase.from('certifications').select('*').order('id', { ascending: false }).limit(3);
+    // Fetch Certifications (Limit 6)
+    const resCert = await supabase.from('certifications').select('*').order('id', { ascending: false }).limit(6);
     certRows = resCert.data;
 
-    // Fetch Articles (Limit 3)
-    const resArt = await supabase.from('articles').select('*').order('id', { ascending: false }).limit(3);
+    // Fetch Articles (Limit 4)
+    const resArt = await supabase.from('articles').select('*').order('id', { ascending: false }).limit(4);
     articleRows = resArt.data;
   }
 
@@ -142,8 +142,8 @@ export default async function Home() {
             <span className="section-label">Projects</span>
             <h2 className="section-title">Recent Projects</h2>
           </div>
-          <div className="project-grid">
-            {projectRows && projectRows.length > 0 ? projectRows.map((project, index) => (
+          <div className="project-grid main-page-grid">
+            {projectRows && projectRows.length > 0 ? projectRows.slice(0, 4).map((project, index) => (
               <ProjectCard project={project} key={index} />
             )) : <p style={{ color: "var(--text-muted)", gridColumn: "1/-1", textAlign: "center", padding: "40px 0" }}>No projects available.</p>}
           </div>
@@ -162,11 +162,9 @@ export default async function Home() {
             <span className="section-label">Certifications</span>
             <h2 className="section-title">My Certifications</h2>
           </div>
-          <div className="cert-carousel-container">
-            {certRows && certRows.length > 0 ? certRows.map((cert, index) => (
-              <div className="cert-carousel-item" key={index}>
-                <CertCard cert={cert} />
-              </div>
+          <div className="cert-grid main-page-grid">
+            {certRows && certRows.length > 0 ? certRows.slice(0, 6).map((cert, index) => (
+              <CertCard cert={cert} key={index} />
             )) : <p style={{ color: "var(--text-muted)", width: "100%", textAlign: "center", padding: "40px 0" }}>No certifications available.</p>}
           </div>
           <div className="view-all-container">
@@ -184,8 +182,8 @@ export default async function Home() {
             <span className="section-label">Articles</span>
             <h2 className="section-title">Latest Articles</h2>
           </div>
-          <div className="blog-grid">
-            {articleRows && articleRows.length > 0 ? articleRows.map((article, index) => (
+          <div className="blog-grid main-page-grid">
+            {articleRows && articleRows.length > 0 ? articleRows.slice(0, 4).map((article, index) => (
               <ArticleCard article={article} key={index} />
             )) : <p style={{ color: "var(--text-muted)", gridColumn: "1/-1", textAlign: "center", padding: "40px 0" }}>No articles available.</p>}
           </div>

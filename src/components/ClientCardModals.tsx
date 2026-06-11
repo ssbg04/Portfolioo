@@ -22,7 +22,11 @@ export function ProjectCard({ project }: { project: any }) {
 
   return (
     <>
-      <div className="project-card" onClick={() => setIsOpen(true)} style={{ cursor: 'pointer' }}>
+      <div 
+        className="project-card" 
+        onClick={() => setIsOpen(true)} 
+        style={{ cursor: 'pointer' }}
+      >
         <div className="card-img">
           <img src={project.img_url || undefined} alt={project.title} loading="lazy" />
           <div className="card-img-overlay"></div>
@@ -96,7 +100,11 @@ export function ArticleCard({ article }: { article: any }) {
 
   return (
     <>
-      <article className="blog-card" onClick={() => setIsOpen(true)} style={{ cursor: 'pointer' }}>
+      <article 
+        className="blog-card" 
+        onClick={() => setIsOpen(true)} 
+        style={{ cursor: 'pointer' }}
+      >
         <div className="blog-meta">
           <span className="blog-date">{article.date_published}</span>
           {article.tag && <span className="blog-tag">{article.tag}</span>}
@@ -173,13 +181,25 @@ export function CertCard({ cert }: { cert: any }) {
 
   return (
     <>
-      <div className="cert-card" onClick={() => setIsOpen(true)} style={{ cursor: 'pointer' }}>
+      <div 
+        className="cert-card" 
+        onClick={() => setIsOpen(true)} 
+        style={{ cursor: 'pointer' }}
+      >
         {cert.img_url ? (
-          <div style={{ width: '60px', height: '60px', overflow: 'hidden', borderRadius: '6px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--card-bg)', flexShrink: 0 }}>
+          <div style={{ width: '80px', height: '60px', overflow: 'hidden', borderRadius: '6px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--card-bg)', flexShrink: 0 }}>
             <img src={cert.img_url} alt={cert.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
           </div>
         ) : (
-          <div className="cert-icon">{cert.icon?.includes('fa-') ? <i className={cert.icon}></i> : (cert.icon || "🏆")}</div>
+          <div style={{ width: '80px', height: '60px', overflow: 'hidden', borderRadius: '6px', border: '1px solid var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: 'var(--card-bg)', flexShrink: 0 }}>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ color: 'var(--text-muted)' }}>
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+              <polyline points="10 9 9 9 8 9"></polyline>
+            </svg>
+          </div>
         )}
         <div className="cert-info">
           <h3>{cert.title}</h3>
