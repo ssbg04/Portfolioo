@@ -109,16 +109,10 @@
   justify-content: center;
 }
 
-/* --- Custom reCAPTCHA Badge Styling (Icon Only) --- */
+/* --- Custom reCAPTCHA Badge Styling (Inline) --- */
 .grecaptcha-badge {
-  left: 24px !important;
-  right: auto !important;
-  bottom: 24px !important;
-  z-index: 2 !important;
-  width: 74px !important;
-  overflow: hidden !important;
-  transition: none !important;
-}
-.grecaptcha-badge:hover {
-  width: 74px !important; /* prevent expansion */
+  position: static !important;
+  margin-top: 15px !important;
+  box-shadow: none !important;
+  display: block !important;
 }

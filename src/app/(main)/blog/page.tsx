@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import ScrollReveal from "@/components/ScrollReveal";
-import FloatingBackButton from "@/components/FloatingBackButton";
+
 
 export const metadata = {
   title: "Blog | Cris Charles Garcia",
@@ -14,7 +14,6 @@ export default async function BlogPage() {
 
   return (
     <>
-      <FloatingBackButton />
       <ScrollReveal>
         <div className="page-hero">
           <span className="section-label">Blog</span>

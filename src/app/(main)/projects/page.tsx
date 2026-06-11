@@ -1,6 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import ScrollReveal from "@/components/ScrollReveal";
-import FloatingBackButton from "@/components/FloatingBackButton";
+import { ProjectCard } from "@/components/ClientCardModals";
 
 export const metadata = {
   title: "All Projects | Cris Charles Garcia",
@@ -14,7 +14,6 @@ export default async function ProjectsPage() {
 
   return (
     <>
-      <FloatingBackButton />
       <ScrollReveal>
         <div className="page-hero">
           <span className="section-label">Projects</span>

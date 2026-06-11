@@ -1,6 +1,7 @@
 import { supabase } from "@/lib/supabase";
 import ScrollReveal from "@/components/ScrollReveal";
 import Link from "next/link";
+import Script from "next/script";
 import { ProjectCard, ArticleCard, CertCard } from "@/components/ClientCardModals";
 
 export const dynamic = 'force-dynamic';
@@ -252,11 +253,13 @@ export default async function Home() {
               <input type="email" name="email" id="form-email" placeholder="Your Email" required />
               <input type="text" name="subject" id="form-subject" placeholder="Subject" required />
               <textarea name="message" id="form-message" rows={5} placeholder="Message" required></textarea>
+              <div id="recaptcha-container" style={{ display: 'flex', justifyContent: 'center', margin: '10px 0' }}></div>
 
 
               {/* reCAPTCHA v3 Enterprise — invisible */}
-              <script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} async defer></script>
-              <script dangerouslySetInnerHTML={{ __html: `
+              <Script src={`https://www.google.com/recaptcha/enterprise.js?render=${recaptchaSiteKey}`} strategy="afterInteractive" />
+              <Script id="recaptcha-inline-script" strategy="afterInteractive">
+                {`
                 (function() {
                   function showToast(type, title, msg) {
                     var container = document.getElementById('toast-container');
@@ -289,6 +292,16 @@ export default async function Home() {
 
                   // Check URL params for status on load
                   document.addEventListener('DOMContentLoaded', function() {
+                    // Move recaptcha badge inline
+                    var moveBadge = setInterval(function() {
+                      var badge = document.querySelector('.grecaptcha-badge');
+                      var container = document.getElementById('recaptcha-container');
+                      if (badge && container) {
+                        container.appendChild(badge);
+                        clearInterval(moveBadge);
+                      }
+                    }, 500);
+
                     var params = new URLSearchParams(window.location.search);
                     var status = params.get('status');
                     var msg = params.get('msg');
@@ -358,7 +371,8 @@ export default async function Home() {
                     });
                   });
                 })();
-              `}} />
+              `}
+              </Script>
 
               <button type="submit" className="btn primary full-width" id="btn-send-message">Send Message</button>
             </form>
