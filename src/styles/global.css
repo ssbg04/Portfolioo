@@ -83,7 +83,6 @@
   --font-body: var(--font-body);
 }
 
-@layer utilities {
   .glass-card {
     background: hsl(var(--card));
     backdrop-filter: blur(var(--glass-blur));
@@ -133,7 +132,6 @@
       radial-gradient(at 10% 20%, hsla(var(--primary) / 0.1) 0px, transparent 50%),
       radial-gradient(at 90% 80%, hsla(var(--secondary) / 0.1) 0px, transparent 50%);
   }
-}
 
 /* Custom variant dark for class-based dark mode in Tailwind v4 */
 @variant dark (&:where(.dark, .dark *));
