@@ -143,51 +143,57 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {valueProposition}
         </p>
 
-        {/* Social Media Links with Hover Handle Tooltips */}
-        <div className={`flex items-center gap-4 mb-10 transition-all duration-800 ease-out delay-700 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          {socialLinks.map((link) => (
-            <div key={link.name} className="relative group flex flex-col items-center">
-              <a
-                href={link.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-11 h-11 rounded-full glass-card hover:bg-primary-custom/10 hover:text-primary-custom transition-all duration-300 flex items-center justify-center"
-                aria-label={`Visit Cris's ${link.name}`}
-              >
-                {link.icon}
-              </a>
-              {/* Tooltip */}
-              <div className="absolute bottom-full mb-3 px-3 py-1.5 bg-foreground-custom text-background-custom text-[11px] font-bold rounded-xl opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-lg z-20">
-                {link.handle}
-                {/* Arrow */}
-                <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 w-2 h-2 bg-foreground-custom rotate-45" />
-              </div>
-            </div>
-          ))}
-        </div>
+        {/* Actions & Social Alignment Group */}
+        <div className={`flex flex-col md:flex-row items-center gap-6 mt-6 transition-all duration-800 ease-out delay-800 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
+          {/* CTA Buttons */}
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full md:w-auto">
+            <a
+              href="#projects"
+              onClick={(e) => handleSmoothScroll(e, 'projects')}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-primary-custom to-emerald-600 text-primary-foreground font-bold text-xs shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 group"
+            >
+              Explore Projects
+              <svg className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+            <a
+              href="#contact"
+              onClick={(e) => handleSmoothScroll(e, 'contact')}
+              className="w-full sm:w-auto px-6 py-3.5 rounded-xl glass-card text-foreground-custom font-bold text-xs border border-border/25 hover:bg-primary-custom/10 hover:text-primary-custom hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
+            >
+              Get In Touch
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+              </svg>
+            </a>
+          </div>
 
-        {/* CTA Buttons */}
-        <div className={`flex flex-col sm:flex-row items-center gap-4 justify-center w-full sm:w-auto mt-4 transition-all duration-800 ease-out delay-800 ${mounted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
-          <a
-            href="#projects"
-            onClick={(e) => handleSmoothScroll(e, 'projects')}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-gradient-to-r from-primary-custom to-emerald-600 text-primary-foreground font-bold text-xs shadow-md hover:shadow-lg hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2 group"
-          >
-            Explore Projects
-            <svg className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-            </svg>
-          </a>
-          <a
-            href="#contact"
-            onClick={(e) => handleSmoothScroll(e, 'contact')}
-            className="w-full sm:w-auto px-6 py-3.5 rounded-xl glass-card text-foreground-custom font-bold text-xs border border-border/25 hover:bg-primary-custom/10 hover:text-primary-custom hover:scale-[1.03] active:scale-[0.98] transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-2"
-          >
-            Get In Touch
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-            </svg>
-          </a>
+          {/* Vertical Divider (Desktop only) */}
+          <div className="hidden md:block w-[1px] h-8 bg-border/20" />
+
+          {/* Social Media Links */}
+          <div className="flex items-center gap-4">
+            {socialLinks.map((link) => (
+              <div key={link.name} className="relative group flex flex-col items-center">
+                <a
+                  href={link.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-11 h-11 rounded-full glass-card hover:bg-primary-custom/10 hover:text-primary-custom transition-all duration-300 flex items-center justify-center"
+                  aria-label={`Visit Cris's ${link.name}`}
+                >
+                  {link.icon}
+                </a>
+                {/* Tooltip */}
+                <div className="absolute bottom-full mb-3 px-3 py-1.5 bg-foreground-custom text-background-custom text-[11px] font-bold rounded-xl opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-lg z-20">
+                  {link.handle}
+                  {/* Arrow */}
+                  <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 w-2 h-2 bg-foreground-custom rotate-45" />
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Down indicator */}
