@@ -75,7 +75,7 @@ export default function Navbar() {
         <div
           className={`transition-all duration-350 ease-out flex items-center justify-between ${
             isScrolled
-              ? 'w-full max-w-4xl glass-card rounded-full px-6 py-2.5 border border-border-hover/10 shadow-lg'
+              ? 'w-full max-w-4xl glass-nav rounded-full px-6 py-2.5 border border-border-hover/10 shadow-lg'
               : 'w-full max-w-7xl px-8 py-6 bg-transparent border-b border-transparent'
           }`}
         >

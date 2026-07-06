@@ -12,7 +12,10 @@ export default defineConfig({
   integrations: [react()],
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
+    build: {
+      cssMinify: 'esbuild'
+    }
   },
 
   adapter: vercel()
