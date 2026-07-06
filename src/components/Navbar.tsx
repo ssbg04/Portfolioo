@@ -1,112 +1,173 @@
-"use client";
+import React, { useState, useEffect } from 'react';
+import ThemeToggle from './ThemeToggle';
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const navItems: NavItem[] = [
+  { label: 'Home', href: '/' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'About', href: '/about' },
+  { label: 'Links', href: '/links' },
+  { label: 'Chat', href: '/chat' },
+  { label: 'Contact', href: '/contact' }
+];
 
 export default function Navbar() {
-  const [isDark, setIsDark] = useState(true);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeHash, setActiveHash] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      setIsDark(localStorage.getItem("theme") !== "light");
-    }
+    const handleScroll = () => {
+      if (window.scrollY > 120) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    handleScroll(); // Run once on mount
+
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  const handleToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const checked = e.target.checked;
-    setIsDark(checked);
-    localStorage.setItem("theme", checked ? "dark" : "light");
-  };
+  // IntersectionObserver to highlight current section if on the homepage
+  useEffect(() => {
+    if (window.location.pathname !== '/') return;
 
-  const toggleMenu = () => {
-    const navLinks = document.getElementById("nav-links");
-    const hamburger = document.getElementById("hamburger");
-    const navOverlay = document.getElementById("nav-overlay");
+    const sections = ['home', 'projects', 'skills', 'about', 'contact'];
+    const observerOptions = {
+      root: null,
+      rootMargin: '-30% 0px -60% 0px',
+      threshold: 0
+    };
 
-    if (navLinks?.classList.contains("active")) {
-      closeMenu();
-    } else {
-      navLinks?.classList.add("active");
-      hamburger?.classList.add("active");
-      navOverlay?.classList.add("active");
-      // eslint-disable-next-line react-hooks/immutability
-      document.body.style.overflow = "hidden";
-    }
-  };
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveHash(`#${entry.target.id}`);
+        }
+      });
+    }, observerOptions);
 
-  const closeMenu = () => {
-    const navLinks = document.getElementById("nav-links");
-    const hamburger = document.getElementById("hamburger");
-    const navOverlay = document.getElementById("nav-overlay");
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
 
-    navLinks?.classList.remove("active");
-    hamburger?.classList.remove("active");
-    navOverlay?.classList.remove("active");
-    document.body.style.overflow = "";
-  };
-
-  const handleLinkClick = () => {
-    // Delay closeMenu slightly to let the browser process the anchor navigation click
-    // before the menu element transitions to pointer-events: none / off-screen
-    setTimeout(closeMenu, 50);
-  };
+    return () => observer.disconnect();
+  }, []);
 
   return (
     <>
-      <input
-        type="checkbox"
-        id="dark-mode-toggle"
-        className="toggle-checkbox"
-        checked={isDark}
-        onChange={handleToggle}
-      />
+      {/* Navigation Container */}
+      <header
+        className={`fixed left-0 right-0 z-50 transition-all duration-350 ease-out flex justify-center ${
+          isScrolled
+            ? 'top-4 px-4'
+            : 'top-0 px-0'
+        }`}
+      >
+        <div
+          className={`transition-all duration-350 ease-out flex items-center justify-between ${
+            isScrolled
+              ? 'w-full max-w-4xl glass-card rounded-full px-6 py-2.5 border border-border-hover/10 shadow-lg'
+              : 'w-full max-w-7xl px-8 py-6 bg-transparent border-b border-transparent'
+          }`}
+        >
+          {/* Logo / Name */}
+          <a
+            href="/"
+            className="flex items-center gap-2 group font-semibold text-lg tracking-tight text-foreground-custom"
+          >
+            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary-custom to-secondary-custom flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:scale-105 transition-transform">
+              CC
+            </div>
+            <span className="hidden sm:inline font-heading font-bold text-glow">Cris Charles</span>
+          </a>
 
-      <nav id="main-nav">
-        <div className="logo">
-          <Link href="/" className="logo-link" onClick={(e) => {
-            if (window.location.pathname === '/') {
-              e.preventDefault();
-              window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-          }}>CG</Link>
-          <Link href="/admin/login" className="logo-dot-link">.</Link>
+          {/* Desktop Navigation Links */}
+          <nav className="hidden md:flex items-center gap-1.5">
+            {navItems.map((item) => {
+              const isActive = activeHash === item.href || (item.href === '/' && activeHash === '#home');
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                    isActive
+                      ? 'bg-primary-custom text-white shadow-sm'
+                      : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-muted-custom/30'
+                  }`}
+                >
+                  {item.label}
+                </a>
+              );
+            })}
+          </nav>
+
+          {/* Actions: Theme Toggle & Mobile Hamburger */}
+          <div className="flex items-center gap-3">
+            <ThemeToggle />
+            
+            {/* Hamburger Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden p-2.5 rounded-full glass-card hover:bg-primary-custom/10 text-foreground-custom transition-all"
+              aria-label="Toggle Navigation Menu"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+              >
+                {mobileMenuOpen ? (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                ) : (
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                )}
+              </svg>
+            </button>
+          </div>
         </div>
+      </header>
 
-        <div className="nav-links" id="nav-links" role="navigation">
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/#about" className="nav-item" onClick={handleLinkClick}>About</a>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/#projects" className="nav-item" onClick={handleLinkClick}>Work</a>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/#certificates" className="nav-item" onClick={handleLinkClick}>Certs</a>
-          <Link href="/#blog" className="nav-item" onClick={handleLinkClick}>Blog</Link>
-          {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-          <a href="/#contact" className="nav-item" onClick={handleLinkClick}>Contact</a>
-
-          <label htmlFor="dark-mode-toggle" className="theme-switch theme-switch-panel" title="Toggle Theme" aria-label="Toggle dark/light mode">
-            <span className="theme-switch-thumb"></span>
-            <span className="theme-switch-icon icon-moon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg></span>
-            <span className="theme-switch-icon icon-sun"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg></span>
-          </label>
+      {/* Mobile Drawer (Glass Sheet) */}
+      <div
+        className={`fixed inset-0 z-40 md:hidden bg-background-custom/30 backdrop-blur-md transition-opacity duration-300 ${
+          mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        }`}
+        onClick={() => setMobileMenuOpen(false)}
+      >
+        <div
+          className={`absolute top-24 right-4 left-4 glass-card rounded-3xl p-6 border border-border-hover/10 shadow-2xl transition-transform duration-300 ease-out origin-top ${
+            mobileMenuOpen ? 'scale-100 translate-y-0' : 'scale-95 -translate-y-4'
+          }`}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="flex flex-col gap-4">
+            {navItems.map((item) => (
+              <a
+                key={item.label}
+                href={item.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-4 py-3.5 rounded-2xl text-base font-semibold hover:bg-primary-custom/10 hover:text-primary-custom text-foreground-custom transition-colors duration-250 flex items-center justify-between"
+              >
+                {item.label}
+                <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </a>
+            ))}
+          </div>
         </div>
-
-        <label htmlFor="dark-mode-toggle" className="theme-switch theme-switch-nav" title="Toggle Theme" aria-label="Toggle dark/light mode">
-          <span className="theme-switch-thumb"></span>
-          <span className="theme-switch-icon icon-moon"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" /></svg></span>
-          <span className="theme-switch-icon icon-sun"><svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5" /><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" /></svg></span>
-        </label>
-
-        <div className="hamburger" id="hamburger" aria-label="Toggle menu" role="button" tabIndex={0} onClick={toggleMenu}>
-          <span className="bar"></span>
-          <span className="bar"></span>
-          <span className="bar"></span>
-        </div>
-
-        {/* Nav overlay backdrop */}
-        <div className="nav-overlay" id="nav-overlay" onClick={closeMenu}></div>
-      </nav>
+      </div>
     </>
   );
 }
-
-
