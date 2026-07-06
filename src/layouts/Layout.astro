@@ -37,6 +37,8 @@ const {
 		</script>
 	</head>
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
+		<!-- Safe-keep custom classes from being tree-shaken by Astro/Vite compiler -->
+		<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>
 		<slot />
 	</body>
 </html>
