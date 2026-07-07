@@ -99,14 +99,16 @@ export default function SpotifyWidget() {
   }, [isPlaying, isApiActive]);
 
   return (
-    <motion.div
-      className="fixed top-[74px] sm:top-[88px] left-6 sm:left-8 z-40 select-none cursor-pointer flex items-center pointer-events-auto"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-      initial={{ opacity: 0, y: -20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", stiffness: 260, damping: 25, delay: 0.8 }}
-    >
+    <div className="fixed top-[82px] sm:top-[98px] left-0 w-full z-40 pointer-events-none flex justify-start">
+      <div className="max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 w-full flex justify-start">
+        <motion.div
+          className="select-none cursor-pointer flex items-center pointer-events-auto"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ type: "spring", stiffness: 260, damping: 25, delay: 0.8 }}
+        >
       <motion.div
         layout
         className="glass-card border border-white/20 bg-white/5 backdrop-blur-xl rounded-full p-2 flex items-center gap-3 shadow-lg shadow-black/10 overflow-hidden"
@@ -203,5 +205,7 @@ export default function SpotifyWidget() {
         </div>
       </motion.div>
     </motion.div>
+      </div>
+    </div>
   );
 }
