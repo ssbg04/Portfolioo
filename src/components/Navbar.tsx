@@ -86,9 +86,12 @@ export default function Navbar() {
             href="/"
             className="flex items-center gap-2 group font-semibold text-lg tracking-tight text-foreground-custom"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary-custom to-secondary-custom flex items-center justify-center text-white font-bold text-sm shadow-md group-hover:scale-105 transition-transform">
-              CC
-            </div>
+            <img
+              src="/logo.png"
+              alt="Cris Charles Logo"
+              draggable="false"
+              className="w-8 h-8 rounded-full object-cover shadow-md group-hover:scale-105 transition-transform"
+            />
             <span className="hidden sm:inline font-heading font-bold text-glow">Cris Charles</span>
           </a>
 
