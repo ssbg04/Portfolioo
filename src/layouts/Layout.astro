@@ -13,6 +13,8 @@ const {
 	title = "Cris Charles Garcia | Full-Stack Developer Portfolio", 
 	description = "Personal portfolio website of Cris Charles Garcia, showcasing projects, skills, experience, and custom AI chatbot assistant." 
 } = Astro.props;
+
+const isRootPage = Astro.url.pathname === '/';
 ---
 
 <!doctype html>
@@ -45,6 +47,6 @@ const {
 		<slot />
 		<BackToTop client:load />
 		<MouseTrail client:load />
-		<SpotifyWidget client:load />
+		{isRootPage && <SpotifyWidget client:load />}
 	</body>
 </html>
