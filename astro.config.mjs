@@ -6,13 +6,18 @@ import tailwindcss from '@tailwindcss/vite';
 
 import vercel from '@astrojs/vercel';
 
+import basicSsl from '@vitejs/plugin-basic-ssl';
+
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
   integrations: [react()],
 
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [tailwindcss(), basicSsl()],
+    server: {
+      https: true
+    },
     build: {
       cssMinify: 'esbuild'
     }

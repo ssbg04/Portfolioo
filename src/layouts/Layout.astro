@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import BackToTop from '../components/BackToTop';
 import MouseTrail from '../components/MouseTrail';
+import SpotifyWidget from '../components/SpotifyWidget';
 
 interface Props {
 	title?: string;
@@ -44,5 +45,6 @@ const {
 		<slot />
 		<BackToTop client:load />
 		<MouseTrail client:load />
+		<SpotifyWidget client:load />
 	</body>
 </html>
