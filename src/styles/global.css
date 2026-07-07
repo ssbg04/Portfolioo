@@ -85,8 +85,8 @@
 
   .glass-card {
     background: rgba(255, 255, 255, 0.45) !important;
-    backdrop-filter: blur(16px) !important;
     -webkit-backdrop-filter: blur(16px) !important;
+    backdrop-filter: blur(16px) !important;
     border: 1px solid rgba(255, 255, 255, 0.2) !important;
     box-shadow: 0 8px 32px 0 rgba(10, 10, 20, 0.04) !important;
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
@@ -111,8 +111,8 @@
 
   .glass-nav {
     background: rgba(255, 255, 255, 0.4) !important;
-    backdrop-filter: blur(20px) !important;
     -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(20px) !important;
     border: 1px solid rgba(255, 255, 255, 0.25) !important;
     box-shadow: 0 4px 30px rgba(10, 10, 20, 0.03) !important;
   }
