@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface ChatMessage {
   role: 'user' | 'model';
@@ -90,36 +91,47 @@ export default function ChatWidget() {
 
       {/* Messages list */}
       <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
-        {messages.map((msg, index) => {
-          const isUser = msg.role === 'user';
-          return (
-            <div
-              key={index}
-              className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
-                  isUser
-                    ? 'bg-primary-custom text-primary-foreground rounded-br-none shadow-md'
-                    : 'glass-card border border-border/15 text-foreground-custom/95 rounded-bl-none'
-                }`}
+        <AnimatePresence initial={false}>
+          {messages.map((msg, index) => {
+            const isUser = msg.role === 'user';
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.35, ease: "easeOut" }}
+                className={`flex w-full ${isUser ? 'justify-end' : 'justify-start'}`}
               >
-                {msg.text}
-              </div>
-            </div>
-          );
-        })}
+                <div
+                  className={`max-w-[85%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
+                    isUser
+                      ? 'bg-primary-custom text-primary-foreground rounded-br-none shadow-md'
+                      : 'glass-card border border-border/15 text-foreground-custom/95 rounded-bl-none'
+                  }`}
+                >
+                  {msg.text}
+                </div>
+              </motion.div>
+            );
+          })}
 
-        {/* Loading typing indicator */}
-        {loading && (
-          <div className="flex w-full justify-start">
-            <div className="glass-card border border-border/15 px-5 py-4 rounded-2xl rounded-bl-none flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-primary-custom animate-bounce" style={{ animationDelay: '0s' }} />
-              <span className="w-2 h-2 rounded-full bg-primary-custom animate-bounce" style={{ animationDelay: '0.2s' }} />
-              <span className="w-2 h-2 rounded-full bg-primary-custom animate-bounce" style={{ animationDelay: '0.4s' }} />
-            </div>
-          </div>
-        )}
+          {/* Loading typing indicator */}
+          {loading && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ duration: 0.2 }}
+              className="flex w-full justify-start"
+            >
+              <div className="glass-card border border-border/15 px-5 py-4 rounded-2xl rounded-bl-none flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-primary-custom animate-bounce" style={{ animationDelay: '0s' }} />
+                <span className="w-2 h-2 rounded-full bg-primary-custom animate-bounce" style={{ animationDelay: '0.2s' }} />
+                <span className="w-2 h-2 rounded-full bg-primary-custom animate-bounce" style={{ animationDelay: '0.4s' }} />
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <div ref={messagesEndRef} />
       </div>

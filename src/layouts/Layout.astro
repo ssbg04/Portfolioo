@@ -1,5 +1,7 @@
 ---
 import '../styles/global.css';
+import BackToTop from '../components/BackToTop';
+import MouseTrail from '../components/MouseTrail';
 
 interface Props {
 	title?: string;
@@ -40,5 +42,7 @@ const {
 		<!-- Safe-keep custom classes from being tree-shaken by Astro/Vite compiler -->
 		<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>
 		<slot />
+		<BackToTop client:load />
+		<MouseTrail client:load />
 	</body>
 </html>

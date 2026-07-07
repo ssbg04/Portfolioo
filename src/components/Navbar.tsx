@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
 
 interface NavItem {
@@ -19,6 +20,7 @@ export default function Navbar() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [activeHash, setActiveHash] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,20 +93,42 @@ export default function Navbar() {
           </a>
 
           {/* Desktop Navigation Links */}
-          <nav className="hidden md:flex items-center gap-1.5">
-            {navItems.map((item) => {
+          <nav 
+            className="hidden md:flex items-center gap-1.5"
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
+            {navItems.map((item, index) => {
               const isActive = activeHash === item.href || (item.href === '/' && activeHash === '#home');
               return (
                 <a
                   key={item.label}
                   href={item.href}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  className={`relative px-4.5 py-2 rounded-full text-sm font-semibold transition-colors duration-300 ${
                     isActive
-                      ? 'bg-primary-custom text-white shadow-sm'
-                      : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-muted-custom/30'
+                      ? 'text-white'
+                      : 'text-muted-foreground-custom hover:text-foreground-custom'
                   }`}
                 >
-                  {item.label}
+                  {/* Sliding Active Pill */}
+                  {isActive && (
+                    <motion.span
+                      layoutId="activeNavIndicator"
+                      className="absolute inset-0 bg-primary-custom rounded-full z-0 shadow-sm shadow-primary-custom/20"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+
+                  {/* Sliding Hover Pill */}
+                  {!isActive && hoveredIndex === index && (
+                    <motion.span
+                      layoutId="hoverNavIndicator"
+                      className="absolute inset-0 bg-primary-custom/10 rounded-full z-0"
+                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                    />
+                  )}
+
+                  <span className="relative z-10">{item.label}</span>
                 </a>
               );
             })}
