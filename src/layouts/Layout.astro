@@ -50,6 +50,7 @@ const isRootPage = Astro.url.pathname === '/';
 		<slot />
 		<BackToTop client:load />
 		<MouseTrail client:load />
+        <Analytics />
 		{isRootPage && <SpotifyWidget client:load />}
 	</body>
 </html>
