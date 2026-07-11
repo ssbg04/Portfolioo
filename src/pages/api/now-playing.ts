@@ -44,7 +44,9 @@ async function getAccessToken() {
   }
 }
 
-// Helper to fetch the most recently played track (limit=1) from Spotify
+// Helper to fetch the most recently played track (limit=1) from Spotify.
+// Returns { track, debugError } so the caller can surface *why* it failed
+// (missing scope, expired token, etc.) instead of silently returning null.
 async function getRecentlyPlayed(token: string) {
   try {
     const recentlyPlayedRes = await fetch(RECENTLY_PLAYED_ENDPOINT, {
@@ -52,28 +54,40 @@ async function getRecentlyPlayed(token: string) {
     });
 
     if (recentlyPlayedRes.status !== 200) {
-      return null;
+      const errBody = await recentlyPlayedRes.text();
+      console.error('Recently-played request failed:', recentlyPlayedRes.status, errBody);
+      return {
+        track: null,
+        debugError: `recently-played returned ${recentlyPlayedRes.status}: ${errBody.slice(0, 300)}`,
+      };
     }
 
     const recentText = await recentlyPlayedRes.text();
-    if (!recentText) return null;
+    if (!recentText) {
+      return { track: null, debugError: 'recently-played returned an empty body' };
+    }
 
     const recentData = JSON.parse(recentText);
     const track = recentData?.items?.[0]?.track;
-    if (!track) return null;
+    if (!track) {
+      return { track: null, debugError: 'recently-played returned no items (listening history may be empty)' };
+    }
 
     return {
-      title: track.name,
-      artist: track.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
-      album: track.album?.name || '',
-      albumArt: track.album?.images?.[0]?.url || '',
-      spotifyUrl: track.external_urls?.spotify || '',
-      playedAt: recentData.items[0].played_at,
-      isPlaying: false,
+      track: {
+        title: track.name,
+        artist: track.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
+        album: track.album?.name || '',
+        albumArt: track.album?.images?.[0]?.url || '',
+        spotifyUrl: track.external_urls?.spotify || '',
+        playedAt: recentData.items[0].played_at,
+        isPlaying: false,
+      },
+      debugError: null,
     };
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error fetching Spotify recently played:', error);
-    return null;
+    return { track: null, debugError: `exception: ${error?.message || String(error)}` };
   }
 }
 
@@ -134,12 +148,14 @@ export const GET: APIRoute = async () => {
 
     // Not actively playing (paused, stopped, empty body, or non-200) —
     // always resolve to the real recently-played (limit=1) endpoint.
-    const recentlyPlayed = await getRecentlyPlayed(token);
+    const { track: recentlyPlayed, debugError } = await getRecentlyPlayed(token);
 
     return new Response(
       JSON.stringify({
         currentPlaying: null,
         recentlyPlayed,
+        // Remove this field once recently-played is confirmed working.
+        ...(debugError ? { debugError } : {}),
       }),
       {
         status: 200,
