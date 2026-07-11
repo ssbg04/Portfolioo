@@ -55,22 +55,24 @@ async function getRecentlyPlayed(token: string) {
 
     if (recentlyPlayedRes.status !== 200) {
       const errBody = await recentlyPlayedRes.text();
+      const retryAfter = recentlyPlayedRes.headers.get('Retry-After');
       console.error('Recently-played request failed:', recentlyPlayedRes.status, errBody);
       return {
         track: null,
         debugError: `recently-played returned ${recentlyPlayedRes.status}: ${errBody.slice(0, 300)}`,
+        retryAfter: retryAfter ? Number(retryAfter) : null,
       };
     }
 
     const recentText = await recentlyPlayedRes.text();
     if (!recentText) {
-      return { track: null, debugError: 'recently-played returned an empty body' };
+      return { track: null, debugError: 'recently-played returned an empty body', retryAfter: null };
     }
 
     const recentData = JSON.parse(recentText);
     const track = recentData?.items?.[0]?.track;
     if (!track) {
-      return { track: null, debugError: 'recently-played returned no items (listening history may be empty)' };
+      return { track: null, debugError: 'recently-played returned no items (listening history may be empty)', retryAfter: null };
     }
 
     return {
@@ -84,10 +86,11 @@ async function getRecentlyPlayed(token: string) {
         isPlaying: false,
       },
       debugError: null,
+      retryAfter: null,
     };
   } catch (error: any) {
     console.error('Error fetching Spotify recently played:', error);
-    return { track: null, debugError: `exception: ${error?.message || String(error)}` };
+    return { track: null, debugError: `exception: ${error?.message || String(error)}`, retryAfter: null };
   }
 }
 
@@ -138,7 +141,7 @@ export const GET: APIRoute = async () => {
               status: 200,
               headers: {
                 'Content-Type': 'application/json',
-                'Cache-Control': 'public, s-maxage=3, stale-while-revalidate=2',
+                'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3',
               },
             }
           );
@@ -148,7 +151,11 @@ export const GET: APIRoute = async () => {
 
     // Not actively playing (paused, stopped, empty body, or non-200) —
     // always resolve to the real recently-played (limit=1) endpoint.
-    const { track: recentlyPlayed, debugError } = await getRecentlyPlayed(token);
+    const { track: recentlyPlayed, debugError, retryAfter } = await getRecentlyPlayed(token);
+
+    // If Spotify rate-limited us, honor Retry-After in our own cache header so
+    // downstream CDN/browser caching backs off instead of retrying immediately.
+    const cacheSeconds = retryAfter && retryAfter > 10 ? retryAfter : 30;
 
     return new Response(
       JSON.stringify({
@@ -161,7 +168,7 @@ export const GET: APIRoute = async () => {
         status: 200,
         headers: {
           'Content-Type': 'application/json',
-          'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5',
+          'Cache-Control': `public, s-maxage=${cacheSeconds}, stale-while-revalidate=15`,
         },
       }
     );
