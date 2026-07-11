@@ -12,7 +12,7 @@
 .vscode
 # testing
 /coverage
-
+/scripts
 # studio
 /Sanity-studio
 

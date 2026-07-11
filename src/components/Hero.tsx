@@ -1,5 +1,7 @@
 import React from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import TiltedCard from './reactbits/TiltedCard';
+import GlareHover from './reactbits/GlareHover';
 
 interface InteractiveButtonProps {
   href: string;
@@ -95,8 +97,8 @@ interface HeroProps {
 const socialLinks = [
   {
     name: 'GitHub',
-    handle: '@ssbg',
-    url: 'https://github.com/ssbg',
+    handle: '@ssbg04',
+    url: 'https://github.com/ssbg04',
     icon: (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
@@ -105,8 +107,8 @@ const socialLinks = [
   },
   {
     name: 'LinkedIn',
-    handle: 'crischarlesgarcia',
-    url: 'https://linkedin.com/in/cris-charles-garcia-187415303',
+    handle: 'ccvg3405',
+    url: 'https://linkedin.com/in/ccvg3405',
     icon: (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
@@ -137,48 +139,9 @@ const socialLinks = [
 
 export default function Hero({ fullName, title, valueProposition, heroImage }: HeroProps) {
   const [mounted, setMounted] = React.useState(false);
-  const [imageLoaded, setImageLoaded] = React.useState(false);
-
-  // Profile card 3D tilt tracking
-  const cardX = useMotionValue(0);
-  const cardY = useMotionValue(0);
-  const shineOpacity = useMotionValue(0);
-
-  const rotateX = useTransform(cardY, [-150, 150], [22, -22]);
-  const rotateY = useTransform(cardX, [-150, 150], [22, -22]);
-
-  // Dynamic shine reflection offsets
-  const shineX = useTransform(cardX, [-150, 150], [-120, 120]);
-  const shineY = useTransform(cardY, [-150, 150], [-120, 120]);
-
-  const handleProfileMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // Relative coordinate from center
-    const relX = event.clientX - rect.left - width / 2;
-    const relY = event.clientY - rect.top - height / 2;
-
-    cardX.set(relX);
-    cardY.set(relY);
-    animate(shineOpacity, 1, { duration: 0.50 });
-  };
-
-  const handleProfileMouseLeave = () => {
-    // Return to absolute flat center smoothly
-    animate(cardX, 0, { type: 'spring', stiffness: 150, damping: 20 });
-    animate(cardY, 0, { type: 'spring', stiffness: 150, damping: 20 });
-    animate(shineOpacity, 0, { duration: 0.50 });
-  };
-
-  const imgRef = React.useRef<HTMLImageElement>(null);
 
   React.useEffect(() => {
     setMounted(true);
-    if (imgRef.current?.complete) {
-      setImageLoaded(true);
-    }
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
@@ -211,30 +174,12 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
     }
   };
 
-  const tiltVariants = {
-    rest: { rotateX: 0, rotateY: 0, scale: 1 },
-    hover: {
-      rotateX: 8,
-      rotateY: -12,
-      scale: 1.02,
-      transition: { duration: 0.45, ease: "easeOut" }
-    }
-  };
-
   return (
     <section
       id="home"
       className="relative min-h-screen flex flex-col md:flex-row items-center justify-center pt-20 md:pt-24 pb-6 md:pb-0 overflow-hidden"
     >
-      {/* Animated Aurora backgrounds */}
-      <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-96 h-96 rounded-full bg-primary-custom/10 blur-3xl animate-float" style={{ animationDelay: '0s' }} />
-        <div className="absolute top-60 -right-20 w-80 h-80 rounded-full bg-secondary-custom/10 blur-3xl animate-float" style={{ animationDelay: '2s' }} />
-        <div className="absolute -bottom-20 left-1/3 w-[500px] h-[500px] rounded-full bg-accent-custom/5 blur-3xl animate-pulse-slow" />
 
-        {/* Subtle grid overlay */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:14px_24px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]" />
-      </div>
 
       <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
@@ -341,22 +286,10 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
 
         {/* Right Column: Professional Profile Picture Frame */}
         <div className="md:col-span-5 flex justify-center order-1 md:order-2">
-          <motion.div
-            className="relative w-40 h-40 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center cursor-pointer"
-            onMouseMove={handleProfileMouseMove}
-            onMouseLeave={handleProfileMouseLeave}
-            onContextMenu={(e) => e.preventDefault()}
-            style={{
-              rotateX,
-              rotateY,
-              transformStyle: 'preserve-3d',
-              perspective: '1000px'
-            }}
-          >
-            {/* Glowing Backdrop Aura (Dynamic Shadow - translates deepest to Z: -40px) */}
+          <div className="relative w-40 h-40 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center">
+            {/* Glowing Backdrop Aura */}
             <motion.div
-              className="absolute w-[88%] h-[88%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-accent-custom blur-3xl pointer-events-none"
-              style={{ transform: 'translateZ(-40px)' }}
+              className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-accent-custom blur-3xl pointer-events-none"
               variants={{
                 rest: { scale: 0.95, opacity: 0.25 },
                 hover: { scale: 1.08, opacity: 0.45, transition: { duration: 0.4 } }
@@ -365,48 +298,30 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
               whileHover="hover"
               animate="rest"
             />
-
-            {/* The Transparent Glass Casing (translated forward to Z: 10px) */}
-            <div
-              className="relative w-full h-full rounded-[24px] sm:rounded-[38px] p-2.5 sm:p-4 border border-white/30 bg-gradient-to-br from-white/12 via-white/5 to-transparent backdrop-blur-2xl shadow-2xl flex items-center justify-center overflow-hidden"
-              style={{ transformStyle: 'preserve-3d', transform: 'translateZ(10px)' }}
-            >
-              {/* Inner picture casing container (translated slightly in Z for depth) */}
-              <div
-                className="w-full h-full rounded-[16px] sm:rounded-[28px] overflow-hidden bg-muted-custom/10 relative border border-white/10"
-                style={{ transform: 'translateZ(15px)' }}
-              >
-                <motion.img
-                  ref={imgRef}
-                  src={heroImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=350&h=350&q=80"}
-                  alt={fullName}
-                  loading="eager"
-                  decoding="async"
-                  onLoad={() => setImageLoaded(true)}
-                  initial={{ scale: 1.15, opacity: 0 }}
-                  animate={imageLoaded ? { scale: 1, opacity: 1 } : { scale: 1.15, opacity: 0 }}
-                  transition={{ duration: 0.8, ease: "easeOut" }}
-                  draggable={false}
-                  className="w-full h-full object-cover pointer-events-none select-none"
+            
+            <TiltedCard
+              imageSrc={heroImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=400&q=80"}
+              altText={fullName}
+              captionText="Available for new projects"
+              containerHeight="100%"
+              containerWidth="100%"
+              imageHeight="100%"
+              imageWidth="100%"
+              rotateAmplitude={12}
+              scaleOnHover={1.03}
+              showMobileWarning={false}
+              showTooltip={true}
+              displayOverlayContent={true}
+              overlayContent={
+                <GlareHover
+                  className="rounded-[15px]"
+                  glareColor="#ffffff"
+                  glareOpacity={0.25}
+                  glareSize={200}
                 />
-              </div>
-
-              {/* Dynamic reflective glass shine overlay */}
-              <motion.div
-                className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay"
-                style={{
-                  x: shineX,
-                  y: shineY,
-                  opacity: shineOpacity,
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0) 30%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0) 70%)',
-                  width: '200%',
-                  height: '200%',
-                  left: '-50%',
-                  top: '-50%'
-                }}
-              />
-            </div>
-          </motion.div>
+              }
+            />
+          </div>
         </div>
 
         {/* Down indicator */}

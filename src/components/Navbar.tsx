@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import ThemeToggle from './ThemeToggle';
+import SpotifyWidget from './SpotifyWidget';
 
 interface NavItem {
   label: string;
@@ -75,92 +76,98 @@ export default function Navbar() {
         }`}
       >
         <div
-          className={`transition-all duration-350 ease-out flex items-center justify-between ${
+          className={`transition-all duration-350 ease-out flex justify-center glass-nav ${
             isScrolled
-              ? 'w-full max-w-4xl glass-nav rounded-full px-6 py-2.5 border border-border-hover/10 shadow-lg'
-              : 'w-full max-w-7xl px-8 py-6 bg-transparent border-b border-transparent'
+              ? 'w-full max-w-4xl rounded-2xl py-2.5 border border-border-hover/10 shadow-lg'
+              : 'w-full max-w-5xl rounded-none py-4 border-b border-border-hover/10 shadow-sm'
           }`}
         >
-          {/* Logo / Name */}
-          <a
-            href="/"
-            className="flex items-center gap-2 group font-semibold text-lg tracking-tight text-foreground-custom"
-          >
-            <img
-              src="/logo.png"
-              alt="Cris Charles Logo"
-              draggable="false"
-              className="w-8 h-8 rounded-full object-cover shadow-md group-hover:scale-105 transition-transform"
-            />
-            <span className="hidden sm:inline font-heading font-bold text-glow">Cris Charles</span>
-          </a>
-
-          {/* Desktop Navigation Links */}
-          <nav 
-            className="hidden md:flex items-center gap-1.5"
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            {navItems.map((item, index) => {
-              const isActive = activeHash === item.href || (item.href === '/' && activeHash === '#home');
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onMouseEnter={() => setHoveredIndex(index)}
-                  className={`relative px-4.5 py-2 rounded-full text-sm font-semibold transition-colors duration-300 ${
-                    isActive
-                      ? 'text-white'
-                      : 'text-muted-foreground-custom hover:text-foreground-custom'
-                  }`}
-                >
-                  {/* Sliding Active Pill */}
-                  {isActive && (
-                    <motion.span
-                      layoutId="activeNavIndicator"
-                      className="absolute inset-0 bg-primary-custom rounded-full z-0 shadow-sm shadow-primary-custom/20"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-
-                  {/* Sliding Hover Pill */}
-                  {!isActive && hoveredIndex === index && (
-                    <motion.span
-                      layoutId="hoverNavIndicator"
-                      className="absolute inset-0 bg-primary-custom/10 rounded-full z-0"
-                      transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                    />
-                  )}
-
-                  <span className="relative z-10">{item.label}</span>
-                </a>
-              );
-            })}
-          </nav>
-
-          {/* Actions: Theme Toggle & Mobile Hamburger */}
-          <div className="flex items-center gap-3">
-            <ThemeToggle />
-            
-            {/* Hamburger Button */}
-            <button
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2.5 rounded-full glass-card hover:bg-primary-custom/10 text-foreground-custom transition-all"
-              aria-label="Toggle Navigation Menu"
-            >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                viewBox="0 0 24 24"
+          <div className={`flex items-center justify-between w-full ${isScrolled ? 'px-6 max-w-full' : 'px-6 max-w-5xl'}`}>
+            {/* Logo / Name / Mobile Spotify */}
+            <div className="flex items-center gap-3">
+              <a
+                href="/"
+                className="flex items-center gap-2 group font-semibold text-lg tracking-tight text-foreground-custom"
               >
-                {mobileMenuOpen ? (
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                ) : (
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                )}
-              </svg>
-            </button>
+                <img
+                  src="/logo.png"
+                  alt="Cris Charles Logo"
+                  draggable="false"
+                  className="w-8 h-8 rounded-full object-cover shadow-md group-hover:scale-105 transition-transform"
+                />
+                <span className="hidden sm:inline font-heading font-bold text-glow">Cris Charles</span>
+              </a>
+              <SpotifyWidget className="md:hidden" />
+            </div>
+
+            {/* Desktop Navigation Links */}
+            <nav 
+              className="hidden md:flex items-center gap-1.5"
+              onMouseLeave={() => setHoveredIndex(null)}
+            >
+              {navItems.map((item, index) => {
+                const isActive = activeHash === item.href || (item.href === '/' && activeHash === '#home');
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onMouseEnter={() => setHoveredIndex(index)}
+                    className={`relative px-4.5 py-2 rounded-full text-sm font-semibold transition-colors duration-300 ${
+                      isActive
+                        ? 'text-white'
+                        : 'text-muted-foreground-custom hover:text-foreground-custom'
+                    }`}
+                  >
+                    {/* Sliding Active Pill */}
+                    {isActive && (
+                      <motion.span
+                        layoutId="activeNavIndicator"
+                        className="absolute inset-0 bg-primary-custom rounded-full z-0 shadow-sm shadow-primary-custom/20"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+
+                    {/* Sliding Hover Pill */}
+                    {!isActive && hoveredIndex === index && (
+                      <motion.span
+                        layoutId="hoverNavIndicator"
+                        className="absolute inset-0 bg-primary-custom/10 rounded-full z-0"
+                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                      />
+                    )}
+
+                    <span className="relative z-10">{item.label}</span>
+                  </a>
+                );
+              })}
+            </nav>
+
+            {/* Actions: Theme Toggle & Mobile Hamburger */}
+            <div className="flex items-center gap-3">
+              <SpotifyWidget className="hidden md:flex" />
+              <ThemeToggle />
+              
+              {/* Hamburger Button */}
+              <button
+                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+                className="md:hidden p-2.5 rounded-full glass-card hover:bg-primary-custom/10 text-foreground-custom transition-all"
+                aria-label="Toggle Navigation Menu"
+              >
+                <svg
+                  className="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  viewBox="0 0 24 24"
+                >
+                  {mobileMenuOpen ? (
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  ) : (
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                  )}
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </header>
