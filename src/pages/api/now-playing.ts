@@ -44,6 +44,39 @@ async function getAccessToken() {
   }
 }
 
+// Helper to fetch the most recently played track (limit=1) from Spotify
+async function getRecentlyPlayed(token: string) {
+  try {
+    const recentlyPlayedRes = await fetch(RECENTLY_PLAYED_ENDPOINT, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    if (recentlyPlayedRes.status !== 200) {
+      return null;
+    }
+
+    const recentText = await recentlyPlayedRes.text();
+    if (!recentText) return null;
+
+    const recentData = JSON.parse(recentText);
+    const track = recentData?.items?.[0]?.track;
+    if (!track) return null;
+
+    return {
+      title: track.name,
+      artist: track.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
+      album: track.album?.name || '',
+      albumArt: track.album?.images?.[0]?.url || '',
+      spotifyUrl: track.external_urls?.spotify || '',
+      playedAt: recentData.items[0].played_at,
+      isPlaying: false,
+    };
+  } catch (error) {
+    console.error('Error fetching Spotify recently played:', error);
+    return null;
+  }
+}
+
 // Server-side GET API handler
 export const GET: APIRoute = async () => {
   const token = await getAccessToken();
@@ -63,97 +96,50 @@ export const GET: APIRoute = async () => {
 
   try {
     const nowPlayingRes = await fetch(NOW_PLAYING_ENDPOINT, {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
 
+    // Only treat it as "currently playing" when Spotify confirms an active track.
+    // Any other case (paused, stopped, no content, error, etc.) falls through
+    // to the recently-played (limit=1) lookup below.
     if (nowPlayingRes.status === 200) {
       const text = await nowPlayingRes.text();
       if (text) {
         const song = JSON.parse(text);
-        if (song && song.item && song.currently_playing_type === 'track') {
-          if (song.is_playing) {
-            return new Response(
-              JSON.stringify({
-                currentPlaying: {
-                  isPlaying: true,
-                  title: song.item.name,
-                  artist: song.item.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
-                  album: song.item.album?.name || '',
-                  albumArt: song.item.album?.images?.[0]?.url || '',
-                  spotifyUrl: song.item.external_urls?.spotify || '',
-                  progressPercent: song.item.duration_ms ? (song.progress_ms / song.item.duration_ms) * 100 : 0
-                },
-                recentlyPlayed: null
-              }),
-              {
-                status: 200,
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'public, s-maxage=3, stale-while-revalidate=2',
-                }
-              }
-            );
-          } else {
-            // Track is paused, we can return it as recently played without needing extra API call
-            return new Response(
-              JSON.stringify({
-                currentPlaying: null,
-                recentlyPlayed: {
-                  title: song.item.name,
-                  artist: song.item.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
-                  album: song.item.album?.name || '',
-                  albumArt: song.item.album?.images?.[0]?.url || '',
-                  spotifyUrl: song.item.external_urls?.spotify || '',
-                  playedAt: new Date().toISOString(),
-                  isPlaying: false
-                }
-              }),
-              {
-                status: 200,
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5',
-                }
-              }
-            );
-          }
+        if (song?.item && song.currently_playing_type === 'track' && song.is_playing) {
+          return new Response(
+            JSON.stringify({
+              currentPlaying: {
+                isPlaying: true,
+                title: song.item.name,
+                artist: song.item.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
+                album: song.item.album?.name || '',
+                albumArt: song.item.album?.images?.[0]?.url || '',
+                spotifyUrl: song.item.external_urls?.spotify || '',
+                progressPercent: song.item.duration_ms ? (song.progress_ms / song.item.duration_ms) * 100 : 0,
+              },
+              recentlyPlayed: null,
+            }),
+            {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/json',
+                'Cache-Control': 'public, s-maxage=3, stale-while-revalidate=2',
+              },
+            }
+          );
         }
       }
     }
 
-    // If we reach here, the song is STOPPED (e.g. Spotify closed), or the API returned an empty body (204)
-    // We now fetch the Recently Played song
-    const recentlyPlayedRes = await fetch(RECENTLY_PLAYED_ENDPOINT, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-
-    let recentlyPlayed = null;
-
-    if (recentlyPlayedRes.status === 200) {
-      const recentText = await recentlyPlayedRes.text();
-      if (recentText) {
-        const recentData = JSON.parse(recentText);
-        if (recentData && recentData.items && recentData.items.length > 0) {
-          const track = recentData.items[0].track;
-          if (track) {
-            recentlyPlayed = {
-              title: track.name,
-              artist: track.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
-              album: track.album?.name || '',
-              albumArt: track.album?.images?.[0]?.url || '',
-              spotifyUrl: track.external_urls?.spotify || '',
-              playedAt: recentData.items[0].played_at,
-              isPlaying: false
-            };
-          }
-        }
-      }
-    }
+    // Not actively playing (paused, stopped, empty body, or non-200) —
+    // always resolve to the real recently-played (limit=1) endpoint.
+    const recentlyPlayed = await getRecentlyPlayed(token);
 
     return new Response(
       JSON.stringify({
         currentPlaying: null,
-        recentlyPlayed
+        recentlyPlayed,
       }),
       {
         status: 200,
