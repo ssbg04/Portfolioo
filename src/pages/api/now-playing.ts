@@ -10,11 +10,21 @@ const NOW_PLAYING_ENDPOINT = `https://api.spotify.com/v1/me/player/currently-pla
 const RECENTLY_PLAYED_ENDPOINT = `https://api.spotify.com/v1/me/player/recently-played?limit=1`;
 const TOKEN_ENDPOINT = `https://accounts.spotify.com/api/token`;
 
-// Helper to retrieve a fresh Spotify access token using the refresh token
+// In-memory access token cache (persists across warm serverless invocations).
+// Avoids hitting the Accounts API on every single poll — tokens are valid ~1hr.
+let cachedAccessToken: string | null = null;
+let cachedAccessTokenExpiresAt = 0; // epoch ms
+
+// Helper to retrieve a fresh Spotify access token using the refresh token,
+// reusing the cached one until shortly before it expires.
 async function getAccessToken() {
   if (!client_id || !client_secret || !refresh_token) {
     console.error('Spotify API keys are missing in env.');
     return null;
+  }
+
+  if (cachedAccessToken && Date.now() < cachedAccessTokenExpiresAt) {
+    return cachedAccessToken;
   }
 
   try {
@@ -37,7 +47,10 @@ async function getAccessToken() {
     }
 
     const data = await response.json();
-    return data.access_token;
+    cachedAccessToken = data.access_token;
+    // Refresh 60s before actual expiry as a safety margin.
+    cachedAccessTokenExpiresAt = Date.now() + Math.max((data.expires_in ?? 3600) - 60, 60) * 1000;
+    return cachedAccessToken;
   } catch (error) {
     console.error('Error fetching Spotify access token:', error);
     return null;
@@ -94,8 +107,26 @@ async function getRecentlyPlayed(token: string) {
   }
 }
 
+// In-memory response cache — backstop in case Cache-Control isn't honored
+// by whatever's in front of this function (e.g. local dev, some serverless
+// setups). Keeps us from re-hitting Spotify on every rapid poll.
+let cachedResponseBody: string | null = null;
+let cachedResponseExpiresAt = 0; // epoch ms
+const MIN_CACHE_MS = 8000; // never re-fetch Spotify more often than this
+
 // Server-side GET API handler
 export const GET: APIRoute = async () => {
+  if (cachedResponseBody && Date.now() < cachedResponseExpiresAt) {
+    return new Response(cachedResponseBody, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'public, s-maxage=10, stale-while-revalidate=5',
+        'X-Cache': 'HIT',
+      },
+    });
+  }
+
   const token = await getAccessToken();
 
   if (!token) {
@@ -124,27 +155,27 @@ export const GET: APIRoute = async () => {
       if (text) {
         const song = JSON.parse(text);
         if (song?.item && song.currently_playing_type === 'track' && song.is_playing) {
-          return new Response(
-            JSON.stringify({
-              currentPlaying: {
-                isPlaying: true,
-                title: song.item.name,
-                artist: song.item.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
-                album: song.item.album?.name || '',
-                albumArt: song.item.album?.images?.[0]?.url || '',
-                spotifyUrl: song.item.external_urls?.spotify || '',
-                progressPercent: song.item.duration_ms ? (song.progress_ms / song.item.duration_ms) * 100 : 0,
-              },
-              recentlyPlayed: null,
-            }),
-            {
-              status: 200,
-              headers: {
-                'Content-Type': 'application/json',
-                'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3',
-              },
-            }
-          );
+          const body = JSON.stringify({
+            currentPlaying: {
+              isPlaying: true,
+              title: song.item.name,
+              artist: song.item.artists?.map((_artist: any) => _artist.name).join(', ') || 'Unknown Artist',
+              album: song.item.album?.name || '',
+              albumArt: song.item.album?.images?.[0]?.url || '',
+              spotifyUrl: song.item.external_urls?.spotify || '',
+              progressPercent: song.item.duration_ms ? (song.progress_ms / song.item.duration_ms) * 100 : 0,
+            },
+            recentlyPlayed: null,
+          });
+          cachedResponseBody = body;
+          cachedResponseExpiresAt = Date.now() + MIN_CACHE_MS;
+          return new Response(body, {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+              'Cache-Control': 'public, s-maxage=5, stale-while-revalidate=3',
+            },
+          });
         }
       }
     }
@@ -154,24 +185,25 @@ export const GET: APIRoute = async () => {
     const { track: recentlyPlayed, debugError, retryAfter } = await getRecentlyPlayed(token);
 
     // If Spotify rate-limited us, honor Retry-After in our own cache header so
-    // downstream CDN/browser caching backs off instead of retrying immediately.
+    // downstream CDN/browser caching backs off instead of retrying immediately,
+    // and hold the in-memory cache for at least that long too.
     const cacheSeconds = retryAfter && retryAfter > 10 ? retryAfter : 30;
+    const body = JSON.stringify({
+      currentPlaying: null,
+      recentlyPlayed,
+      // Remove this field once recently-played is confirmed working.
+      ...(debugError ? { debugError } : {}),
+    });
+    cachedResponseBody = body;
+    cachedResponseExpiresAt = Date.now() + Math.max(cacheSeconds * 1000, MIN_CACHE_MS);
 
-    return new Response(
-      JSON.stringify({
-        currentPlaying: null,
-        recentlyPlayed,
-        // Remove this field once recently-played is confirmed working.
-        ...(debugError ? { debugError } : {}),
-      }),
-      {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/json',
-          'Cache-Control': `public, s-maxage=${cacheSeconds}, stale-while-revalidate=15`,
-        },
-      }
-    );
+    return new Response(body, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': `public, s-maxage=${cacheSeconds}, stale-while-revalidate=15`,
+      },
+    });
   } catch (error) {
     console.error('Error fetching Spotify info:', error);
     return new Response(JSON.stringify({ currentPlaying: null, recentlyPlayed: null, error: 'Internal Server Error' }), {
