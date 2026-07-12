@@ -174,21 +174,6 @@ export const mockExperience: Experience[] = [
   }
 ];
 
-export const mockTestimonials: Testimonial[] = [
-  {
-    name: "Dr. Elena Vance",
-    role: "Director of Product",
-    company: "Black Mesa Systems",
-    quote: "Cris delivered a phenomenal, highly polished product. The glassmorphic design and the AI chatbot integration completely elevated our client onboarding portal."
-  },
-  {
-    name: "Barney Calhoun",
-    role: "Operations Manager",
-    company: "SecurTech",
-    quote: "The NFC portfolio links page is incredibly fast and intuitive. Our team easily shares cards with a single tap, which immediately loads Cris's gorgeous portfolio page."
-  }
-];
-
 // ==========================================
 // Sanity CMS Fetch Logic (If Configured)
 // ==========================================
@@ -298,10 +283,10 @@ export async function getExperience(): Promise<Experience[]> {
 }
 
 export async function getTestimonials(): Promise<Testimonial[]> {
-  if (!isSanityConfigured() || !sanityClient) return mockTestimonials;
+  if (!isSanityConfigured() || !sanityClient) return [];
   try {
     const testimonials = await sanityClient.fetch(`*[_type == "testimonial"]`);
-    if (!testimonials || testimonials.length === 0) return mockTestimonials;
+    if (!testimonials || testimonials.length === 0) return [];
     return testimonials.map((t: any) => ({
       name: t.name,
       role: t.role,
@@ -311,6 +296,6 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     }));
   } catch (error) {
     console.error('Error fetching testimonial from Sanity:', error);
-    return mockTestimonials;
+    return [];
   }
 }

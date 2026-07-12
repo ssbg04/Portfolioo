@@ -155,62 +155,68 @@ export default function Navbar() {
               <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
                 <ThemeToggle />
               </Suspense>
-              
-              {/* Hamburger Button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="md:hidden p-2.5 rounded-full glass-card hover:bg-primary-custom/10 text-foreground-custom transition-all"
-                aria-label="Toggle Navigation Menu"
-              >
-                <svg
-                  className="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  viewBox="0 0 24 24"
-                >
-                  {mobileMenuOpen ? (
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-                  ) : (
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-                  )}
-                </svg>
-              </button>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Mobile Drawer (Glass Sheet) */}
+      {/* Mobile Menu Backdrop */}
       <div
-        className={`fixed inset-0 z-40 md:hidden bg-background-custom/30 backdrop-blur-md transition-opacity duration-300 ${
+        className={`fixed inset-0 z-[55] md:hidden bg-background-custom/60 backdrop-blur-sm transition-opacity duration-300 ${
           mobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setMobileMenuOpen(false)}
+      />
+
+      {/* Mobile Bottom Sheet Menu */}
+      <div
+        className={`fixed bottom-24 left-4 right-4 z-[60] md:hidden glass-card rounded-3xl p-4 border border-border-hover/10 shadow-2xl transition-all duration-300 ease-out origin-bottom ${
+          mobileMenuOpen ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-12 opacity-0 scale-95 pointer-events-none'
+        }`}
+        onClick={(e) => e.stopPropagation()}
       >
-        <div
-          className={`absolute top-24 right-4 left-4 glass-card rounded-3xl p-6 border border-border-hover/10 shadow-2xl transition-transform duration-300 ease-out origin-top ${
-            mobileMenuOpen ? 'scale-100 translate-y-0' : 'scale-95 -translate-y-4'
-          }`}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div className="flex flex-col gap-4">
-            {navItems.map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-4 py-3.5 rounded-2xl text-base font-semibold hover:bg-primary-custom/10 hover:text-primary-custom text-foreground-custom transition-colors duration-250 flex items-center justify-between"
-              >
-                {item.label}
-                <svg className="w-4 h-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </a>
-            ))}
-          </div>
+        <div className="flex flex-col gap-2">
+          <div className="w-12 h-1 bg-foreground-custom/20 rounded-full mx-auto mb-3" />
+          {navItems.map((item) => (
+            <a
+              key={item.label}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              className="px-4 py-3.5 rounded-2xl text-base font-semibold hover:bg-primary-custom/10 active:bg-primary-custom/20 hover:text-primary-custom text-foreground-custom transition-colors duration-250 flex items-center justify-between"
+            >
+              {item.label}
+              <svg className="w-4 h-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M9 5l7 7-7 7" />
+              </svg>
+            </a>
+          ))}
         </div>
       </div>
+
+      {/* Mobile Navigation FAB */}
+      <button
+        onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+        className={`md:hidden fixed bottom-6 right-6 z-[65] p-4 rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.3)] transition-all duration-300 ${
+          mobileMenuOpen 
+            ? 'bg-foreground-custom text-background-custom rotate-90 scale-95' 
+            : 'bg-primary-custom text-white hover:scale-105 active:scale-95'
+        }`}
+        aria-label="Toggle Navigation Menu"
+      >
+        <svg
+          className="w-6 h-6 transform transition-transform"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          viewBox="0 0 24 24"
+        >
+          {mobileMenuOpen ? (
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+          ) : (
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+          )}
+        </svg>
+      </button>
     </>
   );
 }

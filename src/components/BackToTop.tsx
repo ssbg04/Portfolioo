@@ -32,7 +32,7 @@ export default function BackToTop() {
   return (
     <AnimatePresence>
       {isVisible && (
-        <div className="fixed inset-x-0 bottom-6 z-40 pointer-events-none flex justify-center">
+        <div className="hidden md:flex fixed inset-x-0 bottom-6 z-40 pointer-events-none justify-center">
           <div className="w-full max-w-5xl px-6 flex justify-end">
             <motion.button
               onClick={scrollToTop}

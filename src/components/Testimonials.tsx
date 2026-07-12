@@ -7,7 +7,7 @@ interface TestimonialsProps {
 }
 
 export default function Testimonials({ testimonials }: TestimonialsProps) {
-  if (!testimonials || testimonials.length === 0) return null;
+  const isEmpty = !testimonials || testimonials.length === 0;
 
   return (
     <section id="testimonials" className="py-24 relative overflow-hidden bg-muted-custom/10">
@@ -20,12 +20,14 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
           </h2>
           <div className="w-16 h-1 bg-gradient-to-r from-primary-custom to-secondary-custom mx-auto rounded-full mb-4" />
           <p className="text-muted-foreground-custom max-w-lg mx-auto">
-            Kind words and feedback from past team members, managers, and partners.
+            {isEmpty 
+              ? "No client testimonials available at the moment." 
+              : "Kind words and feedback from past team members, managers, and partners."}
           </p>
         </ScrollReveal>
 
-        {/* Testimonials Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {!isEmpty && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map((test, index) => (
             <ScrollReveal
               key={index}
@@ -75,6 +77,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
             </ScrollReveal>
           ))}
         </div>
+        )}
       </div>
     </section>
   );
