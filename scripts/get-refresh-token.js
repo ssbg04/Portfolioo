@@ -1,5 +1,5 @@
-const client_id = "ee972078e4f747f59dce341b0a493986";
-const client_secret = "c068836397cb4b22840ae4e6249aa3d0";
+const client_id = "ffe0774ff6f446b2bab15ae50d553d94";
+const client_secret = "73741db4edc84a4c92d3cd34a43caa6d";
 const redirect_uri = "https://sisibigi.vercel.app/callback";
 
 const code = process.argv[2];
@@ -7,7 +7,7 @@ const code = process.argv[2];
 if (!code) {
   console.error("\x1b[31mError: Please provide your Spotify authorization code as an argument.\x1b[0m");
   console.log("\nUsage:\n  node scripts/get-refresh-token.js <YOUR_AUTH_CODE>");
-  console.log("\nTo get a fresh code, visit:\n  https://accounts.spotify.com/authorize?client_id=ee972078e4f747f59dce341b0a493986&response_type=code&redirect_uri=https://sisibigi.vercel.app/callback&scope=user-read-currently-playing%20user-read-playback-state%20user-read-recently-played\n");
+  console.log("\nTo get a fresh code, visit:\n  https://accounts.spotify.com/authorize?client_id=ffe0774ff6f446b2bab15ae50d553d94&response_type=code&redirect_uri=https://sisibigi.vercel.app/callback&scope=user-read-currently-playing%20user-read-playback-state%20user-read-recently-played\n");
   process.exit(1);
 }
 

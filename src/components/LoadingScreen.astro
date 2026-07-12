@@ -3,39 +3,13 @@
 ---
 
 <div id="global-loader" class="fixed inset-0 z-[99999] flex flex-col items-center justify-center bg-background-custom transition-all duration-1000 ease-[cubic-bezier(0.22,1,0.36,1)]">
-  <div class="relative flex flex-col items-center justify-center">
-    <!-- Outer spinning track -->
-    <div class="absolute inset-[-24px] rounded-full border border-white/5 animate-[spin_10s_linear_infinite]"></div>
+  <div class="flex flex-col items-center justify-center gap-6">
+    <!-- Minimalist Spinner -->
+    <div class="w-10 h-10 rounded-full border-[2px] border-foreground-custom/10 border-t-foreground-custom animate-spin"></div>
     
-    <!-- Complex Rings -->
-    <div class="relative w-28 h-28 flex items-center justify-center">
-      <!-- Glow behind rings -->
-      <div class="absolute inset-0 bg-primary-custom/10 rounded-full blur-2xl animate-pulse"></div>
-      
-      <div class="absolute inset-0 rounded-full border-t-2 border-r-2 border-primary-custom/80 animate-[spin_1.5s_cubic-bezier(0.68,-0.55,0.265,1.55)_infinite]"></div>
-      <div class="absolute inset-2 rounded-full border-b-2 border-l-2 border-secondary-custom/80 animate-[spin_2s_cubic-bezier(0.68,-0.55,0.265,1.55)_infinite_reverse]"></div>
-      <div class="absolute inset-4 rounded-full border-t-2 border-l-2 border-[#1DB954]/60 animate-[spin_3s_linear_infinite]"></div>
-      
-      <!-- Core Glow -->
-      <div class="absolute inset-6 bg-primary-custom/20 rounded-full blur-xl animate-pulse"></div>
-      
-      <!-- Center Graphic / Logo -->
-      <div class="absolute inset-7 bg-card-custom rounded-full border border-white/10 shadow-[0_0_20px_rgba(255,255,255,0.1)_inset] flex items-center justify-center backdrop-blur-md overflow-hidden">
-        <div class="absolute inset-0 bg-gradient-to-tr from-primary-custom/30 to-transparent"></div>
-        <span class="text-xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-white to-white/50 text-glow">CG</span>
-      </div>
-    </div>
-    
-    <!-- Loading Text -->
-    <div class="mt-14 flex flex-col items-center gap-3">
-      <div class="text-[10px] font-bold tracking-[0.4em] text-white/50 uppercase flex gap-1">
-        <span>S</span><span>Y</span><span>S</span><span>T</span><span>E</span><span>M</span>
-        <span class="ml-2">L</span><span>O</span><span>A</span><span>D</span><span>I</span><span>N</span><span>G</span>
-      </div>
-      <!-- Progress Bar -->
-      <div class="w-32 h-0.5 bg-white/10 rounded-full overflow-hidden relative">
-        <div class="absolute top-0 left-0 h-full bg-gradient-to-r from-primary-custom via-[#1DB954] to-secondary-custom shadow-[0_0_10px_rgba(29,185,84,0.8)] w-[10%] animate-[progress_2s_ease-in-out_infinite]"></div>
-      </div>
+    <!-- Minimalist Text -->
+    <div class="text-[10px] font-medium tracking-[0.3em] text-foreground-custom/60 uppercase">
+      Loading
     </div>
   </div>
 </div>

@@ -3,6 +3,7 @@ import '../styles/global.css';
 import BackToTop from '../components/BackToTop';
 import Background from '../components/Background';
 import LoadingScreen from '../components/LoadingScreen.astro';
+import SpotlightLens from '../components/SpotlightLens';
 import Analytics from '@vercel/analytics/astro';
 
 interface Props {
@@ -46,10 +47,12 @@ const isRootPage = Astro.url.pathname === '/';
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
 		<LoadingScreen />
 		<Background client:load />
-		<!-- Safe-keep custom classes from being tree-shaken by Astro/Vite compiler -->
-		<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>
-		<slot />
+		<div id="magnify-content">
+			<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>
+			<slot />
+		</div>
 		<BackToTop client:idle />
+		<SpotlightLens client:load />
         <Analytics />
 	</body>
 </html>

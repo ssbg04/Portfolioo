@@ -80,30 +80,27 @@ export default function Navbar() {
         }`}
       >
         <div
-          className={`transition-all duration-350 ease-out flex justify-center glass-nav ${
+          className={`transition-all duration-350 ease-out flex justify-center ${
             isScrolled
-              ? 'w-full max-w-4xl rounded-2xl py-2.5 border border-border-hover/10 shadow-lg'
-              : 'w-full max-w-5xl rounded-none py-4 border-b border-border-hover/10 shadow-sm'
+              ? 'glass-nav w-full max-w-4xl rounded-2xl py-2.5 border border-border-hover/10 shadow-lg'
+              : 'bg-transparent w-full max-w-5xl rounded-none py-4 border-transparent shadow-none'
           }`}
         >
           <div className={`flex items-center justify-between w-full ${isScrolled ? 'px-6 max-w-full' : 'px-6 max-w-5xl'}`}>
-            {/* Logo / Name / Mobile Spotify */}
+            {/* Logo / Name */}
             <div className="flex items-center gap-3">
               <a
                 href="/"
-                className="flex items-center gap-2 group font-semibold text-lg tracking-tight text-foreground-custom"
+                className="flex items-center gap-2 sm:gap-3 group font-semibold tracking-tight text-foreground-custom"
               >
                 <img
                   src="/logo.png"
                   alt="Cris Charles Logo"
                   draggable="false"
-                  className="w-8 h-8 rounded-full object-cover shadow-md group-hover:scale-105 transition-transform"
+                  className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-cover shadow-md group-hover:scale-105 transition-transform"
                 />
-                <span className="hidden sm:inline font-heading font-bold text-glow">Cris Charles</span>
+                <span className="font-heading font-bold text-glow text-base sm:text-lg md:text-xl bg-none! truncate max-w-[160px] sm:max-w-none">Cris Charles</span>
               </a>
-              <Suspense fallback={<div className="md:hidden w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
-                <SpotifyWidget className="md:hidden" />
-              </Suspense>
             </div>
 
             {/* Desktop Navigation Links */}
@@ -149,12 +146,14 @@ export default function Navbar() {
             </nav>
 
             <div className="flex items-center gap-3">
-              <Suspense fallback={<div className="hidden md:flex w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
-                <SpotifyWidget className="hidden md:flex" />
-              </Suspense>
               <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
-                <ThemeToggle />
+                <SpotifyWidget />
               </Suspense>
+              <div className="hidden md:block">
+                <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+                  <ThemeToggle />
+                </Suspense>
+              </div>
             </div>
           </div>
         </div>
@@ -177,6 +176,14 @@ export default function Navbar() {
       >
         <div className="flex flex-col gap-2">
           <div className="w-12 h-1 bg-foreground-custom/20 rounded-full mx-auto mb-3" />
+          
+          <div className="flex items-center justify-between px-4 py-2 mb-2 border-b border-border-hover/10">
+            <span className="text-sm font-bold text-muted-foreground-custom uppercase tracking-wider">Appearance</span>
+            <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+              <ThemeToggle />
+            </Suspense>
+          </div>
+
           {navItems.map((item) => (
             <a
               key={item.label}
