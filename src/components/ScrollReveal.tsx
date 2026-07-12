@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useIsMobile } from '../lib/hooks';
 
 interface ScrollRevealProps {
   children: React.ReactNode;
@@ -23,6 +24,7 @@ export default function ScrollReveal({
   delay = 0 
 }: ScrollRevealProps) {
   const chosenVariant = variantsMap[variant] || variantsMap['fade-up'];
+  const isMobile = useIsMobile();
 
   return (
     <motion.div
@@ -31,11 +33,11 @@ export default function ScrollReveal({
       viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
       variants={chosenVariant}
       transition={{ 
-        duration: 0.65, 
+        duration: isMobile ? 0.35 : 0.65, 
         delay: delay / 1000, 
         ease: [0.16, 1, 0.3, 1] 
       }}
-      className={className}
+      className={`${className} will-change-transform-opacity`}
     >
       {children}
     </motion.div>

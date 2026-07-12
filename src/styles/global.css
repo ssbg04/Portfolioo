@@ -238,3 +238,47 @@
   opacity: 1;
   transform: scale(1);
 }
+
+/* Performance Optimizations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+.will-change-transform-opacity {
+  will-change: transform, opacity;
+}
+
+@media (max-width: 768px) {
+  .glass-card, .glass-nav {
+    /* 100% remove expensive blur filters */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    
+    /* Simulate glass sheen using a static gradient and almost opaque background */
+    background: linear-gradient(
+      135deg, 
+      rgba(255, 255, 255, 0.96) 0%, 
+      rgba(255, 255, 255, 0.88) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.05), 
+      inset 0 1px 1px rgba(255, 255, 255, 0.6) !important;
+  }
+  
+  .dark .glass-card, .dark .glass-nav {
+    background: linear-gradient(
+      135deg, 
+      rgba(22, 22, 26, 0.96) 0%, 
+      rgba(14, 14, 16, 0.88) 100%
+    ) !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 
+      0 4px 20px rgba(0, 0, 0, 0.3), 
+      inset 0 1px 1px rgba(255, 255, 255, 0.05) !important;
+  }
+}

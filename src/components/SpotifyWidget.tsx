@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -16,13 +16,27 @@ export default function SpotifyWidget({ className = '' }: { className?: string }
   const [isApiActive, setIsApiActive] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
+  const spinnerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
+  // Only animate when visible
+  useEffect(() => {
+    if (!spinnerRef.current) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      setShouldAnimate(entry.isIntersecting);
+    });
+    observer.observe(spinnerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   // Fetch live or recently played song details from our secure API endpoint
   useEffect(() => {
+    let apiPollInterval: NodeJS.Timeout;
+
     const fetchNowPlaying = async () => {
       try {
         const response = await fetch('/api/now-playing');
@@ -59,10 +73,37 @@ export default function SpotifyWidget({ className = '' }: { className?: string }
       setIsApiActive(false);
     };
 
+    const startPolling = () => {
+      if (!apiPollInterval) apiPollInterval = setInterval(fetchNowPlaying, 7000);
+    };
+
+    const stopPolling = () => {
+      if (apiPollInterval) {
+        clearInterval(apiPollInterval);
+        apiPollInterval = undefined as any;
+      }
+    };
+
+    // Initial fetch and poll setup
     fetchNowPlaying();
-    // Poll API every 7 seconds for track changes
-    const apiPollInterval = setInterval(fetchNowPlaying, 7000);
-    return () => clearInterval(apiPollInterval);
+    if (!document.hidden) startPolling();
+
+    // stop polling when page is hidden
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        stopPolling();
+      } else {
+        fetchNowPlaying(); // fetch immediately on focus
+        startPolling();
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    return () => {
+      stopPolling();
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, []);
 
   if (!track) return null;
@@ -78,8 +119,9 @@ export default function SpotifyWidget({ className = '' }: { className?: string }
       >
         {/* Album Art spinning vinyl */}
         <motion.div
+          ref={spinnerRef}
           className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0 border border-white/10 shadow-md"
-          animate={{ rotate: [0, 360] }}
+          animate={shouldAnimate ? { rotate: [0, 360] } : {}}
           transition={{ repeat: Infinity, duration: 12, ease: "linear" }}
         >
           <img

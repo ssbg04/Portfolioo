@@ -7,7 +7,7 @@ const code = process.argv[2];
 if (!code) {
   console.error("\x1b[31mError: Please provide your Spotify authorization code as an argument.\x1b[0m");
   console.log("\nUsage:\n  node scripts/get-refresh-token.js <YOUR_AUTH_CODE>");
-  console.log("\nTo get a fresh code, visit:\n  https://accounts.spotify.com/authorize?client_id=ee972078e4f747f59dce341b0a493986&response_type=code&redirect_uri=https://sisibigi.vercel.app/callback&scope=user-read-currently-playing%20user-read-playback-state\n");
+  console.log("\nTo get a fresh code, visit:\n  https://accounts.spotify.com/authorize?client_id=ee972078e4f747f59dce341b0a493986&response_type=code&redirect_uri=https://sisibigi.vercel.app/callback&scope=user-read-currently-playing%20user-read-playback-state%20user-read-recently-played\n");
   process.exit(1);
 }
 

@@ -15,7 +15,7 @@ const skills = await getSkills();
 
 	<main class="flex-1 pt-32 pb-24">
 		<AboutDetails settings={settings} experience={experience} client:load />
-		<SkillsList skills={skills} client:load />
+		<SkillsList skills={skills} client:visible />
 	</main>
 
 	<footer class="py-12 border-t border-border/10 text-center text-xs text-muted-foreground-custom relative z-10 bg-muted-custom/5">

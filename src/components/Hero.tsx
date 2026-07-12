@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { Suspense, lazy } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
-import TiltedCard from './reactbits/TiltedCard';
-import GlareHover from './reactbits/GlareHover';
+import { useIsMobile } from '../lib/hooks';
+
+const TiltedCard = lazy(() => import('./reactbits/TiltedCard'));
+const GlareHover = lazy(() => import('./reactbits/GlareHover'));
 
 interface InteractiveButtonProps {
   href: string;
@@ -139,6 +141,7 @@ const socialLinks = [
 
 export default function Hero({ fullName, title, valueProposition, heroImage }: HeroProps) {
   const [mounted, setMounted] = React.useState(false);
+  const isMobile = useIsMobile();
 
   React.useEffect(() => {
     setMounted(true);
@@ -159,8 +162,8 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.1
+        staggerChildren: isMobile ? 0.05 : 0.15,
+        delayChildren: isMobile ? 0.05 : 0.1
       }
     }
   };
@@ -170,7 +173,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.65, ease: [0.16, 1, 0.3, 1] }
+      transition: { duration: isMobile ? 0.35 : 0.65, ease: [0.16, 1, 0.3, 1] }
     }
   };
 
@@ -184,7 +187,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
       <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
         <motion.div
-          className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1"
+          className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1 will-change-transform-opacity"
           variants={containerVariants}
           initial="hidden"
           animate={mounted ? "visible" : "hidden"}
@@ -192,7 +195,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Profile/Badge */}
           <motion.div
             variants={itemVariants}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[10px] sm:text-xs font-semibold text-primary-custom border border-primary-custom/10 mb-3 sm:mb-6 shadow-sm"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[10px] sm:text-xs font-semibold text-primary-custom border border-primary-custom/10 mb-3 sm:mb-6 shadow-sm will-change-transform-opacity"
           >
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -204,7 +207,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Heading */}
           <motion.h1
             variants={itemVariants}
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground-custom via-foreground-custom to-primary-custom leading-tight"
+            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground-custom via-foreground-custom to-primary-custom leading-tight will-change-transform-opacity"
           >
             Hi, I'm <span className="text-glow text-primary-custom">{fullName}</span>
           </motion.h1>
@@ -212,7 +215,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Title */}
           <motion.p
             variants={itemVariants}
-            className="text-base sm:text-xl md:text-2xl font-semibold text-muted-foreground-custom mb-1.5 sm:mb-4 font-heading"
+            className="text-base sm:text-xl md:text-2xl font-semibold text-muted-foreground-custom mb-1.5 sm:mb-4 font-heading will-change-transform-opacity"
           >
             {title}
           </motion.p>
@@ -220,7 +223,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Value Proposition */}
           <motion.p
             variants={itemVariants}
-            className="text-xs sm:text-base md:text-lg text-muted-foreground-custom/80 mb-4 sm:mb-8 max-w-xl leading-relaxed"
+            className="text-xs sm:text-base md:text-lg text-muted-foreground-custom/80 mb-4 sm:mb-8 max-w-xl leading-relaxed will-change-transform-opacity"
           >
             {valueProposition}
           </motion.p>
@@ -228,7 +231,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Actions & Social Alignment Group */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 sm:mt-2 w-full justify-center md:justify-start"
+            className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 sm:mt-2 w-full justify-center md:justify-start will-change-transform-opacity"
           >
             {/* Social Links & Divider */}
             <div className="flex items-center gap-4 sm:gap-6">
@@ -298,29 +301,30 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
               whileHover="hover"
               animate="rest"
             />
-            
-            <TiltedCard
-              imageSrc={heroImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=400&q=80"}
-              altText={fullName}
-              captionText="Available for new projects"
-              containerHeight="100%"
-              containerWidth="100%"
-              imageHeight="100%"
-              imageWidth="100%"
-              rotateAmplitude={12}
-              scaleOnHover={1.03}
-              showMobileWarning={false}
-              showTooltip={true}
-              displayOverlayContent={true}
-              overlayContent={
-                <GlareHover
-                  className="rounded-[15px]"
-                  glareColor="#ffffff"
-                  glareOpacity={0.25}
-                  glareSize={200}
-                />
-              }
-            />
+            <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
+              <TiltedCard
+                imageSrc={heroImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=400&q=80"}
+                altText={fullName}
+                captionText="Available for new projects"
+                containerHeight="100%"
+                containerWidth="100%"
+                imageHeight="100%"
+                imageWidth="100%"
+                rotateAmplitude={12}
+                scaleOnHover={1.03}
+                showMobileWarning={false}
+                showTooltip={true}
+                displayOverlayContent={true}
+                overlayContent={
+                  <GlareHover
+                    className="rounded-[15px]"
+                    glareColor="#ffffff"
+                    glareOpacity={0.25}
+                    glareSize={200}
+                  />
+                }
+              />
+            </Suspense>
           </div>
         </div>
 

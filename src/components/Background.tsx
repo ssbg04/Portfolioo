@@ -1,26 +1,28 @@
 import React, { useEffect, useState } from 'react';
+import { useIsMobile } from '../lib/hooks';
 
 export default function Background() {
   const [position, setPosition] = useState({ x: -1000, y: -1000 });
   const [isVisible, setIsVisible] = useState(false);
   const [isInteractive, setIsInteractive] = useState(false);
+  const isMobile = useIsMobile();
 
   // Check for fine pointer (mouse/desktop)
   useEffect(() => {
     const checkInteractive = () => {
       const isFinePointer = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-      setIsInteractive(isFinePointer);
+      setIsInteractive(isFinePointer && !isMobile);
     };
     
     checkInteractive();
     window.addEventListener('resize', checkInteractive);
 
     return () => window.removeEventListener('resize', checkInteractive);
-  }, []);
+  }, [isMobile]);
 
   // Animation and event listeners only active if interactive
   useEffect(() => {
-    if (!isInteractive) return;
+    if (!isInteractive || isMobile) return;
 
     let animationFrameId: number;
     let targetX = -1000;

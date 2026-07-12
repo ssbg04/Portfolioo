@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
-import ThemeToggle from './ThemeToggle';
-import SpotifyWidget from './SpotifyWidget';
+
+const ThemeToggle = lazy(() => import('./ThemeToggle'));
+const SpotifyWidget = lazy(() => import('./SpotifyWidget'));
 
 interface NavItem {
   label: string;
@@ -24,15 +25,18 @@ export default function Navbar() {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
+    let ticking = false;
     const handleScroll = () => {
-      if (window.scrollY > 120) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          setIsScrolled(window.scrollY > 120);
+          ticking = false;
+        });
+        ticking = true;
       }
     };
 
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     handleScroll(); // Run once on mount
 
     return () => window.removeEventListener('scroll', handleScroll);
@@ -97,7 +101,9 @@ export default function Navbar() {
                 />
                 <span className="hidden sm:inline font-heading font-bold text-glow">Cris Charles</span>
               </a>
-              <SpotifyWidget className="md:hidden" />
+              <Suspense fallback={<div className="md:hidden w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+                <SpotifyWidget className="md:hidden" />
+              </Suspense>
             </div>
 
             {/* Desktop Navigation Links */}
@@ -142,10 +148,13 @@ export default function Navbar() {
               })}
             </nav>
 
-            {/* Actions: Theme Toggle & Mobile Hamburger */}
             <div className="flex items-center gap-3">
-              <SpotifyWidget className="hidden md:flex" />
-              <ThemeToggle />
+              <Suspense fallback={<div className="hidden md:flex w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+                <SpotifyWidget className="hidden md:flex" />
+              </Suspense>
+              <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+                <ThemeToggle />
+              </Suspense>
               
               {/* Hamburger Button */}
               <button
