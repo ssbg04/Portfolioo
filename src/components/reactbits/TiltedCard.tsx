@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 
 interface TiltedCardProps {
   imageSrc: string;
+  darkImageSrc?: string;
   altText?: string;
   captionText?: string;
   containerHeight?: React.CSSProperties['height'];
@@ -25,6 +26,7 @@ const springValues = {
 
 export default function TiltedCard({
   imageSrc,
+  darkImageSrc,
   altText = 'Tilted card image',
   captionText = '',
   containerHeight = '300px',
@@ -115,15 +117,38 @@ export default function TiltedCard({
           scale
         }}
       >
-        <motion.img
-          src={imageSrc}
-          alt={altText}
-          className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
-          style={{
-            width: imageWidth,
-            height: imageHeight
-          }}
-        />
+        {darkImageSrc ? (
+          <>
+            <motion.img
+              src={imageSrc}
+              alt={altText}
+              className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)] dark:hidden block"
+              style={{
+                width: imageWidth,
+                height: imageHeight
+              }}
+            />
+            <motion.img
+              src={darkImageSrc}
+              alt={altText}
+              className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)] hidden dark:block"
+              style={{
+                width: imageWidth,
+                height: imageHeight
+              }}
+            />
+          </>
+        ) : (
+          <motion.img
+            src={imageSrc}
+            alt={altText}
+            className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
+            style={{
+              width: imageWidth,
+              height: imageHeight
+            }}
+          />
+        )}
 
         {displayOverlayContent && overlayContent && (
           <motion.div className="absolute top-0 left-0 z-[2] will-change-transform [transform:translateZ(30px)] h-full w-full">

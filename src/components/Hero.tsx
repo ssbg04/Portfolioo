@@ -1,6 +1,8 @@
 import React, { Suspense, lazy } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 import { useIsMobile } from '../lib/hooks';
+import ppDay from '../assets/pp-day.webp';
+import ppNight from '../assets/pp-night.webp';
 
 const TiltedCard = lazy(() => import('./reactbits/TiltedCard'));
 const GlareHover = lazy(() => import('./reactbits/GlareHover'));
@@ -303,7 +305,8 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
             />
             <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
               <TiltedCard
-                imageSrc={heroImage || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=400&h=400&q=80"}
+                imageSrc={(ppDay as any).src || ppDay}
+                darkImageSrc={(ppNight as any).src || ppNight}
                 altText={fullName}
                 captionText="Available for new projects"
                 containerHeight="100%"
