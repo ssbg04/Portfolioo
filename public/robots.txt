@@ -1,0 +1,21 @@
+# Robots.txt for ssbg04/Portfolioo Portfolio
+# This file helps search engines navigate and index your portfolio site
+
+User-agent: *
+Allow: /
+Disallow: /api/
+Disallow: /.vercel/
+Disallow: /.astro/
+
+# Allow specific crawlers
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+# Crawl delay (optional - uncomment if needed)
+# Crawl-delay: 1
+
+# Reference to sitemap
+Sitemap: https://portfolioo-two-delta.vercel.app/sitemap.xml
