@@ -10,7 +10,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://astro.build/config
 export default defineConfig({
-  output: 'hybrid',
+  output: 'static',
   integrations: [react()],
 
   vite: {
