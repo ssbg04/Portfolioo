@@ -7,10 +7,12 @@ interface TestimonialsProps {
 }
 
 export default function Testimonials({ testimonials }: TestimonialsProps) {
-  const isEmpty = !testimonials || testimonials.length === 0;
+  if (!testimonials || testimonials.length === 0) {
+    return null;
+  }
 
   return (
-    <section id="testimonials" className="py-24 relative overflow-hidden bg-muted-custom/10">
+    <section id="testimonials" className="py-24 relative overflow-hidden">
       <div className="container mx-auto px-6 max-w-5xl relative z-10">
         
         {/* Section Title */}
@@ -20,14 +22,11 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
           </h2>
           <div className="w-16 h-1 bg-gradient-to-r from-primary-custom to-secondary-custom mx-auto rounded-full mb-4" />
           <p className="text-muted-foreground-custom max-w-lg mx-auto">
-            {isEmpty 
-              ? "No client testimonials available at the moment." 
-              : "Kind words and feedback from past team members, managers, and partners."}
+            Kind words and feedback from past team members, managers, and partners.
           </p>
         </ScrollReveal>
 
-        {!isEmpty && (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
           {testimonials.map((test, index) => (
             <ScrollReveal
               key={index}
@@ -35,7 +34,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
               delay={(index % 2) * 100}
             >
               <div
-                className="glass-card p-8 rounded-[32px] border border-border/25 relative overflow-hidden flex flex-col justify-between h-full"
+                className="glass-card p-8 rounded-[32px] border border-border-custom relative overflow-hidden flex flex-col justify-between h-full"
               >
                 {/* Quote bubble icon decoration */}
                 <div className="absolute top-6 right-8 text-primary-custom/10 pointer-events-none">
@@ -45,7 +44,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                 </div>
 
                 <div>
-                  <p className="text-sm md:text-base italic text-muted-foreground-custom/95 leading-relaxed mb-8 relative z-10">
+                  <p className="text-sm md:text-base italic text-foreground-custom/90 leading-relaxed mb-8 relative z-10">
                     "{test.quote}"
                   </p>
                 </div>
@@ -60,16 +59,16 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                       className="w-12 h-12 rounded-full object-cover border-2 border-primary-custom/25 shadow-sm"
                     />
                   ) : (
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-primary-custom to-secondary-custom flex items-center justify-center text-white font-bold text-base shadow-sm">
-                      {test.name.charAt(0)}
+                    <div className="w-12 h-12 rounded-full bg-primary-custom/10 border-2 border-primary-custom/20 flex items-center justify-center font-bold text-primary-custom text-sm">
+                      {test.name ? test.name.charAt(0) : 'T'}
                     </div>
                   )}
                   <div>
-                    <h4 className="text-sm font-bold text-foreground-custom font-heading">
+                    <h4 className="font-bold text-sm text-foreground-custom">
                       {test.name}
                     </h4>
-                    <p className="text-[11px] font-semibold text-muted-foreground-custom">
-                      {test.role} at <span className="text-primary-custom">{test.company}</span>
+                    <p className="text-xs text-muted-foreground-custom">
+                      {test.role} {test.company ? `at ${test.company}` : ''}
                     </p>
                   </div>
                 </div>
@@ -77,7 +76,6 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
             </ScrollReveal>
           ))}
         </div>
-        )}
       </div>
     </section>
   );

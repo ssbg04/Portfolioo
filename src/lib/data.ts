@@ -1,4 +1,5 @@
 // Portfolio Data Layer (supports Sanity CMS with fallback to high-quality Mock data)
+import { sanityClient, urlFor } from './sanity';
 
 export interface Project {
   title: string;
@@ -57,147 +58,96 @@ export interface SiteSettings {
 }
 
 // ==========================================
-// Mock Data (High-quality fallback content)
+// Fallback Mock Data
 // ==========================================
 
 export const mockSiteSettings: SiteSettings = {
   fullName: "Cris Charles Garcia",
-  title: "Senior Full-Stack Engineer & AI Architect",
-  valueProposition: "Crafting beautiful, high-performance interfaces and deploying intelligent agentic systems at scale.",
+  title: "Software Developer",
+  valueProposition: "I am an IT student majoring in Software Development based in Laguna, Philippines. I focus on building reliable cross platforms applications with AI assisted.",
   biography: [
-    "I am a senior full-stack developer who enjoys building fluid, responsive user interfaces and robust scalable backend APIs. Over the years, I've worked across different tech stacks, prioritizing performance, clean architectures, and modern engineering standards.",
-    "Currently, I'm specializing in Astro, Next.js, and integrating large language models (LLMs) to create interactive agentic experiences."
+    "I am a senior IT student majoring in Software Development. I write code to solve real-world problems.",
+    "My primary stack includes PHP, React, Node.js, and MySQL. I enjoy database design, front-end development, and bug fixing."
   ],
   email: "crischarlesgarcia345@gmail.com",
-  location: "Manila, Philippines",
+  location: "Laguna, Philippines",
   resumeFile: "#"
 };
 
 export const mockSocialLinks: SocialLink[] = [
-  { platform: "GitHub", url: "https://github.com/crischarlesgarcia", icon: "github", order: 1 },
-  { platform: "LinkedIn", url: "https://linkedin.com/in/crischarlesgarcia", icon: "linkedin", order: 2 },
-  { platform: "Twitter", url: "https://twitter.com/crischarles", icon: "twitter", order: 3 },
+  { platform: "GitHub", url: "https://github.com/ssbg04", icon: "github", order: 1 },
+  { platform: "Facebook", url: "https://www.facebook.com/kristyarls345/", icon: "facebook", order: 2 },
+  { platform: "TikTok", url: "https://www.tiktok.com/@sisibigi", icon: "tiktok", order: 3 },
   { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 4 }
 ];
 
 export const mockSkills: Skill[] = [
-  // Frontend
-  { name: "Astro", category: "Frontend", proficiency: 95 },
-  { name: "React / Next.js", category: "Frontend", proficiency: 92 },
-  { name: "TypeScript", category: "Frontend", proficiency: 90 },
-  { name: "Tailwind CSS", category: "Frontend", proficiency: 95 },
-  { name: "HTML5/CSS3/JS", category: "Frontend", proficiency: 98 },
-  // Backend
-  { name: "Node.js / Express", category: "Backend", proficiency: 88 },
-  { name: "GraphQL / GROQ", category: "Backend", proficiency: 85 },
-  { name: "FastAPI / Python", category: "Backend", proficiency: 80 },
-  // Database
-  { name: "PostgreSQL", category: "Database", proficiency: 85 },
-  { name: "Supabase / Firebase", category: "Database", proficiency: 90 },
-  { name: "MongoDB", category: "Database", proficiency: 82 },
-  // DevOps
-  { name: "Docker", category: "DevOps", proficiency: 75 },
-  { name: "CI/CD (GitHub Actions)", category: "DevOps", proficiency: 80 },
-  { name: "Vercel / Netlify / AWS", category: "DevOps", proficiency: 90 },
-  // AI/ML
-  { name: "Gemini API / LLMs", category: "AI/ML", proficiency: 88 },
-  { name: "Prompt Engineering", category: "AI/ML", proficiency: 92 },
-  { name: "LangChain / RAG", category: "AI/ML", proficiency: 80 }
+  { name: "HTML5/CSS3/JS", category: "Frontend", proficiency: 90 },
+  { name: "Node.js", category: "Backend", proficiency: 85 },
+  { name: "Flutter", category: "Mobile", proficiency: 80 },
+  { name: "MySQL", category: "Database", proficiency: 85 }
 ];
 
 export const mockProjects: Project[] = [
   {
-    title: "QuantumAgent AI Chatbot",
-    slug: "quantumagent-ai-chatbot",
-    summary: "High-performance RAG-based AI customer support agent using Gemini and Supabase Vector DB.",
-    description: "An advanced AI-powered chatbot capable of context-aware, structured retrieval using Pinecone/Supabase Vector Store. Employs stream processing for fast response rates and strict system prompt safety policies.",
-    coverImage: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&h=380&q=80",
-    technologies: ["React", "TypeScript", "Gemini API", "Supabase", "Tailwind CSS"],
-    repositoryUrl: "https://github.com/crischarlesgarcia/quantum-agent",
-    liveUrl: "https://quantumagent.vercel.app",
+    title: "TIS Record Management System",
+    slug: "tis-record-management-system",
+    summary: "Comprehensive record and student management platform engineered for institutional efficiency.",
+    description: "Designed and built to streamline academic data, attendance records, and student profiles with secure role-based access and intuitive data dashboards.",
+    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+    technologies: ["PHP", "MySQL", "JavaScript", "Bootstrap"],
+    repositoryUrl: "https://github.com/ssbg04",
+    liveUrl: "https://github.com/ssbg04",
     featured: true,
     order: 1,
-    publishedAt: "2026-03-10"
-  },
-  {
-    title: "NeuroGlass UI Kit",
-    slug: "neuroglass-ui-kit",
-    summary: "Premium design library focusing on material glassmorphism, responsive utilities, and fluid WebGL physics.",
-    description: "A highly-optimized glassmorphic component library styled using dynamic Tailwind custom classes. Achieving 60fps on mobile via hardware-accelerated transforms and canvas-based micro-interactions.",
-    coverImage: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?auto=format&fit=crop&w=600&h=380&q=80",
-    technologies: ["Astro", "Tailwind CSS", "React", "Framer Motion"],
-    repositoryUrl: "https://github.com/crischarlesgarcia/neuroglass-ui",
-    liveUrl: "https://neuroglass.dev",
-    featured: true,
-    order: 2,
-    publishedAt: "2026-04-15"
-  },
-  {
-    title: "Apex Analytics Platform",
-    slug: "apex-analytics-platform",
-    summary: "Real-time metric monitoring dashboard featuring live-streamed server charts, heatmaps, and anomalies detection.",
-    description: "A powerful visual telemetry board showcasing microservices metrics. Written entirely in TypeScript, utilizing WebSockets for real-time visual delta rendering and custom SVG data representations.",
-    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=600&h=380&q=80",
-    technologies: ["Next.js", "Node.js", "Chart.js", "Redis", "TypeScript"],
-    repositoryUrl: "https://github.com/crischarlesgarcia/apex-analytics",
-    liveUrl: "https://apex-telemetry.vercel.app",
-    featured: true,
-    order: 3,
-    publishedAt: "2026-05-20"
+    publishedAt: "2026"
   }
 ];
 
 export const mockExperience: Experience[] = [
   {
-    company: "Stellar AI Solutions",
-    role: "Lead Full-Stack Developer",
-    startDate: "2025-01",
+    company: "Talisay Integrated School",
+    role: "Programmer",
+    startDate: "2025",
     endDate: "Present",
     description: [
-      "Architected responsive Next.js/Astro enterprise interfaces utilizing custom Tailwind utility structures.",
-      "Engineered automated semantic data pipelines incorporating LLMs for automated CMS content tagging.",
-      "Improved mobile web load performance (LCP) by 45% through aggressive bundle-shaking and client-side hydration gating."
+      "Engineered automated school record management solutions and optimized database queries.",
+      "Collaborated with administration staff to digitize physical records and improve data retrieval speed."
     ],
-    technologies: ["Astro", "React", "Node.js", "Gemini API", "Tailwind CSS"]
-  },
-  {
-    company: "NovaTech Labs",
-    role: "Senior Frontend Engineer",
-    startDate: "2023-05",
-    endDate: "2024-12",
-    description: [
-      "Designed and maintained custom component libraries based on Glassmorphic and Material Design principles.",
-      "Spearheaded SEO and WCAG accessibility audits, resulting in standard-compliant (AA contrast) interfaces and 95+ score audits.",
-      "Configured automatic Vercel preview deployment pipelines with automated Playwright visual testing."
-    ],
-    technologies: ["React", "TypeScript", "Tailwind CSS", "Astro", "Playwright"]
+    technologies: ["PHP", "MySQL", "JavaScript", "HTML/CSS"]
   }
 ];
 
 // ==========================================
-// Sanity CMS Fetch Logic (If Configured)
+// Sanity CMS Fetch Logic
 // ==========================================
 
-import { sanityClient, urlFor } from './sanity';
-
-const isSanityConfigured = () => {
-  return !!sanityClient;
-};
-
 export async function getSiteSettings(): Promise<SiteSettings> {
-  if (!isSanityConfigured() || !sanityClient) return mockSiteSettings;
   try {
     const settings = await sanityClient.fetch(`*[_type == "siteSettings"][0]`);
     if (!settings) return mockSiteSettings;
+
+    // Handle biography whether stored as array of strings, single string, or block content
+    let biography: string[] = [];
+    if (Array.isArray(settings.biography)) {
+      biography = settings.biography.flatMap((b: any) => 
+        typeof b === 'string' ? b.split('\n\n').filter(Boolean) : [String(b)]
+      );
+    } else if (typeof settings.biography === 'string') {
+      biography = settings.biography.split('\n\n').filter(Boolean);
+    }
+
     return {
       fullName: settings.fullName || mockSiteSettings.fullName,
       title: settings.title || mockSiteSettings.title,
       valueProposition: settings.valueProposition || mockSiteSettings.valueProposition,
-      biography: settings.biography || mockSiteSettings.biography,
+      biography: biography.length > 0 ? biography : mockSiteSettings.biography,
       heroImage: settings.heroImage ? urlFor(settings.heroImage) : undefined,
       email: settings.email || mockSiteSettings.email,
       location: settings.location || mockSiteSettings.location,
-      resumeFile: settings.resumeFile ? (typeof settings.resumeFile === 'string' ? settings.resumeFile : urlFor(settings.resumeFile)) : mockSiteSettings.resumeFile
+      resumeFile: settings.resumeFile 
+        ? (typeof settings.resumeFile === 'string' ? settings.resumeFile : urlFor(settings.resumeFile)) 
+        : mockSiteSettings.resumeFile
     };
   } catch (error) {
     console.error('Error fetching siteSettings from Sanity:', error);
@@ -206,15 +156,14 @@ export async function getSiteSettings(): Promise<SiteSettings> {
 }
 
 export async function getSocialLinks(): Promise<SocialLink[]> {
-  if (!isSanityConfigured() || !sanityClient) return mockSocialLinks.sort((a, b) => a.order - b.order);
   try {
-    const links = await sanityClient.fetch(`*[_type == "socialLink"] | order(order asc)`);
+    const links = await sanityClient.fetch(`*[_type == "socialLink"] | order(coalesce(order, 99) asc)`);
     if (!links || links.length === 0) return mockSocialLinks;
-    return links.map((l: any) => ({
-      platform: l.platform,
-      url: l.url,
-      icon: l.icon || 'link',
-      order: l.order || 0
+    return links.map((l: any, idx: number) => ({
+      platform: l.platform || 'Link',
+      url: l.url || '#',
+      icon: l.icon || (l.platform ? l.platform.toLowerCase() : 'link'),
+      order: typeof l.order === 'number' ? l.order : idx + 1
     }));
   } catch (error) {
     console.error('Error fetching socialLink from Sanity:', error);
@@ -223,14 +172,13 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
 }
 
 export async function getSkills(): Promise<Skill[]> {
-  if (!isSanityConfigured() || !sanityClient) return mockSkills;
   try {
     const skills = await sanityClient.fetch(`*[_type == "skill"]`);
     if (!skills || skills.length === 0) return mockSkills;
     return skills.map((s: any) => ({
-      name: s.name,
-      category: s.category,
-      proficiency: s.proficiency || 0,
+      name: s.name || 'Skill',
+      category: s.category || 'Tools',
+      proficiency: typeof s.proficiency === 'number' ? s.proficiency : 85,
       icon: s.icon
     }));
   } catch (error) {
@@ -240,23 +188,25 @@ export async function getSkills(): Promise<Skill[]> {
 }
 
 export async function getProjects(): Promise<Project[]> {
-  if (!isSanityConfigured() || !sanityClient) return mockProjects.sort((a, b) => a.order - b.order);
   try {
-    const projects = await sanityClient.fetch(`*[_type == "project"] | order(order asc)`);
+    const projects = await sanityClient.fetch(`*[_type == "project"] | order(coalesce(order, 99) asc)`);
     if (!projects || projects.length === 0) return mockProjects;
-    return projects.map((p: any) => ({
-      title: p.title,
-      slug: p.slug?.current || p.slug,
-      summary: p.summary,
-      description: p.description,
-      coverImage: p.coverImage ? urlFor(p.coverImage) : undefined,
-      technologies: p.technologies || [],
-      repositoryUrl: p.repositoryUrl,
-      liveUrl: p.liveUrl,
-      featured: p.featured || false,
-      order: p.order || 0,
-      publishedAt: p.publishedAt || ''
-    }));
+    return projects.map((p: any, idx: number) => {
+      const slugVal = p.slug?.current || (typeof p.slug === 'string' ? p.slug : (p.title ? p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : `project-${idx}`));
+      return {
+        title: p.title || 'Untitled Project',
+        slug: slugVal,
+        summary: p.summary || p.description || '',
+        description: p.description || p.summary || '',
+        coverImage: p.coverImage ? urlFor(p.coverImage) : undefined,
+        technologies: Array.isArray(p.technologies) ? p.technologies : [],
+        repositoryUrl: p.repositoryUrl,
+        liveUrl: p.liveUrl,
+        featured: p.featured ?? true,
+        order: typeof p.order === 'number' ? p.order : idx + 1,
+        publishedAt: p.publishedAt ? String(p.publishedAt) : '2026'
+      };
+    });
   } catch (error) {
     console.error('Error fetching project from Sanity:', error);
     return mockProjects;
@@ -264,18 +214,25 @@ export async function getProjects(): Promise<Project[]> {
 }
 
 export async function getExperience(): Promise<Experience[]> {
-  if (!isSanityConfigured() || !sanityClient) return mockExperience;
   try {
     const experience = await sanityClient.fetch(`*[_type == "experience"] | order(startDate desc)`);
     if (!experience || experience.length === 0) return mockExperience;
-    return experience.map((e: any) => ({
-      company: e.company,
-      role: e.role,
-      startDate: e.startDate,
-      endDate: e.endDate || 'Present',
-      description: e.description || [],
-      technologies: e.technologies || []
-    }));
+    return experience.map((e: any) => {
+      let desc: string[] = [];
+      if (Array.isArray(e.description)) {
+        desc = e.description.flatMap((d: any) => typeof d === 'string' ? d.split('\n\n').filter(Boolean) : [String(d)]);
+      } else if (typeof e.description === 'string') {
+        desc = e.description.split('\n\n').filter(Boolean);
+      }
+      return {
+        company: e.company || 'Company',
+        role: e.role || 'Developer',
+        startDate: e.startDate ? String(e.startDate) : '2025',
+        endDate: e.endDate ? String(e.endDate) : 'Present',
+        description: desc.length > 0 ? desc : [e.company || 'Work history details'],
+        technologies: Array.isArray(e.technologies) ? e.technologies : []
+      };
+    });
   } catch (error) {
     console.error('Error fetching experience from Sanity:', error);
     return mockExperience;
@@ -283,7 +240,6 @@ export async function getExperience(): Promise<Experience[]> {
 }
 
 export async function getTestimonials(): Promise<Testimonial[]> {
-  if (!isSanityConfigured() || !sanityClient) return [];
   try {
     const testimonials = await sanityClient.fetch(`*[_type == "testimonial"]`);
     if (!testimonials || testimonials.length === 0) return [];

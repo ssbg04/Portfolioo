@@ -13,19 +13,23 @@ import {
 	getProjects, 
 	getSkills, 
 	getExperience, 
-	getTestimonials 
+	getTestimonials,
+	getSocialLinks
 } from '../lib/data';
 
-// Server-side fetch (or fallback to Mock)
+// Server-side fetch from Sanity (with resilient fallbacks)
 const settings = await getSiteSettings();
 const allProjects = await getProjects();
-const featuredProjects = allProjects.filter(p => p.featured);
+const featuredProjects = allProjects.length > 0
+  ? (allProjects.some(p => p.featured) ? allProjects.filter(p => p.featured) : allProjects)
+  : [];
 const skills = await getSkills();
 const experience = await getExperience();
 const testimonials = await getTestimonials();
+const socialLinks = await getSocialLinks();
 ---
 
-<Layout title={`${settings.fullName} | Portfolio`} description={settings.valueProposition}>
+<Layout title={`${settings.fullName} | ${settings.title}`} description={settings.valueProposition}>
 	<!-- Navigation bar -->
 	<Navbar client:load />
 
@@ -36,6 +40,7 @@ const testimonials = await getTestimonials();
 			title={settings.title} 
 			valueProposition={settings.valueProposition} 
 			heroImage={settings.heroImage}
+			socialLinks={socialLinks}
 			client:load 
 		/>
 		
@@ -45,13 +50,15 @@ const testimonials = await getTestimonials();
 		
 		<About settings={settings} experience={experience} client:visible />
 		
-		<Testimonials testimonials={testimonials} client:visible />
+		{testimonials.length > 0 && (
+			<Testimonials testimonials={testimonials} client:visible />
+		)}
 		
 		<ContactForm client:visible />
 	</main>
 
 	<!-- Footer -->
-	<footer class="py-12 border-t border-border/10 text-center text-xs text-muted-foreground-custom relative z-10 bg-muted-custom/5">
+	<footer class="py-12 border-t border-border-custom text-center text-xs text-muted-foreground-custom relative z-10 bg-muted-custom/30">
 		<p>&copy; {new Date().getFullYear()} {settings.fullName}. Built with Astro & React. All rights reserved.</p>
 	</footer>
 </Layout>

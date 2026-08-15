@@ -1,6 +1,7 @@
 import React, { Suspense, lazy } from 'react';
-import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { useIsMobile } from '../lib/hooks';
+import type { SocialLink } from '../lib/data';
 import ppDay from '../assets/pp-day.webp';
 import ppNight from '../assets/pp-night.webp';
 
@@ -66,7 +67,7 @@ function InteractiveButton({ href, onClick, className, children, variant }: Inte
         perspective: '600px'
       }}
       whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.94, rotateX: 0, rotateY: 0 }} // Hold press compresses and resets rotation
+      whileTap={{ scale: 0.94, rotateX: 0, rotateY: 0 }}
       transition={{ type: 'spring', stiffness: 350, damping: 25 }}
       className={`relative overflow-hidden ${className}`}
     >
@@ -90,58 +91,59 @@ function InteractiveButton({ href, onClick, className, children, variant }: Inte
   );
 }
 
-
 interface HeroProps {
   fullName: string;
   title: string;
   valueProposition: string;
   heroImage?: string;
+  socialLinks?: SocialLink[];
 }
 
-const socialLinks = [
-  {
-    name: 'GitHub',
-    handle: '@ssbg04',
-    url: 'https://github.com/ssbg04',
-    icon: (
+const getPlatformIcon = (platform: string) => {
+  const p = platform.toLowerCase();
+  if (p.includes('github')) {
+    return (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
       </svg>
-    )
-  },
-  {
-    name: 'LinkedIn',
-    handle: 'ccvg3405',
-    url: 'https://linkedin.com/in/ccvg3405',
-    icon: (
+    );
+  }
+  if (p.includes('facebook')) {
+    return (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+      </svg>
+    );
+  }
+  if (p.includes('tiktok')) {
+    return (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.09-1.03-1.87-1.09-2.93-3.16-2.61-5.25.38-2.52 2.5-4.46 5.04-4.46.73 0 1.43.16 2.07.46.06.03.11.05.16.08v4.18c-1.38-.24-2.81-.19-4.16.14-1.12.28-2.12 1.05-2.67 2.06-.55 1.01-.58 2.22-.09 3.25.48 1.01 1.41 1.72 2.49 2.03 1.1.32 2.27.32 3.37.01.69-.2 1.34-.55 1.87-.99.53-.44.97-.99 1.25-1.61.28-.62.43-1.28.46-1.95.06-2.69.02-5.38.02-8.07z" />
+      </svg>
+    );
+  }
+  if (p.includes('linkedin')) {
+    return (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
       </svg>
-    )
-  },
-  {
-    name: 'Twitter',
-    handle: '@N/A',
-    url: '#',
-    icon: (
+    );
+  }
+  if (p.includes('twitter') || p.includes('x.com')) {
+    return (
       <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
         <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
       </svg>
-    )
-  },
-  {
-    name: 'Email',
-    handle: 'crischarlesgarcia345@gmail.com',
-    url: 'mailto:crischarlesgarcia345@gmail.com',
-    icon: (
-      <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-      </svg>
-    )
+    );
   }
-];
+  return (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
+    </svg>
+  );
+};
 
-export default function Hero({ fullName, title, valueProposition, heroImage }: HeroProps) {
+export default function Hero({ fullName, title, valueProposition, heroImage, socialLinks = [] }: HeroProps) {
   const [mounted, setMounted] = React.useState(false);
   const isMobile = useIsMobile();
 
@@ -158,35 +160,39 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
     }
   };
 
-  // Motion animation config for text elements
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: isMobile ? 0.05 : 0.15,
+        staggerChildren: isMobile ? 0.05 : 0.12,
         delayChildren: isMobile ? 0.05 : 0.1
       }
     }
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 24 },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: isMobile ? 0.35 : 0.65, ease: [0.16, 1, 0.3, 1] }
+      transition: { duration: isMobile ? 0.35 : 0.55, ease: [0.16, 1, 0.3, 1] }
     }
   };
+
+  const linksToRender = socialLinks.length > 0 ? socialLinks : [
+    { platform: "GitHub", url: "https://github.com/ssbg04", icon: "github", order: 1 },
+    { platform: "Facebook", url: "https://www.facebook.com/kristyarls345/", icon: "facebook", order: 2 },
+    { platform: "TikTok", url: "https://www.tiktok.com/@sisibigi", icon: "tiktok", order: 3 },
+    { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 4 }
+  ];
 
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col md:flex-row items-center justify-center pt-20 md:pt-24 pb-6 md:pb-0 overflow-hidden"
+      className="relative min-h-screen flex flex-col md:flex-row items-center justify-center pt-24 md:pt-28 pb-10 md:pb-0 overflow-hidden"
     >
-
-
-      <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
+      <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
         <motion.div
           className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1 will-change-transform-opacity"
@@ -194,10 +200,10 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           initial="hidden"
           animate={mounted ? "visible" : "hidden"}
         >
-          {/* Profile/Badge */}
+          {/* Status Badge */}
           <motion.div
             variants={itemVariants}
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full glass-card text-[10px] sm:text-xs font-semibold text-primary-custom border border-primary-custom/10 mb-3 sm:mb-6 shadow-sm will-change-transform-opacity"
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-semibold text-primary-custom border border-primary-custom/20 mb-4 sm:mb-6 shadow-sm"
           >
             <span className="flex h-2 w-2 relative">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -209,7 +215,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Heading */}
           <motion.h1
             variants={itemVariants}
-            className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-3 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-foreground-custom via-foreground-custom to-primary-custom leading-tight will-change-transform-opacity"
+            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-3 sm:mb-4 text-foreground-custom leading-tight"
           >
             Hi, I'm <span className="text-glow text-primary-custom">{fullName}</span>
           </motion.h1>
@@ -217,7 +223,7 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Title */}
           <motion.p
             variants={itemVariants}
-            className="text-base sm:text-xl md:text-2xl font-semibold text-muted-foreground-custom mb-1.5 sm:mb-4 font-heading will-change-transform-opacity"
+            className="text-lg sm:text-xl md:text-2xl font-bold text-foreground-custom mb-3 font-heading"
           >
             {title}
           </motion.p>
@@ -225,40 +231,34 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           {/* Value Proposition */}
           <motion.p
             variants={itemVariants}
-            className="text-xs sm:text-base md:text-lg text-muted-foreground-custom/80 mb-4 sm:mb-8 max-w-xl leading-relaxed will-change-transform-opacity"
+            className="text-sm sm:text-base md:text-lg text-foreground-custom/85 dark:text-foreground-custom/90 mb-6 sm:mb-8 max-w-xl leading-relaxed font-normal"
           >
             {valueProposition}
           </motion.p>
 
-          {/* Actions & Social Alignment Group */}
+          {/* Actions & Social Links */}
           <motion.div
             variants={itemVariants}
-            className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 sm:mt-2 w-full justify-center md:justify-start will-change-transform-opacity"
+            className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 w-full justify-center md:justify-start"
           >
-            {/* Social Links & Divider */}
+            {/* Social Icons */}
             <div className="flex items-center gap-4 sm:gap-6">
-              <div className="flex items-center gap-3">
-                {socialLinks.map((link) => (
-                  <div key={link.name} className="relative group flex flex-col items-center">
-                    <a
-                      href={link.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-9 h-9 sm:w-11 sm:h-11 rounded-full glass-card hover:bg-primary-custom/10 hover:text-primary-custom transition-all duration-300 flex items-center justify-center"
-                      aria-label={`Visit Cris's ${link.name}`}
-                    >
-                      {link.icon}
-                    </a>
-                    {/* Tooltip */}
-                    <div className="absolute bottom-full mb-3 px-3 py-1.5 bg-foreground-custom text-background-custom text-[11px] font-bold rounded-xl opacity-0 group-hover:opacity-100 scale-95 group-hover:scale-100 transition-all duration-200 pointer-events-none whitespace-nowrap shadow-lg z-20">
-                      {link.handle}
-                      {/* Arrow */}
-                      <div className="absolute top-full left-1/2 transform -translate-x-1/2 -mt-1 w-2 h-2 bg-foreground-custom rotate-45" />
-                    </div>
-                  </div>
+              <div className="flex items-center gap-2.5">
+                {linksToRender.map((link) => (
+                  <a
+                    key={link.platform}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-10 h-10 rounded-full glass-card text-foreground-custom hover:text-primary-custom hover:border-primary-custom/40 transition-all duration-250 flex items-center justify-center shadow-sm"
+                    aria-label={`Visit Cris on ${link.platform}`}
+                    title={link.platform}
+                  >
+                    {getPlatformIcon(link.platform)}
+                  </a>
                 ))}
               </div>
-              <div className="hidden sm:block w-[1px] h-8 bg-border/20" />
+              <div className="hidden sm:block w-px h-8 bg-border-custom" />
             </div>
 
             {/* CTA Buttons */}
@@ -267,10 +267,10 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
                 href="#projects"
                 onClick={(e) => handleSmoothScroll(e, 'projects')}
                 variant="primary"
-                className="w-1/2 sm:w-auto px-4 py-2.5 rounded-lg bg-gradient-to-r from-primary-custom to-secondary-custom text-primary-foreground font-bold text-[10px] sm:text-xs shadow-md hover:shadow-lg transition-all duration-200 text-center cursor-pointer uppercase tracking-wider group flex items-center justify-center gap-1.5"
+                className="w-1/2 sm:w-auto px-5 py-3 rounded-xl bg-primary-custom text-white font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 text-center cursor-pointer uppercase tracking-wider group flex items-center justify-center gap-1.5"
               >
                 Projects
-                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
               </InteractiveButton>
@@ -278,10 +278,10 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
                 href="#contact"
                 onClick={(e) => handleSmoothScroll(e, 'contact')}
                 variant="secondary"
-                className="w-1/2 sm:w-auto px-4 py-2.5 rounded-lg glass-card text-foreground-custom font-bold text-[10px] sm:text-xs border border-border/25 hover:bg-primary-custom/10 hover:text-primary-custom transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5"
+                className="w-1/2 sm:w-auto px-5 py-3 rounded-xl glass-card text-foreground-custom font-bold text-xs border border-border-custom hover:border-primary-custom/40 hover:text-primary-custom transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5"
               >
                 Contact
-                <svg className="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                 </svg>
               </InteractiveButton>
@@ -289,24 +289,17 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
           </motion.div>
         </motion.div>
 
-        {/* Right Column: Professional Profile Picture Frame */}
+        {/* Right Column: Profile Image Frame */}
         <div className="md:col-span-5 flex justify-center order-1 md:order-2">
-          <div className="relative w-40 h-40 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center">
-            {/* Glowing Backdrop Aura */}
+          <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center">
+            {/* Backdrop Aura */}
             <motion.div
-              className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-accent-custom blur-3xl pointer-events-none"
-              variants={{
-                rest: { scale: 0.95, opacity: 0.25 },
-                hover: { scale: 1.08, opacity: 0.45, transition: { duration: 0.4 } }
-              }}
-              initial="rest"
-              whileHover="hover"
-              animate="rest"
+              className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-primary-custom blur-3xl pointer-events-none opacity-30"
             />
             <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
               <TiltedCard
-                imageSrc={(ppDay as any).src || ppDay}
-                darkImageSrc={(ppNight as any).src || ppNight}
+                imageSrc={heroImage || (ppDay as any).src || ppDay}
+                darkImageSrc={heroImage || (ppNight as any).src || ppNight}
                 altText={fullName}
                 captionText="Available for new projects"
                 containerHeight="100%"
@@ -330,18 +323,6 @@ export default function Hero({ fullName, title, valueProposition, heroImage }: H
             </Suspense>
           </div>
         </div>
-
-        {/* Down indicator */}
-        <a
-          href="#projects"
-          onClick={(e) => handleSmoothScroll(e, 'projects')}
-          className="absolute top-140 left-1/2 transform -translate-x-1/2 animate-bounce opacity-50 hover:opacity-100 transition-opacity cursor-pointer"
-          aria-label="Scroll down to projects"
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-          </svg>
-        </a>
       </div>
     </section>
   );
