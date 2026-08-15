@@ -1,0 +1,100 @@
+---
+export interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalURL?: string;
+  type?: 'website' | 'article' | 'profile';
+  publishedTime?: string;
+}
+
+const {
+  title = 'Cris Charles Garcia | Full-Stack Developer & Software Engineer',
+  description = 'Personal portfolio of Cris Charles Garcia — Full-Stack Developer specializing in modern web applications, Astro, React, TypeScript, Cloud solutions, and AI assistant integration.',
+  image = '/logo.png',
+  type = 'website',
+  publishedTime,
+} = Astro.props;
+
+const canonicalURL = Astro.props.canonicalURL || new URL(Astro.url.pathname, Astro.site || Astro.url.origin || 'https://crischarles.dev').href;
+const socialImageURL = new URL(image, Astro.site || Astro.url.origin || 'https://crischarles.dev').href;
+
+// JSON-LD Structured Data Schema (Person & WebSite)
+const schemaData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://crischarles.top/#website",
+      "url": "https://crischarles.top",
+      "name": "Cris Charles Garcia Portfolio",
+      "description": description,
+      "publisher": {
+        "@id": "https://crischarles.top/#person"
+      },
+      "inLanguage": "en-US"
+    },
+    {
+      "@type": "Person",
+      "@id": "https://crischarles.top/#person",
+      "name": "Cris Charles Garcia",
+      "url": "https://crischarles.top",
+      "image": socialImageURL,
+      "jobTitle": "Full-Stack Developer & Software Engineer",
+      "description": description,
+      "knowsAbout": [
+        "Web Development",
+        "React",
+        "Astro",
+        "TypeScript",
+        "Node.js",
+        "Cloud Architecture",
+        "Sanity CMS",
+        "Tailwind CSS",
+        "Artificial Intelligence"
+      ]
+    },
+    {
+      "@type": "ProfilePage",
+      "@id": canonicalURL,
+      "url": canonicalURL,
+      "name": title,
+      "isPartOf": {
+        "@id": "https://crischarles.top/#website"
+      },
+      "mainEntity": {
+        "@id": "https://crischarles.top/#person"
+      }
+    }
+  ]
+};
+---
+
+<!-- Primary Meta Tags -->
+<title>{title}</title>
+<meta name="title" content={title} />
+<meta name="description" content={description} />
+<meta name="author" content="Cris Charles Garcia" />
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<link rel="canonical" href={canonicalURL} />
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:url" content={canonicalURL} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:image" content={socialImageURL} />
+<meta property="og:site_name" content="Cris Charles Garcia" />
+<meta property="og:locale" content="en_US" />
+{publishedTime && <meta property="article:published_time" content={publishedTime} />}
+
+<!-- Twitter -->
+<meta property="twitter:card" content="summary_large_image" />
+<meta property="twitter:url" content={canonicalURL} />
+<meta property="twitter:title" content={title} />
+<meta property="twitter:description" content={description} />
+<meta property="twitter:image" content={socialImageURL} />
+<meta name="twitter:creator" content="@CrisCharles" />
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json" set:html={JSON.stringify(schemaData)} />

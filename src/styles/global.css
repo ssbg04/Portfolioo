@@ -109,18 +109,70 @@
     box-shadow: 0 12px 40px 0 rgba(2, 2, 8, 0.6) !important;
   }
 
-  .glass-nav {
-    background: rgba(255, 255, 255, 0.4) !important;
-    -webkit-backdrop-filter: blur(20px) !important;
-    backdrop-filter: blur(20px) !important;
-    border: 1px solid rgba(255, 255, 255, 0.25) !important;
-    box-shadow: 0 4px 30px rgba(10, 10, 20, 0.03) !important;
+  /* Fluent UI Surface & AppBar (Landscape Mode) */
+  .fluent-acrylic {
+    background: rgba(255, 255, 255, 0.75) !important;
+    -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+    backdrop-filter: blur(28px) saturate(180%) !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.04) !important;
   }
 
-  .dark .glass-nav {
-    background: rgba(10, 10, 12, 0.4) !important;
-    border: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 4px 30px rgba(2, 2, 8, 0.3) !important;
+  .dark .fluent-acrylic {
+    background: rgba(18, 18, 22, 0.75) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.4) !important;
+  }
+
+  .fluent-tab {
+    position: relative;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s cubic-bezier(0.1, 0.9, 0.2, 1);
+  }
+
+  .fluent-tab:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .dark .fluent-tab:hover {
+    background: rgba(255, 255, 255, 0.08);
+  }
+
+  .fluent-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 20%;
+    right: 20%;
+    height: 3px;
+    background: hsl(var(--primary));
+    border-radius: 3px;
+  }
+
+  /* Material 3 Surface & Bottom Bar (Portrait Mode) */
+  .m3-surface {
+    background: rgba(243, 244, 249, 0.92) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    backdrop-filter: blur(20px) !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.06) !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.04) !important;
+  }
+
+  .dark .m3-surface {
+    background: rgba(20, 20, 26, 0.92) !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.45) !important;
+  }
+
+  .m3-pill-active {
+    background-color: hsl(var(--primary-container)) !important;
+    color: hsl(var(--primary)) !important;
+  }
+
+  .dark .m3-pill-active {
+    background-color: hsla(var(--primary) / 0.25) !important;
+    color: hsl(var(--primary-foreground)) !important;
   }
 
   .text-glow {
@@ -252,20 +304,9 @@
   will-change: transform, opacity;
 }
 
-@media (max-width: 768px) {
-  .glass-card, .glass-nav {
-    /* Completely remove blur, gradients, and heavy shadows for maximum mobile performance */
-    backdrop-filter: none !important;
-    -webkit-backdrop-filter: none !important;
-    
-    background: rgba(255, 255, 255, 0.95) !important;
-    border: 1px solid rgba(0, 0, 0, 0.05) !important;
-    box-shadow: none !important;
-  }
-  
-  .dark .glass-card, .dark .glass-nav {
-    background: rgba(18, 18, 20, 0.95) !important;
-    border: 1px solid rgba(255, 255, 255, 0.05) !important;
-    box-shadow: none !important;
+/* Responsive Safe Padding for Portrait Bottom Bar */
+@media (max-width: 768px), (orientation: portrait) {
+  body {
+    padding-bottom: 74px;
   }
 }

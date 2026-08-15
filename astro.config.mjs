@@ -10,6 +10,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl';
 
 // https://astro.build/config
 export default defineConfig({
+  site: 'https://crischarles.top',
   output: 'server',
   integrations: [react()],
 

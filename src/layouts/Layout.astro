@@ -5,15 +5,20 @@ import Background from '../components/Background';
 import LoadingScreen from '../components/LoadingScreen.astro';
 import SpotlightLens from '../components/SpotlightLens';
 import Analytics from '@vercel/analytics/astro';
+import SEO from '../components/SEO.astro';
 
 interface Props {
 	title?: string;
 	description?: string;
+	image?: string;
+	type?: 'website' | 'article' | 'profile';
 }
 
 const { 
 	title = "Cris Charles Garcia | Full-Stack Developer Portfolio", 
-	description = "Personal portfolio website of Cris Charles Garcia, showcasing projects, skills, experience, and custom AI chatbot assistant." 
+	description = "Personal portfolio website of Cris Charles Garcia, showcasing projects, skills, experience, and custom AI chatbot assistant.",
+	image = "/logo.png",
+	type = "website"
 } = Astro.props;
 
 const isRootPage = Astro.url.pathname === '/';
@@ -25,12 +30,11 @@ const isRootPage = Astro.url.pathname === '/';
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/png" href="/logo.png" />
+		<link rel="apple-touch-icon" href="/logo.png" />
 		<meta name="generator" content={Astro.generator} />
 
-		
-		<!-- SEO Meta Tags -->
-		<title>{title}</title>
-		<meta name="description" content={description} />
+		<!-- SEO & Structured Data -->
+		<SEO title={title} description={description} image={image} type={type} />
 		
 		<!-- Theme Initialization Script (Prevents FOUC) -->
 		<script is:inline>
