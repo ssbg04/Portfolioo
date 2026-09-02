@@ -14,8 +14,9 @@ node_modules/
 # testing
 /coverage
 /scripts
-# studio
-/Sanity-studio
+# studio build & cache (studio code is tracked)
+Sanity-studio/.sanity/
+Sanity-studio/dist/
 theme/
 
 # next.js

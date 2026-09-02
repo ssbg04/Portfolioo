@@ -3,9 +3,10 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar';
 import Certifications from '../components/Certifications';
 import Footer from '../components/Footer';
-import { getSiteSettings } from '../lib/data';
+import { getSiteSettings, getCertifications } from '../lib/data';
 
 const settings = await getSiteSettings();
+const certifications = await getCertifications();
 ---
 
 <Layout
@@ -30,7 +31,7 @@ const settings = await getSiteSettings();
       </div>
     </section>
 
-    <Certifications client:visible />
+    <Certifications certifications={certifications} client:visible />
   </main>
 
   <Footer fullName={settings.fullName} client:load />

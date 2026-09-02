@@ -5,11 +5,12 @@ import AboutDetails from '../components/About';
 import SkillsList from '../components/Skills';
 import Certifications from '../components/Certifications';
 import Footer from '../components/Footer';
-import { getSiteSettings, getExperience, getSkills } from '../lib/data';
+import { getSiteSettings, getExperience, getSkills, getCertifications } from '../lib/data';
 
 const settings = await getSiteSettings();
 const experience = await getExperience();
 const skills = await getSkills();
+const certifications = await getCertifications();
 ---
 
 <Layout title={`About | ${settings.fullName}`} description="Learn more about Cris Charles Garcia's professional history, skills matrix, and developer biography.">
@@ -18,7 +19,7 @@ const skills = await getSkills();
 	<main class="flex-1 pt-32 pb-24">
 		<AboutDetails settings={settings} experience={experience} client:load />
 		<SkillsList skills={skills} client:visible />
-		<Certifications client:visible />
+		<Certifications certifications={certifications} client:visible />
 	</main>
 
 	<Footer fullName={settings.fullName} client:load />

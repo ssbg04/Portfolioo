@@ -14,6 +14,7 @@ import {
 	getSiteSettings, 
 	getProjects, 
 	getSkills, 
+	getCertifications,
 	getExperience, 
 	getTestimonials,
 	getSocialLinks
@@ -26,6 +27,7 @@ const featuredProjects = allProjects.length > 0
   ? (allProjects.some(p => p.featured) ? allProjects.filter(p => p.featured) : allProjects)
   : [];
 const skills = await getSkills();
+const certifications = await getCertifications();
 const experience = await getExperience();
 const testimonials = await getTestimonials();
 const socialLinks = await getSocialLinks();
@@ -50,7 +52,7 @@ const socialLinks = await getSocialLinks();
 		
 		<Skills skills={skills} client:visible />
 		
-		<Certifications client:visible />
+		<Certifications certifications={certifications} client:visible />
 		
 		<About settings={settings} experience={experience} client:visible />
 		

@@ -1,0 +1,22 @@
+{
+  "name": "portfolio-studio",
+  "private": true,
+  "version": "1.0.0",
+  "main": "package.json",
+  "scripts": {
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "start": "sanity start"
+  },
+  "dependencies": {
+    "@sanity/vision": "^6.3.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "sanity": "^6.3.0",
+    "sanity-plugin-vercel-deploy": "^4.0.0",
+    "styled-components": "^6.1.15"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.5"
+  }
+}
