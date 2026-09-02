@@ -2,7 +2,6 @@
 import '../styles/global.css';
 import BackToTop from '../components/BackToTop';
 import Background from '../components/Background';
-import LoadingScreen from '../components/LoadingScreen.astro';
 import SpotlightLens from '../components/SpotlightLens';
 import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
@@ -47,9 +46,39 @@ const isRootPage = Astro.url.pathname === '/';
 				}
 			})();
 		</script>
+
+		<!-- Orientation Stamp Script (Prevents nav layout shift) -->
+		<script is:inline>
+			(function() {
+				function setOrientation() {
+					const isPortrait = window.matchMedia('(orientation: portrait)').matches;
+					const isNarrowLandscape = !isPortrait && window.innerWidth < 1024;
+					document.documentElement.dataset.orientation = isPortrait
+						? 'portrait'
+						: isNarrowLandscape
+							? 'landscape-compact'
+							: 'landscape';
+				}
+				setOrientation();
+				window.addEventListener('resize', setOrientation, { passive: true });
+				window.addEventListener('orientationchange', setOrientation, { passive: true });
+			})();
+		</script>
+		<!-- Performance Tier Detection -->
+		<script is:inline>
+			(function() {
+				var tier = 'mid';
+				var cores = navigator.hardwareConcurrency || 2;
+				var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+				var saveData = conn && conn.saveData;
+				var slowConn = conn && (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g');
+				if (cores <= 4 || saveData || slowConn) { tier = 'low'; }
+				else if (cores >= 8 && window.devicePixelRatio >= 2) { tier = 'high'; }
+				document.documentElement.dataset.tier = tier;
+			})();
+		</script>
 	</head>
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
-		<LoadingScreen />
 		<Background client:load />
 		<div id="magnify-content">
 			<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>

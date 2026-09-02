@@ -1,0 +1,37 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar';
+import Certifications from '../components/Certifications';
+import Footer from '../components/Footer';
+import { getSiteSettings } from '../lib/data';
+
+const settings = await getSiteSettings();
+---
+
+<Layout
+  title={`Certifications | ${settings.fullName}`}
+  description="Verified credentials and certifications earned by Cris Charles Garcia from Cisco and other industry-recognized programs."
+>
+  <Navbar client:load />
+
+  <main class="flex-1 min-h-screen">
+    <!-- Page Hero -->
+    <section class="pt-16 pb-6 px-4 sm:px-6">
+      <div class="max-w-5xl mx-auto">
+        <div class="bento-card bento-enter mt-4">
+          <p class="section-label">Credentials &amp; Badges</p>
+          <h1 class="text-4xl md:text-5xl font-bold font-heading text-foreground-custom mt-2 mb-3">
+            Certifications
+          </h1>
+          <p class="text-muted-foreground-custom max-w-2xl leading-relaxed">
+            Verified digital credentials from Cisco and industry partners. Each badge represents completed coursework, assessments, and demonstrated competency.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <Certifications client:visible />
+  </main>
+
+  <Footer fullName={settings.fullName} client:load />
+</Layout>

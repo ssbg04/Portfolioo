@@ -16,141 +16,124 @@ export default function About({ settings, experience }: AboutProps) {
       ];
 
   return (
-    <section id="about" className="py-24 relative overflow-hidden">
-      <div className="container mx-auto px-6 max-w-5xl relative z-10">
-        
-        {/* Section Title */}
-        <ScrollReveal variant="fade-up" className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold font-heading mb-4 text-glow bg-clip-text text-transparent bg-gradient-to-r from-foreground-custom to-primary-custom">
-            About & Experience
-          </h2>
-          <div className="w-16 h-1 bg-gradient-to-r from-primary-custom to-secondary-custom mx-auto rounded-full mb-4" />
-          <p className="text-muted-foreground-custom max-w-lg mx-auto font-medium">
-            A background on my professional journey, education, and career milestones.
-          </p>
+    <section id="about" className="py-20 relative">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+
+        {/* Section Header */}
+        <ScrollReveal variant="fade-up" className="mb-10">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
+            <div>
+              <span className="section-tag">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
+                04 // Profile
+              </span>
+              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
+                About &amp; Experience
+              </h2>
+            </div>
+            <p className="text-sm text-muted-foreground-custom max-w-sm">
+              Academic background, engineering roles, and technical journey.
+            </p>
+          </div>
         </ScrollReveal>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
-          {/* Biography Column */}
-          <div className="lg:col-span-5 flex flex-col gap-8 items-center lg:items-start w-full">
-            {/* Biography Card */}
-            <ScrollReveal variant="fade-left" className="w-full">
-              <div className="glass-card w-full p-7 rounded-[24px] border border-border-custom relative overflow-hidden">
-                <h3 className="text-xl font-bold font-heading text-foreground-custom mb-5 flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-primary-custom" />
-                  Biography
-                </h3>
-                
-                <div className="flex flex-col gap-4 mb-8">
-                  {paragraphs.map((paragraph, index) => (
-                    <p 
-                      key={index} 
-                      className="text-sm md:text-base text-foreground-custom/90 leading-relaxed font-normal"
-                    >
-                      {paragraph}
-                    </p>
-                  ))}
-                </div>
+        {/* Bento Grid Layout */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
 
-                {/* Quick Info Grid */}
-                <div className="flex flex-col gap-3.5 border-t border-border-custom/50 pt-6 text-sm">
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-muted-foreground-custom">Location</span>
-                    <span className="text-foreground-custom font-medium">{settings.location}</span>
+          {/* Left Column: Biography */}
+          <div className="lg:col-span-5 flex flex-col gap-6 w-full">
+            <ScrollReveal variant="fade-up">
+              <div className="bento-card p-6 sm:p-7 flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium mb-4">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Open to Engineering Roles
                   </div>
-                  <div className="flex justify-between items-center">
-                    <span className="font-semibold text-muted-foreground-custom">Email</span>
-                    <span className="text-primary-custom hover:underline font-medium">
-                      <a href={`mailto:${settings.email}`}>{settings.email}</a>
-                    </span>
+
+                  <h3 className="text-xl font-bold font-heading text-foreground-custom mb-3 tracking-tight">
+                    {settings.fullName}
+                  </h3>
+
+                  <div className="flex flex-col gap-3 text-sm text-foreground-custom/85 leading-relaxed font-normal">
+                    {paragraphs.map((p, i) => (
+                      <p key={i}>{p}</p>
+                    ))}
                   </div>
                 </div>
 
-                {/* Resume Button */}
-                <div className="mt-8">
-                  {settings.resumeFile && settings.resumeFile !== '#' ? (
-                    <a
-                      href={settings.resumeFile}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-custom text-white font-semibold text-sm shadow-md hover:scale-[1.02] active:scale-[0.98] transition-transform duration-250"
-                      download
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                      </svg>
-                      Download Resume
+                {/* Metadata & Actions */}
+                <div className="mt-6 pt-4 border-t border-border-custom flex flex-col gap-3">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-mono text-muted-foreground-custom">Location</span>
+                    <span className="font-medium text-foreground-custom">{settings.location}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-mono text-muted-foreground-custom">Contact</span>
+                    <a href={`mailto:${settings.email}`} className="font-mono text-primary-custom hover:underline truncate max-w-[200px]">
+                      {settings.email}
                     </a>
-                  ) : (
-                    <button
-                      onClick={() => alert("Resume file is available upon request.")}
-                      className="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-primary-custom text-white font-semibold text-sm shadow-md hover:scale-[1.02] active:scale-[0.98] transition-transform duration-250 cursor-pointer"
+                  </div>
+
+                  <div className="pt-2">
+                    <a
+                      href={settings.resumeFile && settings.resumeFile !== '#' ? settings.resumeFile : '/Cris_Charles_Garcia_Resume.pdf'}
+                      download="Cris_Charles_Garcia_Resume.pdf"
+                      className="w-full inline-flex items-center justify-center gap-2 px-4 py-2 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all cursor-pointer"
                     >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                       </svg>
-                      Download Resume
-                    </button>
-                  )}
+                      Download Resume/CV
+                    </a>
+                  </div>
                 </div>
               </div>
             </ScrollReveal>
           </div>
 
-          {/* Work Experience Timeline */}
-          <div className="lg:col-span-7 flex flex-col gap-8 w-full">
-            <ScrollReveal variant="fade-right" className="w-full">
-              <h3 className="text-xl font-bold font-heading text-foreground-custom mb-6 pl-2 flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-secondary-custom" />
-                Work History
-              </h3>
-              
-              <div className="relative border-l-2 border-border-custom ml-4 flex flex-col gap-8">
+          {/* Right Column: Experience */}
+          <div className="lg:col-span-7 flex flex-col gap-5 w-full">
+            <ScrollReveal variant="fade-up" delay={80}>
+              <div className="flex flex-col gap-4">
                 {experience.map((exp, idx) => (
-                  <div key={idx} className="relative pl-8 group">
-                    {/* Timeline Dot */}
-                    <span className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-primary-custom border-2 border-background-custom shadow-md group-hover:scale-125 transition-transform" />
-
-                    {/* Company & Role */}
-                    <div className="glass-card p-6 rounded-[20px] border border-border-custom">
-                      <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
-                        <div>
-                          <h4 className="text-lg font-bold font-heading text-foreground-custom group-hover:text-primary-custom transition-colors">
-                            {exp.role}
-                          </h4>
-                          <p className="text-sm font-semibold text-primary-custom">
-                            {exp.company}
-                          </p>
-                        </div>
-                        <span className="text-xs font-semibold px-3 py-1 rounded-full bg-muted-custom text-muted-foreground-custom border border-border-custom/50">
-                          {exp.startDate} — {exp.endDate}
-                        </span>
+                  <div key={idx} className="bento-card p-6 sm:p-7">
+                    <div className="flex flex-wrap items-start justify-between gap-2 pb-3 mb-3 border-b border-border-custom">
+                      <div>
+                        <h4 className="text-lg font-bold font-heading text-foreground-custom tracking-tight">
+                          {exp.role}
+                        </h4>
+                        <p className="text-xs font-medium text-muted-foreground-custom mt-0.5">
+                          {exp.company}
+                        </p>
                       </div>
 
-                      {/* Description points */}
-                      <ul className="list-disc pl-4 flex flex-col gap-2 mb-4 text-sm text-foreground-custom/85 leading-relaxed">
-                        {exp.description.map((bullet, bIdx) => (
-                          <li key={bIdx}>{bullet}</li>
-                        ))}
-                      </ul>
-
-                      {/* Role Tech Tags */}
-                      {exp.technologies && exp.technologies.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 pt-2 border-t border-border-custom/30">
-                          {exp.technologies.map((t) => (
-                            <span
-                              key={t}
-                              className="text-xs font-semibold px-2.5 py-1 rounded-lg bg-primary-custom/10 text-primary-custom border border-primary-custom/20"
-                            >
-                              {t}
-                            </span>
-                          ))}
-                        </div>
-                      )}
+                      <span className="text-xs font-mono text-muted-foreground-custom">
+                        {exp.startDate} — {exp.endDate}
+                      </span>
                     </div>
+
+                    <ul className="flex flex-col gap-2 mb-4 text-sm text-foreground-custom/85 leading-relaxed list-disc list-inside">
+                      {exp.description.map((bullet, bIdx) => (
+                        <li key={bIdx} className="font-normal">{bullet}</li>
+                      ))}
+                    </ul>
+
+                    {exp.technologies && exp.technologies.length > 0 && (
+                      <div className="pt-3 border-t border-border-custom flex flex-wrap gap-1.5">
+                        {exp.technologies.map((t) => (
+                          <span key={t} className="tech-tag">
+                            {t}
+                          </span>
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
             </ScrollReveal>
           </div>
+
         </div>
       </div>
     </section>

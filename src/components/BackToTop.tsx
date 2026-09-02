@@ -32,9 +32,8 @@ export default function BackToTop() {
   return (
     <AnimatePresence>
       {isVisible && (
-        <div className="hidden md:flex fixed inset-x-0 bottom-6 z-40 pointer-events-none justify-center">
-          <div className="w-full max-w-5xl px-6 flex justify-end">
-            <motion.button
+        <div className="fixed inset-x-0 bottom-6 z-40 flex justify-center pointer-events-none">
+          <motion.button
               onClick={scrollToTop}
               initial={{ opacity: 0, scale: 0.8, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -55,7 +54,6 @@ export default function BackToTop() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
               </svg>
             </motion.button>
-          </div>
         </div>
       )}
     </AnimatePresence>

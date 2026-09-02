@@ -4,9 +4,11 @@ import Navbar from '../components/Navbar';
 import Hero from '../components/Hero';
 import Projects from '../components/Projects';
 import Skills from '../components/Skills';
+import Certifications from '../components/Certifications';
 import About from '../components/About';
 import Testimonials from '../components/Testimonials';
 import ContactForm from '../components/ContactForm';
+import Footer from '../components/Footer';
 
 import { 
 	getSiteSettings, 
@@ -48,6 +50,8 @@ const socialLinks = await getSocialLinks();
 		
 		<Skills skills={skills} client:visible />
 		
+		<Certifications client:visible />
+		
 		<About settings={settings} experience={experience} client:visible />
 		
 		{testimonials.length > 0 && (
@@ -57,8 +61,5 @@ const socialLinks = await getSocialLinks();
 		<ContactForm client:visible />
 	</main>
 
-	<!-- Footer -->
-	<footer class="py-12 border-t border-border-custom text-center text-xs text-muted-foreground-custom relative z-10 bg-muted-custom/30">
-		<p>&copy; {new Date().getFullYear()} {settings.fullName}. Built with Astro & React. All rights reserved.</p>
-	</footer>
+	<Footer fullName={settings.fullName} client:load />
 </Layout>
