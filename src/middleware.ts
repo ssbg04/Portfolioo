@@ -15,7 +15,7 @@ export const onRequest = defineMiddleware((context, next) => {
     pathname === '/maintenance' ||
     pathname.startsWith('/_astro') ||
     pathname.startsWith('/api') ||
-    /\.(png|svg|ico|webp|jpg|jpeg|gif|css|js|txt|xml|json|woff2?|ttf|eot)$/i.test(pathname)
+    /\.(png|svg|ico|webp|jpg|jpeg|gif|css|js|txt|xml|json|woff2?|ttf|eot|pdf)$/i.test(pathname)
   ) {
     return next();
   }

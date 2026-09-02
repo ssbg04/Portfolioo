@@ -71,7 +71,7 @@ export const mockSiteSettings: SiteSettings = {
   ],
   email: "crischarlesgarcia345@gmail.com",
   location: "Laguna, Philippines",
-  resumeFile: "/Cris_Charles_Garcia_Resume.pdf"
+  resumeFile: "/CV-Cris-Charles-Garcia.pdf"
 };
 
 export const mockSocialLinks: SocialLink[] = [
