@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import ScrollReveal from './ScrollReveal';
 import { mockCertifications, type Certification } from '../lib/data';
+import haptic from '../lib/haptics';
 
 interface Props {
   certifications?: Certification[];
@@ -63,7 +64,10 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
           {allCerts.map((cert, idx) => (
             <ScrollReveal key={cert.id || idx} variant="fade-up" delay={idx * 50} className="h-full">
               <div
-                onClick={() => setSelectedCert(cert)}
+                onClick={() => {
+                  haptic.openModal();
+                  setSelectedCert(cert);
+                }}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedCert(cert); }}
@@ -130,7 +134,10 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
           >
             {/* Close 'X' Button in Top Right */}
             <button
-              onClick={() => setSelectedCert(null)}
+              onClick={() => {
+                haptic.tap();
+                setSelectedCert(null);
+              }}
               className="absolute top-5 right-5 w-8 h-8 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/15 text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom z-10"
               aria-label="Close modal"
             >
@@ -204,7 +211,10 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
                 </a>
               )}
               <button
-                onClick={() => setSelectedCert(null)}
+                onClick={() => {
+                  haptic.tap();
+                  setSelectedCert(null);
+                }}
                 className="py-2.5 px-4 rounded-xl border border-border-custom text-xs font-semibold text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 transition-colors cursor-pointer"
               >
                 Close

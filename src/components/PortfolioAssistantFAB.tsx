@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import haptic from '../lib/haptics';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -54,6 +55,7 @@ export default function PortfolioAssistantFAB() {
 
       if (res.ok) {
         const data = await res.json();
+        haptic.tick();
         setMessages((prev) => [...prev, { role: 'assistant', text: data.text }]);
       } else {
         setMessages((prev) => [
@@ -72,6 +74,7 @@ export default function PortfolioAssistantFAB() {
   };
 
   const handleQuickPrompt = (prompt: string) => {
+    haptic.tick();
     handleSend(prompt);
   };
 
@@ -80,7 +83,10 @@ export default function PortfolioAssistantFAB() {
       {/* ─── Floating Action Button (FAB) ─── */}
       <div className="fixed bottom-6 right-5 sm:right-7 z-40">
         <button
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            haptic.tap();
+            setIsOpen(!isOpen);
+          }}
           aria-label={isOpen ? "Close Portfolio Assistant" : "Open Portfolio Assistant"}
           aria-expanded={isOpen}
           className="relative group p-3.5 rounded-2xl bg-primary-custom text-white shadow-xl hover:bg-primary-custom/90 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-white/20"
@@ -130,7 +136,10 @@ export default function PortfolioAssistantFAB() {
             </div>
 
             <button
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                haptic.tap();
+                setIsOpen(false);
+              }}
               aria-label="Close Assistant"
               className="p-1.5 rounded-lg text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 transition-all cursor-pointer"
             >

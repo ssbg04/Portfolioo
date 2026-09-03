@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import haptic from '../lib/haptics';
 
 interface Track {
   title: string;
@@ -65,7 +66,12 @@ export default function SpotifyWidget() {
       <div className="relative shrink-0 flex items-center justify-center">
         {/* Vinyl Disc Container */}
         <div
-          className={`relative w-12 h-12 rounded-full bg-[#111116] border-2 border-zinc-700/80 shadow-md flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105 ${
+          onClick={() => {
+            haptic.tap();
+            setIsPlaying(!isPlaying);
+          }}
+          title={isPlaying ? 'Click to pause spinning' : 'Click to spin'}
+          className={`relative w-12 h-12 rounded-full bg-[#111116] border-2 border-zinc-700/80 shadow-md flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105 cursor-pointer ${
             isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''
           }`}
         >

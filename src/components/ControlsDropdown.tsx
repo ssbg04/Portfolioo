@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+import haptic from '../lib/haptics';
 
 export default function ControlsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -50,6 +51,7 @@ export default function ControlsDropdown() {
   }, [isOpen]);
 
   const toggleTheme = (targetTheme: 'light' | 'dark') => {
+    haptic.tap();
     setTheme(targetTheme);
     if (targetTheme === 'dark') {
       document.documentElement.classList.add('dark');
@@ -61,6 +63,7 @@ export default function ControlsDropdown() {
   };
 
   const toggleMagnifier = () => {
+    haptic.tick();
     const nextVal = !magnifierEnabled;
     setMagnifierEnabled(nextVal);
     localStorage.setItem('magnifierEnabled', String(nextVal));
@@ -68,10 +71,12 @@ export default function ControlsDropdown() {
   };
 
   const triggerInstantMagnify = () => {
+    haptic.tap();
     window.dispatchEvent(new CustomEvent('toggle-magnifier-mode'));
   };
 
   const changeZoom = (newZoom: number) => {
+    haptic.tick();
     const clamped = Math.max(80, Math.min(130, newZoom));
     setZoom(clamped);
     document.documentElement.style.fontSize = `${(clamped / 100) * 15}px`;
@@ -82,7 +87,10 @@ export default function ControlsDropdown() {
     <div className="relative" ref={dropdownRef}>
       {/* Dropdown Toggle Button */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => {
+          haptic.tap();
+          setIsOpen(!isOpen);
+        }}
         aria-label="Display & accessibility controls"
         aria-expanded={isOpen}
         className={`p-2 sm:px-3 sm:py-1.5 rounded-xl glass-card flex items-center gap-1.5 text-xs font-semibold text-foreground-custom hover:bg-primary-custom/10 hover:border-primary-custom/40 transition-all focus:outline-none focus:ring-2 focus:ring-primary-custom cursor-pointer ${

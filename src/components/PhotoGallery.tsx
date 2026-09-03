@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { GalleryItem } from '../lib/data';
+import haptic from '../lib/haptics';
 
 interface PhotoGalleryProps {
   items: GalleryItem[];
@@ -62,7 +63,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
           {categories.map((cat) => (
             <button
               key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              onClick={() => {
+                haptic.tick();
+                setSelectedCategory(cat);
+              }}
               className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 selectedCategory === cat
                   ? 'bg-primary-custom text-white shadow-xs'
@@ -85,7 +89,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
           {filteredItems.map((item, idx) => (
             <div
               key={item.id || idx}
-              onClick={() => setActiveModalItem(item)}
+              onClick={() => {
+                haptic.openModal();
+                setActiveModalItem(item);
+              }}
               className="group relative rounded-2xl overflow-hidden cursor-pointer border border-border-custom bg-muted-custom/20 aspect-[4/3] shadow-xs"
               style={{
                 animation: 'galleryBottomEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both',
@@ -143,7 +150,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
         >
           {/* Top-Right Cross Button */}
           <button
-            onClick={() => setActiveModalItem(null)}
+            onClick={() => {
+              haptic.tap();
+              setActiveModalItem(null);
+            }}
             aria-label="Close modal"
             className="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-2.5 rounded-full bg-white/10 hover:bg-white/25 text-white transition-all cursor-pointer border border-white/20"
           >
