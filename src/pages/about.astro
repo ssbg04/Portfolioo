@@ -3,15 +3,13 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar';
 import AboutDetails from '../components/About';
 import SkillsList from '../components/Skills';
-import Certifications from '../components/Certifications';
 import Footer from '../components/Footer';
-import { getSiteSettings, getExperience, getEducation, getSkills, getCertifications, getSocialLinks } from '../lib/data';
+import { getSiteSettings, getExperience, getEducation, getSkills, getSocialLinks } from '../lib/data';
 
 const settings = await getSiteSettings();
 const experience = await getExperience();
 const education = await getEducation();
 const skills = await getSkills();
-const certifications = await getCertifications();
 const socialLinks = await getSocialLinks();
 ---
 
@@ -22,10 +20,9 @@ const socialLinks = await getSocialLinks();
 >
 	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
 
-	<main class="flex-1 pt-32 pb-24">
+	<main class="flex-1 pt-24 pb-16">
 		<AboutDetails settings={settings} experience={experience} education={education} client:load />
 		<SkillsList skills={skills} client:visible />
-		<Certifications certifications={certifications} client:visible />
 	</main>
 
 	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />

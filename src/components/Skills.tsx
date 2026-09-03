@@ -91,7 +91,7 @@ export default function Skills({ skills }: SkillsProps) {
             <div>
               <span className="section-tag">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                03 // Tech Stack
+                02 // Tech Stack
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
                 Technologies &amp; Tools
