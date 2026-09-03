@@ -207,7 +207,7 @@ export default function About({ settings, experience, education = [] }: AboutPro
                               {exp.role}
                             </h5>
                             <p className="text-xs font-medium text-primary-custom mt-0.5">
-                              {exp.company} {exp.employmentType ? `&bull; ${exp.employmentType}` : ''} {exp.location ? `(${exp.location})` : ''}
+                              {exp.company} {exp.employmentType ? `• ${exp.employmentType}` : ''} {exp.location ? `(${exp.location})` : ''}
                             </p>
                           </div>
 
@@ -271,7 +271,7 @@ export default function About({ settings, experience, education = [] }: AboutPro
                               {edu.degree}
                             </h5>
                             <p className="text-xs font-medium text-primary-custom mt-0.5">
-                              {edu.fieldOfStudy ? `${edu.fieldOfStudy} &bull; ` : ''}{edu.institution}
+                              {edu.fieldOfStudy ? `${edu.fieldOfStudy} • ` : ''}{edu.institution}
                             </p>
                           </div>
 
