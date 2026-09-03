@@ -251,6 +251,30 @@ export const mockEducation: Education[] = [
   }
 ];
 
+export const mockTestimonials: Testimonial[] = [
+  {
+    name: "Engr. Michael Reyes",
+    role: "Department Coordinator",
+    company: "Talisay Integrated School",
+    quote: "Cris engineered our records management solution with exceptional precision. His database structure eliminated redundant paperwork and streamlined student profiling across the board.",
+    relationship: "Internship Supervisor"
+  },
+  {
+    name: "Prof. Alyssa Navarro",
+    role: "Lead IT Faculty",
+    company: "LSPU College of Computer Studies",
+    quote: "One of the most dedicated developers in his cohort. Cris combines strong relational database skills with modern full-stack practices and always goes beyond basic requirements.",
+    relationship: "Academic Instructor"
+  },
+  {
+    name: "Jethro Hernandez",
+    role: "Senior Full-Stack Engineer",
+    company: "Collaborative Project",
+    quote: "A dependable and proactive teammate. Cris writes clean, modular code, adapts rapidly to modern toolchains, and delivers rock-solid backend endpoints ahead of schedule.",
+    relationship: "Project Partner"
+  }
+];
+
 // ==========================================
 // Sanity CMS Fetch Logic
 // ==========================================
@@ -462,9 +486,9 @@ export async function getEducation(): Promise<Education[]> {
 
 export async function getTestimonials(): Promise<Testimonial[]> {
   try {
-    if (!sanityClient) return [];
+    if (!sanityClient) return mockTestimonials;
     const testimonials = await sanityClient.fetch(`*[_type == "testimonial"] | order(coalesce(order, 99) asc)`);
-    if (!testimonials || testimonials.length === 0) return [];
+    if (!testimonials || testimonials.length === 0) return mockTestimonials;
     return testimonials.map((t: any) => ({
       name: t.name,
       role: t.role,
@@ -475,6 +499,6 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     }));
   } catch (error) {
     console.error('Error fetching testimonial from Sanity:', error);
-    return [];
+    return mockTestimonials;
   }
 }
