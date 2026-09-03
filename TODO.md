@@ -12,10 +12,12 @@
 - redesign the card of certificates large picture, badge/cert code, issuing org, and title only -> hover and when click show all the information of the certificate in a modal -> dont make verify button only on credly or other platform 
 - in about page it has certifications section -> remove it because it is already in certifications page -->
 
-- in about section bento cell 2 make the image optimize load [About.tsx#L99-103](textBlock;file:///f%3A/WebDevelopment/Portfolio/src/components/About.tsx#L99-103)
+<!-- - in about section bento cell 2 make the image optimize load [About.tsx#L99-103](textBlock;file:///f%3A/WebDevelopment/Portfolio/src/components/About.tsx#L99-103)
 - link page cv url /CV-Cris-Charles-Garcia.pdf -> available work chip fetch from sanity same from home page
 - in cards of certificate/badges can be previewed if the picture is a certificate not a badge so make it large and can be previewed
 - certifications page title remove the ```03 // Credentials & Badges
 
 Certifications & Badges
-Verified digital credentials from Cisco and industry partners. Each badge represents completed coursework, assessments, and demonstrated competency.``` section
+Verified digital credentials from Cisco and industry partners. Each badge represents completed coursework, assessments, and demonstrated competency.``` section -->
+<!-- - background shapes in landscape the right side shapes collides
+- in portrait make the different approach of parallex and layout of the shapes -->
