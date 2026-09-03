@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import type { Education, Experience, SiteSettings } from '../lib/data';
 import ScrollReveal from './ScrollReveal';
 
@@ -9,6 +9,29 @@ interface AboutProps {
 }
 
 export default function About({ settings, experience, education = [] }: AboutProps) {
+  const [philippineTime, setPhilippineTime] = useState<string>('');
+
+  useEffect(() => {
+    const updateTime = () => {
+      try {
+        const formatted = new Intl.DateTimeFormat('en-US', {
+          timeZone: 'Asia/Manila',
+          hour: 'numeric',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: true
+        }).format(new Date());
+        setPhilippineTime(formatted);
+      } catch {
+        setPhilippineTime('UTC+8');
+      }
+    };
+
+    updateTime();
+    const timer = setInterval(updateTime, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
   const paragraphs = (settings.biography && settings.biography.length > 0)
     ? settings.biography
     : [
@@ -17,6 +40,7 @@ export default function About({ settings, experience, education = [] }: AboutPro
       ];
 
   const resumeUrl = settings.resumeFile && settings.resumeFile !== '#' ? settings.resumeFile : '/CV-Cris-Charles-Garcia.pdf';
+  const profileAvatar = settings.heroImage || settings.logoImage || '/logo.png';
 
   return (
     <section id="about" className="py-20 relative">
@@ -28,77 +52,136 @@ export default function About({ settings, experience, education = [] }: AboutPro
             <div>
               <span className="section-tag">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                04 // Profile
+                04 // Profile &amp; Background
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
                 About &amp; Background
               </h2>
             </div>
             <p className="text-sm text-muted-foreground-custom max-w-sm">
-              Academic background, engineering roles, and technical journey.
+              Modular bento overview of engineering background, career history, and academic credentials.
             </p>
           </div>
         </ScrollReveal>
 
-        {/* Bento Grid Layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* ─── Modern Bento Box Grid ─── */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5">
 
-          {/* Left Column: Biography & Identity */}
-          <div className="lg:col-span-5 flex flex-col gap-6 w-full">
-            <ScrollReveal variant="fade-up">
-              <div className="bento-card p-6 sm:p-7 flex flex-col justify-between">
+          {/* Bento Cell 1: Core Bio & Professional Narrative (8 cols) */}
+          <div className="lg:col-span-8 md:col-span-2">
+            <ScrollReveal variant="fade-up" className="h-full">
+              <div className="bento-card p-6 sm:p-8 flex flex-col justify-between h-full group">
                 <div>
-                  {settings.isAvailable !== false && (
-                    <div className="inline-flex items-center gap-2 text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-medium mb-4">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      {settings.availabilityStatus || 'Open to Engineering Roles'}
+                  <div className="flex items-center justify-between gap-2 pb-4 mb-5 border-b border-border-custom">
+                    <div className="flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-primary-custom" />
+                      <span className="text-[11px] font-mono uppercase tracking-widest text-primary-custom font-semibold">
+                        Software Developer // Biography
+                      </span>
                     </div>
-                  )}
+                    {settings.isAvailable !== false && (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-medium">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                        {settings.availabilityStatus || 'Open to Opportunities'}
+                      </span>
+                    )}
+                  </div>
 
-                  <h3 className="text-xl font-bold font-heading text-foreground-custom mb-3 tracking-tight">
+                  <h3 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight mb-4">
                     {settings.fullName}
                   </h3>
 
-                  <div className="flex flex-col gap-3 text-sm text-foreground-custom/85 leading-relaxed font-normal">
+                  <div className="flex flex-col gap-3.5 text-sm sm:text-base text-foreground-custom/85 leading-relaxed font-normal">
                     {paragraphs.map((p, i) => (
                       <p key={i}>{p}</p>
                     ))}
                   </div>
                 </div>
 
-                {/* Metadata & Actions */}
-                <div className="mt-6 pt-4 border-t border-border-custom flex flex-col gap-3">
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-mono text-muted-foreground-custom">Location</span>
-                    <span className="font-medium text-foreground-custom">{settings.location}</span>
+                {/* Footer Highlight */}
+                <div className="mt-8 pt-4 border-t border-border-custom flex flex-wrap items-center justify-between gap-3 text-xs">
+                  <span className="text-muted-foreground-custom font-mono">
+                    Specialization: <span className="text-foreground-custom font-medium">Full-Stack Development &amp; Database Architecture</span>
+                  </span>
+                  <span className="font-mono text-primary-custom font-medium">
+                    {settings.location}
+                  </span>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Bento Cell 2: Quick Identity, Fast Facts & CV Hub (4 cols) */}
+          <div className="lg:col-span-4 md:col-span-2">
+            <ScrollReveal variant="fade-up" delay={60} className="h-full">
+              <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center gap-4 pb-4 mb-4 border-b border-border-custom">
+                    <div className="w-14 h-14 rounded-2xl overflow-hidden border border-border-custom shadow-xs bg-muted-custom/20 shrink-0">
+                      <img
+                        src={profileAvatar}
+                        alt={settings.fullName}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div>
+                      <h4 className="text-base font-bold font-heading text-foreground-custom">
+                        {settings.fullName}
+                      </h4>
+                      <p className="text-xs font-mono text-primary-custom mt-0.5">
+                        {settings.title}
+                      </p>
+                    </div>
                   </div>
 
-                  <div className="flex justify-between items-center text-xs">
-                    <span className="font-mono text-muted-foreground-custom">Contact</span>
-                    <a href={`mailto:${settings.email}`} className="font-mono text-primary-custom hover:underline truncate max-w-[200px]">
-                      {settings.email}
-                    </a>
-                  </div>
+                  {/* Fact Matrix */}
+                  <div className="flex flex-col gap-2.5 text-xs">
+                    <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
+                      <span className="font-mono text-muted-foreground-custom">Location</span>
+                      <span className="font-medium text-foreground-custom">{settings.location}</span>
+                    </div>
 
-                  {/* Dual Action: View and Download Resume/CV */}
-                  <div className="pt-2 grid grid-cols-2 gap-2">
+                    <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
+                      <span className="font-mono text-muted-foreground-custom">Direct Email</span>
+                      <a 
+                        href={`mailto:${settings.email}`} 
+                        className="font-mono text-primary-custom hover:underline truncate max-w-[170px]"
+                        title={settings.email}
+                      >
+                        {settings.email}
+                      </a>
+                    </div>
+
+                    <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
+                      <span className="font-mono text-muted-foreground-custom">Status</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-medium">Active &bull; Available</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* CV Action Buttons */}
+                <div className="mt-6 pt-4 border-t border-border-custom flex flex-col gap-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground-custom">
+                    Verified Documents
+                  </span>
+                  <div className="grid grid-cols-2 gap-2">
                     <a
                       href={resumeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all cursor-pointer text-center"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all cursor-pointer text-center shadow-xs"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                       </svg>
-                      View CV
+                      View CV ↗
                     </a>
 
                     <a
                       href={resumeUrl}
                       download="CV-Cris-Charles-Garcia.pdf"
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all cursor-pointer text-center"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all cursor-pointer text-center"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
@@ -111,46 +194,54 @@ export default function About({ settings, experience, education = [] }: AboutPro
             </ScrollReveal>
           </div>
 
-          {/* Right Column: Experience & Education */}
-          <div className="lg:col-span-7 flex flex-col gap-6 w-full">
-            {/* Experience Section */}
-            {experience && experience.length > 0 && (
-              <ScrollReveal variant="fade-up" delay={80}>
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between px-1">
-                    <h4 className="text-xs font-mono uppercase tracking-wider text-muted-foreground-custom font-semibold">
-                      Work &amp; Engineering Experience
-                    </h4>
-                    <span className="text-[10px] font-mono text-primary-custom">{experience.length} roles</span>
+          {/* Bento Cell 3: Work & Engineering Experience (7 cols) */}
+          <div className="lg:col-span-7 md:col-span-2">
+            <ScrollReveal variant="fade-up" delay={100} className="h-full">
+              <div className="bento-card p-6 sm:p-8 flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center justify-between pb-3 mb-5 border-b border-border-custom">
+                    <div className="flex items-center gap-2">
+                      <span className="p-1.5 rounded-lg bg-primary-custom/10 text-primary-custom">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 14.15v4.25c0 1.094-.787 2.036-1.872 2.18-2.087.277-4.216.42-6.378.42s-4.291-.143-6.378-.42c-1.085-.144-1.872-1.086-1.872-2.18v-4.25m16.5 0a2.18 2.18 0 0 0 .75-1.661V8.706c0-1.081-.768-2.015-1.837-2.175a48.114 48.114 0 0 0-3.413-.387m4.5 8.006c-.194.165-.42.295-.673.38A23.978 23.978 0 0 1 12 15.75c-2.648 0-5.195-.429-7.577-1.22a2.016 2.016 0 0 1-.673-.38m0 0A2.18 2.18 0 0 1 3 12.489V8.706c0-1.081.768-2.015 1.837-2.175a48.111 48.111 0 0 1 3.413-.387m7.5 0V5.25A2.25 2.25 0 0 0 13.5 3h-3a2.25 2.25 0 0 0-2.25 2.25v1.069m7.5 0c.976.076 1.944.17 2.899.282m-13.298 0a48.45 48.45 0 0 1 2.899-.282m0 0a48.27 48.27 0 0 1 7.5 0" />
+                        </svg>
+                      </span>
+                      <h4 className="text-sm font-bold font-heading uppercase tracking-wider text-foreground-custom">
+                        Work Experience
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-mono text-primary-custom px-2 py-0.5 rounded-full bg-primary-custom/10 border border-primary-custom/20">
+                      {experience.length} {experience.length === 1 ? 'Role' : 'Roles'}
+                    </span>
                   </div>
 
                   {experience.map((exp, idx) => (
-                    <div key={idx} className="bento-card p-6 sm:p-7">
-                      <div className="flex flex-wrap items-start justify-between gap-2 pb-3 mb-3 border-b border-border-custom">
+                    <div key={idx} className={idx > 0 ? "pt-5 mt-5 border-t border-border-custom" : ""}>
+                      <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
                         <div>
-                          <h4 className="text-lg font-bold font-heading text-foreground-custom tracking-tight">
+                          <h5 className="text-base font-bold font-heading text-foreground-custom tracking-tight">
                             {exp.role}
-                          </h4>
-                          <p className="text-xs font-medium text-muted-foreground-custom mt-0.5">
-                            {exp.company} {exp.employmentType ? `• ${exp.employmentType}` : ''} {exp.location ? `(${exp.location})` : ''}
+                          </h5>
+                          <p className="text-xs font-medium text-primary-custom mt-0.5">
+                            {exp.company} {exp.employmentType ? `&bull; ${exp.employmentType}` : ''} {exp.location ? `(${exp.location})` : ''}
                           </p>
                         </div>
 
-                        <span className="text-xs font-mono text-muted-foreground-custom">
+                        <span className="text-[11px] font-mono text-muted-foreground-custom px-2 py-0.5 rounded-md bg-foreground-custom/5 border border-border-custom">
                           {exp.startDate} — {exp.endDate}
                         </span>
                       </div>
 
-                      <ul className="flex flex-col gap-2 mb-4 text-sm text-foreground-custom/85 leading-relaxed list-disc list-inside">
+                      <ul className="flex flex-col gap-1.5 my-3 text-xs sm:text-sm text-foreground-custom/85 leading-relaxed list-disc list-inside">
                         {exp.description.map((bullet, bIdx) => (
                           <li key={bIdx} className="font-normal">{bullet}</li>
                         ))}
                       </ul>
 
                       {exp.technologies && exp.technologies.length > 0 && (
-                        <div className="pt-3 border-t border-border-custom flex flex-wrap gap-1.5">
+                        <div className="pt-2 flex flex-wrap gap-1.5">
                           {exp.technologies.map((t) => (
-                            <span key={t} className="tech-tag">
+                            <span key={t} className="tech-tag text-[10px]">
                               {t}
                             </span>
                           ))}
@@ -159,58 +250,201 @@ export default function About({ settings, experience, education = [] }: AboutPro
                     </div>
                   ))}
                 </div>
-              </ScrollReveal>
-            )}
+              </div>
+            </ScrollReveal>
+          </div>
 
-            {/* Education Section */}
-            {education && education.length > 0 && (
-              <ScrollReveal variant="fade-up" delay={120}>
-                <div className="flex flex-col gap-4">
-                  <div className="flex items-center justify-between px-1 mt-2">
-                    <h4 className="text-xs font-mono uppercase tracking-wider text-muted-foreground-custom font-semibold">
-                      Education &amp; Academic Background
-                    </h4>
-                    <span className="text-[10px] font-mono text-primary-custom">{education.length} credentials</span>
+          {/* Bento Cell 4: Academic Background & Education (5 cols) */}
+          <div className="lg:col-span-5 md:col-span-2">
+            <ScrollReveal variant="fade-up" delay={140} className="h-full">
+              <div className="bento-card p-6 sm:p-8 flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center justify-between pb-3 mb-5 border-b border-border-custom">
+                    <div className="flex items-center gap-2">
+                      <span className="p-1.5 rounded-lg bg-primary-custom/10 text-primary-custom">
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
+                        </svg>
+                      </span>
+                      <h4 className="text-sm font-bold font-heading uppercase tracking-wider text-foreground-custom">
+                        Academics &amp; Degrees
+                      </h4>
+                    </div>
+                    <span className="text-[10px] font-mono text-primary-custom px-2 py-0.5 rounded-full bg-primary-custom/10 border border-primary-custom/20">
+                      {education.length > 0 ? `${education.length} Record` : 'Undergrad'}
+                    </span>
                   </div>
 
-                  {education.map((edu, idx) => (
-                    <div key={idx} className="bento-card p-6 sm:p-7">
-                      <div className="flex flex-wrap items-start justify-between gap-2 pb-3 mb-3 border-b border-border-custom">
-                        <div>
-                          <h4 className="text-lg font-bold font-heading text-foreground-custom tracking-tight">
-                            {edu.degree}
-                          </h4>
-                          <p className="text-xs font-medium text-primary-custom mt-0.5">
-                            {edu.fieldOfStudy ? `${edu.fieldOfStudy} • ` : ''}{edu.institution}
-                          </p>
+                  {education && education.length > 0 ? (
+                    education.map((edu, idx) => (
+                      <div key={idx} className={idx > 0 ? "pt-5 mt-5 border-t border-border-custom" : ""}>
+                        <div className="flex flex-wrap items-start justify-between gap-2 mb-2">
+                          <div>
+                            <h5 className="text-base font-bold font-heading text-foreground-custom tracking-tight">
+                              {edu.degree}
+                            </h5>
+                            <p className="text-xs font-medium text-primary-custom mt-0.5">
+                              {edu.fieldOfStudy ? `${edu.fieldOfStudy} &bull; ` : ''}{edu.institution}
+                            </p>
+                          </div>
+
+                          <span className="text-[11px] font-mono text-muted-foreground-custom px-2 py-0.5 rounded-md bg-foreground-custom/5 border border-border-custom">
+                            {edu.startDate} — {edu.endDate}
+                          </span>
                         </div>
 
-                        <span className="text-xs font-mono text-muted-foreground-custom">
-                          {edu.startDate} — {edu.endDate}
-                        </span>
+                        {edu.achievements && edu.achievements.length > 0 && (
+                          <ul className="flex flex-col gap-1.5 my-3 text-xs sm:text-sm text-foreground-custom/85 leading-relaxed list-disc list-inside">
+                            {edu.achievements.map((item, aIdx) => (
+                              <li key={aIdx} className="font-normal">{item}</li>
+                            ))}
+                          </ul>
+                        )}
+
+                        {edu.location && (
+                          <div className="pt-2 text-[11px] font-mono text-muted-foreground-custom flex items-center gap-1.5">
+                            <span>📍 {edu.location}</span>
+                          </div>
+                        )}
                       </div>
-
-                      {edu.achievements && edu.achievements.length > 0 && (
-                        <ul className="flex flex-col gap-2 text-sm text-foreground-custom/85 leading-relaxed list-disc list-inside">
-                          {edu.achievements.map((item, aIdx) => (
-                            <li key={aIdx} className="font-normal">{item}</li>
-                          ))}
-                        </ul>
-                      )}
-
-                      {edu.location && (
-                        <div className="pt-3 mt-3 border-t border-border-custom text-[11px] font-mono text-muted-foreground-custom flex items-center gap-1.5">
-                          <span>📍 {edu.location}</span>
-                        </div>
-                      )}
+                    ))
+                  ) : (
+                    <div>
+                      <h5 className="text-base font-bold font-heading text-foreground-custom tracking-tight">
+                        BS in Information Technology
+                      </h5>
+                      <p className="text-xs font-medium text-primary-custom mt-0.5">
+                        Major in Software Development &bull; Laguna State Polytechnic University
+                      </p>
+                      <p className="text-xs text-muted-foreground-custom mt-2">
+                        Comprehensive coursework covering database systems, algorithms, object-oriented programming, and web engineering.
+                      </p>
                     </div>
-                  ))}
+                  )}
                 </div>
-              </ScrollReveal>
-            )}
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Bento Cell 5: Engineering Principles & Core Strengths (4 cols) */}
+          <div className="lg:col-span-4 md:col-span-1">
+            <ScrollReveal variant="fade-up" delay={160} className="h-full">
+              <div className="bento-card p-6 flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border-custom">
+                    <span className="p-1 rounded-md bg-primary-custom/10 text-primary-custom">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75 22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3-4.5 16.5" />
+                      </svg>
+                    </span>
+                    <h5 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground-custom">
+                      Core Pillars
+                    </h5>
+                  </div>
+
+                  <ul className="flex flex-col gap-2.5 text-xs text-foreground-custom/85">
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary-custom font-bold">&bull;</span>
+                      <span><strong>Clean Architecture:</strong> Modularity, readable codebases, and maintainable structure.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary-custom font-bold">&bull;</span>
+                      <span><strong>Relational Databases:</strong> Schema normalization, indexes, and queries in MySQL.</span>
+                    </li>
+                    <li className="flex items-start gap-2">
+                      <span className="text-primary-custom font-bold">&bull;</span>
+                      <span><strong>Performance-First:</strong> Fast load times, responsive UI, and lightweight assets.</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-border-custom text-[11px] font-mono text-muted-foreground-custom">
+                  Focus: Practical, real-world utility
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Bento Cell 6: Timezone, Availability & Location (4 cols) */}
+          <div className="lg:col-span-4 md:col-span-1">
+            <ScrollReveal variant="fade-up" delay={200} className="h-full">
+              <div className="bento-card p-6 flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center justify-between pb-3 mb-3 border-b border-border-custom">
+                    <div className="flex items-center gap-2">
+                      <span className="p-1 rounded-md bg-primary-custom/10 text-primary-custom">
+                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                      </span>
+                      <h5 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground-custom">
+                        Local Time
+                      </h5>
+                    </div>
+                    <span className="text-[10px] font-mono text-primary-custom font-medium">
+                      UTC+8 (PHT)
+                    </span>
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <div className="text-2xl font-mono font-bold text-foreground-custom tracking-tight">
+                      {philippineTime || '12:00:00 PM'}
+                    </div>
+                    <p className="text-xs text-muted-foreground-custom leading-relaxed">
+                      Laguna, Philippines. Available for global remote contracts, asynchronous workflows, and localized teams.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-border-custom flex items-center gap-2 text-[11px] font-mono text-emerald-600 dark:text-emerald-400">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Ready for remote collaboration</span>
+                </div>
+              </div>
+            </ScrollReveal>
+          </div>
+
+          {/* Bento Cell 7: Collaboration & Action Hub (4 cols) */}
+          <div className="lg:col-span-4 md:col-span-2">
+            <ScrollReveal variant="fade-up" delay={240} className="h-full">
+              <div className="bento-card p-6 flex flex-col justify-between h-full bg-gradient-to-br from-primary-custom/5 via-transparent to-transparent">
+                <div>
+                  <div className="flex items-center gap-2 pb-3 mb-3 border-b border-border-custom">
+                    <span className="p-1 rounded-md bg-primary-custom/10 text-primary-custom">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a.75.75 0 0 1-.774-.954 5.373 5.373 0 0 0 .524-2.022A8.995 8.995 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
+                      </svg>
+                    </span>
+                    <h5 className="text-xs font-mono uppercase tracking-wider font-semibold text-foreground-custom">
+                      Get In Touch
+                    </h5>
+                  </div>
+
+                  <h4 className="text-base font-bold font-heading text-foreground-custom mb-1.5">
+                    Let's Build Together
+                  </h4>
+                  <p className="text-xs text-muted-foreground-custom leading-relaxed">
+                    Have a software project, engineering role, or question? My inbox is always open.
+                  </p>
+                </div>
+
+                <div className="mt-4 pt-3 border-t border-border-custom">
+                  <a
+                    href="#contact"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all text-center shadow-xs"
+                  >
+                    Send a Message
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+                    </svg>
+                  </a>
+                </div>
+              </div>
+            </ScrollReveal>
           </div>
 
         </div>
+
       </div>
     </section>
   );
