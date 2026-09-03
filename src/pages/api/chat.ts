@@ -4,6 +4,8 @@ import {
   getProjects, 
   getSkills, 
   getExperience, 
+  getEducation,
+  getCertifications,
   getTestimonials 
 } from '../../lib/data';
 
@@ -23,12 +25,14 @@ export const POST: APIRoute = async ({ request }) => {
     const projects = await getProjects();
     const skills = await getSkills();
     const experience = await getExperience();
+    const education = await getEducation();
+    const certifications = await getCertifications();
     const testimonials = await getTestimonials();
 
     // Construct the context string
     const context = `
-You are the AI Assistant for Cris Charles Garcia, a Senior Full-Stack Engineer and AI Architect.
-Your goal is to answer visitor questions accurately and politely about Cris's background, skills, work history, projects, and testimonials.
+You are the AI Assistant for ${settings.fullName}, ${settings.title}.
+Your goal is to answer visitor questions accurately and politely about ${settings.fullName}'s background, skills, work history, education, certifications, projects, and testimonials.
 Keep your responses friendly, concise, and professional.
 
 PORTFOLIO CONTENT CONTEXT:
@@ -44,6 +48,15 @@ ${experience.map(exp => `- Role: ${exp.role} at ${exp.company} (${exp.startDate}
   Key achievements:
   ${exp.description.map(desc => `  * ${desc}`).join('\n')}
   Technologies: ${exp.technologies?.join(', ') || 'N/A'}`).join('\n\n')}
+
+EDUCATION & ACADEMICS:
+${education.map(ed => `- ${ed.degree} (${ed.fieldOfStudy || ''}) at ${ed.institution}, ${ed.location || ''} (${ed.startDate} - ${ed.endDate})
+  Achievements: ${ed.achievements?.join(', ') || 'N/A'}`).join('\n')}
+
+CERTIFICATIONS & CREDENTIALS:
+${certifications.map(c => `- ${c.title} (#${c.code}) by ${c.issuer} (${c.category})
+  Description: ${c.description}
+  Skills: ${c.skills?.join(', ') || 'N/A'}`).join('\n')}
 
 FEATURED PROJECTS:
 ${projects.map(p => `- Title: ${p.title}

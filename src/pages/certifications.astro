@@ -3,17 +3,19 @@ import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar';
 import Certifications from '../components/Certifications';
 import Footer from '../components/Footer';
-import { getSiteSettings, getCertifications } from '../lib/data';
+import { getSiteSettings, getCertifications, getSocialLinks } from '../lib/data';
 
 const settings = await getSiteSettings();
 const certifications = await getCertifications();
+const socialLinks = await getSocialLinks();
 ---
 
 <Layout
-  title={`Certifications | ${settings.fullName}`}
+  title={settings.seoTitle ? `Certifications | ${settings.seoTitle}` : `Certifications | ${settings.fullName}`}
   description="Verified credentials and certifications earned by Cris Charles Garcia from Cisco and other industry-recognized programs."
+  image={settings.heroImage || settings.logoImage || '/logo.png'}
 >
-  <Navbar client:load />
+  <Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
 
   <main class="flex-1 min-h-screen">
     <!-- Page Hero -->
@@ -34,5 +36,5 @@ const certifications = await getCertifications();
     <Certifications certifications={certifications} client:visible />
   </main>
 
-  <Footer fullName={settings.fullName} client:load />
+  <Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />
 </Layout>

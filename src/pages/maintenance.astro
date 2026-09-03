@@ -4,6 +4,7 @@ import { getSiteSettings, getSocialLinks } from '../lib/data';
 
 const settings = await getSiteSettings();
 const socialLinks = await getSocialLinks();
+const resumeUrl = settings.resumeFile && settings.resumeFile !== '#' ? settings.resumeFile : '/CV-Cris-Charles-Garcia.pdf';
 ---
 
 <Layout title={`Under Development | ${settings.fullName}`} description="Cris Charles Garcia — Portfolio currently under development. Please check back later.">
@@ -16,7 +17,7 @@ const socialLinks = await getSocialLinks();
         {/* Header: Logo + Identity */}
         <div class="flex items-center gap-3.5 pb-6 border-b border-border-custom/60">
           <img
-            src="/logo.png"
+            src={settings.logoImage || settings.heroImage || '/logo.png'}
             alt={settings.fullName}
             class="w-10 h-10 rounded-full object-cover ring-1 ring-border-custom shadow-xs"
           />
@@ -38,11 +39,11 @@ const socialLinks = await getSocialLinks();
           </div>
 
           <h2 class="text-2xl font-bold font-heading text-foreground-custom tracking-tight">
-            Please come back later.
+            {settings.maintenanceTitle || 'Please come back later.'}
           </h2>
 
           <p class="text-sm text-foreground-custom/80 leading-relaxed font-normal">
-            The website is currently being refined and updated. You can still reach me directly through my channels below.
+            {settings.maintenanceMessage || 'The website is currently being refined and updated. You can still reach me directly through my channels below.'}
           </p>
         </div>
 
@@ -74,7 +75,7 @@ const socialLinks = await getSocialLinks();
           </span>
           <div class="grid grid-cols-2 gap-2">
             <a
-              href="/CV-Cris-Charles-Garcia.pdf"
+              href={resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
               class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all text-center"
@@ -86,7 +87,7 @@ const socialLinks = await getSocialLinks();
               View CV
             </a>
             <a
-              href="/CV-Cris-Charles-Garcia.pdf"
+              href={resumeUrl}
               download="CV-Cris-Charles-Garcia.pdf"
               class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all text-center"
             >

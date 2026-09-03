@@ -12,7 +12,12 @@ const navItems = [
   { label: 'Contact', href: '/contact' },
 ];
 
-export default function Navbar() {
+interface NavbarProps {
+  fullName?: string;
+  logoImage?: string;
+}
+
+export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.png' }: NavbarProps) {
   const [activePath, setActivePath] = useState('/');
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -53,12 +58,12 @@ export default function Navbar() {
           {/* Brand */}
           <a href="/" className="flex items-center gap-2.5 shrink-0 group focus:outline-none">
             <img
-              src="/logo.png"
-              alt="Cris Charles"
+              src={logoImage || '/logo.png'}
+              alt={fullName}
               className="w-7 h-7 rounded-full object-cover ring-1 ring-border-custom group-hover:ring-primary-custom/50 transition-all"
             />
             <span className="font-heading font-bold text-sm tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors hidden sm:inline">
-              Cris Charles
+              {fullName}
             </span>
           </a>
 

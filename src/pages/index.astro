@@ -16,6 +16,7 @@ import {
 	getSkills, 
 	getCertifications,
 	getExperience, 
+	getEducation,
 	getTestimonials,
 	getSocialLinks
 } from '../lib/data';
@@ -29,13 +30,18 @@ const featuredProjects = allProjects.length > 0
 const skills = await getSkills();
 const certifications = await getCertifications();
 const experience = await getExperience();
+const education = await getEducation();
 const testimonials = await getTestimonials();
 const socialLinks = await getSocialLinks();
 ---
 
-<Layout title={`${settings.fullName} | ${settings.title}`} description={settings.valueProposition}>
+<Layout 
+	title={settings.seoTitle || `${settings.fullName} | ${settings.title}`} 
+	description={settings.seoDescription || settings.valueProposition}
+	image={settings.heroImage || settings.logoImage || '/logo.png'}
+>
 	<!-- Navigation bar -->
-	<Navbar client:load />
+	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
 
 	<!-- Main sections -->
 	<main class="flex-1">
@@ -44,6 +50,9 @@ const socialLinks = await getSocialLinks();
 			title={settings.title} 
 			valueProposition={settings.valueProposition} 
 			heroImage={settings.heroImage}
+			heroImageNight={settings.heroImageNight}
+			isAvailable={settings.isAvailable}
+			availabilityStatus={settings.availabilityStatus}
 			socialLinks={socialLinks}
 			client:load 
 		/>
@@ -54,14 +63,20 @@ const socialLinks = await getSocialLinks();
 		
 		<Certifications certifications={certifications} client:visible />
 		
-		<About settings={settings} experience={experience} client:visible />
+		<About settings={settings} experience={experience} education={education} client:visible />
 		
 		{testimonials.length > 0 && (
 			<Testimonials testimonials={testimonials} client:visible />
 		)}
 		
-		<ContactForm client:visible />
+		<ContactForm 
+			socialLinks={socialLinks}
+			contactHeading={settings.contactHeading}
+			contactSubtitle={settings.contactSubtitle}
+			email={settings.email}
+			client:visible 
+		/>
 	</main>
 
-	<Footer fullName={settings.fullName} client:load />
+	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />
 </Layout>

@@ -96,6 +96,9 @@ interface HeroProps {
   title: string;
   valueProposition: string;
   heroImage?: string;
+  heroImageNight?: string;
+  isAvailable?: boolean;
+  availabilityStatus?: string;
   socialLinks?: SocialLink[];
 }
 
@@ -143,7 +146,16 @@ const getPlatformIcon = (platform: string) => {
   );
 };
 
-export default function Hero({ fullName, title, valueProposition, heroImage, socialLinks = [] }: HeroProps) {
+export default function Hero({
+  fullName,
+  title,
+  valueProposition,
+  heroImage,
+  heroImageNight,
+  isAvailable = true,
+  availabilityStatus = 'Available for new projects',
+  socialLinks = []
+}: HeroProps) {
   const [mounted, setMounted] = React.useState(false);
   const isMobile = useIsMobile();
 
@@ -180,12 +192,14 @@ export default function Hero({ fullName, title, valueProposition, heroImage, soc
     }
   };
 
-  const linksToRender = socialLinks.length > 0 ? socialLinks : [
-    { platform: "GitHub", url: "https://github.com/ssbg04", icon: "github", order: 1 },
-    { platform: "Facebook", url: "https://www.facebook.com/kristyarls345/", icon: "facebook", order: 2 },
-    { platform: "TikTok", url: "https://www.tiktok.com/@sisibigi", icon: "tiktok", order: 3 },
-    { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 4 }
-  ];
+  const linksToRender = socialLinks.length > 0
+    ? socialLinks.filter(l => l.showInHero !== false)
+    : [
+        { platform: "GitHub", url: "https://github.com/ssbg04", icon: "github", order: 1 },
+        { platform: "Facebook", url: "https://www.facebook.com/kristyarls345/", icon: "facebook", order: 2 },
+        { platform: "TikTok", url: "https://www.tiktok.com/@sisibigi", icon: "tiktok", order: 3 },
+        { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 4 }
+      ];
 
   return (
     <section
@@ -201,16 +215,18 @@ export default function Hero({ fullName, title, valueProposition, heroImage, soc
           animate={mounted ? "visible" : "hidden"}
         >
           {/* Status Badge */}
-          <motion.div
-            variants={itemVariants}
-            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-semibold text-primary-custom border border-primary-custom/20 mb-4 sm:mb-6 shadow-sm"
-          >
-            <span className="flex h-2 w-2 relative">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            Available for new projects
-          </motion.div>
+          {isAvailable !== false && (
+            <motion.div
+              variants={itemVariants}
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-semibold text-primary-custom border border-primary-custom/20 mb-4 sm:mb-6 shadow-sm"
+            >
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              {availabilityStatus}
+            </motion.div>
+          )}
 
           {/* Heading */}
           <motion.h1
@@ -299,9 +315,9 @@ export default function Hero({ fullName, title, valueProposition, heroImage, soc
             <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
               <TiltedCard
                 imageSrc={heroImage || (ppDay as any).src || ppDay}
-                darkImageSrc={heroImage || (ppNight as any).src || ppNight}
+                darkImageSrc={heroImageNight || heroImage || (ppNight as any).src || ppNight}
                 altText={fullName}
-                captionText="Available for new projects"
+                captionText={availabilityStatus}
                 containerHeight="100%"
                 containerWidth="100%"
                 imageHeight="100%"

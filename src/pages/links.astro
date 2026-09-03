@@ -5,7 +5,10 @@ import Footer from '../components/Footer';
 import { getSiteSettings, getSocialLinks } from '../lib/data';
 
 const settings = await getSiteSettings();
-const links = await getSocialLinks();
+const allLinks = await getSocialLinks();
+const links = allLinks.filter(l => l.showInLinksPage !== false);
+const resumeUrl = settings.resumeFile && settings.resumeFile !== '#' ? settings.resumeFile : '/CV-Cris-Charles-Garcia.pdf';
+const profileAvatar = settings.heroImage || settings.logoImage || '/logo.png';
 
 const formatDisplayUrl = (url: string) => {
   try {
@@ -47,7 +50,7 @@ const getIconSvg = (platform: string) => {
   title={`Links & Socials | ${settings.fullName}`}
   description="Official social links, contact options, and developer directory for Cris Charles Garcia."
 >
-  <Navbar client:load />
+  <Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
 
   <main class="min-h-screen py-20 px-4 sm:px-6 flex flex-col items-center justify-center relative">
     <div class="w-full max-w-md flex flex-col items-center relative z-10 bento-enter">
@@ -56,7 +59,7 @@ const getIconSvg = (platform: string) => {
       <div class="w-full bento-card p-6 sm:p-7 text-center flex flex-col items-center mb-5">
         <div class="w-20 h-20 rounded-full overflow-hidden border border-border-custom shadow-xs mb-4">
           <img
-            src="/logo.png"
+            src={profileAvatar}
             alt={settings.fullName}
             class="w-full h-full object-cover"
           />
@@ -77,7 +80,7 @@ const getIconSvg = (platform: string) => {
         {/* Quick CV Action */}
         <div class="w-full grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-border-custom">
           <a
-            href="/CV-Cris-Charles-Garcia.pdf"
+            href={resumeUrl}
             target="_blank"
             rel="noopener noreferrer"
             class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all text-center"
@@ -90,7 +93,7 @@ const getIconSvg = (platform: string) => {
           </a>
 
           <a
-            href="/CV-Cris-Charles-Garcia.pdf"
+            href={resumeUrl}
             download="CV-Cris-Charles-Garcia.pdf"
             class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all text-center"
           >
@@ -159,5 +162,5 @@ const getIconSvg = (platform: string) => {
     </div>
   </main>
 
-  <Footer fullName={settings.fullName} client:load />
+  <Footer fullName={settings.fullName} socialLinks={allLinks} client:load />
 </Layout>

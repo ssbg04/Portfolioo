@@ -2,6 +2,7 @@ import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { visionTool } from '@sanity/vision'
 import { vercelDeployTool } from 'sanity-plugin-vercel-deploy'
+import { structure } from './structure'
 import { schemaTypes } from './schemaTypes'
 
 export default defineConfig({
@@ -11,7 +12,11 @@ export default defineConfig({
   projectId: process.env.SANITY_STUDIO_PROJECT_ID || 'rk63yuwi',
   dataset: process.env.SANITY_STUDIO_DATASET || 'production',
 
-  plugins: [structureTool(), visionTool(), vercelDeployTool()],
+  plugins: [
+    structureTool({ structure }),
+    visionTool(),
+    vercelDeployTool()
+  ],
 
   schema: {
     types: schemaTypes,

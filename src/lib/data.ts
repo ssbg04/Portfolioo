@@ -90,9 +90,15 @@ export interface SiteSettings {
   biography?: string[];
   heroImage?: string;
   heroImageNight?: string;
+  logoImage?: string;
   email: string;
   location: string;
   resumeFile?: string;
+  contactHeading?: string;
+  contactSubtitle?: string;
+  maintenanceMode?: boolean;
+  maintenanceTitle?: string;
+  maintenanceMessage?: string;
   seoTitle?: string;
   seoDescription?: string;
 }
@@ -113,7 +119,13 @@ export const mockSiteSettings: SiteSettings = {
   ],
   email: "crischarlesgarcia345@gmail.com",
   location: "Laguna, Philippines",
-  resumeFile: "/CV-Cris-Charles-Garcia.pdf"
+  resumeFile: "/CV-Cris-Charles-Garcia.pdf",
+  logoImage: "/logo.png",
+  contactHeading: "Let's create something amazing.",
+  contactSubtitle: "Whether you have a question, a project idea, or just want to say hi, my inbox is always open. I'll try my best to get back to you!",
+  maintenanceMode: false,
+  maintenanceTitle: "Please come back later.",
+  maintenanceMessage: "The website is currently being refined and updated. You can still reach me directly through my channels below."
 };
 
 export const mockSocialLinks: SocialLink[] = [
@@ -274,9 +286,15 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       biography: biography.length > 0 ? biography : mockSiteSettings.biography,
       heroImage: settings.heroImage ? urlFor(settings.heroImage) : undefined,
       heroImageNight: settings.heroImageNight ? urlFor(settings.heroImageNight) : undefined,
+      logoImage: settings.logoImage ? urlFor(settings.logoImage) : mockSiteSettings.logoImage,
       email: settings.email || mockSiteSettings.email,
       location: settings.location || mockSiteSettings.location,
       resumeFile: resumeResolved,
+      contactHeading: settings.contactHeading || mockSiteSettings.contactHeading,
+      contactSubtitle: settings.contactSubtitle || mockSiteSettings.contactSubtitle,
+      maintenanceMode: settings.maintenanceMode ?? mockSiteSettings.maintenanceMode,
+      maintenanceTitle: settings.maintenanceTitle || mockSiteSettings.maintenanceTitle,
+      maintenanceMessage: settings.maintenanceMessage || mockSiteSettings.maintenanceMessage,
       seoTitle: settings.seoTitle,
       seoDescription: settings.seoDescription
     };
@@ -291,15 +309,25 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
     if (!sanityClient) return mockSocialLinks;
     const links = await sanityClient.fetch(`*[_type == "socialLink"] | order(coalesce(order, 99) asc)`);
     if (!links || links.length === 0) return mockSocialLinks;
-    return links.map((l: any, idx: number) => ({
-      platform: l.platform || 'Link',
-      url: l.url || '#',
-      icon: l.icon || (l.platform ? l.platform.toLowerCase() : 'link'),
-      order: typeof l.order === 'number' ? l.order : idx + 1,
-      showInHero: l.showInHero ?? true,
-      showInFooter: l.showInFooter ?? true,
-      showInLinksPage: l.showInLinksPage ?? true
-    }));
+    return links.map((l: any, idx: number) => {
+      const platformName = l.platform || 'Link';
+      let iconKey = (l.icon && l.icon !== 'a' && l.icon !== '1') ? l.icon : platformName.toLowerCase();
+      if (iconKey.includes('facebook')) iconKey = 'facebook';
+      else if (iconKey.includes('github')) iconKey = 'github';
+      else if (iconKey.includes('tiktok')) iconKey = 'tiktok';
+      else if (iconKey.includes('linkedin')) iconKey = 'linkedin';
+      else if (iconKey.includes('mail') || iconKey.includes('email')) iconKey = 'mail';
+
+      return {
+        platform: platformName,
+        url: l.url || '#',
+        icon: iconKey,
+        order: typeof l.order === 'number' ? l.order : idx + 1,
+        showInHero: l.showInHero ?? true,
+        showInFooter: l.showInFooter ?? true,
+        showInLinksPage: l.showInLinksPage ?? true
+      };
+    });
   } catch (error) {
     console.error('Error fetching socialLink from Sanity:', error);
     return mockSocialLinks;

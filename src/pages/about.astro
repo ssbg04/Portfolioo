@@ -5,22 +5,28 @@ import AboutDetails from '../components/About';
 import SkillsList from '../components/Skills';
 import Certifications from '../components/Certifications';
 import Footer from '../components/Footer';
-import { getSiteSettings, getExperience, getSkills, getCertifications } from '../lib/data';
+import { getSiteSettings, getExperience, getEducation, getSkills, getCertifications, getSocialLinks } from '../lib/data';
 
 const settings = await getSiteSettings();
 const experience = await getExperience();
+const education = await getEducation();
 const skills = await getSkills();
 const certifications = await getCertifications();
+const socialLinks = await getSocialLinks();
 ---
 
-<Layout title={`About | ${settings.fullName}`} description="Learn more about Cris Charles Garcia's professional history, skills matrix, and developer biography.">
-	<Navbar client:load />
+<Layout 
+	title={settings.seoTitle ? `About | ${settings.seoTitle}` : `About | ${settings.fullName}`} 
+	description="Learn more about Cris Charles Garcia's professional history, skills matrix, education, and developer biography."
+	image={settings.heroImage || settings.logoImage || '/logo.png'}
+>
+	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
 
 	<main class="flex-1 pt-32 pb-24">
-		<AboutDetails settings={settings} experience={experience} client:load />
+		<AboutDetails settings={settings} experience={experience} education={education} client:load />
 		<SkillsList skills={skills} client:visible />
 		<Certifications certifications={certifications} client:visible />
 	</main>
 
-	<Footer fullName={settings.fullName} client:load />
+	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />
 </Layout>

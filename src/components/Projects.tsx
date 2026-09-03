@@ -83,7 +83,7 @@ export default function Projects({ initialProjects }: ProjectsProps) {
                             />
                             <div className="absolute top-3 left-3 px-2.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-mono text-emerald-400 flex items-center gap-1.5">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                              LIVE PRODUCTION
+                              {project.status || 'LIVE PRODUCTION'}
                             </div>
                           </div>
                         ) : null}
@@ -93,6 +93,25 @@ export default function Projects({ initialProjects }: ProjectsProps) {
                     {/* Content Body */}
                     <div className={`flex flex-col justify-between ${isFeatured ? 'lg:col-span-5' : ''}`}>
                       <div>
+                        {/* Standard card image preview */}
+                        {!isFeatured && project.coverImage && (
+                          <div className="relative aspect-[16/9] w-full rounded-xl overflow-hidden border border-border-custom mb-4">
+                            <img
+                              src={project.coverImage}
+                              alt={project.title}
+                              loading="lazy"
+                              decoding="async"
+                              className="w-full h-full object-cover group-hover:scale-[1.02] transition-transform duration-500"
+                            />
+                            {project.status && (
+                              <div className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[9px] font-mono text-emerald-400 flex items-center gap-1">
+                                <span className="w-1 h-1 rounded-full bg-emerald-400 animate-pulse" />
+                                {project.status}
+                              </div>
+                            )}
+                          </div>
+                        )}
+
                         {/* Meta header */}
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <span className="text-[11px] font-mono text-muted-foreground-custom">

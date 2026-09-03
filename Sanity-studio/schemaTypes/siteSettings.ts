@@ -89,6 +89,52 @@ export default defineType({
       description: 'URL or path to fallback resume (e.g. /CV-Cris-Charles-Garcia.pdf or Google Drive link)'
     }),
     defineField({
+      name: 'logoImage',
+      title: 'Navbar Brand Logo / Avatar Icon',
+      type: 'image',
+      options: {
+        hotspot: true
+      },
+      description: 'Custom logo image displayed in the navbar and favicon fallback'
+    }),
+    defineField({
+      name: 'contactHeading',
+      title: 'Contact Section Headline',
+      type: 'string',
+      initialValue: "Let's create something amazing.",
+      description: 'Main heading text for the contact form section'
+    }),
+    defineField({
+      name: 'contactSubtitle',
+      title: 'Contact Section Subtitle / Message',
+      type: 'text',
+      rows: 2,
+      initialValue: "Whether you have a question, a project idea, or just want to say hi, my inbox is always open. I'll try my best to get back to you!",
+      description: 'Introductory sentence displayed next to contact details'
+    }),
+    defineField({
+      name: 'maintenanceMode',
+      title: 'Enable Maintenance Mode',
+      type: 'boolean',
+      initialValue: false,
+      description: 'When enabled, visitors will see the maintenance/under development page'
+    }),
+    defineField({
+      name: 'maintenanceTitle',
+      title: 'Maintenance Page Title',
+      type: 'string',
+      initialValue: 'Please come back later.',
+      description: 'Headline on the maintenance page'
+    }),
+    defineField({
+      name: 'maintenanceMessage',
+      title: 'Maintenance Page Message',
+      type: 'text',
+      rows: 3,
+      initialValue: 'The website is currently being refined and updated. You can still reach me directly through my channels below.',
+      description: 'Body message on the maintenance page'
+    }),
+    defineField({
       name: 'seoTitle',
       title: 'Default SEO Title Override',
       type: 'string',
