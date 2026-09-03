@@ -36,7 +36,7 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
   };
 
   return (
-    <section id="certifications" className="py-16 sm:py-20 relative">
+    <section id="certifications" className="pt-6 sm:pt-10 pb-16 sm:pb-20 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}

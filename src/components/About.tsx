@@ -20,7 +20,7 @@ export default function About({ settings, experience, education = [] }: AboutPro
   const hasEducation = education && education.length > 0;
 
   return (
-    <section id="about" className="py-20 relative">
+    <section id="about" className="py-12 sm:py-16 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}

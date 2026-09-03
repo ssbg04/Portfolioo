@@ -20,7 +20,7 @@ const socialLinks = await getSocialLinks();
 >
 	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
 
-	<main class="flex-1 pt-24 pb-16">
+	<main class="flex-1 pb-16">
 		<AboutDetails settings={settings} experience={experience} education={education} client:load />
 		<SkillsList skills={skills} client:visible />
 	</main>

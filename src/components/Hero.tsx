@@ -204,7 +204,7 @@ export default function Hero({
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col md:flex-row items-center justify-center pt-24 md:pt-28 pb-10 md:pb-0 overflow-hidden"
+      className="relative min-h-[calc(100vh-60px)] flex flex-col md:flex-row items-center justify-center pt-6 sm:pt-8 pb-10 md:pb-12 overflow-hidden"
     >
       <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
