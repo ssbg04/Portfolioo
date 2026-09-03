@@ -6,6 +6,7 @@ import SpotlightLens from '../components/SpotlightLens';
 import PortfolioAssistantFAB from '../components/PortfolioAssistantFAB';
 import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
+import NetworkStatus from '../components/NetworkStatus';
 
 interface Props {
 	title?: string;
@@ -31,7 +32,13 @@ const isRootPage = Astro.url.pathname === '/';
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<link rel="icon" type="image/png" href="/logo.png" />
 		<link rel="apple-touch-icon" href="/logo.png" />
-		<meta name="generator" content={Astro.generator} />
+		<!-- PWA & Mobile Web App Manifest -->
+		<link rel="manifest" href="/manifest.webmanifest" />
+		<meta name="theme-color" content="#090a0f" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="apple-mobile-web-app-title" content="Cris Charles" />
 
 		<!-- SEO & Structured Data -->
 		<SEO title={title} description={description} image={image} type={type} />
@@ -88,6 +95,17 @@ const isRootPage = Astro.url.pathname === '/';
 				document.documentElement.dataset.tier = tier;
 			})();
 		</script>
+
+		<!-- Service Worker Registration for PWA & Offline E-Business Card -->
+		<script is:inline>
+			if ('serviceWorker' in navigator) {
+				window.addEventListener('load', function() {
+					navigator.serviceWorker.register('/sw.js').catch(function(err) {
+						console.log('SW registration error:', err);
+					});
+				});
+			}
+		</script>
 	</head>
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
 		<Background client:load />
@@ -98,6 +116,7 @@ const isRootPage = Astro.url.pathname === '/';
 		<BackToTop client:idle />
 		<PortfolioAssistantFAB client:idle />
 		<SpotlightLens client:load />
+		<NetworkStatus client:load />
         <Analytics />
 	</body>
 </html>
