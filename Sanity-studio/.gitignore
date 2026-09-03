@@ -1,9 +1,0 @@
-# Sanity Studio ignore rules
-node_modules/
-.env*
-.sanity/
-dist/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-.DS_Store

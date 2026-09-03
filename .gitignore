@@ -18,6 +18,7 @@ node_modules/
 Sanity-studio/.sanity/
 Sanity-studio/dist/
 theme/
+Sanity-studio/
 
 # next.js
 /.next/
