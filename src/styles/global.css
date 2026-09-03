@@ -280,3 +280,22 @@ html[data-tier='low'].dark .glass-nav {
     border-color: rgba(255, 255, 255, 0.08) !important;
   }
 }
+
+/* ─── Lite Mode / Data Saver Alternate Fast Design ─── */
+html[data-tier='low'] * {
+  text-rendering: optimizeSpeed !important;
+}
+
+html[data-tier='low'] .bg-gradient-mesh {
+  background-image: none !important;
+}
+
+html[data-tier='low'] .bento-card:hover,
+html[data-tier='low'] .glass-card:hover {
+  transform: none !important;
+}
+
+html[data-tier='low'] .will-change-transform,
+html[data-tier='low'] .will-change-transform-opacity {
+  will-change: auto !important;
+}

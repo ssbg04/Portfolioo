@@ -23,6 +23,11 @@ export default function ScrollReveal({
   variant = 'fade-up',
   delay = 0 
 }: ScrollRevealProps) {
+  const isLowTier = typeof document !== 'undefined' && document.documentElement.dataset.tier === 'low';
+  if (isLowTier) {
+    return <div className={className}>{children}</div>;
+  }
+
   const chosenVariant = variantsMap[variant] || variantsMap['fade-up'];
   const isMobile = useIsMobile();
 

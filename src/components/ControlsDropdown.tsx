@@ -6,6 +6,7 @@ export default function ControlsDropdown() {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [magnifierEnabled, setMagnifierEnabled] = useState<boolean>(true);
   const [zoom, setZoom] = useState<number>(100);
+  const [isLiteMode, setIsLiteMode] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -14,6 +15,12 @@ export default function ControlsDropdown() {
     const isDark = document.documentElement.classList.contains('dark') || 
       (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
     setTheme(isDark ? 'dark' : 'light');
+
+    const checkLite = () => {
+      setIsLiteMode(document.documentElement.dataset.tier === 'low');
+    };
+    checkLite();
+    window.addEventListener('tier-change', checkLite);
 
     const savedMag = localStorage.getItem('magnifierEnabled');
     if (savedMag !== null) {
@@ -28,6 +35,10 @@ export default function ControlsDropdown() {
         document.documentElement.style.fontSize = `${(zoomVal / 100) * 15}px`;
       }
     }
+
+    return () => {
+      window.removeEventListener('tier-change', checkLite);
+    };
   }, []);
 
   useEffect(() => {
@@ -81,6 +92,16 @@ export default function ControlsDropdown() {
     setZoom(clamped);
     document.documentElement.style.fontSize = `${(clamped / 100) * 15}px`;
     localStorage.setItem('pageZoom', String(clamped));
+  };
+
+  const toggleLiteMode = () => {
+    haptic.tap();
+    const next = !isLiteMode;
+    setIsLiteMode(next);
+    localStorage.setItem('liteMode', String(next));
+    const nextTier = next ? 'low' : ((navigator.hardwareConcurrency >= 8 && window.devicePixelRatio >= 2) ? 'high' : 'mid');
+    document.documentElement.dataset.tier = nextTier;
+    window.dispatchEvent(new CustomEvent('tier-change', { detail: { tier: nextTier } }));
   };
 
   return (
@@ -294,6 +315,48 @@ export default function ControlsDropdown() {
                 className="flex-1 py-1 rounded-lg bg-muted-custom/40 dark:bg-zinc-800 text-foreground-custom font-bold text-xs hover:bg-muted-custom dark:hover:bg-zinc-700 disabled:opacity-40 transition-colors flex items-center justify-center cursor-pointer"
               >
                 +
+              </button>
+            </div>
+          </div>
+
+          <div className="h-px bg-border-custom dark:bg-zinc-800" />
+
+          {/* Section 4: Fast / Lite Mode (Data Saver) */}
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground-custom flex items-center gap-1.5">
+                <span>⚡</span> Lite Mode (Data Saver)
+              </span>
+              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                isLiteMode ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold' : 'bg-muted-custom/60 text-muted-foreground-custom'
+              }`}>
+                {isLiteMode ? 'Active' : 'Off'}
+              </span>
+            </div>
+
+            <div className="flex items-center justify-between gap-2 p-2.5 bg-muted-custom/30 dark:bg-zinc-900/60 rounded-xl border border-border-custom dark:border-zinc-800">
+              <div className="flex flex-col pr-2">
+                <span className="text-xs font-semibold text-foreground-custom">
+                  Ultra-Fast Design
+                </span>
+                <span className="text-[10px] text-muted-foreground-custom leading-tight mt-0.5">
+                  Disables heavy shapes &amp; blurs for slow internet
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={toggleLiteMode}
+                className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-emerald-500 ${
+                  isLiteMode ? 'bg-emerald-500' : 'bg-zinc-400 dark:bg-zinc-700'
+                }`}
+                aria-label="Toggle lite mode"
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-xs ${
+                    isLiteMode ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
               </button>
             </div>
           </div>

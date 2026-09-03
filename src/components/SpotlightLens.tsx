@@ -19,6 +19,7 @@ export default function SpotlightLens() {
     };
     checkDesktop();
     window.addEventListener('resize', checkDesktop);
+    window.addEventListener('tier-change', checkDesktop);
 
     const savedMag = localStorage.getItem('magnifierEnabled');
     if (savedMag !== null) {

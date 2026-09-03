@@ -72,8 +72,16 @@ export default function Background() {
   const ptShape4Y = useTransform(scrollY, [2000, 3200], [-30, 60]);
   const ptShape4Opacity = useTransform(scrollY, [1800, 2500, 3200], [0.1, 0.9, 0.9]);
 
+  const [isLowTier, setIsLowTier] = useState(false);
+
   useEffect(() => {
     setMounted(true);
+
+    const checkTier = () => {
+      setIsLowTier(document.documentElement.dataset.tier === 'low');
+    };
+    checkTier();
+    window.addEventListener('tier-change', checkTier);
 
     const checkOrientation = () => {
       setIsPortrait(window.innerHeight > window.innerWidth);
@@ -85,8 +93,8 @@ export default function Background() {
     }
 
     const handleMouseMove = (e: MouseEvent) => {
-      // Only track mouse in landscape desktop
-      if (window.innerHeight <= window.innerWidth) {
+      // Only track mouse in landscape desktop and if not low-tier
+      if (document.documentElement.dataset.tier !== 'low' && window.innerHeight <= window.innerWidth) {
         const centerX = window.innerWidth / 2;
         const centerY = window.innerHeight / 2;
         mouseX.set((e.clientX - centerX) * 0.065);
@@ -98,12 +106,13 @@ export default function Background() {
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     return () => {
+      window.removeEventListener('tier-change', checkTier);
       window.removeEventListener('resize', checkOrientation);
       window.removeEventListener('mousemove', handleMouseMove);
     };
   }, [mouseX, mouseY]);
 
-  if (!mounted) return null;
+  if (!mounted || isLowTier) return null;
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
