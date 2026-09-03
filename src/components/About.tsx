@@ -100,7 +100,11 @@ export default function About({ settings, experience, education = [] }: AboutPro
                       <img
                         src={profileAvatar}
                         alt={settings.fullName}
-                        className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                        width="56"
+                        height="56"
+                        className="w-full h-full object-cover transition-opacity duration-300"
                       />
                     </div>
                     <div className="min-w-0">

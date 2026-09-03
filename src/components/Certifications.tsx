@@ -36,7 +36,7 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
   };
 
   return (
-    <section id="certifications" className="py-20 relative">
+    <section id="certifications" className="py-16 sm:py-20 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
@@ -48,27 +48,27 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
                 03 // Certifications
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
-                Verified Credentials
+                Verified Credentials &amp; Certifications
               </h2>
             </div>
             <p className="text-sm text-muted-foreground-custom max-w-sm">
-              Digitally verified credentials issued through Cisco and industry partners.
+              Digitally verified credentials and certificates issued through Cisco, NC2, and industry programs.
             </p>
           </div>
         </ScrollReveal>
 
-        {/* ─── Redesigned Certificate Cards Grid ─── */}
-        {/* Large picture, badge/cert code, issuing org, and title only */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+        {/* ─── Certificate & Badge Cards Grid ─── */}
+        {/* Large picture/certificate preview, badge/cert code, issuing org, and title only */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {allCerts.map((cert, idx) => (
-            <ScrollReveal key={cert.id || idx} variant="fade-up" delay={idx * 40} className="h-full">
+            <ScrollReveal key={cert.id || idx} variant="fade-up" delay={idx * 50} className="h-full">
               <div
                 onClick={() => setSelectedCert(cert)}
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedCert(cert); }}
-                aria-label={`View details for ${cert.title}`}
-                className="bento-card p-6 flex flex-col justify-between items-center text-center h-full group cursor-pointer hover:border-primary-custom/40 hover:-translate-y-1.5 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
+                aria-label={`View full certificate details for ${cert.title}`}
+                className="bento-card p-5 sm:p-6 flex flex-col justify-between items-center text-center h-full group cursor-pointer hover:border-primary-custom/40 hover:-translate-y-1.5 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
               >
                 <div className="w-full flex flex-col items-center">
                   {/* Top Bar: Badge/Cert Code & Issuing Org */}
@@ -81,14 +81,23 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
                     </span>
                   </div>
 
-                  {/* Large Picture / Badge */}
-                  <div className="w-32 h-32 sm:w-36 sm:h-36 my-4 flex items-center justify-center p-2 group-hover:scale-105 transition-transform duration-300">
+                  {/* Large Picture / Certificate Document Preview Container */}
+                  <div className="w-full h-44 sm:h-48 my-3 rounded-2xl bg-foreground-custom/[0.02] border border-border-custom/60 flex items-center justify-center p-3 relative overflow-hidden group-hover:border-primary-custom/30 transition-all">
                     <img
                       src={cert.badgeImage}
                       alt={cert.title}
                       loading="lazy"
-                      className="w-full h-full object-contain drop-shadow-sm"
+                      className="max-h-full max-w-full object-contain rounded-lg drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
                     />
+
+                    {/* Subtle Preview Indicator overlay */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-1.5 text-white text-xs font-medium rounded-2xl backdrop-blur-xs">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                      </svg>
+                      <span>Preview</span>
+                    </div>
                   </div>
 
                   {/* Title Only */}
@@ -98,8 +107,8 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
                 </div>
 
                 {/* Subtle Click Indicator Pill */}
-                <div className="pt-4 mt-4 border-t border-border-custom/60 w-full flex items-center justify-center text-[10px] font-mono text-muted-foreground-custom group-hover:text-primary-custom transition-colors">
-                  <span>Click to view credential info</span>
+                <div className="pt-3.5 mt-3 border-t border-border-custom/60 w-full flex items-center justify-center text-[10px] font-mono text-muted-foreground-custom group-hover:text-primary-custom transition-colors">
+                  <span>Click to preview full certificate</span>
                 </div>
               </div>
             </ScrollReveal>
@@ -107,7 +116,7 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
         </div>
       </div>
 
-      {/* ─── Full Certificate Detail Modal ─── */}
+      {/* ─── Full Certificate & Badge Detail Modal (Large Preview) ─── */}
       {selectedCert && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md"
@@ -116,39 +125,40 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-lg bento-card p-6 sm:p-8 bg-white dark:bg-[#0f111a] border border-border-custom rounded-3xl shadow-2xl flex flex-col gap-5 text-foreground-custom max-h-[90vh] overflow-y-auto"
+            className="relative w-full max-w-2xl sm:max-w-3xl bento-card p-6 sm:p-8 bg-white dark:bg-[#0f111a] border border-border-custom rounded-3xl shadow-2xl flex flex-col gap-4 text-foreground-custom max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close 'X' Button in Top Right */}
             <button
               onClick={() => setSelectedCert(null)}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/15 text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom"
+              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/15 text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom z-10"
               aria-label="Close modal"
             >
               ✕
             </button>
 
-            {/* Modal Header: Badge + Title + Issuer + Code */}
-            <div className="flex flex-col items-center text-center gap-3 pt-2">
-              <div className="w-28 h-28 sm:w-32 sm:h-32 flex items-center justify-center p-2">
-                <img
-                  src={selectedCert.badgeImage}
-                  alt={selectedCert.title}
-                  className="w-full h-full object-contain drop-shadow-md"
-                />
-              </div>
+            {/* Large Certificate / Badge Viewport */}
+            <div className="w-full max-h-[50vh] flex items-center justify-center bg-foreground-custom/[0.02] dark:bg-black/40 rounded-2xl border border-border-custom/70 p-3 sm:p-4 overflow-hidden shadow-inner">
+              <img
+                src={selectedCert.badgeImage}
+                alt={selectedCert.title}
+                className="max-h-[46vh] w-auto max-w-full object-contain rounded-lg drop-shadow-md"
+              />
+            </div>
 
-              <div className="flex items-center gap-2">
+            {/* Title & Metadata */}
+            <div className="flex flex-col gap-2 text-center sm:text-left">
+              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
                 <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-600 dark:text-emerald-400 px-2.5 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/20 font-semibold flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   VERIFIED CREDENTIAL
                 </span>
-                <span className="text-[10px] font-mono text-muted-foreground-custom px-2 py-0.5 rounded-full bg-foreground-custom/5 border border-border-custom">
-                  #{selectedCert.code}
+                <span className="text-[10px] font-mono text-muted-foreground-custom px-2.5 py-0.5 rounded-full bg-foreground-custom/5 border border-border-custom">
+                  Code: #{selectedCert.code}
                 </span>
               </div>
 
-              <h3 className="text-lg sm:text-xl font-bold font-heading text-foreground-custom leading-tight px-2">
+              <h3 className="text-lg sm:text-2xl font-bold font-heading text-foreground-custom leading-tight">
                 {selectedCert.title}
               </h3>
 
@@ -160,7 +170,7 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
 
             {/* Full Description */}
             {selectedCert.description && (
-              <div className="p-3.5 rounded-2xl bg-foreground-custom/[0.03] border border-border-custom text-xs text-foreground-custom/90 leading-relaxed text-center sm:text-left">
+              <div className="p-4 rounded-2xl bg-foreground-custom/[0.03] border border-border-custom text-xs sm:text-sm text-foreground-custom/90 leading-relaxed">
                 {selectedCert.description}
               </div>
             )}
@@ -173,7 +183,7 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
                 </p>
                 <div className="flex flex-wrap gap-1.5">
                   {selectedCert.skills.map((s) => (
-                    <span key={s} className="tech-tag text-[10px]">
+                    <span key={s} className="tech-tag text-[11px]">
                       {s}
                     </span>
                   ))}

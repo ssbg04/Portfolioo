@@ -16,7 +16,7 @@ const links = allLinks.length > 0
       { platform: 'Facebook', url: 'https://facebook.com', icon: 'facebook', order: 5 },
     ];
 
-const resumeUrl = settings.resumeUrl || '/Cris_Charles_Garcia_CV.pdf';
+const resumeUrl = settings.resumeUrl || '/CV-Cris-Charles-Garcia.pdf';
 const profileAvatar = settings.heroImage || settings.logoImage || '/logo.png';
 
 const formatDisplayUrl = (url: string) => {
@@ -66,10 +66,15 @@ const getIconSvg = (platform: string) => {
         <span>Back to Portfolio</span>
       </a>
 
-      <span class="text-[10px] font-mono text-emerald-500 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-        Available for work
-      </span>
+      {settings.isAvailable !== false && (
+        <span class="text-[10px] font-mono text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 font-medium">
+          <span class="flex h-1.5 w-1.5 relative">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+          </span>
+          {settings.availabilityStatus || 'Available for opportunities'}
+        </span>
+      )}
     </div>
 
     <div class="w-full max-w-md flex flex-col items-center relative z-10">
