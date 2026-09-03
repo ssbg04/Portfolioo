@@ -30,7 +30,7 @@ export default function ScrollReveal({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: "-8% 0px -8% 0px" }}
+      viewport={{ once: true, amount: 0.05 }}
       variants={chosenVariant}
       transition={{ 
         duration: isMobile ? 0.35 : 0.65, 

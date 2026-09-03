@@ -1,34 +1,35 @@
 /**
  * Mobile Haptic Feedback Utility using the standard W3C Vibration API.
- * Provides tactile micro-vibrations for phone browsers (Android Chrome, Edge, Firefox, Samsung Internet).
- * Safely no-ops on desktop and iOS Safari without errors or overhead.
+ * Provides tactile physical vibrations for mobile phone browsers (Android Chrome, Edge, Firefox, Samsung Internet).
+ * Note: iOS Safari restricts navigator.vibrate() by Apple system policy.
  */
 
 const canVibrate = (): boolean => {
-  return typeof window !== 'undefined' && typeof navigator !== 'undefined' && 'vibrate' in navigator;
+  return typeof window !== 'undefined' && typeof navigator !== 'undefined' && typeof navigator.vibrate === 'function';
 };
 
 export const haptic = {
   /**
-   * Ultra-short 8ms tick for tabs, category filters, and small toggle switches.
+   * Crisp 35ms pulse for tabs, category filters, and small toggles.
+   * Long enough for physical vibration motors (ERM & LRA) to overcome inertia.
    */
   tick: () => {
     if (canVibrate()) {
       try {
-        navigator.vibrate(8);
+        navigator.vibrate(35);
       } catch {
-        // Safe no-op on devices with restricted permissions
+        // Safe no-op
       }
     }
   },
 
   /**
-   * Crisp 15ms tap for standard buttons, theme switcher, and FAB buttons.
+   * Solid 55ms pulse for standard buttons, theme switcher, and FAB buttons.
    */
   tap: () => {
     if (canVibrate()) {
       try {
-        navigator.vibrate(15);
+        navigator.vibrate(55);
       } catch {
         // Safe no-op
       }
@@ -36,12 +37,12 @@ export const haptic = {
   },
 
   /**
-   * 20ms tactile pulse when opening modals, full-screen certificates, or photos.
+   * 75ms tactile pulse when opening modals, full-screen certificates, or photos.
    */
   openModal: () => {
     if (canVibrate()) {
       try {
-        navigator.vibrate(20);
+        navigator.vibrate(75);
       } catch {
         // Safe no-op
       }
@@ -49,12 +50,12 @@ export const haptic = {
   },
 
   /**
-   * Double-pulse [15ms, 40ms, 20ms] confirming actions like copy to clipboard, download, or form submit.
+   * Distinct double-pulse [45ms, 60ms, 45ms] confirming actions like copy, download, or form submit.
    */
   success: () => {
     if (canVibrate()) {
       try {
-        navigator.vibrate([15, 40, 20]);
+        navigator.vibrate([45, 60, 45]);
       } catch {
         // Safe no-op
       }

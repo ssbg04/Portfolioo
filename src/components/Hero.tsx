@@ -1,5 +1,5 @@
 import React, { Suspense, lazy } from 'react';
-import { motion, useMotionValue, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useTransform, useScroll } from 'framer-motion';
 import { useIsMobile } from '../lib/hooks';
 import type { SocialLink } from '../lib/data';
 import ppDay from '../assets/pp-day.webp';
@@ -308,10 +308,8 @@ export default function Hero({
         {/* Right Column: Profile Image Frame */}
         <div className="md:col-span-5 flex justify-center order-1 md:order-2">
           <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center">
-            {/* Backdrop Aura */}
-            <motion.div
-              className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-primary-custom blur-3xl pointer-events-none opacity-30"
-            />
+            {/* Subtle Backdrop Aura (Decreased Color Strength, Static) */}
+            <div className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-primary-custom blur-3xl pointer-events-none opacity-15" />
             <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
               <TiltedCard
                 imageSrc={heroImage || (ppDay as any).src || ppDay}

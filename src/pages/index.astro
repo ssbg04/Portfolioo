@@ -61,7 +61,7 @@ const socialLinks = await getSocialLinks();
 		
 		<Skills skills={skills} client:visible />
 		
-		<Certifications certifications={certifications} client:visible />
+		<Certifications certifications={certifications} client:load />
 		
 		<About settings={settings} experience={experience} education={education} client:visible />
 		

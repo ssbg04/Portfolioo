@@ -87,12 +87,29 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
 
                   {/* Large Picture / Certificate Document Preview Container */}
                   <div className="w-full h-44 sm:h-48 my-3 rounded-2xl bg-foreground-custom/[0.02] border border-border-custom/60 flex items-center justify-center p-3 relative overflow-hidden group-hover:border-primary-custom/30 transition-all">
-                    <img
-                      src={cert.badgeImage}
-                      alt={cert.title}
-                      loading="lazy"
-                      className="max-h-full max-w-full object-contain rounded-lg drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
-                    />
+                    {cert.badgeImage ? (
+                      <img
+                        src={cert.badgeImage}
+                        alt={cert.title}
+                        loading="lazy"
+                        referrerPolicy="no-referrer"
+                        className="max-h-full max-w-full object-contain rounded-lg drop-shadow-sm group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          // If remote image fails, show subtle fallback badge
+                          const parent = (e.currentTarget as HTMLElement).parentElement;
+                          if (parent) {
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                            const fallback = parent.querySelector('.cert-fallback-icon');
+                            if (fallback) (fallback as HTMLElement).classList.remove('hidden');
+                          }
+                        }}
+                      />
+                    ) : null}
+                    <div className={`cert-fallback-icon w-16 h-16 rounded-2xl bg-primary-custom/10 flex items-center justify-center text-primary-custom ${cert.badgeImage ? 'hidden' : ''}`}>
+                      <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
+                      </svg>
+                    </div>
 
                     {/* Subtle Preview Indicator overlay */}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-1.5 text-white text-xs font-medium rounded-2xl backdrop-blur-xs">
@@ -149,6 +166,7 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
               <img
                 src={selectedCert.badgeImage}
                 alt={selectedCert.title}
+                referrerPolicy="no-referrer"
                 className="max-h-[46vh] w-auto max-w-full object-contain rounded-lg drop-shadow-md"
               />
             </div>

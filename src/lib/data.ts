@@ -444,7 +444,7 @@ export async function getCertifications(): Promise<Certification[]> {
     if (!sanityClient) return mockCertifications;
     const certs = await sanityClient.fetch(`*[_type == "certification"] | order(coalesce(order, 99) asc)`);
     if (!certs || certs.length === 0) return mockCertifications;
-    return certs.map((c: any, idx: number) => {
+    const sanityCerts = certs.map((c: any, idx: number) => {
       const badgeImg = c.badgeImage ? urlFor(c.badgeImage) : (c.badgeImageUrl || '');
       return {
         id: c._id || `cert-${idx}`,
@@ -461,6 +461,15 @@ export async function getCertifications(): Promise<Certification[]> {
         order: typeof c.order === 'number' ? c.order : idx + 1
       };
     });
+
+    // Merge any credentials not yet duplicated in Sanity (e.g. Cisco badges + TESDA NC2)
+    const combined = [...sanityCerts];
+    for (const mock of mockCertifications) {
+      if (!combined.some(c => c.title?.toLowerCase() === mock.title?.toLowerCase() || c.code === mock.code)) {
+        combined.push(mock);
+      }
+    }
+    return combined;
   } catch (error) {
     console.error('Error fetching certification from Sanity:', error);
     return mockCertifications;
