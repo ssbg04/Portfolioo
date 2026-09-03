@@ -6,6 +6,7 @@ import experience from './experience'
 import education from './education'
 import testimonial from './testimonial'
 import socialLink from './socialLink'
+import galleryItem from './galleryItem'
 
 export const schemaTypes = [
   siteSettings,
@@ -15,5 +16,6 @@ export const schemaTypes = [
   experience,
   education,
   testimonial,
-  socialLink
+  socialLink,
+  galleryItem
 ]

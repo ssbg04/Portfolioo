@@ -1,0 +1,27 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar';
+import PhotoGallery from '../components/PhotoGallery';
+import Footer from '../components/Footer';
+import { getSiteSettings, getGalleryItems, getSocialLinks } from '../lib/data';
+
+const settings = await getSiteSettings();
+const galleryItems = await getGalleryItems();
+const socialLinks = await getSocialLinks();
+---
+
+<Layout
+  title={settings.seoTitle ? `Gallery | ${settings.seoTitle}` : `Photo Gallery | ${settings.fullName}`}
+  description="Visual showcase and photo archive of project milestones, developer activities, and academic experiences of Cris Charles Garcia."
+  image={settings.heroImage || settings.logoImage || '/logo.png'}
+>
+  <Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
+
+  <main class="flex-1 min-h-screen pt-24 pb-16 px-4 sm:px-6">
+    <div class="max-w-6xl mx-auto">
+      <PhotoGallery items={galleryItems} client:load />
+    </div>
+  </main>
+
+  <Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />
+</Layout>

@@ -46,6 +46,14 @@ export default defineType({
       description: 'e.g. Collaborated on TIS Management System'
     }),
     defineField({
+      name: 'rating',
+      title: 'Star Rating (1 - 5)',
+      type: 'number',
+      initialValue: 5,
+      validation: Rule => Rule.min(1).max(5).integer(),
+      description: 'Number of gold stars to display (1 to 5, default is 5)'
+    }),
+    defineField({
       name: 'order',
       title: 'Display Order',
       type: 'number',

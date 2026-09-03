@@ -69,6 +69,16 @@ export interface Testimonial {
   avatar?: string;
   quote: string;
   relationship?: string;
+  rating?: number;
+}
+
+export interface GalleryItem {
+  id: string;
+  title?: string;
+  photo: string;
+  description?: string;
+  category?: string;
+  order?: number;
 }
 
 export interface SocialLink {
@@ -257,21 +267,75 @@ export const mockTestimonials: Testimonial[] = [
     role: "Department Coordinator",
     company: "Talisay Integrated School",
     quote: "Cris engineered our records management solution with exceptional precision. His database structure eliminated redundant paperwork and streamlined student profiling across the board.",
-    relationship: "Internship Supervisor"
+    relationship: "Internship Supervisor",
+    rating: 5
   },
   {
     name: "Prof. Alyssa Navarro",
     role: "Lead IT Faculty",
     company: "LSPU College of Computer Studies",
     quote: "One of the most dedicated developers in his cohort. Cris combines strong relational database skills with modern full-stack practices and always goes beyond basic requirements.",
-    relationship: "Academic Instructor"
+    relationship: "Academic Instructor",
+    rating: 5
   },
   {
     name: "Jethro Hernandez",
     role: "Senior Full-Stack Engineer",
     company: "Collaborative Project",
     quote: "A dependable and proactive teammate. Cris writes clean, modular code, adapts rapidly to modern toolchains, and delivers rock-solid backend endpoints ahead of schedule.",
-    relationship: "Project Partner"
+    relationship: "Project Partner",
+    rating: 5
+  }
+];
+
+export const mockGalleryItems: GalleryItem[] = [
+  {
+    id: "g-1",
+    title: "TIS Records Management Demo",
+    photo: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
+    description: "Presenting the automated student and institutional record management system.",
+    category: "Projects",
+    order: 1
+  },
+  {
+    id: "g-2",
+    title: "Software Engineering Lab",
+    photo: "https://images.unsplash.com/photo-1531403009284-440f080d1e12?auto=format&fit=crop&w=1200&q=80",
+    description: "Database normalization and backend system architecture design sessions.",
+    category: "Academics",
+    order: 2
+  },
+  {
+    id: "g-3",
+    title: "Developer Workstation Setup",
+    photo: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=1200&q=80",
+    description: "Daily development environment focused on clean code, TypeScript, and performance benchmarking.",
+    category: "Personal",
+    order: 3
+  },
+  {
+    id: "g-4",
+    title: "Cisco Networking & Security Milestones",
+    photo: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80",
+    description: "Cybersecurity assessment and hardware fundamentals credential demonstrations.",
+    category: "Certificates",
+    order: 4
+  },
+  {
+    id: "g-5",
+    title: "Campus Tech Colloquium",
+    photo: "https://images.unsplash.com/photo-1540575467063-178a50c2df87?auto=format&fit=crop&w=1200&q=80",
+    description: "Participating in university technology showcase and developer symposia.",
+    category: "Events",
+    order: 5
+  },
+  {
+    id: "g-6",
+    title: "Collaborative Code Review",
+    photo: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=1200&q=80",
+    description: "Sprint planning and collaborative peer debugging sessions.",
+    category: "Projects",
+    order: 6
   }
 ];
 
@@ -495,10 +559,30 @@ export async function getTestimonials(): Promise<Testimonial[]> {
       company: t.company,
       avatar: t.avatar ? urlFor(t.avatar) : undefined,
       quote: t.quote,
-      relationship: t.relationship
+      relationship: t.relationship,
+      rating: typeof t.rating === 'number' ? Math.min(5, Math.max(1, t.rating)) : 5
     }));
   } catch (error) {
     console.error('Error fetching testimonial from Sanity:', error);
     return mockTestimonials;
+  }
+}
+
+export async function getGalleryItems(): Promise<GalleryItem[]> {
+  try {
+    if (!sanityClient) return mockGalleryItems;
+    const items = await sanityClient.fetch(`*[_type == "galleryItem"] | order(coalesce(order, 99) asc, _createdAt desc)`);
+    if (!items || items.length === 0) return mockGalleryItems;
+    return items.map((g: any) => ({
+      id: g._id,
+      title: g.title,
+      photo: g.photo ? urlFor(g.photo) : (g.photoUrl || ''),
+      description: g.description,
+      category: g.category || 'General',
+      order: g.order
+    })).filter((item: GalleryItem) => Boolean(item.photo));
+  } catch (error) {
+    console.error('Error fetching gallery items from Sanity:', error);
+    return mockGalleryItems;
   }
 }

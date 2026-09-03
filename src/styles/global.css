@@ -211,3 +211,72 @@ html[data-tier='low'] .reveal-scale-up { opacity: 1; transform: none; transition
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
 body { padding-top: 60px; }
+
+/* ─── Low-End Mobile & Low-Tier Performance & Color Optimization ─── */
+html[data-tier='low'] .bento-card,
+html[data-tier='low'] .glass-card,
+html[data-tier='low'] .glass-nav,
+html[data-tier='low'] .glass-surface {
+  -webkit-backdrop-filter: none !important;
+  backdrop-filter: none !important;
+}
+
+@media (max-width: 640px) {
+  .glass-nav,
+  .glass-card,
+  .bento-card,
+  .glass-surface {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+}
+
+/* Light Mode Solid High-Contrast Surfaces on Low-Tier / Mobile */
+html[data-tier='low']:not(.dark) .bento-card,
+html[data-tier='low']:not(.dark) .glass-card {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.12) !important;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+html[data-tier='low']:not(.dark) .glass-nav {
+  background-color: #ffffff !important;
+  border-color: rgba(15, 23, 42, 0.1) !important;
+}
+
+@media (max-width: 640px) {
+  html:not(.dark) .bento-card,
+  html:not(.dark) .glass-card {
+    background-color: #ffffff !important;
+    border-color: rgba(15, 23, 42, 0.12) !important;
+  }
+  html:not(.dark) .glass-nav {
+    background-color: #ffffff !important;
+    border-color: rgba(15, 23, 42, 0.1) !important;
+  }
+}
+
+/* Dark Mode Solid High-Contrast Surfaces on Low-Tier / Mobile */
+html[data-tier='low'].dark .bento-card,
+html[data-tier='low'].dark .glass-card {
+  background-color: #0f111a !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+}
+
+html[data-tier='low'].dark .glass-nav {
+  background-color: #090a0f !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+@media (max-width: 640px) {
+  html.dark .bento-card,
+  html.dark .glass-card {
+    background-color: #0f111a !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+  }
+  html.dark .glass-nav {
+    background-color: #090a0f !important;
+    border-color: rgba(255, 255, 255, 0.08) !important;
+  }
+}

@@ -120,7 +120,7 @@ export default function ControlsDropdown() {
       {/* High-Contrast Dropdown Popover */}
       {isOpen && (
         <div
-          className="absolute right-0 mt-2 w-72 p-4 bg-card-custom dark:bg-[#12121a] rounded-2xl shadow-2xl border border-border-custom dark:border-zinc-700/80 z-50 flex flex-col gap-4 text-foreground-custom"
+          className="absolute right-0 mt-2 w-72 p-4 bg-white dark:bg-[#12121a] rounded-2xl shadow-2xl border border-zinc-200/90 dark:border-zinc-700/80 z-50 flex flex-col gap-4 text-foreground-custom"
           style={{ animation: 'bentoReveal 0.2s cubic-bezier(0.16, 1, 0.3, 1) both' }}
         >
           {/* Header */}

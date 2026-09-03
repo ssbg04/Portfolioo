@@ -49,7 +49,7 @@ export default function SpotifyWidget() {
             return;
           }
         }
-      } catch (e) {
+      } catch {
         // Fallback to default
       }
     };
@@ -61,20 +61,46 @@ export default function SpotifyWidget() {
 
   return (
     <div className="w-full max-w-sm rounded-2xl glass-card border border-border-custom p-3 sm:p-3.5 flex items-center gap-3.5 shadow-sm group hover:border-[#1DB954]/40 transition-all">
-      {/* Album Art with Green Glow */}
-      <div className="relative w-12 h-12 rounded-xl overflow-hidden shrink-0 bg-muted-custom/40 border border-border-custom shadow-xs group-hover:scale-105 transition-transform duration-300">
-        <img
-          src={track.albumArt}
-          alt={track.title}
-          className="w-full h-full object-cover"
-          loading="lazy"
-        />
-        <div className="absolute inset-0 m-auto w-2 h-2 rounded-full bg-black/80 border border-white/30" />
+      {/* ─── Messenger / Instagram Style Spinning Vinyl Disc ─── */}
+      <div className="relative shrink-0 flex items-center justify-center">
+        {/* Vinyl Disc Container */}
+        <div
+          className={`relative w-12 h-12 rounded-full bg-[#111116] border-2 border-zinc-700/80 shadow-md flex items-center justify-center overflow-hidden transition-transform duration-300 group-hover:scale-105 ${
+            isPlaying ? 'animate-[spin_4s_linear_infinite]' : ''
+          }`}
+        >
+          {/* Vinyl Grooves Texture */}
+          <div className="absolute inset-1 rounded-full border border-white/10" />
+          <div className="absolute inset-2.5 rounded-full border border-white/10" />
+          <div className="absolute inset-3.5 rounded-full border border-white/5" />
+
+          {/* Center Album Art Label */}
+          <div className="relative w-5 h-5 rounded-full overflow-hidden border border-zinc-600 bg-black flex items-center justify-center">
+            <img
+              src={track.albumArt}
+              alt={track.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+            />
+          </div>
+
+          {/* Center Spindle Hole */}
+          <div className="absolute w-1.5 h-1.5 rounded-full bg-zinc-900 border border-white/50 z-10" />
+        </div>
+
+        {/* Small soundwave badge overlay */}
+        {isPlaying && (
+          <span className="absolute -bottom-1 -right-1 w-3.5 h-3.5 rounded-full bg-[#1DB954] border-2 border-background-custom flex items-center justify-center text-black">
+            <svg className="w-2 h-2 fill-current" viewBox="0 0 24 24">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z" />
+            </svg>
+          </span>
+        )}
       </div>
 
-      {/* Track Info & Progress */}
+      {/* ─── Track Info & Progress ─── */}
       <div className="flex-1 min-w-0 flex flex-col justify-center">
-        {/* Top Tag: Now Playing / Spotify Badge */}
+        {/* Top Tag: Now Playing status badge */}
         <div className="flex items-center justify-between gap-2 mb-0.5">
           <div className="flex items-center gap-1.5">
             {isPlaying ? (
@@ -84,10 +110,10 @@ export default function SpotifyWidget() {
                 <span className="w-0.5 h-1.5 bg-[#1DB954] rounded-full animate-pulse delay-150" />
               </div>
             ) : (
-              <span className="w-2 h-2 rounded-full bg-muted-foreground-custom/60" />
+              <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
             )}
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#1DB954]">
-              {isPlaying ? 'Now Playing' : 'Recently Played'}
+              {isPlaying ? 'Now Playing' : 'Paused / Offline'}
             </span>
           </div>
 

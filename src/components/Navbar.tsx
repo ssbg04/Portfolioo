@@ -7,8 +7,8 @@ const navItems = [
   { label: 'Projects', href: '/projects' },
   { label: 'About', href: '/about' },
   { label: 'Certifications', href: '/certifications' },
+  { label: 'Gallery', href: '/gallery' },
   { label: 'Links', href: '/links' },
-  { label: 'Chat', href: '/chat' },
   { label: 'Contact', href: '/contact' },
 ];
 
@@ -40,6 +40,18 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
     window.addEventListener('resize', onResize, { passive: true });
     return () => window.removeEventListener('resize', onResize);
   }, []);
+
+  // Lock scroll when mobile drawer is open
+  useEffect(() => {
+    if (drawerOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [drawerOpen]);
 
   const isActive = (href: string) => {
     if (href === '/') return activePath === '/';
@@ -100,16 +112,16 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
               <ControlsDropdown />
             </Suspense>
 
-            {/* Hamburger — mobile only */}
+            {/* Hamburger / Toggle — mobile only */}
             <button
-              className="md:hidden flex flex-col items-center justify-center gap-1.5 w-9 h-9 rounded-lg hover:bg-foreground-custom/8 transition-colors focus:outline-none"
-              onClick={() => setDrawerOpen(!drawerOpen)}
-              aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
+              className="md:hidden flex flex-col items-center justify-center gap-1.5 w-9 h-9 rounded-xl hover:bg-foreground-custom/8 active:bg-foreground-custom/15 transition-colors focus:outline-none cursor-pointer border border-border-custom"
+              onClick={() => setDrawerOpen((prev) => !prev)}
+              aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
               aria-expanded={drawerOpen}
             >
-              <span className={`block w-5 h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? 'rotate-45 translate-y-2' : ''}`} />
-              <span className={`block h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? 'w-0 opacity-0' : 'w-5'}`} />
-              <span className={`block w-5 h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? '-rotate-45 -translate-y-2' : ''}`} />
+              <span className={`block w-4.5 h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? 'rotate-45 translate-y-2' : ''}`} />
+              <span className={`block h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? 'w-0 opacity-0' : 'w-4.5'}`} />
+              <span className={`block w-4.5 h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? '-rotate-45 -translate-y-2' : ''}`} />
             </button>
           </div>
         </div>
@@ -118,22 +130,45 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
       {/* ── Mobile Drawer Backdrop ── */}
       {drawerOpen && (
         <div
-          className="md:hidden fixed inset-0 z-40 bg-fg-color/20"
-          style={{ backdropFilter: 'blur(4px)' }}
+          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity"
           onClick={() => setDrawerOpen(false)}
           aria-hidden="true"
         />
       )}
 
-      {/* ── Mobile Drawer ── */}
+      {/* ── Mobile Drawer (Solid Opaque Theme with Close Button) ── */}
       <aside
-        className={`md:hidden fixed top-0 right-0 bottom-0 z-50 w-72 glass-surface border-l border-border-custom flex flex-col transition-transform duration-300 ease-out ${
+        className={`md:hidden fixed top-0 right-0 bottom-0 z-50 w-72 bg-white dark:bg-[#090a0f] text-foreground-custom border-l border-border-custom shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
           drawerOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
-        aria-label="Mobile menu"
-        style={{ paddingTop: '60px' }}
+        aria-label="Mobile navigation"
       >
-        <nav className="flex flex-col gap-1 p-4">
+        {/* Drawer Header */}
+        <div className="flex items-center justify-between px-5 h-[60px] border-b border-border-custom bg-muted-custom/20">
+          <div className="flex items-center gap-2">
+            <img
+              src={logoImage || '/logo.png'}
+              alt={fullName}
+              className="w-6 h-6 rounded-full object-cover"
+            />
+            <span className="font-heading font-bold text-xs text-foreground-custom">
+              Navigation
+            </span>
+          </div>
+
+          <button
+            onClick={() => setDrawerOpen(false)}
+            aria-label="Close menu"
+            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/10 transition-colors cursor-pointer"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Drawer Navigation Links */}
+        <nav className="flex flex-col gap-1 p-4 overflow-y-auto">
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (
@@ -141,24 +176,25 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                 key={item.label}
                 href={item.href}
                 onClick={() => setDrawerOpen(false)}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   active
-                    ? 'bg-primary-custom/10 text-primary-custom'
+                    ? 'bg-primary-custom/10 text-primary-custom font-bold border border-primary-custom/20'
                     : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
                 }`}
               >
-                {active && <span className="w-1.5 h-1.5 rounded-full bg-primary-custom shrink-0" />}
-                {item.label}
+                <span>{item.label}</span>
+                {active && <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />}
               </a>
             );
           })}
         </nav>
 
-        <div className="mt-auto p-4 border-t border-border-custom">
+        {/* Drawer Footer */}
+        <div className="mt-auto p-4 border-t border-border-custom bg-muted-custom/10">
           <a
             href="/contact"
             onClick={() => setDrawerOpen(false)}
-            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-sm font-semibold bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-95 transition-all"
+            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-95 transition-all shadow-sm"
           >
             Get in Touch
             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

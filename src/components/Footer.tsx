@@ -61,7 +61,7 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
       ];
 
   return (
-    <footer className="relative z-10 border-t border-border-custom bg-muted-custom/20 pt-10 pb-8">
+    <footer className="relative z-10 border-t border-border-custom bg-muted-custom/20 pt-10 pb-16 sm:pb-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-6">
 
         {/* Center: Spotify Widget Box */}

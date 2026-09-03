@@ -3,6 +3,7 @@ import '../styles/global.css';
 import BackToTop from '../components/BackToTop';
 import Background from '../components/Background';
 import SpotlightLens from '../components/SpotlightLens';
+import PortfolioAssistantFAB from '../components/PortfolioAssistantFAB';
 import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
 
@@ -85,6 +86,7 @@ const isRootPage = Astro.url.pathname === '/';
 			<slot />
 		</div>
 		<BackToTop client:idle />
+		<PortfolioAssistantFAB client:idle />
 		<SpotlightLens client:load />
         <Analytics />
 	</body>
