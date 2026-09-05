@@ -16,6 +16,7 @@ export interface Project {
   featured: boolean;
   order: number;
   publishedAt: string;
+  highlights?: string[];
 }
 
 export interface Skill {
@@ -217,15 +218,48 @@ export const mockProjects: Project[] = [
     slug: "tis-record-management-system",
     category: "System / Record Management",
     status: "LIVE PRODUCTION",
-    summary: "Comprehensive record and student management platform engineered for institutional efficiency.",
+    summary: "Comprehensive institutional record and student management platform engineered for administrative operational efficiency.",
     description: "Designed and built to streamline academic data, attendance records, and student profiles with secure role-based access and intuitive data dashboards.",
-    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80",
+    coverImage: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=1200&q=80",
     technologies: ["PHP", "MySQL", "JavaScript", "Bootstrap"],
+    highlights: ["Role-Based Access Control", "Automated Student Profiling", "Institutional Audit Logging"],
     repositoryUrl: "https://github.com/ssbg04",
     liveUrl: "https://github.com/ssbg04",
     featured: true,
     order: 1,
     publishedAt: "2026"
+  },
+  {
+    title: "LSPU CCS Lab Station Portal",
+    slug: "lspu-ccs-lab-station-portal",
+    category: "Web Application",
+    status: "IN DEVELOPMENT",
+    summary: "Centralized computer laboratory management platform with real-time workstation booking and hardware telemetry.",
+    description: "Built for university computer science laboratories to monitor system health, manage student seat assignments, and track peripheral inventories.",
+    coverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80",
+    technologies: ["React", "Node.js", "Express", "Tailwind CSS"],
+    highlights: ["Real-time Station Booking", "QR Attendance", "Live Hardware Inventory"],
+    repositoryUrl: "https://github.com/ssbg04",
+    liveUrl: "https://github.com/ssbg04",
+    featured: true,
+    order: 2,
+    publishedAt: "2026"
+  },
+  {
+    title: "Cisco Threat Telemetry Visualizer",
+    slug: "cisco-threat-telemetry-visualizer",
+    category: "Tools & Utilities",
+    status: "PROTOTYPE",
+    summary: "Network and host endpoint telemetry visualizer mapping anomalous behavior aligned with Cisco cybersecurity fundamentals.",
+    description: "An analytical dashboard parsing syslog entries and endpoint events to visualize attack patterns and test automated incident mitigation rules.",
+    coverImage: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
+    technologies: ["JavaScript", "Python", "REST API", "Tailwind CSS"],
+    highlights: ["Syslog Telemetry Parsing", "Endpoint Hardening Audit", "Threat Severity Graphing"],
+    repositoryUrl: "https://github.com/ssbg04",
+    liveUrl: "https://github.com/ssbg04",
+    featured: true,
+    order: 3,
+    publishedAt: "2025"
   }
 ];
 
@@ -494,6 +528,7 @@ export async function getProjects(): Promise<Project[]> {
         coverImage: p.coverImage ? urlFor(p.coverImage) : undefined,
         gallery,
         technologies: Array.isArray(p.technologies) ? p.technologies : [],
+        highlights: Array.isArray(p.highlights) ? p.highlights : [],
         repositoryUrl: p.repositoryUrl,
         liveUrl: p.liveUrl,
         featured: p.featured ?? true,

@@ -25,7 +25,7 @@ import {
 const settings = await getSiteSettings();
 const allProjects = await getProjects();
 const featuredProjects = allProjects.length > 0
-  ? (allProjects.some(p => p.featured) ? allProjects.filter(p => p.featured) : allProjects)
+  ? (allProjects.some(p => p.featured) ? allProjects.filter(p => p.featured) : allProjects).slice(0, 5)
   : [];
 const skills = await getSkills();
 const certifications = await getCertifications();
@@ -57,7 +57,7 @@ const socialLinks = await getSocialLinks();
 			client:load 
 		/>
 		
-		<Projects initialProjects={featuredProjects} client:visible />
+		<Projects initialProjects={featuredProjects} limit={5} client:visible />
 		
 		<Skills skills={skills} client:visible />
 		

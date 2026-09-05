@@ -27,7 +27,7 @@ const socialLinks = await getSocialLinks();
 			</p>
 		</div>
 
-		<ProjectsList initialProjects={allProjects} client:load />
+		<ProjectsList initialProjects={allProjects} showArchiveLink={false} client:load />
 	</main>
 
 	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />
