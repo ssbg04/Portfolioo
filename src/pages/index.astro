@@ -65,9 +65,7 @@ const socialLinks = await getSocialLinks();
 		
 		<About settings={settings} experience={experience} education={education} client:visible />
 		
-		{testimonials.length > 0 && (
-			<Testimonials testimonials={testimonials} client:visible />
-		)}
+		<Testimonials testimonials={testimonials} client:visible />
 		
 		<ContactForm 
 			socialLinks={socialLinks}

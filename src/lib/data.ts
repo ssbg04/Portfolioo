@@ -295,32 +295,7 @@ export const mockEducation: Education[] = [
   }
 ];
 
-export const mockTestimonials: Testimonial[] = [
-  {
-    name: "Engr. Michael Reyes",
-    role: "Department Coordinator",
-    company: "Talisay Integrated School",
-    quote: "Cris engineered our records management solution with exceptional precision. His database structure eliminated redundant paperwork and streamlined student profiling across the board.",
-    relationship: "Internship Supervisor",
-    rating: 5
-  },
-  {
-    name: "Prof. Alyssa Navarro",
-    role: "Lead IT Faculty",
-    company: "LSPU College of Computer Studies",
-    quote: "One of the most dedicated developers in his cohort. Cris combines strong relational database skills with modern full-stack practices and always goes beyond basic requirements.",
-    relationship: "Academic Instructor",
-    rating: 5
-  },
-  {
-    name: "Jethro Hernandez",
-    role: "Senior Full-Stack Engineer",
-    company: "Collaborative Project",
-    quote: "A dependable and proactive teammate. Cris writes clean, modular code, adapts rapidly to modern toolchains, and delivers rock-solid backend endpoints ahead of schedule.",
-    relationship: "Project Partner",
-    rating: 5
-  }
-];
+export const mockTestimonials: Testimonial[] = [];
 
 export const mockGalleryItems: GalleryItem[] = [
   {
@@ -594,9 +569,9 @@ export async function getEducation(): Promise<Education[]> {
 
 export async function getTestimonials(): Promise<Testimonial[]> {
   try {
-    if (!sanityClient) return mockTestimonials;
+    if (!sanityClient) return [];
     const testimonials = await sanityClient.fetch(`*[_type == "testimonial"] | order(coalesce(order, 99) asc)`);
-    if (!testimonials || testimonials.length === 0) return mockTestimonials;
+    if (!testimonials || testimonials.length === 0) return [];
     return testimonials.map((t: any) => ({
       name: t.name,
       role: t.role,
@@ -608,7 +583,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
     }));
   } catch (error) {
     console.error('Error fetching testimonial from Sanity:', error);
-    return mockTestimonials;
+    return [];
   }
 }
 
