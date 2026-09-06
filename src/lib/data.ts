@@ -39,6 +39,23 @@ export interface Certification {
   issueDate?: string;
   featured?: boolean;
   order?: number;
+  type?: 'certificate' | 'badge';
+}
+
+export function isDocumentCertificate(cert: Certification): boolean {
+  if (cert.type === 'certificate') return true;
+  if (cert.type === 'badge') return false;
+  const title = (cert.title || '').toLowerCase();
+  const url = (cert.badgeUrl || '').toLowerCase();
+  const img = (cert.badgeImage || '').toLowerCase();
+  if (url.includes('credly.com') || img.includes('credly.com') || img.includes('badge')) return false;
+  return (
+    title.includes('certificate') ||
+    title.includes('nc2') ||
+    title.includes('nc ii') ||
+    title.includes('tesda') ||
+    title.includes('diploma')
+  );
 }
 
 export interface Experience {
@@ -157,60 +174,7 @@ export const mockSkills: Skill[] = [
   { name: "Cybersecurity Basics", category: "Cybersecurity", proficiency: 80 }
 ];
 
-export const mockCertifications: Certification[] = [
-  {
-    id: 'computer-hardware',
-    code: '01',
-    title: 'Computer Hardware Basics',
-    issuer: 'Cisco',
-    description: 'Hardware diagnostics, mobile device architectures, component installation, preventative maintenance, and troubleshooting tools.',
-    badgeImage: 'https://images.credly.com/images/19e742ef-13be-4d26-87ed-ac8f5fd0643c/linkedin_thumb_image.png',
-    badgeUrl: 'https://www.credly.com/badges/d2f0c176-2e45-4b99-88e2-fa9fb9ff34c6/public_url',
-    category: 'Hardware & Systems',
-    skills: ['PC Architecture', 'Component Diagnostics', 'Hardware Assembly', 'System Repair'],
-    featured: true,
-    order: 1
-  },
-  {
-    id: 'digital-awareness',
-    code: '02',
-    title: 'Digital Awareness',
-    issuer: 'Cisco × OpenEDG',
-    description: 'Digital tools ecosystem, online safety protocols, data management, and ethical technology practices in modern computing.',
-    badgeImage: 'https://images.credly.com/images/29e7c859-4719-4081-a12f-6bdc073a43d2/linkedin_thumb_image.png',
-    badgeUrl: 'https://www.credly.com/badges/20ec510f-8325-483c-b16e-2ca00ae660ae/public_url',
-    category: 'Digital Literacy',
-    skills: ['Digital Privacy', 'Cyber Hygiene', 'Content Ethics', 'Security Best Practices'],
-    featured: true,
-    order: 2
-  },
-  {
-    id: 'endpoint-security',
-    code: '03',
-    title: 'Endpoint Security',
-    issuer: 'Cisco',
-    description: 'Host and OS hardening, endpoint telemetry, malware detection, network segmentation, and defense-in-depth principles.',
-    badgeImage: 'https://images.credly.com/images/0ca5f542-fb5e-4a22-9b7a-c1a1ce4c3db7/linkedin_thumb_EndpointSecurity.png',
-    badgeUrl: 'https://www.credly.com/badges/2aae16d4-b16c-474f-a84e-f06c330193cd/public_url',
-    category: 'Cybersecurity',
-    skills: ['Endpoint Hardening', 'Threat Telemetry', 'OS Security', 'Mitigation Protocols'],
-    featured: true,
-    order: 3
-  },
-  {
-    id: 'intro-cybersecurity',
-    code: '04',
-    title: 'Introduction to Cybersecurity',
-    issuer: 'Cisco',
-    description: 'Global threat landscape, vulnerability assessment methodologies, incident mitigation, and defensive cybersecurity operations.',
-    badgeImage: 'https://images.credly.com/images/af8c6b4e-fc31-47c4-8dcb-eb7a2065dc5b/linkedin_thumb_I2CS__1_.png',
-    badgeUrl: 'https://www.credly.com/badges/adc49a5e-87bb-4917-991d-a28160942c13/public_url',
-    category: 'Cybersecurity',
-    skills: ['Threat Modeling', 'Vulnerability Assessment', 'Incident Response', 'Network Defense'],
-    featured: true,
-    order: 4
-  }
-];
+export const mockCertifications: Certification[] = [];
 
 export const mockProjects: Project[] = [
   {
@@ -467,21 +431,14 @@ export async function getCertifications(): Promise<Certification[]> {
         skills: Array.isArray(c.skills) ? c.skills : [],
         issueDate: c.issueDate,
         featured: c.featured ?? true,
-        order: typeof c.order === 'number' ? c.order : idx + 1
+        order: typeof c.order === 'number' ? c.order : idx + 1,
+        type: c.type || (c.badgeUrl?.includes('credly.com') ? 'badge' : (c.title?.toLowerCase().includes('badge') ? 'badge' : 'certificate'))
       };
     });
-
-    // Merge any credentials not yet duplicated in Sanity (e.g. Cisco badges + TESDA NC2)
-    const combined = [...sanityCerts];
-    for (const mock of mockCertifications) {
-      if (!combined.some(c => c.title?.toLowerCase() === mock.title?.toLowerCase() || c.code === mock.code)) {
-        combined.push(mock);
-      }
-    }
-    return combined;
+    return sanityCerts;
   } catch (error) {
     console.error('Error fetching certification from Sanity:', error);
-    return mockCertifications;
+    return [];
   }
 }
 
