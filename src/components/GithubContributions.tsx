@@ -32,7 +32,7 @@ export default function GithubContributions({ username = 'ssbg04' }: Props) {
       try {
         setLoading(true);
         setError(false);
-        const res = await fetch(`https://github-contributions-api.jogruber.de/v4/${username}?y=last`);
+        const res = await fetch(`/api/github-contributions?username=${username}`);
         if (!res.ok) throw new Error('Failed to load contributions');
         const json: ApiResponse = await res.json();
         if (isMounted) {
