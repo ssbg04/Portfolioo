@@ -79,17 +79,13 @@ const isRootPage = Astro.url.pathname === '/';
 				var tier = 'mid';
 				if (manualLite === 'true') {
 					tier = 'low';
-				} else if (manualLite === 'false') {
-					tier = (navigator.hardwareConcurrency >= 8 && window.devicePixelRatio >= 2) ? 'high' : 'mid';
 				} else {
-					var cores = navigator.hardwareConcurrency || 2;
-					var conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-					var saveData = conn && conn.saveData;
-					var slowConn = conn && (conn.effectiveType === '2g' || conn.effectiveType === 'slow-2g' || conn.effectiveType === '3g' || (conn.downlink && conn.downlink < 1.0));
-					if (cores <= 4 || saveData || slowConn) {
-						tier = 'low';
-					} else if (cores >= 8 && window.devicePixelRatio >= 2) {
+					// Lite mode default is disabled (Off) unless explicitly enabled by user
+					var cores = navigator.hardwareConcurrency || 4;
+					if (cores >= 8 && window.devicePixelRatio >= 2) {
 						tier = 'high';
+					} else {
+						tier = 'mid';
 					}
 				}
 				document.documentElement.dataset.tier = tier;

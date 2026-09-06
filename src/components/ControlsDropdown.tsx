@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import haptic from '../lib/haptics';
+import { useIsMobile } from '../lib/hooks';
 
 export default function ControlsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
@@ -7,17 +8,21 @@ export default function ControlsDropdown() {
   const [magnifierEnabled, setMagnifierEnabled] = useState<boolean>(true);
   const [zoom, setZoom] = useState<number>(100);
   const [isLiteMode, setIsLiteMode] = useState<boolean>(false);
+  const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const isMobile = useIsMobile(768);
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
+
+    setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches);
 
     const isDark = document.documentElement.classList.contains('dark') || 
       (!localStorage.getItem('theme') && window.matchMedia('(prefers-color-scheme: dark)').matches);
     setTheme(isDark ? 'dark' : 'light');
 
     const checkLite = () => {
-      setIsLiteMode(document.documentElement.dataset.tier === 'low');
+      setIsLiteMode(localStorage.getItem('liteMode') === 'true');
     };
     checkLite();
     window.addEventListener('tier-change', checkLite);
@@ -210,59 +215,63 @@ export default function ControlsDropdown() {
 
           <div className="h-px bg-border-custom dark:bg-zinc-800" />
 
-          {/* Section 2: Magnifier Feature (Hold 'R' / Toggle) */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center justify-between">
-              <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground-custom">
-                Magnifier Lens (Key 'R')
-              </span>
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                magnifierEnabled ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-muted-custom text-muted-foreground-custom'
-              }`}>
-                {magnifierEnabled ? 'Enabled' : 'Disabled'}
-              </span>
-            </div>
+          {/* Section 2: Magnifier Feature (Hold 'R' / Toggle) - Hidden on Mobile */}
+          {!isMobile && !isTouchDevice && (
+            <>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground-custom">
+                    Magnifier Lens (Key 'R')
+                  </span>
+                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                    magnifierEnabled ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-muted-custom text-muted-foreground-custom'
+                  }`}>
+                    {magnifierEnabled ? 'Enabled' : 'Disabled'}
+                  </span>
+                </div>
 
-            <div className="flex items-center justify-between gap-2 p-2.5 bg-muted-custom/30 dark:bg-zinc-900/60 rounded-xl border border-border-custom dark:border-zinc-800">
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold text-foreground-custom">
-                  Hold 'R' to Magnify
-                </span>
-                <span className="text-[10px] text-muted-foreground-custom">
-                  Magnifies content under cursor
-                </span>
+                <div className="flex items-center justify-between gap-2 p-2.5 bg-muted-custom/30 dark:bg-zinc-900/60 rounded-xl border border-border-custom dark:border-zinc-800">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-semibold text-foreground-custom">
+                      Hold 'R' to Magnify
+                    </span>
+                    <span className="text-[10px] text-muted-foreground-custom">
+                      Magnifies content under cursor
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={toggleMagnifier}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-custom ${
+                      magnifierEnabled ? 'bg-primary-custom' : 'bg-zinc-400 dark:bg-zinc-700'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                        magnifierEnabled ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {magnifierEnabled && (
+                  <button
+                    type="button"
+                    onClick={triggerInstantMagnify}
+                    className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-primary-custom/10 text-primary-custom hover:bg-primary-custom/20 border border-primary-custom/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
+                  >
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                    </svg>
+                    Toggle Magnifier Lens Mode
+                  </button>
+                )}
               </div>
 
-              <button
-                type="button"
-                onClick={toggleMagnifier}
-                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer focus:outline-none focus:ring-2 focus:ring-primary-custom ${
-                  magnifierEnabled ? 'bg-primary-custom' : 'bg-zinc-400 dark:bg-zinc-700'
-                }`}
-              >
-                <span
-                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                    magnifierEnabled ? 'translate-x-6' : 'translate-x-1'
-                  }`}
-                />
-              </button>
-            </div>
-
-            {magnifierEnabled && (
-              <button
-                type="button"
-                onClick={triggerInstantMagnify}
-                className="w-full py-1.5 px-3 rounded-lg text-xs font-semibold bg-primary-custom/10 text-primary-custom hover:bg-primary-custom/20 border border-primary-custom/20 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
-                </svg>
-                Toggle Magnifier Lens Mode
-              </button>
-            )}
-          </div>
-
-          <div className="h-px bg-border-custom dark:bg-zinc-800" />
+              <div className="h-px bg-border-custom dark:bg-zinc-800" />
+            </>
+          )}
 
           {/* Section 3: Page Text Zoom */}
           <div className="flex flex-col gap-2">
