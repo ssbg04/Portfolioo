@@ -24,3 +24,6 @@ Verified digital credentials from Cisco and industry partners. Each badge repres
 <!-- - Lite mode default the toggle is disabled
 - hide the magnifier lens settings if detected mobile
 - limit portfolio assistant pre selections, add feature that shows their ip and location when prompts like a using AI chatbot or if they try to prompt in the portfolio assistant like its a AI -->
+
+<!-- - fix the lite mode only hero section loads when i reload that enabled lite mode
+- make the UI in mobile same as on pc but when lagging notify to turn on the lite mode -->

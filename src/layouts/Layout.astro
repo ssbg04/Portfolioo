@@ -7,6 +7,7 @@ import PortfolioAssistantFAB from '../components/PortfolioAssistantFAB';
 import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
 import NetworkStatus from '../components/NetworkStatus';
+import LagNotification from '../components/LagNotification';
 
 interface Props {
 	title?: string;
@@ -113,6 +114,7 @@ const isRootPage = Astro.url.pathname === '/';
 		<PortfolioAssistantFAB client:idle />
 		<SpotlightLens client:load />
 		<NetworkStatus client:load />
+		<LagNotification client:load />
         <Analytics />
 	</body>
 </html>

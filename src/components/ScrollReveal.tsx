@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useIsMobile } from '../lib/hooks';
 
@@ -23,9 +23,32 @@ export default function ScrollReveal({
   variant = 'fade-up',
   delay = 0 
 }: ScrollRevealProps) {
-  const isLowTier = typeof document !== 'undefined' && document.documentElement.dataset.tier === 'low';
+  const [isLowTier, setIsLowTier] = useState(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.dataset.tier === 'low';
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const checkTier = () => {
+      setIsLowTier(document.documentElement.dataset.tier === 'low');
+    };
+    checkTier();
+    window.addEventListener('tier-change', checkTier);
+    return () => window.removeEventListener('tier-change', checkTier);
+  }, []);
+
   if (isLowTier) {
-    return <div className={className}>{children}</div>;
+    return (
+      <div 
+        data-scroll-reveal="true" 
+        className={className} 
+        style={{ opacity: 1, transform: 'none' }}
+      >
+        {children}
+      </div>
+    );
   }
 
   const chosenVariant = variantsMap[variant] || variantsMap['fade-up'];
@@ -33,6 +56,7 @@ export default function ScrollReveal({
 
   return (
     <motion.div
+      data-scroll-reveal="true"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true, amount: 0.05 }}

@@ -352,7 +352,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
                 }`}
               >
-                <span>All Credentials</span>
+                <span>All</span>
                 <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white font-bold">
                   {allCerts.length}
                 </span>
@@ -369,7 +369,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
                 }`}
               >
-                <span>Document Certificates</span>
+                <span>Certificates</span>
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${filterMode === 'certificates' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
                   {documentCerts.length}
                 </span>
@@ -386,7 +386,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
                 }`}
               >
-                <span>Digital Skill Badges</span>
+                <span>Skill Badges</span>
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${filterMode === 'badges' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
                   {skillBadges.length}
                 </span>

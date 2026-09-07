@@ -195,7 +195,14 @@ html[data-tier='low'] .nav-enter { animation: none; opacity: 1; transform: none;
 }
 
 html[data-tier='low'] .reveal-fade-up,
-html[data-tier='low'] .reveal-scale-up { opacity: 1; transform: none; transition: none; }
+html[data-tier='low'] .reveal-scale-up,
+html[data-tier='low'] .will-change-transform-opacity,
+html[data-tier='low'] [data-scroll-reveal] {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
+  animation: none !important;
+}
 
 .reveal-fade-up { transform: translateY(16px); }
 .reveal-fade-up.active { opacity: 1; transform: translateY(0); }
@@ -212,7 +219,7 @@ html[data-tier='low'] .reveal-scale-up { opacity: 1; transform: none; transition
 
 body { padding-top: 60px; }
 
-/* ─── Low-End Mobile & Low-Tier Performance & Color Optimization ─── */
+/* ─── Lite-Tier Performance & Solid Contrast Optimization (Active only when Lite Mode is ON) ─── */
 html[data-tier='low'] .bento-card,
 html[data-tier='low'] .glass-card,
 html[data-tier='low'] .glass-nav,
@@ -221,17 +228,7 @@ html[data-tier='low'] .glass-surface {
   backdrop-filter: none !important;
 }
 
-@media (max-width: 640px) {
-  .glass-nav,
-  .glass-card,
-  .bento-card,
-  .glass-surface {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-  }
-}
-
-/* Light Mode Solid High-Contrast Surfaces on Low-Tier / Mobile */
+/* Light Mode Solid High-Contrast Surfaces on Low-Tier */
 html[data-tier='low']:not(.dark) .bento-card,
 html[data-tier='low']:not(.dark) .glass-card {
   background-color: #ffffff !important;
@@ -244,19 +241,7 @@ html[data-tier='low']:not(.dark) .glass-nav {
   border-color: rgba(15, 23, 42, 0.1) !important;
 }
 
-@media (max-width: 640px) {
-  html:not(.dark) .bento-card,
-  html:not(.dark) .glass-card {
-    background-color: #ffffff !important;
-    border-color: rgba(15, 23, 42, 0.12) !important;
-  }
-  html:not(.dark) .glass-nav {
-    background-color: #ffffff !important;
-    border-color: rgba(15, 23, 42, 0.1) !important;
-  }
-}
-
-/* Dark Mode Solid High-Contrast Surfaces on Low-Tier / Mobile */
+/* Dark Mode Solid High-Contrast Surfaces on Low-Tier */
 html[data-tier='low'].dark .bento-card,
 html[data-tier='low'].dark .glass-card {
   background-color: #0f111a !important;
@@ -267,18 +252,6 @@ html[data-tier='low'].dark .glass-card {
 html[data-tier='low'].dark .glass-nav {
   background-color: #090a0f !important;
   border-color: rgba(255, 255, 255, 0.08) !important;
-}
-
-@media (max-width: 640px) {
-  html.dark .bento-card,
-  html.dark .glass-card {
-    background-color: #0f111a !important;
-    border-color: rgba(255, 255, 255, 0.1) !important;
-  }
-  html.dark .glass-nav {
-    background-color: #090a0f !important;
-    border-color: rgba(255, 255, 255, 0.08) !important;
-  }
 }
 
 /* ─── Lite Mode / Data Saver Alternate Fast Design ─── */
