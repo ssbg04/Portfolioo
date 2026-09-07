@@ -8,15 +8,82 @@ import {
   Geometry,
   Color,
   Vec3,
-  Torus,
+  Plane,
   Cylinder,
-  Box
+  Torus,
+  Box,
+  Sphere
 } from 'ogl';
 
-// ─── GLSL Shaders for Blender-style 3D Physical Lighting ───
+// ─── GLSL Shaders ───
 
-// 1. Faceted Core & Solid Mesh Material (Flat Normals + Diffuse + Specular + Fresnel Rim Glow)
-const coreVertexShader = `
+// 1. Abstract 3D Procedural Topographic Grid / Wave Terrain Shader (Standard WebGL Compatible)
+const terrainVertexShader = `
+attribute vec3 position;
+attribute vec2 uv;
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+uniform float uTime;
+uniform float uScrollProgress;
+
+varying vec2 vUv;
+varying float vElevation;
+varying vec3 vViewPos;
+
+void main() {
+    vUv = uv;
+    vec3 pos = position;
+
+    // Procedural 3D abstract waves (Blender-like displacement landscape)
+    float wave1 = sin(pos.x * 0.42 + uTime * 0.35) * cos(pos.y * 0.48 + uTime * 0.28) * 0.58;
+    float wave2 = sin(pos.x * 0.85 - uTime * 0.22 + uScrollProgress * 3.5) * 0.22;
+    float wave3 = cos((pos.x + pos.y) * 0.65 + uTime * 0.3) * 0.16;
+    pos.z += wave1 + wave2 + wave3;
+
+    vElevation = pos.z;
+    vec4 mvPosition = modelViewMatrix * vec4(pos, 1.0);
+    vViewPos = mvPosition.xyz;
+    gl_Position = projectionMatrix * mvPosition;
+}
+`;
+
+const terrainFragmentShader = `
+precision highp float;
+uniform vec3 uColorBase;
+uniform vec3 uColorGrid;
+uniform float uOpacity;
+
+varying vec2 vUv;
+varying float vElevation;
+varying vec3 vViewPos;
+
+void main() {
+    // Technical blueprint contour grid lines (standard WebGL compatible without extensions)
+    vec2 majorCoord = abs(fract(vUv * vec2(32.0, 24.0) - 0.5) - 0.5);
+    float majorDist = min(majorCoord.x, majorCoord.y);
+    float majorLine = smoothstep(0.045, 0.008, majorDist);
+
+    vec2 minorCoord = abs(fract(vUv * vec2(96.0, 72.0) - 0.5) - 0.5);
+    float minorDist = min(minorCoord.x, minorCoord.y);
+    float minorLine = smoothstep(0.025, 0.005, minorDist) * 0.35;
+
+    float gridMask = max(majorLine, minorLine);
+
+    // Subtle atmospheric distance falloff
+    float depthFade = clamp((16.0 - (-vViewPos.z)) / 9.5, 0.25, 1.0);
+
+    // Dynamic crest glow on wave peaks
+    float crestGlow = smoothstep(-0.25, 0.65, vElevation) * 0.45;
+
+    vec3 finalColor = mix(uColorBase, uColorGrid, gridMask * 0.85 + crestGlow * 0.5);
+    float alpha = (gridMask * 0.48 + crestGlow * 0.25 + 0.07) * depthFade * uOpacity;
+
+    gl_FragColor = vec4(finalColor, alpha);
+}
+`;
+
+// 2. Physical Shading for Revealed 3D Portfolio Symbols (Faceted / Metallic Blender-style)
+const symbolVertexShader = `
 attribute vec3 position;
 attribute vec3 normal;
 uniform mat4 modelViewMatrix;
@@ -34,9 +101,8 @@ void main() {
 }
 `;
 
-const coreFragmentShader = `
+const symbolFragmentShader = `
 precision highp float;
-
 uniform vec3 uColorBase;
 uniform vec3 uColorRim;
 uniform vec3 uLightDir;
@@ -50,28 +116,30 @@ void main() {
     vec3 viewDir = normalize(-vPosition);
     vec3 lightDir = normalize(uLightDir);
 
-    // Diffuse wrap
+    // Key light (diffuse)
     float NdotL = max(dot(normal, lightDir), 0.0);
     float diffuse = NdotL * 0.65 + 0.35;
 
-    // Specular highlight (Blinn-Phong)
-    vec3 halfDir = normalize(lightDir + viewDir);
-    float spec = pow(max(dot(normal, halfDir), 0.0), 28.0) * 0.55;
+    // Fill light from lower-opposite angle
+    vec3 fillDir = normalize(vec3(-0.7, -0.4, 0.8));
+    float fillDiff = max(dot(normal, fillDir), 0.0) * 0.25;
 
-    // Fresnel rim effect (Blender physical glow on silhouette)
+    // Specular highlight (Blender glossy reflection)
+    vec3 halfDir = normalize(lightDir + viewDir);
+    float spec = pow(max(dot(normal, halfDir), 0.0), 28.0) * 0.75;
+
+    // Fresnel rim glow
     float fresnel = pow(1.0 - max(dot(normal, viewDir), 0.0), 2.2);
 
-    vec3 baseCol = mix(uColorBase, uColorRim, fresnel * 0.75);
-    vec3 finalCol = baseCol * diffuse + uColorRim * spec + uColorRim * fresnel * 0.45;
-
-    // Semi-translucent core so foreground typography stays 100% legible
-    float alpha = clamp(uOpacity * (0.28 + fresnel * 0.62), 0.0, 0.85);
+    vec3 col = mix(uColorBase, uColorRim, fresnel * 0.75);
+    vec3 finalCol = col * (diffuse + fillDiff) + vec3(1.0) * spec * 0.7 + uColorRim * fresnel * 0.8;
+    float alpha = uOpacity * (0.88 + fresnel * 0.12);
 
     gl_FragColor = vec4(finalCol, alpha);
 }
 `;
 
-// 2. Glowing Wireframe Material
+// 3. Glowing Wireframe Outline Shader for 3D Symbols
 const wireVertexShader = `
 attribute vec3 position;
 uniform mat4 modelViewMatrix;
@@ -88,40 +156,27 @@ uniform vec3 uColorWire;
 uniform float uOpacity;
 
 void main() {
-    gl_FragColor = vec4(uColorWire, uOpacity);
+    gl_FragColor = vec4(uColorWire, uOpacity * 0.95);
 }
 `;
 
-// 3. Dynamic Constellation Network Link Lines
-const tetherFragmentShader = `
-precision highp float;
-uniform vec3 uColorTether;
-uniform float uOpacity;
-uniform float uTime;
-
-void main() {
-    float pulse = 0.55 + 0.45 * sin(uTime * 2.8);
-    gl_FragColor = vec4(uColorTether, uOpacity * pulse);
-}
-`;
-
-// 4. Vertex Node Beacons (Glowing Network Data Points)
-const nodeVertexShader = `
+// 4. Glowing Node Beacons (Router Ports & Signal Indicators)
+const beaconVertexShader = `
 attribute vec3 position;
 uniform mat4 modelViewMatrix;
 uniform mat4 projectionMatrix;
 uniform float uPixelRatio;
 
 void main() {
-    vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_PointSize = (26.0 / -mvPosition.z) * uPixelRatio;
-    gl_Position = projectionMatrix * mvPosition;
+    vec4 mvPos = modelViewMatrix * vec4(position, 1.0);
+    gl_PointSize = (26.0 / max(-mvPos.z, 1.0)) * uPixelRatio;
+    gl_Position = projectionMatrix * mvPos;
 }
 `;
 
-const nodeFragmentShader = `
+const beaconFragmentShader = `
 precision highp float;
-uniform vec3 uColorNode;
+uniform vec3 uColorBeacon;
 uniform float uTime;
 uniform float uOpacity;
 
@@ -129,255 +184,83 @@ void main() {
     vec2 coord = gl_PointCoord - vec2(0.5);
     float dist = length(coord);
     if (dist > 0.5) discard;
-    float alpha = smoothstep(0.5, 0.06, dist);
-    float pulse = 0.8 + 0.2 * sin(uTime * 3.2);
-    gl_FragColor = vec4(uColorNode, alpha * pulse * uOpacity);
+    float alpha = smoothstep(0.5, 0.05, dist);
+    float pulse = 0.7 + 0.3 * sin(uTime * 4.0);
+    gl_FragColor = vec4(uColorBeacon, alpha * pulse * uOpacity);
 }
 `;
 
-// ─── Procedural 3D Geometry Generators ───
+// ─── Procedural Symbol Geometry Generators ───
 
-// A) 3D Icosahedron & Polyhedral Lattice Data
-function createPolyhedralData(radius = 1.6) {
-  const phi = (1.0 + Math.sqrt(5.0)) / 2.0;
-  const rawVerts = [
-    [-1,  phi,  0], [ 1,  phi,  0], [-1, -phi,  0], [ 1, -phi,  0],
-    [ 0, -1,  phi], [ 0,  1,  phi], [ 0, -1, -phi], [ 0,  1, -phi],
-    [ phi,  0, -1], [ phi,  0,  1], [-phi,  0, -1], [-phi,  0,  1]
+// A) 3D Code Glyph `</>` Geometry (Frontend & Software Engineering)
+function createCodeGlyphGeometry(gl: any) {
+  const lines = [
+    // `<` bracket
+    [-0.75, 0.4, 0], [-1.15, 0.0, 0],
+    [-1.15, 0.0, 0], [-0.75, -0.4, 0],
+
+    // `/` slash
+    [-0.22, -0.6, 0], [0.22, 0.6, 0],
+
+    // `>` bracket
+    [0.75, 0.4, 0], [1.15, 0.0, 0],
+    [1.15, 0.0, 0], [0.75, -0.4, 0]
   ];
 
-  const invLen = 1.0 / Math.sqrt(1.0 + phi * phi);
-  const baseVerts = rawVerts.map(([x, y, z]) => [
-    x * invLen * radius,
-    y * invLen * radius,
-    z * invLen * radius
-  ]);
-
-  const faces = [
-    [0, 11, 5], [0, 5, 1], [0, 1, 7], [0, 7, 10], [0, 10, 11],
-    [1, 5, 9], [5, 11, 4], [11, 10, 2], [10, 7, 6], [7, 1, 8],
-    [3, 9, 4], [3, 4, 2], [3, 2, 6], [3, 6, 8], [3, 8, 9],
-    [4, 9, 5], [2, 4, 11], [6, 2, 10], [8, 6, 7], [9, 8, 1]
-  ];
-
-  const corePositions = new Float32Array(20 * 3 * 3);
-  const coreNormals = new Float32Array(20 * 3 * 3);
-
-  let vIdx = 0;
-  faces.forEach(([i0, i1, i2]) => {
-    const v0 = baseVerts[i0];
-    const v1 = baseVerts[i1];
-    const v2 = baseVerts[i2];
-
-    const ax = v1[0] - v0[0], ay = v1[1] - v0[1], az = v1[2] - v0[2];
-    const bx = v2[0] - v0[0], by = v2[1] - v0[1], bz = v2[2] - v0[2];
-    let nx = ay * bz - az * by;
-    let ny = az * bx - ax * bz;
-    let nz = ax * by - ay * bx;
-    const nlen = Math.hypot(nx, ny, nz) || 1;
-    nx /= nlen; ny /= nlen; nz /= nlen;
-
-    [v0, v1, v2].forEach((v) => {
-      corePositions[vIdx] = v[0];
-      corePositions[vIdx + 1] = v[1];
-      corePositions[vIdx + 2] = v[2];
-
-      coreNormals[vIdx] = nx;
-      coreNormals[vIdx + 1] = ny;
-      coreNormals[vIdx + 2] = nz;
-
-      vIdx += 3;
-    });
-  });
-
-  const edgeSet = new Set<string>();
-  const edgePairs: [number, number][] = [];
-  faces.forEach(([a, b, c]) => {
-    const triPairs: [number, number][] = [
-      [Math.min(a, b), Math.max(a, b)],
-      [Math.min(b, c), Math.max(b, c)],
-      [Math.min(c, a), Math.max(c, a)]
-    ];
-    triPairs.forEach(([p1, p2]) => {
-      const key = `${p1}_${p2}`;
-      if (!edgeSet.has(key)) {
-        edgeSet.add(key);
-        edgePairs.push([p1, p2]);
-      }
-    });
-  });
-
-  const wireRadius = radius * 1.025;
-  const wirePositions = new Float32Array(edgePairs.length * 2 * 3);
-  let wIdx = 0;
-  edgePairs.forEach(([p1, p2]) => {
-    const vA = rawVerts[p1];
-    const vB = rawVerts[p2];
-
-    wirePositions[wIdx] = vA[0] * invLen * wireRadius;
-    wirePositions[wIdx + 1] = vA[1] * invLen * wireRadius;
-    wirePositions[wIdx + 2] = vA[2] * invLen * wireRadius;
-
-    wirePositions[wIdx + 3] = vB[0] * invLen * wireRadius;
-    wirePositions[wIdx + 4] = vB[1] * invLen * wireRadius;
-    wirePositions[wIdx + 5] = vB[2] * invLen * wireRadius;
-
-    wIdx += 6;
-  });
-
-  const nodeRadius = radius * 1.03;
-  const nodePositions = new Float32Array(rawVerts.length * 3);
-  rawVerts.forEach((v, idx) => {
-    nodePositions[idx * 3] = v[0] * invLen * nodeRadius;
-    nodePositions[idx * 3 + 1] = v[1] * invLen * nodeRadius;
-    nodePositions[idx * 3 + 2] = v[2] * invLen * nodeRadius;
-  });
-
-  return { corePositions, coreNormals, wirePositions, nodePositions };
+  const positions = new Float32Array(lines.flat());
+  return new Geometry(gl, { position: { size: 3, data: positions } });
 }
 
-// B) 3D Cryptographic Octahedron (Cybersecurity & Credentials Crystal)
-function createOctahedronData(r = 0.55) {
-  const top = [0, r * 1.15, 0];
-  const btm = [0, -r * 1.15, 0];
-  const eq = [
-    [r, 0, 0],
-    [0, 0, r],
-    [-r, 0, 0],
-    [0, 0, -r]
+// B) 3D Security Shield Geometry (Cybersecurity & Credentials)
+function createShieldGeometry(gl: any) {
+  const shieldEdges = [
+    [-0.65, 0.75, 0], [0.65, 0.75, 0],
+    [0.65, 0.75, 0], [0.72, 0.15, 0],
+    [0.72, 0.15, 0], [0.0, -0.85, 0],
+    [0.0, -0.85, 0], [-0.72, 0.15, 0],
+    [-0.72, 0.15, 0], [-0.65, 0.75, 0],
+
+    [0.0, 0.75, 0.15], [0.0, -0.85, 0.15],
+    [-0.65, 0.75, 0], [0.0, 0.75, 0.15],
+    [0.65, 0.75, 0], [0.0, 0.75, 0.15],
+    [0.72, 0.15, 0], [0.0, -0.15, 0.15],
+    [-0.72, 0.15, 0], [0.0, -0.15, 0.15]
   ];
 
-  const faces = [
-    [top, eq[0], eq[1]],
-    [top, eq[1], eq[2]],
-    [top, eq[2], eq[3]],
-    [top, eq[3], eq[0]],
-    [btm, eq[1], eq[0]],
-    [btm, eq[2], eq[1]],
-    [btm, eq[3], eq[2]],
-    [btm, eq[0], eq[3]]
-  ];
-
-  const positions = new Float32Array(8 * 3 * 3);
-  const normals = new Float32Array(8 * 3 * 3);
-
-  let idx = 0;
-  faces.forEach(([v0, v1, v2]) => {
-    const ax = v1[0] - v0[0], ay = v1[1] - v0[1], az = v1[2] - v0[2];
-    const bx = v2[0] - v0[0], by = v2[1] - v0[1], bz = v2[2] - v0[2];
-    let nx = ay * bz - az * by;
-    let ny = az * bx - ax * bz;
-    let nz = ax * by - ay * bx;
-    const nlen = Math.hypot(nx, ny, nz) || 1;
-    nx /= nlen; ny /= nlen; nz /= nlen;
-
-    [v0, v1, v2].forEach((v) => {
-      positions[idx] = v[0];
-      positions[idx + 1] = v[1];
-      positions[idx + 2] = v[2];
-      normals[idx] = nx;
-      normals[idx + 1] = ny;
-      normals[idx + 2] = nz;
-      idx += 3;
-    });
-  });
-
-  // Wireframe edges for the octahedron (12 edges)
-  const edges: [number[], number[]][] = [
-    [top, eq[0]], [top, eq[1]], [top, eq[2]], [top, eq[3]],
-    [btm, eq[0]], [btm, eq[1]], [btm, eq[2]], [btm, eq[3]],
-    [eq[0], eq[1]], [eq[1], eq[2]], [eq[2], eq[3]], [eq[3], eq[0]]
-  ];
-
-  const wirePositions = new Float32Array(edges.length * 2 * 3);
-  let wIdx = 0;
-  edges.forEach(([vA, vB]) => {
-    wirePositions[wIdx] = vA[0] * 1.02;
-    wirePositions[wIdx + 1] = vA[1] * 1.02;
-    wirePositions[wIdx + 2] = vA[2] * 1.02;
-    wirePositions[wIdx + 3] = vB[0] * 1.02;
-    wirePositions[wIdx + 4] = vB[1] * 1.02;
-    wirePositions[wIdx + 5] = vB[2] * 1.02;
-    wIdx += 6;
-  });
-
-  return { positions, normals, wirePositions };
+  const positions = new Float32Array(shieldEdges.flat());
+  return new Geometry(gl, { position: { size: 3, data: positions } });
 }
 
-// ─── Waypoint Interpolation for Cinematic Parallax ───
-interface ParallaxTransform {
-  x: number;
-  y: number;
-  z: number;
-  rotX: number;
-  rotY: number;
-  rotZ: number;
-  scale: number;
-}
+// Section Progress Detector: Computes real-time presence (0 to 1) of any section in viewport
+function getSectionState(id: string): { progress: number; yRel: number } {
+  if (typeof document === 'undefined') return { progress: 0, yRel: 0 };
+  const el = document.getElementById(id);
+  if (!el) return { progress: 0, yRel: 0 };
 
-function getParallaxWaypoint(p: number, isPortrait: boolean): ParallaxTransform {
-  const t = Math.max(0, Math.min(1, p));
+  const rect = el.getBoundingClientRect();
+  const vh = window.innerHeight;
 
-  if (isPortrait) {
-    const waypoints: { p: number; data: ParallaxTransform }[] = [
-      { p: 0.0, data: { x: 0.0, y: 0.55, z: -0.6, rotX: 0.35, rotY: 0.5, rotZ: 0.05, scale: 0.88 } },
-      { p: 0.2, data: { x: 0.0, y: -0.2, z: -0.8, rotX: 0.65, rotY: 1.5, rotZ: 0.15, scale: 1.12 } },
-      { p: 0.5, data: { x: 0.0, y: 0.25, z: -0.6, rotX: -0.3, rotY: 2.8, rotZ: -0.1, scale: 1.20 } },
-      { p: 0.8, data: { x: 0.0, y: -0.35, z: -0.9, rotX: 0.45, rotY: 4.2, rotZ: 0.12, scale: 1.05 } },
-      { p: 1.0, data: { x: 0.0, y: 0.0, z: -0.7, rotX: 0.55, rotY: 5.6, rotZ: 0.08, scale: 1.10 } },
-    ];
-    return interpolateWaypoints(waypoints, t);
+  // Center of section vs center of viewport
+  const sectionCenter = rect.top + rect.height * 0.5;
+  const viewportCenter = vh * 0.5;
+  const dist = sectionCenter - viewportCenter;
+
+  // Active range: section activates as it enters toward viewport center
+  const activeHalfRange = Math.max(vh * 0.7, rect.height * 0.55);
+
+  if (Math.abs(dist) > activeHalfRange) {
+    return { progress: 0, yRel: dist > 0 ? 1 : -1 };
   }
 
-  const waypoints: { p: number; data: ParallaxTransform }[] = [
-    // 0.0 - Hero: Clean initial baseline scale
-    { p: 0.0, data: { x: 1.35, y: 0.15, z: 0.1, rotX: 0.22, rotY: 0.45, rotZ: 0.08, scale: 1.05 } },
-    // 0.22 - About: Dynamic zoom-in as user scrolls down into narrative
-    { p: 0.22, data: { x: -1.15, y: -0.22, z: -0.1, rotX: 0.68, rotY: 1.65, rotZ: -0.25, scale: 1.35 } },
-    // 0.45 - Projects: Deep close-up zoom showcasing 3D geometry & satellites
-    { p: 0.45, data: { x: 1.25, y: 0.28, z: 0.18, rotX: -0.42, rotY: 3.1, rotZ: 0.32, scale: 1.45 } },
-    // 0.72 - Skills & Tech: Balanced framing behind modular bento cards
-    { p: 0.72, data: { x: -0.95, y: -0.38, z: -0.15, rotX: 0.52, rotY: 4.4, rotZ: -0.28, scale: 1.25 } },
-    // 1.0 - Contact / Footer: Majestic elevated scale looking up
-    { p: 1.0, data: { x: 0.85, y: -0.05, z: 0.05, rotX: 0.65, rotY: 5.85, rotZ: 0.18, scale: 1.30 } },
-  ];
+  const factor = 1 - Math.abs(dist) / activeHalfRange;
+  const smooth = factor * factor * (3 - 2 * factor); // smoothstep bell curve
 
-  return interpolateWaypoints(waypoints, t);
-}
-
-function interpolateWaypoints(
-  waypoints: { p: number; data: ParallaxTransform }[],
-  t: number
-): ParallaxTransform {
-  if (t <= waypoints[0].p) return { ...waypoints[0].data };
-  if (t >= waypoints[waypoints.length - 1].p) return { ...waypoints[waypoints.length - 1].data };
-
-  let i = 0;
-  while (i < waypoints.length - 1 && waypoints[i + 1].p < t) {
-    i++;
-  }
-
-  const p0 = waypoints[i].p;
-  const p1 = waypoints[i + 1].p;
-  const ratio = (t - p0) / (p1 - p0);
-  const factor = ratio * ratio * (3 - 2 * ratio);
-
-  const d0 = waypoints[i].data;
-  const d1 = waypoints[i + 1].data;
-
-  return {
-    x: d0.x + (d1.x - d0.x) * factor,
-    y: d0.y + (d1.y - d0.y) * factor,
-    z: d0.z + (d1.z - d0.z) * factor,
-    rotX: d0.rotX + (d1.rotX - d0.rotX) * factor,
-    rotY: d0.rotY + (d1.rotY - d0.rotY) * factor,
-    rotZ: d0.rotZ + (d1.rotZ - d0.rotZ) * factor,
-    scale: d0.scale + (d1.scale - d0.scale) * factor,
-  };
+  return { progress: smooth, yRel: dist / activeHalfRange };
 }
 
 export default function Background() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const gridRef = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);
   const [isLowTier, setIsLowTier] = useState(false);
   const [reducedMotion, setReducedMotion] = useState(false);
@@ -428,227 +311,356 @@ export default function Background() {
     gl.canvas.style.pointerEvents = 'none';
 
     // ─── 2. Camera & Scene Hierarchy ───
-    const camera = new Camera(gl, { fov: 42 });
+    const camera = new Camera(gl, { fov: 44 });
     camera.position.set(0, 0, 7.5);
 
     const scene = new Transform();
-    // Unified Root: The entire 3D cybernetic portfolio ecosystem transforms as ONE cohesive entity
-    const sceneRoot = new Transform();
-    sceneRoot.setParent(scene);
 
-    // ─── 3. Shared Program Shaders ───
-    const coreProgram = new Program(gl, {
-      vertex: coreVertexShader,
-      fragment: coreFragmentShader,
+    // ─── 3. Shaders & Material Programs ───
+    const terrainProgram = new Program(gl, {
+      vertex: terrainVertexShader,
+      fragment: terrainFragmentShader,
       transparent: true,
       cullFace: null,
       depthTest: true,
       depthWrite: false,
       uniforms: {
-        uColorBase: { value: new Color(0.06, 0.12, 0.28) },
-        uColorRim: { value: new Color(0.23, 0.51, 0.96) },
-        uLightDir: { value: new Vec3(0.8, 1.2, 1.5).normalize() },
-        uOpacity: { value: 0.65 }
-      }
-    });
-
-    const wireProgram = new Program(gl, {
-      vertex: wireVertexShader,
-      fragment: wireFragmentShader,
-      transparent: true,
-      depthTest: true,
-      depthWrite: false,
-      uniforms: {
-        uColorWire: { value: new Color(0.35, 0.75, 1.0) },
-        uOpacity: { value: 0.68 }
-      }
-    });
-
-    const nodeProgram = new Program(gl, {
-      vertex: nodeVertexShader,
-      fragment: nodeFragmentShader,
-      transparent: true,
-      depthTest: false,
-      uniforms: {
-        uColorNode: { value: new Color(0.4, 0.85, 1.0) },
+        uColorBase: { value: new Color(0.04, 0.1, 0.22) },
+        uColorGrid: { value: new Color(0.24, 0.58, 0.98) },
+        uOpacity: { value: 0.72 },
         uTime: { value: 0 },
-        uOpacity: { value: 0.85 },
-        uPixelRatio: { value: renderer.dpr }
+        uScrollProgress: { value: 0 }
       }
     });
 
-    const tetherProgram = new Program(gl, {
-      vertex: wireVertexShader,
-      fragment: tetherFragmentShader,
-      transparent: true,
-      depthTest: true,
-      depthWrite: false,
-      uniforms: {
-        uColorTether: { value: new Color(0.3, 0.7, 1.0) },
-        uOpacity: { value: 0.35 },
-        uTime: { value: 0 }
-      }
+    // Program factories for independent smooth transitions
+    const makeSymbolProgram = () =>
+      new Program(gl, {
+        vertex: symbolVertexShader,
+        fragment: symbolFragmentShader,
+        transparent: true,
+        cullFace: null,
+        depthTest: true,
+        depthWrite: false,
+        uniforms: {
+          uColorBase: { value: new Color(0.06, 0.12, 0.28) },
+          uColorRim: { value: new Color(0.23, 0.51, 0.96) },
+          uLightDir: { value: new Vec3(0.8, 1.2, 1.5).normalize() },
+          uOpacity: { value: 0.0 }
+        }
+      });
+
+    const makeWireProgram = () =>
+      new Program(gl, {
+        vertex: wireVertexShader,
+        fragment: wireFragmentShader,
+        transparent: true,
+        depthTest: true,
+        depthWrite: false,
+        uniforms: {
+          uColorWire: { value: new Color(0.35, 0.78, 1.0) },
+          uOpacity: { value: 0.0 }
+        }
+      });
+
+    const makeBeaconProgram = () =>
+      new Program(gl, {
+        vertex: beaconVertexShader,
+        fragment: beaconFragmentShader,
+        transparent: true,
+        depthTest: false,
+        uniforms: {
+          uColorBeacon: { value: new Color(0.42, 0.88, 1.0) },
+          uTime: { value: 0 },
+          uOpacity: { value: 0.0 },
+          uPixelRatio: { value: renderer.dpr }
+        }
+      });
+
+    // Programs for each section's 3D object
+    const aboutSymbolProg = makeSymbolProgram();
+    const aboutWireProg = makeWireProgram();
+
+    const projectsSymbolProg = makeSymbolProgram();
+    const projectsWireProg = makeWireProgram();
+
+    const skillsSymbolProg = makeSymbolProgram();
+    const skillsWireProg = makeWireProgram();
+    const skillsBeaconProg = makeBeaconProgram();
+
+    const certSymbolProg = makeSymbolProgram();
+    const certWireProg = makeWireProgram();
+
+    const testSymbolProg = makeSymbolProgram();
+    const testWireProg = makeWireProgram();
+
+    const contactSymbolProg = makeSymbolProgram();
+    const contactWireProg = makeWireProgram();
+    const contactBeaconProg = makeBeaconProgram();
+
+    const allSymbolProgs = [aboutSymbolProg, projectsSymbolProg, skillsSymbolProg, certSymbolProg, testSymbolProg, contactSymbolProg];
+    const allWireProgs = [aboutWireProg, projectsWireProg, skillsWireProg, certWireProg, testWireProg, contactWireProg];
+    const allBeaconProgs = [skillsBeaconProg, contactBeaconProg];
+
+    // ─── 4. BASE LAYER: Abstract Procedural 3D Topographic Mesh ───
+    // At Hero, this abstract landscape is the sole focal background, calm & architectural
+    const terrainGeom = new Plane(gl, {
+      width: 18,
+      height: 14,
+      widthSegments: 38,
+      heightSegments: 28
     });
 
-    // ─── 4. OBJECT 1: Central Polyhedral Core with Gyroscopic Rings (Computing / Architecture) ───
-    const polyData = createPolyhedralData(1.55);
+    const terrainMesh = new Mesh(gl, { geometry: terrainGeom, program: terrainProgram });
+    terrainMesh.rotation.set(-1.05, 0.08, -0.15);
+    terrainMesh.position.set(0.0, -1.3, -1.2);
+    terrainMesh.setParent(scene);
 
-    const coreGeometry = new Geometry(gl, {
-      position: { size: 3, data: polyData.corePositions },
-      normal: { size: 3, data: polyData.coreNormals }
-    });
-    const coreMesh = new Mesh(gl, { geometry: coreGeometry, program: coreProgram });
-    coreMesh.setParent(sceneRoot);
+    // ─── 5. SECTION-BASED 3D OBJECTS (Appear when respective section is in view) ───
 
-    const wireGeometry = new Geometry(gl, {
-      position: { size: 3, data: polyData.wirePositions }
-    });
-    const wireMesh = new Mesh(gl, { mode: gl.LINES, geometry: wireGeometry, program: wireProgram });
-    wireMesh.setParent(sceneRoot);
+    // ─────────────────────────────────────────────────────────────
+    // OBJECT 1: About & Background (`#about`) -> 3D Developer Code Monolith
+    // ─────────────────────────────────────────────────────────────
+    const aboutGroup = new Transform();
+    aboutGroup.setParent(scene);
+    aboutGroup.visible = false;
 
-    const nodeGeometry = new Geometry(gl, {
-      position: { size: 3, data: polyData.nodePositions }
-    });
-    const nodeMesh = new Mesh(gl, { mode: gl.POINTS, geometry: nodeGeometry, program: nodeProgram });
-    nodeMesh.setParent(sceneRoot);
+    // Solid beveled terminal monolith
+    const monolithGeom = new Box(gl, { width: 1.4, height: 1.8, depth: 0.22 });
+    const monolithMesh = new Mesh(gl, { geometry: monolithGeom, program: aboutSymbolProg });
+    monolithMesh.setParent(aboutGroup);
 
-    // Gyroscopic Orbital Rings
-    const ring1Geom = new Torus(gl, { radius: 2.1, tube: 0.016, radialSegments: 48, tubularSegments: 16 });
-    const ring2Geom = new Torus(gl, { radius: 2.48, tube: 0.013, radialSegments: 56, tubularSegments: 16 });
+    // Embossed 3D glowing `< / >` code symbol
+    const codeGlyphGeom = createCodeGlyphGeometry(gl);
+    const codeGlyphMesh = new Mesh(gl, { mode: gl.LINES, geometry: codeGlyphGeom, program: aboutWireProg });
+    codeGlyphMesh.position.set(0, 0, 0.13);
+    codeGlyphMesh.setParent(aboutGroup);
 
-    const ring1Mesh = new Mesh(gl, { geometry: ring1Geom, program: coreProgram });
-    ring1Mesh.rotation.set(0.65, 0.25, 0.0);
-    ring1Mesh.setParent(sceneRoot);
+    // Orbiting syntax gems
+    const syntaxGemGeom = new Box(gl, { width: 0.22, height: 0.22, depth: 0.22 });
+    const gem1 = new Mesh(gl, { geometry: syntaxGemGeom, program: aboutSymbolProg });
+    gem1.rotation.set(Math.PI / 4, Math.PI / 4, 0);
+    gem1.setParent(aboutGroup);
 
-    const ring2Mesh = new Mesh(gl, { geometry: ring2Geom, program: coreProgram });
-    ring2Mesh.rotation.set(-0.85, 0.15, 0.45);
-    ring2Mesh.setParent(sceneRoot);
+    const gem2 = new Mesh(gl, { geometry: syntaxGemGeom, program: aboutSymbolProg });
+    gem2.rotation.set(-Math.PI / 4, Math.PI / 4, 0);
+    gem2.setParent(aboutGroup);
 
-    // ─── 5. OBJECT 2: 3-Tier Database Storage Canister (MySQL & Backend Infrastructure) ───
-    const dbGroup = new Transform();
-    dbGroup.setParent(sceneRoot);
+    // Outer gimbal orbit ring
+    const codeRingGeom = new Torus(gl, { radius: 1.45, tube: 0.014, radialSegments: 36, tubularSegments: 8 });
+    const codeRingMesh = new Mesh(gl, { geometry: codeRingGeom, program: aboutWireProg });
+    codeRingMesh.rotation.set(0.45, 0.2, 0);
+    codeRingMesh.setParent(aboutGroup);
 
-    const discGeom = new Cylinder(gl, { radiusTop: 0.42, radiusBottom: 0.42, height: 0.15, radialSegments: 28 });
-    const discRingGeom = new Torus(gl, { radius: 0.43, tube: 0.012, radialSegments: 28, tubularSegments: 8 });
+    // ─────────────────────────────────────────────────────────────
+    // OBJECT 2: Featured Projects (`#projects`) -> 3D Database Server Architecture Stack
+    // ─────────────────────────────────────────────────────────────
+    const projectsGroup = new Transform();
+    projectsGroup.setParent(scene);
+    projectsGroup.visible = false;
 
-    [-0.2, 0.0, 0.2].forEach((offsetY) => {
-      const disc = new Mesh(gl, { geometry: discGeom, program: coreProgram });
+    const discGeom = new Cylinder(gl, { radiusTop: 0.62, radiusBottom: 0.62, height: 0.22, radialSegments: 28 });
+    const discRingGeom = new Torus(gl, { radius: 0.63, tube: 0.016, radialSegments: 28, tubularSegments: 8 });
+
+    [-0.32, 0.0, 0.32].forEach((offsetY) => {
+      const disc = new Mesh(gl, { geometry: discGeom, program: projectsSymbolProg });
       disc.position.set(0, offsetY, 0);
-      disc.setParent(dbGroup);
+      disc.setParent(projectsGroup);
 
-      const discRing = new Mesh(gl, { geometry: discRingGeom, program: wireProgram });
+      const discRing = new Mesh(gl, { geometry: discRingGeom, program: projectsWireProg });
       discRing.position.set(0, offsetY, 0);
       discRing.rotation.set(Math.PI / 2, 0, 0);
-      discRing.setParent(dbGroup);
+      discRing.setParent(projectsGroup);
     });
 
-    // ─── 6. OBJECT 3: Cryptographic Octahedron Crystal (Cybersecurity & Credentials) ───
-    const octaData = createOctahedronData(0.5);
-    const octaGroup = new Transform();
-    octaGroup.setParent(sceneRoot);
+    // Orbiting query cache data blocks
+    const queryBlockGeom = new Box(gl, { width: 0.22, height: 0.22, depth: 0.22 });
+    const queryBlock1 = new Mesh(gl, { geometry: queryBlockGeom, program: projectsSymbolProg });
+    queryBlock1.setParent(projectsGroup);
+    const queryBlock2 = new Mesh(gl, { geometry: queryBlockGeom, program: projectsSymbolProg });
+    queryBlock2.setParent(projectsGroup);
 
-    const octaGeom = new Geometry(gl, {
-      position: { size: 3, data: octaData.positions },
-      normal: { size: 3, data: octaData.normals }
-    });
-    const octaMesh = new Mesh(gl, { geometry: octaGeom, program: coreProgram });
-    octaMesh.setParent(octaGroup);
+    // Orbital data ring
+    const dbOrbitRing = new Torus(gl, { radius: 1.25, tube: 0.012, radialSegments: 36, tubularSegments: 8 });
+    const dbOrbitMesh = new Mesh(gl, { geometry: dbOrbitRing, program: projectsWireProg });
+    dbOrbitMesh.rotation.set(0.65, 0.35, 0);
+    dbOrbitMesh.setParent(projectsGroup);
 
-    const octaWireGeom = new Geometry(gl, {
-      position: { size: 3, data: octaData.wirePositions }
-    });
-    const octaWireMesh = new Mesh(gl, { mode: gl.LINES, geometry: octaWireGeom, program: wireProgram });
-    octaWireMesh.setParent(octaGroup);
+    // ─────────────────────────────────────────────────────────────
+    // OBJECT 3: Technologies & Tools (`#skills`) -> 3D Cisco Network Router & Packet Satellite
+    // ─────────────────────────────────────────────────────────────
+    const skillsGroup = new Transform();
+    skillsGroup.setParent(scene);
+    skillsGroup.visible = false;
 
-    // ─── 7. OBJECT 4: Cisco Router Node Satellite (Cisco Networking & Routing Mesh) ───
-    const ciscoGroup = new Transform();
-    ciscoGroup.setParent(sceneRoot);
+    const ciscoHubGeom = new Cylinder(gl, { radiusTop: 0.42, radiusBottom: 0.42, height: 0.26, radialSegments: 24 });
+    const ciscoHub = new Mesh(gl, { geometry: ciscoHubGeom, program: skillsSymbolProg });
+    ciscoHub.setParent(skillsGroup);
 
-    // Central router hub node
-    const ciscoHubGeom = new Cylinder(gl, { radiusTop: 0.28, radiusBottom: 0.28, height: 0.16, radialSegments: 20 });
-    const ciscoHub = new Mesh(gl, { geometry: ciscoHubGeom, program: coreProgram });
-    ciscoHub.setParent(ciscoGroup);
+    // Cross bus network trunks
+    const trunkGeom = new Cylinder(gl, { radiusTop: 0.022, radiusBottom: 0.022, height: 1.3, radialSegments: 8 });
+    const trunkH = new Mesh(gl, { geometry: trunkGeom, program: skillsWireProg });
+    trunkH.rotation.set(0, 0, Math.PI / 2);
+    trunkH.setParent(skillsGroup);
 
-    // Cross antenna prongs
-    const prongGeom = new Cylinder(gl, { radiusTop: 0.016, radiusBottom: 0.016, height: 0.88, radialSegments: 8 });
-    const prongH = new Mesh(gl, { geometry: prongGeom, program: wireProgram });
-    prongH.rotation.set(0, 0, Math.PI / 2);
-    prongH.setParent(ciscoGroup);
+    const trunkV = new Mesh(gl, { geometry: trunkGeom, program: skillsWireProg });
+    trunkV.setParent(skillsGroup);
 
-    const prongV = new Mesh(gl, { geometry: prongGeom, program: wireProgram });
-    prongV.setParent(ciscoGroup);
-
-    // Satellite wave ring
-    const ciscoRingGeom = new Torus(gl, { radius: 0.48, tube: 0.01, radialSegments: 32, tubularSegments: 8 });
-    const ciscoRing = new Mesh(gl, { geometry: ciscoRingGeom, program: wireProgram });
+    // Equatorial protocol ring
+    const ciscoRingGeom = new Torus(gl, { radius: 0.78, tube: 0.014, radialSegments: 32, tubularSegments: 8 });
+    const ciscoRing = new Mesh(gl, { geometry: ciscoRingGeom, program: skillsWireProg });
     ciscoRing.rotation.set(Math.PI / 2, 0, 0);
-    ciscoRing.setParent(ciscoGroup);
+    ciscoRing.setParent(skillsGroup);
 
-    // 4 Glowing transceiver port LEDs
+    // 4 LED Beacon Ports
     const ciscoPortPositions = new Float32Array([
-      0.44, 0, 0,
-      -0.44, 0, 0,
-      0, 0.44, 0,
-      0, -0.44, 0
+      0.65, 0, 0,
+      -0.65, 0, 0,
+      0, 0.65, 0,
+      0, -0.65, 0
     ]);
     const ciscoPortsGeom = new Geometry(gl, { position: { size: 3, data: ciscoPortPositions } });
-    const ciscoPortsMesh = new Mesh(gl, { mode: gl.POINTS, geometry: ciscoPortsGeom, program: nodeProgram });
-    ciscoPortsMesh.setParent(ciscoGroup);
+    const ciscoPortsMesh = new Mesh(gl, { mode: gl.POINTS, geometry: ciscoPortsGeom, program: skillsBeaconProg });
+    ciscoPortsMesh.setParent(skillsGroup);
 
-    // ─── 8. OBJECT 5: Syntax / Terminal Code Prism (Frontend & Full-Stack Development) ───
-    const codeGroup = new Transform();
-    codeGroup.setParent(sceneRoot);
+    // Orbiting packet spheres
+    const packetGeom = new Sphere(gl, { radius: 0.1, widthSegments: 14, heightSegments: 10 });
+    const packet1 = new Mesh(gl, { geometry: packetGeom, program: skillsSymbolProg });
+    packet1.setParent(skillsGroup);
+    const packet2 = new Mesh(gl, { geometry: packetGeom, program: skillsSymbolProg });
+    packet2.setParent(skillsGroup);
 
-    const boxGeom = new Box(gl, { width: 0.46, height: 0.58, depth: 0.38 });
-    const codeMesh = new Mesh(gl, { geometry: boxGeom, program: coreProgram });
-    codeMesh.setParent(codeGroup);
+    // ─────────────────────────────────────────────────────────────
+    // OBJECT 4: Certifications & Credentials (`#certifications`) -> 3D Cybersecurity Shield & Crest
+    // ─────────────────────────────────────────────────────────────
+    const certGroup = new Transform();
+    certGroup.setParent(scene);
+    certGroup.visible = false;
 
-    // Outer wireframe framing the code prism
-    const codeRingGeom = new Torus(gl, { radius: 0.42, tube: 0.01, radialSegments: 24, tubularSegments: 8 });
-    const codeRing = new Mesh(gl, { geometry: codeRingGeom, program: wireProgram });
-    codeRing.rotation.set(0.4, 0.3, 0);
-    codeRing.setParent(codeGroup);
+    // Solid shield body
+    const shieldPlateGeom = new Box(gl, { width: 1.15, height: 1.45, depth: 0.16 });
+    const shieldPlate = new Mesh(gl, { geometry: shieldPlateGeom, program: certSymbolProg });
+    shieldPlate.setParent(certGroup);
 
-    // ─── 9. Interconnecting Constellation Network Links (Lines connecting Satellites to Core) ───
-    // 4 lines (8 vertices) linking Central Core (0,0,0) to each of the 4 satellites
-    const tetherPositions = new Float32Array(4 * 2 * 3);
-    const tetherGeom = new Geometry(gl, {
-      position: { size: 3, data: tetherPositions }
-    });
-    const tetherMesh = new Mesh(gl, { mode: gl.LINES, geometry: tetherGeom, program: tetherProgram });
-    tetherMesh.setParent(sceneRoot);
+    // Beveled shield wireframe contour
+    const shieldGeom = createShieldGeometry(gl);
+    const shieldMesh = new Mesh(gl, { mode: gl.LINES, geometry: shieldGeom, program: certWireProg });
+    shieldMesh.position.set(0, 0, 0.1);
+    shieldMesh.setParent(certGroup);
 
-    // ─── 10. Dynamic Theme Color Adaptation (Dark & Light Mode) ───
+    // Central diamond security lock / verified core
+    const lockGeom = new Box(gl, { width: 0.42, height: 0.42, depth: 0.32 });
+    const lockMesh = new Mesh(gl, { geometry: lockGeom, program: certSymbolProg });
+    lockMesh.position.set(0, 0, 0.15);
+    lockMesh.rotation.set(0, 0, Math.PI / 4);
+    lockMesh.setParent(certGroup);
+
+    // Outer verification ring
+    const certRingGeom = new Torus(gl, { radius: 1.25, tube: 0.014, radialSegments: 36, tubularSegments: 8 });
+    const certRing = new Mesh(gl, { geometry: certRingGeom, program: certWireProg });
+    certRing.rotation.set(0.35, 0.2, 0);
+    certRing.setParent(certGroup);
+
+    // ─────────────────────────────────────────────────────────────
+    // OBJECT 5: Testimonials (`#testimonials`) -> 3D Trust Endorsement Crystal
+    // ─────────────────────────────────────────────────────────────
+    const testGroup = new Transform();
+    testGroup.setParent(scene);
+    testGroup.visible = false;
+
+    // Faceted diamond bipyramid crystal
+    const crystalGeom = new Sphere(gl, { radius: 0.58, widthSegments: 6, heightSegments: 4 });
+    const crystalMesh = new Mesh(gl, { geometry: crystalGeom, program: testSymbolProg });
+    crystalMesh.setParent(testGroup);
+
+    // Wireframe facet lines
+    const crystalWireMesh = new Mesh(gl, { mode: gl.LINES, geometry: crystalGeom, program: testWireProg });
+    crystalWireMesh.setParent(testGroup);
+
+    // Dual interlocking gyroscope trust rings
+    const gyroRing1Geom = new Torus(gl, { radius: 1.05, tube: 0.014, radialSegments: 32, tubularSegments: 8 });
+    const gyroRing1 = new Mesh(gl, { geometry: gyroRing1Geom, program: testWireProg });
+    gyroRing1.setParent(testGroup);
+
+    const gyroRing2Geom = new Torus(gl, { radius: 1.25, tube: 0.014, radialSegments: 32, tubularSegments: 8 });
+    const gyroRing2 = new Mesh(gl, { geometry: gyroRing2Geom, program: testWireProg });
+    gyroRing2.rotation.set(Math.PI / 2, 0, 0);
+    gyroRing2.setParent(testGroup);
+
+    // ─────────────────────────────────────────────────────────────
+    // OBJECT 6: Contact & Connect (`#contact`) -> 3D Holographic Communication Satellite
+    // ─────────────────────────────────────────────────────────────
+    const contactGroup = new Transform();
+    contactGroup.setParent(scene);
+    contactGroup.visible = false;
+
+    // Transmitter sphere
+    const commSphereGeom = new Sphere(gl, { radius: 0.45, widthSegments: 20, heightSegments: 14 });
+    const commSphere = new Mesh(gl, { geometry: commSphereGeom, program: contactSymbolProg });
+    commSphere.setParent(contactGroup);
+
+    // Parabolic receiver dish
+    const dishGeom = new Cylinder(gl, { radiusTop: 0.65, radiusBottom: 0.15, height: 0.28, radialSegments: 24 });
+    const dishMesh = new Mesh(gl, { geometry: dishGeom, program: contactSymbolProg });
+    dishMesh.rotation.set(Math.PI / 2, 0, 0);
+    dishMesh.position.set(0, 0, -0.2);
+    dishMesh.setParent(contactGroup);
+
+    // Antenna spike
+    const spikeGeom = new Cylinder(gl, { radiusTop: 0.012, radiusBottom: 0.02, height: 0.9, radialSegments: 8 });
+    const spikeMesh = new Mesh(gl, { geometry: spikeGeom, program: contactWireProg });
+    spikeMesh.position.set(0, 0.55, 0);
+    spikeMesh.setParent(contactGroup);
+
+    // Pulsing antenna beacon at tip of spike
+    const beaconPointPositions = new Float32Array([0, 1.0, 0]);
+    const beaconPointGeom = new Geometry(gl, { position: { size: 3, data: beaconPointPositions } });
+    const beaconPointMesh = new Mesh(gl, { mode: gl.POINTS, geometry: beaconPointGeom, program: contactBeaconProg });
+    beaconPointMesh.setParent(contactGroup);
+
+    // Expanding holographic pulse wave ring
+    const pulseRingGeom = new Torus(gl, { radius: 1.15, tube: 0.014, radialSegments: 36, tubularSegments: 8 });
+    const pulseRingMesh = new Mesh(gl, { geometry: pulseRingGeom, program: contactWireProg });
+    pulseRingMesh.rotation.set(Math.PI / 2, 0, 0);
+    pulseRingMesh.setParent(contactGroup);
+
+    // ─── 6. Dynamic Theme Color Adaptation (Dark & Light Mode) ───
     const applyThemeColors = () => {
       const isDark = document.documentElement.classList.contains('dark');
       if (isDark) {
-        // Futuristic Obsidian / Bioluminescent Electric Blue
-        coreProgram.uniforms.uColorBase.value.set(0.05, 0.11, 0.25);
-        coreProgram.uniforms.uColorRim.value.set(0.23, 0.51, 0.96);
-        coreProgram.uniforms.uOpacity.value = 0.65;
+        terrainProgram.uniforms.uColorBase.value.set(0.04, 0.09, 0.2);
+        terrainProgram.uniforms.uColorGrid.value.set(0.24, 0.58, 0.98);
+        terrainProgram.uniforms.uOpacity.value = 0.72;
 
-        wireProgram.uniforms.uColorWire.value.set(0.35, 0.75, 1.0);
-        wireProgram.uniforms.uOpacity.value = 0.65;
+        allSymbolProgs.forEach((prog) => {
+          prog.uniforms.uColorBase.value.set(0.05, 0.12, 0.25);
+          prog.uniforms.uColorRim.value.set(0.3, 0.72, 1.0);
+        });
 
-        nodeProgram.uniforms.uColorNode.value.set(0.45, 0.88, 1.0);
-        nodeProgram.uniforms.uOpacity.value = 0.85;
+        allWireProgs.forEach((prog) => {
+          prog.uniforms.uColorWire.value.set(0.4, 0.85, 1.0);
+        });
 
-        tetherProgram.uniforms.uColorTether.value.set(0.28, 0.65, 0.98);
-        tetherProgram.uniforms.uOpacity.value = 0.32;
+        allBeaconProgs.forEach((prog) => {
+          prog.uniforms.uColorBeacon.value.set(0.5, 0.95, 1.0);
+        });
       } else {
-        // Clean Minimalist Frosted Ice / Architectural Blueprint Azure
-        coreProgram.uniforms.uColorBase.value.set(0.72, 0.82, 0.95);
-        coreProgram.uniforms.uColorRim.value.set(0.15, 0.39, 0.92);
-        coreProgram.uniforms.uOpacity.value = 0.42;
+        terrainProgram.uniforms.uColorBase.value.set(0.76, 0.85, 0.96);
+        terrainProgram.uniforms.uColorGrid.value.set(0.18, 0.44, 0.92);
+        terrainProgram.uniforms.uOpacity.value = 0.52;
 
-        wireProgram.uniforms.uColorWire.value.set(0.18, 0.42, 0.88);
-        wireProgram.uniforms.uOpacity.value = 0.45;
+        allSymbolProgs.forEach((prog) => {
+          prog.uniforms.uColorBase.value.set(0.82, 0.9, 0.98);
+          prog.uniforms.uColorRim.value.set(0.1, 0.45, 0.98);
+        });
 
-        nodeProgram.uniforms.uColorNode.value.set(0.15, 0.4, 0.95);
-        nodeProgram.uniforms.uOpacity.value = 0.75;
+        allWireProgs.forEach((prog) => {
+          prog.uniforms.uColorWire.value.set(0.08, 0.35, 0.92);
+        });
 
-        tetherProgram.uniforms.uColorTether.value.set(0.2, 0.45, 0.85);
-        tetherProgram.uniforms.uOpacity.value = 0.22;
+        allBeaconProgs.forEach((prog) => {
+          prog.uniforms.uColorBeacon.value.set(0.1, 0.5, 1.0);
+        });
       }
     };
 
@@ -663,19 +675,21 @@ export default function Background() {
     });
     themeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
-    // ─── 11. Viewport Sizing & Resize ───
+    // ─── 7. Viewport Resize ───
     const handleResize = () => {
       const width = window.innerWidth;
       const height = window.innerHeight;
       renderer.setSize(width, height);
       camera.perspective({ aspect: width / height });
-      nodeProgram.uniforms.uPixelRatio.value = renderer.dpr;
+      allBeaconProgs.forEach((prog) => {
+        prog.uniforms.uPixelRatio.value = renderer.dpr;
+      });
     };
 
     window.addEventListener('resize', handleResize);
     handleResize();
 
-    // ─── 12. Mouse Inertia & Parallax Input ───
+    // ─── 8. Mouse Parallax Input ───
     let mouseTargetX = 0;
     let mouseTargetY = 0;
     let currentMouseX = 0;
@@ -692,11 +706,7 @@ export default function Background() {
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
-    // ─── 13. Smooth Interpolation State ───
-    let curX = 0, curY = 0, curZ = 0;
-    let curRotX = 0, curRotY = 0, curRotZ = 0;
-    let curScale = 1.0;
-    let lastTime = performance.now();
+    // ─── 9. Render & Parallax Loop ───
     let isVisible = true;
 
     const handleVisibility = () => {
@@ -704,145 +714,240 @@ export default function Background() {
     };
     document.addEventListener('visibilitychange', handleVisibility);
 
-    const isPortrait = window.innerHeight > window.innerWidth;
-    const initialProgress = window.scrollY / Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-    const initialWp = getParallaxWaypoint(initialProgress, isPortrait);
-    curX = initialWp.x;
-    curY = initialWp.y;
-    curZ = initialWp.z;
-    curRotX = initialWp.rotX;
-    curRotY = initialWp.rotY;
-    curRotZ = initialWp.rotZ;
-    curScale = initialWp.scale;
-
-    let lastScrollY = window.scrollY;
-    let scrollVelocity = 0;
-
-    // ─── 14. Main 60FPS Render & Parallax Loop ───
     const renderLoop = (now: number) => {
       if (isDisposed) return;
       animationFrameId = requestAnimationFrame(renderLoop);
 
       if (!isVisible) return;
 
-      const dt = Math.min((now - lastTime) * 0.001, 0.1);
-      lastTime = now;
       const tSec = now * 0.001;
 
       // Update shader time uniforms
-      nodeProgram.uniforms.uTime.value = tSec;
-      tetherProgram.uniforms.uTime.value = tSec;
+      terrainProgram.uniforms.uTime.value = tSec;
+      allBeaconProgs.forEach((prog) => {
+        prog.uniforms.uTime.value = tSec;
+      });
 
-      // Local Gyroscopic Spin for Central Rings
-      ring1Mesh.rotation.y += dt * 0.32;
-      ring1Mesh.rotation.x += dt * 0.14;
-
-      ring2Mesh.rotation.z -= dt * 0.28;
-      ring2Mesh.rotation.y -= dt * 0.16;
-
-      // ── Satellite 1: Database Canister (Top-Left quadrant) ──
-      const dbX = -2.85 + Math.cos(tSec * 0.45) * 0.28;
-      const dbY = 1.45 + Math.sin(tSec * 0.5) * 0.22;
-      const dbZ = -0.75 + Math.sin(tSec * 0.35) * 0.2;
-      dbGroup.position.set(dbX, dbY, dbZ);
-      dbGroup.rotation.set(0.35 + Math.sin(tSec * 0.3) * 0.15, tSec * 0.35, -0.2);
-
-      // ── Satellite 2: Cryptographic Octahedron (Top-Right quadrant) ──
-      const octX = 2.8 + Math.sin(tSec * 0.4) * 0.3;
-      const octY = 1.55 + Math.cos(tSec * 0.38) * 0.25;
-      const octZ = -0.65 + Math.cos(tSec * 0.45) * 0.22;
-      octaGroup.position.set(octX, octY, octZ);
-      octaGroup.rotation.set(tSec * 0.45, tSec * 0.55, tSec * 0.2);
-
-      // ── Satellite 3: Cisco Router Node (Bottom-Left quadrant) ──
-      const ciscoX = -2.55 + Math.sin(tSec * 0.35) * 0.25;
-      const ciscoY = -1.75 + Math.cos(tSec * 0.42) * 0.2;
-      const ciscoZ = -0.55 + Math.sin(tSec * 0.28) * 0.2;
-      ciscoGroup.position.set(ciscoX, ciscoY, ciscoZ);
-      ciscoGroup.rotation.set(0.4, tSec * 0.38, tSec * 0.25);
-
-      // ── Satellite 4: Syntax / Code Prism (Bottom-Right quadrant) ──
-      const codeX = 2.65 + Math.cos(tSec * 0.48) * 0.26;
-      const codeY = -1.55 + Math.sin(tSec * 0.36) * 0.22;
-      const codeZ = -0.7 + Math.sin(tSec * 0.42) * 0.2;
-      codeGroup.position.set(codeX, codeY, codeZ);
-      codeGroup.rotation.set(tSec * 0.3, tSec * 0.4, tSec * 0.2);
-
-      // ── Update Constellation Tether Lines ──
-      // Line 0: Core -> DB Canister
-      tetherPositions[0] = 0; tetherPositions[1] = 0; tetherPositions[2] = 0;
-      tetherPositions[3] = dbX; tetherPositions[4] = dbY; tetherPositions[5] = dbZ;
-
-      // Line 1: Core -> Octahedron
-      tetherPositions[6] = 0; tetherPositions[7] = 0; tetherPositions[8] = 0;
-      tetherPositions[9] = octX; tetherPositions[10] = octY; tetherPositions[11] = octZ;
-
-      // Line 2: Core -> Cisco Router
-      tetherPositions[12] = 0; tetherPositions[13] = 0; tetherPositions[14] = 0;
-      tetherPositions[15] = ciscoX; tetherPositions[16] = ciscoY; tetherPositions[17] = ciscoZ;
-
-      // Line 3: Core -> Code Prism
-      tetherPositions[18] = 0; tetherPositions[19] = 0; tetherPositions[20] = 0;
-      tetherPositions[21] = codeX; tetherPositions[22] = codeY; tetherPositions[23] = codeZ;
-
-      tetherGeom.attributes.position.needsUpdate = true;
-
-      // ── Parallax Waypoint & Dynamic Scroll-Down Zoom ──
+      // Scroll Tracking
       const currentScrollY = window.scrollY;
-      const scrollDelta = currentScrollY - lastScrollY;
-      lastScrollY = currentScrollY;
-
-      // Damped scroll velocity tracking
-      scrollVelocity += (scrollDelta - scrollVelocity) * 0.12;
-
-      // Tactile zoom impulse: scrolling down pulses a smooth forward zoom-in
-      const scrollZoomImpulse = Math.min(0.25, Math.max(-0.06, scrollVelocity * 0.0032));
-
       const scrollMax = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
-      const scrollProgress = currentScrollY / scrollMax;
-      const currentPortrait = window.innerHeight > window.innerWidth;
+      const scrollProgress = Math.min(Math.max(currentScrollY / scrollMax, 0), 1);
 
-      const wp = getParallaxWaypoint(scrollProgress, currentPortrait);
+      terrainProgram.uniforms.uScrollProgress.value = scrollProgress;
 
+      // Mouse Parallax Damping
       currentMouseX += (mouseTargetX - currentMouseX) * 0.05;
       currentMouseY += (mouseTargetY - currentMouseY) * 0.05;
 
-      const ambientSpinY = (now * 0.00015);
-      const ambientSpinX = Math.sin(now * 0.0002) * 0.08;
+      // Static Blueprint Dot Grid Parallax
+      if (gridRef.current && !reducedMotion) {
+        const gridParallaxY = -(currentScrollY * 0.12);
+        gridRef.current.style.transform = `translate3d(0, ${gridParallaxY}px, 0)`;
+      }
 
-      const targetX = wp.x + currentMouseX * 0.22;
-      const targetY = wp.y - currentMouseY * 0.18;
-      const targetZ = wp.z;
+      // Abstract Terrain Parallax Motion (undulates and tilts smoothly)
+      const targetTerrainY = -1.3 + (scrollProgress * 0.45) - currentMouseY * 0.15;
+      const targetTerrainRotX = -1.05 + (scrollProgress * 0.25) - currentMouseY * 0.18;
+      const targetTerrainRotY = 0.08 + currentMouseX * 0.22;
 
-      const targetRotX = wp.rotX + ambientSpinX - currentMouseY * 0.32;
-      const targetRotY = wp.rotY + ambientSpinY + currentMouseX * 0.38;
-      const targetRotZ = wp.rotZ;
+      terrainMesh.position.y += (targetTerrainY - terrainMesh.position.y) * 0.06;
+      terrainMesh.rotation.x += (targetTerrainRotX - terrainMesh.rotation.x) * 0.06;
+      terrainMesh.rotation.y += (targetTerrainRotY - terrainMesh.rotation.y) * 0.06;
 
-      // Combined progressive section zoom + dynamic scroll-down impulse
-      const targetScale = wp.scale + scrollZoomImpulse;
+      // ─── Responsive Positioning & Placement ───
+      const width = window.innerWidth;
+      const isWide = width >= 1440;
+      const isMediumDesktop = width >= 1024 && width < 1440;
+      const isTablet = width >= 768 && width < 1024;
+      const isPortrait = width < 768;
 
-      const lerpFactor = reducedMotion ? 0.2 : 0.045;
-      curX += (targetX - curX) * lerpFactor;
-      curY += (targetY - curY) * lerpFactor;
-      curZ += (targetZ - curZ) * lerpFactor;
+      let baseX = 3.35;
+      let baseY = 0.25;
+      let baseZ = 0.35;
+      let scaleMult = 1.3;
 
-      curRotX += (targetRotX - curRotX) * lerpFactor;
-      curRotY += (targetRotY - curRotY) * lerpFactor;
-      curRotZ += (targetRotZ - curRotZ) * lerpFactor;
+      if (isWide) {
+        // Wide screen: sits in open right margin beside cards
+        baseX = 3.45;
+        baseY = 0.25;
+        baseZ = 0.4;
+        scaleMult = 1.35;
+      } else if (isMediumDesktop) {
+        // Medium desktop: positioned beside headers & cards
+        baseX = 3.0;
+        baseY = 0.35;
+        baseZ = 0.3;
+        scaleMult = 1.15;
+      } else if (isTablet) {
+        baseX = 2.4;
+        baseY = 0.4;
+        baseZ = 0.1;
+        scaleMult = 0.95;
+      } else {
+        // Mobile / portrait: centered behind content cards with gentle ambient scale
+        baseX = 0.0;
+        baseY = 0.1;
+        baseZ = -0.4;
+        scaleMult = 0.78;
+      }
 
-      curScale += (targetScale - curScale) * lerpFactor;
+      const opacityMult = isPortrait ? 0.35 : 0.95;
 
-      sceneRoot.position.set(curX, curY, curZ);
-      sceneRoot.rotation.set(curRotX, curRotY, curRotZ);
-      sceneRoot.scale.set(curScale, curScale, curScale);
+      // ─── REAL-TIME SECTION-BASED REVEAL LOGIC ───
+      // Each section's 3D object only surfaces when that specific section is active in view.
+      // At Hero (top of page), all objects are hidden, keeping the initial hero background static & calm.
 
-      // Render the unified 3D constellation
-      renderer.render({ scene, camera });
+      // 1. About Section -> Developer Code Monolith
+      const aboutState = getSectionState('about');
+      aboutGroup.visible = aboutState.progress > 0.01;
+      const aboutOpacity = aboutState.progress * opacityMult;
+      aboutSymbolProg.uniforms.uOpacity.value = aboutOpacity * 0.9;
+      aboutWireProg.uniforms.uOpacity.value = aboutOpacity * 1.0;
+
+      if (aboutGroup.visible) {
+        const yOff = (1 - aboutState.progress) * -0.55;
+        const curScale = aboutState.progress * scaleMult;
+        aboutGroup.position.set(
+          baseX + currentMouseX * 0.2,
+          baseY + yOff - currentMouseY * 0.15,
+          baseZ
+        );
+        aboutGroup.scale.set(curScale, curScale, curScale);
+        aboutGroup.rotation.set(0.18 + Math.sin(tSec * 0.4) * 0.1, tSec * 0.35 + currentMouseX * 0.25, 0.08);
+
+        // Orbiting syntax gems
+        gem1.position.set(Math.cos(tSec * 1.4) * 1.1, Math.sin(tSec * 1.0) * 0.35, Math.sin(tSec * 1.4) * 0.7);
+        gem2.position.set(-Math.cos(tSec * 1.4) * 1.1, -Math.sin(tSec * 1.0) * 0.35, -Math.sin(tSec * 1.4) * 0.7);
+      }
+
+      // 2. Featured Projects Section -> Database Server Architecture Stack
+      const projectsState = getSectionState('projects');
+      projectsGroup.visible = projectsState.progress > 0.01;
+      const projectsOpacity = projectsState.progress * opacityMult;
+      projectsSymbolProg.uniforms.uOpacity.value = projectsOpacity * 0.9;
+      projectsWireProg.uniforms.uOpacity.value = projectsOpacity * 1.0;
+
+      if (projectsGroup.visible) {
+        const yOff = (1 - projectsState.progress) * -0.55;
+        const curScale = projectsState.progress * scaleMult;
+        projectsGroup.position.set(
+          baseX + currentMouseX * 0.2,
+          baseY + 0.05 + yOff - currentMouseY * 0.15,
+          baseZ
+        );
+        projectsGroup.scale.set(curScale, curScale, curScale);
+        projectsGroup.rotation.set(0.32 + Math.sin(tSec * 0.35) * 0.1, tSec * 0.38 + currentMouseX * 0.25, -0.12);
+
+        // Orbiting query cache data blocks
+        queryBlock1.position.set(Math.cos(tSec * 1.5) * 1.15, 0.22 + Math.sin(tSec * 1.1) * 0.18, Math.sin(tSec * 1.5) * 1.15);
+        queryBlock2.position.set(-Math.cos(tSec * 1.3) * 1.2, -0.18 + Math.cos(tSec * 0.8) * 0.15, -Math.sin(tSec * 1.3) * 1.2);
+      }
+
+      // 3. Skills Section -> Cisco Network Router & Packet Satellite
+      const skillsState = getSectionState('skills');
+      skillsGroup.visible = skillsState.progress > 0.01;
+      const skillsOpacity = skillsState.progress * opacityMult;
+      skillsSymbolProg.uniforms.uOpacity.value = skillsOpacity * 0.9;
+      skillsWireProg.uniforms.uOpacity.value = skillsOpacity * 1.0;
+      skillsBeaconProg.uniforms.uOpacity.value = skillsOpacity * 1.0;
+
+      if (skillsGroup.visible) {
+        const yOff = (1 - skillsState.progress) * -0.55;
+        const curScale = skillsState.progress * scaleMult;
+        skillsGroup.position.set(
+          baseX + currentMouseX * 0.2,
+          baseY - 0.05 + yOff - currentMouseY * 0.15,
+          baseZ
+        );
+        skillsGroup.scale.set(curScale, curScale, curScale);
+        skillsGroup.rotation.set(0.3 + Math.sin(tSec * 0.4) * 0.08, tSec * 0.38 + currentMouseX * 0.3, tSec * 0.18);
+
+        // Orbiting packet spheres
+        packet1.position.set(Math.cos(tSec * 1.8) * 0.78, Math.sin(tSec * 1.8) * 0.78, 0);
+        packet2.position.set(Math.cos(tSec * 1.8 + Math.PI) * 0.78, Math.sin(tSec * 1.8 + Math.PI) * 0.78, 0);
+      }
+
+      // 4. Certifications Section -> Cybersecurity Shield & Crest
+      const certState = getSectionState('certifications');
+      certGroup.visible = certState.progress > 0.01;
+      const certOpacity = certState.progress * opacityMult;
+      certSymbolProg.uniforms.uOpacity.value = certOpacity * 0.9;
+      certWireProg.uniforms.uOpacity.value = certOpacity * 1.0;
+
+      if (certGroup.visible) {
+        const yOff = (1 - certState.progress) * -0.55;
+        const curScale = certState.progress * scaleMult;
+        certGroup.position.set(
+          baseX + currentMouseX * 0.2,
+          baseY + yOff - currentMouseY * 0.15,
+          baseZ
+        );
+        certGroup.scale.set(curScale, curScale, curScale);
+        certGroup.rotation.set(0.2 + Math.sin(tSec * 0.35) * 0.1, tSec * 0.3 + currentMouseX * 0.25, 0.06);
+
+        // Rotating central lock
+        lockMesh.rotation.set(tSec * 0.6, tSec * 0.5, Math.PI / 4);
+      }
+
+      // 5. Testimonials Section -> Trust Endorsement Crystal
+      const testState = getSectionState('testimonials');
+      testGroup.visible = testState.progress > 0.01;
+      const testOpacity = testState.progress * opacityMult;
+      testSymbolProg.uniforms.uOpacity.value = testOpacity * 0.9;
+      testWireProg.uniforms.uOpacity.value = testOpacity * 1.0;
+
+      if (testGroup.visible) {
+        const yOff = (1 - testState.progress) * -0.55;
+        const curScale = testState.progress * scaleMult;
+        testGroup.position.set(
+          baseX + currentMouseX * 0.2,
+          baseY + yOff - currentMouseY * 0.15,
+          baseZ
+        );
+        testGroup.scale.set(curScale, curScale, curScale);
+        testGroup.rotation.set(0.25 + Math.sin(tSec * 0.3) * 0.1, tSec * 0.32 + currentMouseX * 0.2, 0.1);
+
+        // Dual counter-rotating gyroscope rings
+        gyroRing1.rotation.set(tSec * 0.5, tSec * 0.7, 0);
+        gyroRing2.rotation.set(-tSec * 0.6, 0, tSec * 0.5);
+      }
+
+      // 6. Contact Section -> Holographic Communication Satellite
+      const contactState = getSectionState('contact');
+      contactGroup.visible = contactState.progress > 0.01;
+      const contactOpacity = contactState.progress * opacityMult;
+      contactSymbolProg.uniforms.uOpacity.value = contactOpacity * 0.9;
+      contactWireProg.uniforms.uOpacity.value = contactOpacity * 1.0;
+      contactBeaconProg.uniforms.uOpacity.value = contactOpacity * 1.0;
+
+      if (contactGroup.visible) {
+        const yOff = (1 - contactState.progress) * -0.55;
+        const curScale = contactState.progress * scaleMult;
+        contactGroup.position.set(
+          baseX + currentMouseX * 0.2,
+          baseY + yOff - currentMouseY * 0.15,
+          baseZ
+        );
+        contactGroup.scale.set(curScale, curScale, curScale);
+        contactGroup.rotation.set(0.28 + Math.sin(tSec * 0.3) * 0.1, tSec * 0.34 + currentMouseX * 0.25, -0.1);
+
+        // Pulse wave expansion
+        const pulseCycle = (tSec * 0.8) % 1.0;
+        const pulseScale = 0.8 + pulseCycle * 0.9;
+        pulseRingMesh.scale.set(pulseScale, pulseScale, pulseScale);
+      }
+
+      // Render Scene with safe guard for frame teardown
+      try {
+        renderer.render({ scene, camera });
+      } catch (err) {
+        // Graceful handling of teardown
+      }
     };
 
     animationFrameId = requestAnimationFrame(renderLoop);
 
-    // ─── 15. Cleanup on Unmount ───
+    // ─── 10. Cleanup on Unmount ───
     return () => {
       isDisposed = true;
       cancelAnimationFrame(animationFrameId);
@@ -869,12 +974,13 @@ export default function Background() {
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
-      {/* Layer 1: Dot Matrix Grid (Code Matrix blueprint background) */}
+      {/* Layer 1: Dot Matrix Grid (Static blueprint background with smooth vertical parallax drift) */}
       <div
-        className="absolute -top-32 -bottom-32 inset-x-0 bg-[radial-gradient(hsla(var(--foreground)/0.12)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_60%,transparent_100%)] opacity-35"
+        ref={gridRef}
+        className="absolute -top-48 -bottom-48 inset-x-0 bg-[radial-gradient(hsla(var(--foreground)/0.12)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_60%,transparent_100%)] opacity-35 will-change-transform"
       />
 
-      {/* Layer 2: Real-time Blender-style 3D Constellation Parallax Canvas */}
+      {/* Layer 2: Abstract Topographic 3D Horizon with Section-Based Revealed Symbols */}
       <div ref={containerRef} className="absolute inset-0 w-full h-full" />
     </div>
   );
