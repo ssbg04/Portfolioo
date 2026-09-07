@@ -18,7 +18,7 @@
 - certifications page title remove the ```03 // Credentials & Badges
 
 Certifications & Badges
-Verified digital credentials from Cisco and industry partners. Each badge represents completed coursework, assessments, and demonstrated competency.``` section -->
+Verified digital credentials from Cisco and industry partners. Each badge represents completed coursework, assessments, and demonstrated competency
 <!-- - background shapes in landscape the right side shapes collides
 - in portrait make the different approach of parallex and layout of the shapes -->
 <!-- - Lite mode default the toggle is disabled
