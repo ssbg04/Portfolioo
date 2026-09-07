@@ -6,9 +6,15 @@ interface ProjectsProps {
   initialProjects: Project[];
   showArchiveLink?: boolean;
   limit?: number;
+  sectionTag?: string;
 }
 
-export default function Projects({ initialProjects, showArchiveLink = true, limit }: ProjectsProps) {
+export default function Projects({
+  initialProjects,
+  showArchiveLink = true,
+  limit,
+  sectionTag = '02 // Projects'
+}: ProjectsProps) {
   const [filter, setFilter] = useState<string>('All');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [activeImage, setActiveImage] = useState<string>('');
@@ -68,7 +74,7 @@ export default function Projects({ initialProjects, showArchiveLink = true, limi
             <div>
               <span className="section-tag">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-pulse" />
-                01 // Projects
+                {sectionTag}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
                 Featured Work

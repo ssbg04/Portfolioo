@@ -6,9 +6,15 @@ interface AboutProps {
   settings: SiteSettings;
   experience: Experience[];
   education?: Education[];
+  sectionTag?: string;
 }
 
-export default function About({ settings, experience, education = [] }: AboutProps) {
+export default function About({
+  settings,
+  experience,
+  education = [],
+  sectionTag = '01 // Profile & Background'
+}: AboutProps) {
   const paragraphs = (settings.biography && settings.biography.length > 0)
     ? settings.biography
     : [];
@@ -29,7 +35,7 @@ export default function About({ settings, experience, education = [] }: AboutPro
             <div>
               <span className="section-tag">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                04 // Profile &amp; Background
+                {sectionTag}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
                 About &amp; Background

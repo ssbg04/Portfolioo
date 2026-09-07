@@ -4,6 +4,7 @@ import ScrollReveal from './ScrollReveal';
 
 interface SkillsProps {
   skills: Skill[];
+  sectionTag?: string;
 }
 
 const getCategoryIcon = (category: string) => {
@@ -50,7 +51,7 @@ const getCategoryIcon = (category: string) => {
   );
 };
 
-export default function Skills({ skills }: SkillsProps) {
+export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: SkillsProps) {
   if (!skills || skills.length === 0) {
     return null;
   }
@@ -91,7 +92,7 @@ export default function Skills({ skills }: SkillsProps) {
             <div>
               <span className="section-tag">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                02 // Tech Stack
+                {sectionTag}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
                 Technologies &amp; Tools
@@ -134,28 +135,12 @@ export default function Skills({ skills }: SkillsProps) {
                         {categorySkills.map((skill) => (
                           <div
                             key={skill.name}
-                            className="p-3 rounded-xl border border-border-custom/80 bg-foreground-custom/[0.02] hover:bg-foreground-custom/[0.05] transition-all flex flex-col justify-between"
+                            className="p-3 rounded-xl border border-border-custom/80 bg-foreground-custom/[0.02] hover:bg-foreground-custom/[0.05] hover:border-primary-custom/40 transition-all flex items-center justify-between group/item"
                           >
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-semibold text-foreground-custom">
-                                {skill.name}
-                              </span>
-                              {typeof skill.proficiency === 'number' && skill.proficiency > 0 && (
-                                <span className="text-[10px] font-mono text-primary-custom font-medium">
-                                  {skill.proficiency}%
-                                </span>
-                              )}
-                            </div>
-
-                            {/* Minimal Proficiency Meter if defined */}
-                            {typeof skill.proficiency === 'number' && skill.proficiency > 0 && (
-                              <div className="w-full h-1 bg-border-custom/50 rounded-full overflow-hidden mt-2">
-                                <div
-                                  className="h-full bg-primary-custom rounded-full transition-all duration-500"
-                                  style={{ width: `${Math.min(100, Math.max(0, skill.proficiency))}%` }}
-                                />
-                              </div>
-                            )}
+                            <span className="text-xs font-semibold text-foreground-custom group-hover/item:text-primary-custom transition-colors">
+                              {skill.name}
+                            </span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary-custom/40 group-hover/item:bg-primary-custom transition-colors shrink-0 ml-2" />
                           </div>
                         ))}
                       </div>

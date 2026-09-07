@@ -284,7 +284,7 @@ export const POST: APIRoute = async ({ request }) => {
           const catSkills = skills.filter(s => (s.category || 'Core') === cat).map(s => s.name);
           return `• ${cat}: ${catSkills.join(', ')}`;
         }).join('\n') +
-        `\n\nYou can review the full interactive matrix in the Skills Matrix section.`;
+        `\n\nYou can review the full breakdown in the Technologies & Tools section.`;
 
     } else if (query.includes('experience') || query.includes('job') || query.includes('career') || query.includes('intern') || query.includes('role')) {
       reply = `Professional Experience:\n\n` +

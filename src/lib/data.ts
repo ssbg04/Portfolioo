@@ -22,7 +22,7 @@ export interface Project {
 export interface Skill {
   name: string;
   category: 'Frontend' | 'Backend' | 'Mobile' | 'Database' | 'DevOps' | 'AI/ML' | 'Tools' | 'Cybersecurity' | string;
-  proficiency: number; // 0-100
+  proficiency?: number; // optional (deprecated)
   icon?: string;
 }
 
@@ -403,7 +403,6 @@ export async function getSkills(): Promise<Skill[]> {
     return skills.map((s: any) => ({
       name: s.name || 'Skill',
       category: s.category || 'Tools',
-      proficiency: typeof s.proficiency === 'number' ? s.proficiency : 85,
       icon: s.icon
     }));
   } catch (error) {

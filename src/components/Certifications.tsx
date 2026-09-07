@@ -6,11 +6,12 @@ import haptic from '../lib/haptics';
 interface Props {
   certifications?: Certification[];
   extraCerts?: Certification[];
+  sectionTag?: string;
 }
 
 type FilterMode = 'all' | 'certificates' | 'badges';
 
-export default function Certifications({ certifications, extraCerts = [] }: Props) {
+export default function Certifications({ certifications, extraCerts = [], sectionTag = '04 // Certifications' }: Props) {
   const baseCerts = (certifications && certifications.length > 0) ? certifications : mockCertifications;
   const allCerts = [...baseCerts, ...extraCerts];
 
@@ -324,7 +325,7 @@ export default function Certifications({ certifications, extraCerts = [] }: Prop
             <div>
               <span className="section-tag">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                03 // Certifications
+                {sectionTag}
               </span>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
                 Verified Credentials &amp; Certifications
