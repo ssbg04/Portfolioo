@@ -1,15 +1,25 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SpotlightLens() {
   const [active, setActive] = useState(false);
-  const [pos, setPos] = useState({ clientX: -100, clientY: -100 });
-  const [scroll, setScroll] = useState({ x: 0, y: 0 });
   const [cloneHtml, setCloneHtml] = useState('');
   const [bodySize, setBodySize] = useState({ width: 0, height: 0 });
-  const [isHovered, setIsHovered] = useState(false);
+  const [scroll, setScroll] = useState({ x: 0, y: 0 });
+  const [magnifierPos, setMagnifierPos] = useState({ clientX: -100, clientY: -100 });
   const [isDesktop, setIsDesktop] = useState(false);
-  const [magnifierEnabled, setMagnifierEnabled] = useState(true);
+  const [magnifierEnabled, setMagnifierEnabled] = useState(false);
+
+  // Direct DOM ref for 120 FPS cursor (0 React re-renders on mouse movement)
+  const ringRef = useRef<HTMLDivElement>(null);
+
+  // High-frequency coordinates in refs to bypass React render cycle
+  const mousePos = useRef({ x: -100, y: -100 });
+  const ringPos = useRef({ x: -100, y: -100 });
+  const isHoveredRef = useRef(false);
+  const isMouseDownRef = useRef(false);
+  const isVisibleRef = useRef(false);
+  const rafId = useRef<number | null>(null);
 
   useEffect(() => {
     const checkDesktop = () => {
@@ -22,9 +32,7 @@ export default function SpotlightLens() {
     window.addEventListener('tier-change', checkDesktop);
 
     const savedMag = localStorage.getItem('magnifierEnabled');
-    if (savedMag !== null) {
-      setMagnifierEnabled(savedMag === 'true');
-    }
+    setMagnifierEnabled(savedMag === 'true');
 
     const onMagPref = (e: any) => {
       if (e.detail && typeof e.detail.enabled === 'boolean') {
@@ -34,7 +42,7 @@ export default function SpotlightLens() {
     };
 
     const onToggleMode = () => {
-      setActive(prev => {
+      setActive((prev) => {
         if (!prev) {
           const contentDiv = document.getElementById('magnify-content');
           if (contentDiv) {
@@ -55,6 +63,7 @@ export default function SpotlightLens() {
 
     return () => {
       window.removeEventListener('resize', checkDesktop);
+      window.removeEventListener('tier-change', checkDesktop);
       window.removeEventListener('magnifier-preference-changed', onMagPref);
       window.removeEventListener('toggle-magnifier-mode', onToggleMode);
     };
@@ -62,6 +71,83 @@ export default function SpotlightLens() {
 
   useEffect(() => {
     if (!isDesktop) return;
+
+    // 120 FPS RAF Animation Loop (Hardware Accelerated via translate3d)
+    const renderLoop = () => {
+      // Smooth spring follow with Linear Interpolation (Lerp)
+      const ease = 0.18;
+      ringPos.current.x += (mousePos.current.x - ringPos.current.x) * ease;
+      ringPos.current.y += (mousePos.current.y - ringPos.current.y) * ease;
+
+      const rx = Number(ringPos.current.x.toFixed(2));
+      const ry = Number(ringPos.current.y.toFixed(2));
+      const mx = Number(mousePos.current.x.toFixed(2));
+      const my = Number(mousePos.current.y.toFixed(2));
+
+      if (ringRef.current) {
+        let scale = 1;
+        if (isMouseDownRef.current) {
+          scale = 0.82;
+        } else if (isHoveredRef.current) {
+          scale = 1.65;
+        }
+
+        ringRef.current.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%) scale(${scale})`;
+        ringRef.current.style.opacity = isVisibleRef.current ? '1' : '0';
+      }
+
+      rafId.current = requestAnimationFrame(renderLoop);
+    };
+
+    rafId.current = requestAnimationFrame(renderLoop);
+
+    const handlePointerMove = (e: PointerEvent) => {
+      mousePos.current.x = e.clientX;
+      mousePos.current.y = e.clientY;
+      isVisibleRef.current = true;
+
+      // If magnifier active, update its position
+      if (active) {
+        setMagnifierPos({ clientX: e.clientX, clientY: e.clientY });
+      }
+
+      // Fast check for interactive targets
+      const target = e.target as HTMLElement | null;
+      if (target) {
+        const isInteractive = Boolean(
+          target.closest('a, button, [role="button"], input, textarea, select, .bento-card, .cursor-pointer')
+        );
+        isHoveredRef.current = isInteractive;
+
+        if (ringRef.current) {
+          if (isInteractive) {
+            ringRef.current.style.borderColor = 'var(--primary-custom)';
+            ringRef.current.style.backgroundColor = 'rgba(56, 189, 248, 0.12)';
+            ringRef.current.style.boxShadow = '0 0 20px rgba(56, 189, 248, 0.25)';
+          } else {
+            ringRef.current.style.borderColor = '';
+            ringRef.current.style.backgroundColor = '';
+            ringRef.current.style.boxShadow = '';
+          }
+        }
+      }
+    };
+
+    const handlePointerDown = () => {
+      isMouseDownRef.current = true;
+    };
+
+    const handlePointerUp = () => {
+      isMouseDownRef.current = false;
+    };
+
+    const handleMouseLeave = () => {
+      isVisibleRef.current = false;
+    };
+
+    const handleMouseEnter = () => {
+      isVisibleRef.current = true;
+    };
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (
@@ -79,6 +165,7 @@ export default function SpotlightLens() {
             height: document.documentElement.scrollHeight,
           });
           setScroll({ x: window.scrollX, y: window.scrollY });
+          setMagnifierPos({ clientX: mousePos.current.x, clientY: mousePos.current.y });
           setActive(true);
         }
       }
@@ -90,44 +177,42 @@ export default function SpotlightLens() {
       }
     };
 
-    const handleMouseMove = (e: MouseEvent) => {
-      setPos({ clientX: e.clientX, clientY: e.clientY });
-
-      const target = e.target as HTMLElement | null;
-      if (target) {
-        const isInteractive = Boolean(
-          target.closest('a, button, [role="button"], input, textarea, select, .bento-card, .cursor-pointer')
-        );
-        setIsHovered(isInteractive);
-      }
-    };
-
     const handleScroll = () => {
       if (active) setScroll({ x: window.scrollX, y: window.scrollY });
     };
 
+    window.addEventListener('pointermove', handlePointerMove, { passive: true });
+    window.addEventListener('pointerdown', handlePointerDown, { passive: true });
+    window.addEventListener('pointerup', handlePointerUp, { passive: true });
+    document.addEventListener('mouseleave', handleMouseLeave);
+    document.addEventListener('mouseenter', handleMouseEnter);
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
-    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
+      if (rafId.current) cancelAnimationFrame(rafId.current);
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerdown', handlePointerDown);
+      window.removeEventListener('pointerup', handlePointerUp);
+      document.removeEventListener('mouseleave', handleMouseLeave);
+      document.removeEventListener('mouseenter', handleMouseEnter);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
-      window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('scroll', handleScroll);
     };
   }, [active, isDesktop, magnifierEnabled]);
 
   const LENS_SIZE = 220;
   const SCALE = 1.45;
-  const pageX = pos.clientX + scroll.x;
-  const pageY = pos.clientY + scroll.y;
+  const pageX = magnifierPos.clientX + scroll.x;
+  const pageY = magnifierPos.clientY + scroll.y;
 
   if (!isDesktop) return null;
 
   return (
     <>
+      {/* ─── Magnifier Mode (Hold 'R' / Toggle) ─── */}
       <AnimatePresence>
         {active && (
           <motion.div
@@ -135,12 +220,12 @@ export default function SpotlightLens() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.12 }}
-            className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-2 border-primary-custom/80 shadow-[0_0_40px_rgba(37,99,235,0.35)] bg-background-custom"
+            className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-2 border-primary-custom/80 shadow-[0_0_40px_rgba(56,189,248,0.35)] bg-background-custom"
             style={{
               width: LENS_SIZE,
               height: LENS_SIZE,
-              left: pos.clientX - LENS_SIZE / 2,
-              top: pos.clientY - LENS_SIZE / 2,
+              left: magnifierPos.clientX - LENS_SIZE / 2,
+              top: magnifierPos.clientY - LENS_SIZE / 2,
             }}
           >
             <div
@@ -154,33 +239,21 @@ export default function SpotlightLens() {
               dangerouslySetInnerHTML={{ __html: cloneHtml }}
             />
             <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/10 to-transparent mix-blend-overlay" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary-custom shadow-[0_0_8px_rgba(37,99,235,1)]" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary-custom shadow-[0_0_8px_var(--primary-custom)]" />
           </motion.div>
         )}
       </AnimatePresence>
 
+      {/* ─── Redesigned Single Fluid Cursor Ring (No Center Dot) ─── */}
       {!active && (
-        <div className="fixed inset-0 pointer-events-none z-[99998] overflow-hidden" aria-hidden="true">
+        <div className="fixed inset-0 pointer-events-none z-[99998] overflow-hidden select-none" aria-hidden="true">
+          {/* Outer Spring Ring (36px, Lerp follow, smooth expand on hover) */}
           <div
-            className="fixed rounded-full border border-primary-custom/40 transition-all duration-150 ease-out will-change-transform"
+            ref={ringRef}
+            className="fixed top-0 left-0 w-9 h-9 rounded-full border border-primary-custom/40 bg-primary-custom/[0.04] backdrop-blur-[0.5px] pointer-events-none will-change-transform transition-[border-color,background-color,box-shadow] duration-200"
             style={{
-              width: isHovered ? '42px' : '24px',
-              height: isHovered ? '42px' : '24px',
-              left: pos.clientX,
-              top: pos.clientY,
-              transform: 'translate(-50%, -50%)',
-              backgroundColor: isHovered ? 'rgba(37, 99, 235, 0.08)' : 'transparent',
-              boxShadow: isHovered ? '0 0 14px rgba(37, 99, 235, 0.2)' : 'none',
-            }}
-          />
-          <div
-            className="fixed rounded-full bg-primary-custom transition-transform duration-75 ease-out will-change-transform"
-            style={{
-              width: '4px',
-              height: '4px',
-              left: pos.clientX,
-              top: pos.clientY,
-              transform: 'translate(-50%, -50%)',
+              transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)',
+              opacity: 0,
             }}
           />
         </div>

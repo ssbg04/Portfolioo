@@ -5,7 +5,7 @@ import { useIsMobile } from '../lib/hooks';
 export default function ControlsDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [magnifierEnabled, setMagnifierEnabled] = useState<boolean>(true);
+  const [magnifierEnabled, setMagnifierEnabled] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(100);
   const [isLiteMode, setIsLiteMode] = useState<boolean>(false);
   const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
@@ -28,9 +28,7 @@ export default function ControlsDropdown() {
     window.addEventListener('tier-change', checkLite);
 
     const savedMag = localStorage.getItem('magnifierEnabled');
-    if (savedMag !== null) {
-      setMagnifierEnabled(savedMag === 'true');
-    }
+    setMagnifierEnabled(savedMag === 'true');
 
     const savedZoom = localStorage.getItem('pageZoom');
     if (savedZoom) {
