@@ -2,6 +2,7 @@ import React from 'react';
 import type { Education, Experience, SiteSettings } from '../lib/data';
 import ScrollReveal from './ScrollReveal';
 import GithubContributions from './GithubContributions';
+import LocalTimeWeather from './LocalTimeWeather';
 
 interface AboutProps {
   settings: SiteSettings;
@@ -129,6 +130,8 @@ export default function About({
                       <span className="font-mono text-muted-foreground-custom">Location</span>
                       <span className="font-medium text-foreground-custom">{settings.location}</span>
                     </div>
+
+                    <LocalTimeWeather latitude={14.130792771445167} longitude={121.43629230199042} />
 
                     <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
                       <span className="font-mono text-muted-foreground-custom">Contact</span>
