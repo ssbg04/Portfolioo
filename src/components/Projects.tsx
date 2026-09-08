@@ -80,9 +80,6 @@ export default function Projects({
                 Featured Work
               </h2>
             </div>
-            <p className="text-sm text-muted-foreground-custom max-w-sm">
-              Production systems, institutional database platforms, and full-stack solutions.
-            </p>
           </div>
 
           {/* Filter Pills */}
@@ -124,58 +121,36 @@ export default function Projects({
             >
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
                 
-                {/* Left: Interactive Browser Mockup Window */}
+                {/* Left: Project Screenshot Viewport */}
                 <div className="lg:col-span-7 flex flex-col justify-between">
-                  <div className="browser-frame shadow-xl group/mockup relative">
-                    {/* Simulated Browser Chrome Top Header with Lock & .local/dashboard */}
-                    <div className="browser-header">
-                      {/* Traffic Lights */}
-                      <div className="flex items-center gap-1.5">
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]/80 inline-block" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]/80 inline-block" />
-                        <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]/80 inline-block" />
-                      </div>
-
-                      {/* Mockup Address Bar */}
-                      <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-background-custom/80 border border-border-custom text-[11px] font-mono text-muted-foreground-custom truncate max-w-[220px] sm:max-w-[280px]">
-                        <svg className="w-2.5 h-2.5 text-primary-custom flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-                        </svg>
-                        <span className="truncate">{flagshipProject.slug}.local/dashboard</span>
-                      </div>
-
-                      {/* Status Indicator */}
-                      <div className="ml-auto px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-mono font-medium text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5 shadow-xs">
+                  <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-border-custom bg-muted-custom/20 shadow-lg group/mockup">
+                    {flagshipProject.status && (
+                      <div className="absolute top-3.5 right-3.5 z-20 px-2.5 py-1 rounded-full bg-background-custom/85 backdrop-blur-md border border-border-custom text-[10px] font-mono font-medium text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span className="hidden sm:inline">{flagshipProject.status || 'LIVE PRODUCTION'}</span>
-                        <span className="sm:hidden">LIVE</span>
+                        <span>{flagshipProject.status}</span>
                       </div>
-                    </div>
-
-                    {/* Screenshot Viewport with Hover Overlay */}
-                    <div className="relative aspect-[16/10] w-full overflow-hidden bg-muted-custom/30">
-                      {flagshipProject.coverImage ? (
-                        <img
-                          src={flagshipProject.coverImage}
-                          alt={flagshipProject.title}
-                          loading="lazy"
-                          decoding="async"
-                          className="w-full h-full object-cover group-hover/hero:scale-[1.02] transition-transform duration-500 ease-out"
-                        />
-                      ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-primary-custom/10 to-transparent">
-                          <span className="font-mono text-xs text-muted-foreground-custom">Preview Interface</span>
-                        </div>
-                      )}
-                      {/* Click to inspect overlay */}
-                      <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/hero:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                        <span className="px-3.5 py-1.5 rounded-full bg-background-custom/90 text-foreground-custom font-mono text-xs font-semibold backdrop-blur-sm shadow-md flex items-center gap-1.5">
-                          <svg className="w-3.5 h-3.5 text-primary-custom" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
-                          </svg>
-                          Click to View Details
-                        </span>
+                    )}
+                    {flagshipProject.coverImage ? (
+                      <img
+                        src={flagshipProject.coverImage}
+                        alt={flagshipProject.title}
+                        loading="lazy"
+                        decoding="async"
+                        className="w-full h-full object-cover group-hover/hero:scale-[1.02] transition-transform duration-500 ease-out"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex flex-col items-center justify-center p-6 text-center bg-gradient-to-br from-primary-custom/10 to-transparent">
+                        <span className="font-mono text-xs text-muted-foreground-custom">Preview Interface</span>
                       </div>
+                    )}
+                    {/* Click to inspect overlay */}
+                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/hero:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                      <span className="px-3.5 py-1.5 rounded-full bg-background-custom/90 text-foreground-custom font-mono text-xs font-semibold backdrop-blur-sm shadow-md flex items-center gap-1.5">
+                        <svg className="w-3.5 h-3.5 text-primary-custom" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
+                        </svg>
+                        Click to View Details
+                      </span>
                     </div>
                   </div>
 
@@ -309,42 +284,27 @@ export default function Projects({
                     className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group hover:border-primary-custom/40 transition-all duration-300 cursor-pointer"
                   >
                     <div>
-                      {/* Browser Mockup Window for Secondary Cards with Lock & .local */}
+                      {/* Project Screenshot Viewport for Secondary Cards */}
                       {project.coverImage ? (
-                        <div className="browser-frame mb-5 group/submockup">
-                          <div className="browser-header py-1.5 px-3">
-                            <div className="flex items-center gap-1.5">
-                              <span className="w-2 h-2 rounded-full bg-[#ff5f56]/70 inline-block" />
-                              <span className="w-2 h-2 rounded-full bg-[#ffbd2e]/70 inline-block" />
-                              <span className="w-2 h-2 rounded-full bg-[#27c93f]/70 inline-block" />
+                        <div className="relative aspect-[16/9] w-full rounded-2xl overflow-hidden border border-border-custom bg-muted-custom/20 mb-5 group/submockup shadow-xs">
+                          {project.status && (
+                            <div className="absolute top-2.5 right-2.5 z-20 px-2 py-0.5 rounded-full bg-background-custom/85 backdrop-blur-md border border-border-custom text-[9px] font-mono font-medium text-emerald-500 dark:text-emerald-400 flex items-center gap-1 shadow-sm">
+                              <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>{project.status}</span>
                             </div>
-                            <div className="flex items-center gap-1 text-[10px] font-mono text-muted-foreground-custom/80 ml-2 truncate max-w-[170px] sm:max-w-[210px]">
-                              <svg className="w-2 h-2 text-primary-custom flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                                <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-                              </svg>
-                              <span className="truncate">{project.slug}.local</span>
-                            </div>
-                            {project.status && (
-                              <div className="ml-auto px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-[9px] font-mono text-emerald-500 dark:text-emerald-400 flex items-center gap-1">
-                                <span className="w-1 h-1 rounded-full bg-emerald-500 animate-pulse" />
-                                {project.status}
-                              </div>
-                            )}
-                          </div>
-                          <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted-custom/20">
-                            <img
-                              src={project.coverImage}
-                              alt={project.title}
-                              loading="lazy"
-                              decoding="async"
-                              className="w-full h-full object-cover group-hover/submockup:scale-[1.03] transition-transform duration-500 ease-out"
-                            />
-                            {/* Hover overlay hint */}
-                            <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
-                              <span className="px-3 py-1 rounded-full bg-background-custom/90 text-foreground-custom font-mono text-[11px] font-medium backdrop-blur-sm shadow-sm">
-                                View Details ↗
-                              </span>
-                            </div>
+                          )}
+                          <img
+                            src={project.coverImage}
+                            alt={project.title}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover/submockup:scale-[1.03] transition-transform duration-500 ease-out"
+                          />
+                          {/* Hover overlay hint */}
+                          <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center pointer-events-none">
+                            <span className="px-3 py-1 rounded-full bg-background-custom/90 text-foreground-custom font-mono text-[11px] font-medium backdrop-blur-sm shadow-sm">
+                              View Details ↗
+                            </span>
                           </div>
                         </div>
                       ) : null}
@@ -533,46 +493,25 @@ export default function Projects({
             {/* LEFT COLUMN: Screenshot Overview & Gallery */}
             <div className="w-full md:w-7/12 bg-muted-custom/25 border-b md:border-b-0 md:border-r border-border-custom p-5 sm:p-6 flex flex-col justify-between overflow-y-auto max-h-[45vh] md:max-h-[90vh]">
               <div>
-                {/* Browser Frame Mockup with lock icon & .local */}
-                <div className="browser-frame shadow-xl overflow-hidden mb-4">
-                  <div className="browser-header">
-                    <div className="flex items-center gap-1.5">
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#ff5f56]/80 inline-block" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]/80 inline-block" />
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#27c93f]/80 inline-block" />
+                {/* Clean Project Screenshot Frame */}
+                <div className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-border-custom bg-black/5 mb-4 shadow-md">
+                  {selectedProject.status && (
+                    <div className="absolute top-3 right-3 z-20 px-2.5 py-1 rounded-full bg-background-custom/85 backdrop-blur-md border border-border-custom text-[10px] font-mono font-medium text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5 shadow-sm">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span>{selectedProject.status}</span>
                     </div>
-
-                    {/* Address bar with lock */}
-                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-md bg-background-custom/80 border border-border-custom text-[11px] font-mono text-muted-foreground-custom truncate max-w-[200px] sm:max-w-[260px]">
-                      <svg className="w-2.5 h-2.5 text-primary-custom flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M10 1a4.5 4.5 0 00-4.5 4.5V9H5a2 2 0 00-2 2v6a2 2 0 002 2h10a2 2 0 002-2v-6a2 2 0 00-2-2h-.5V5.5A4.5 4.5 0 0010 1zm3 8V5.5a3 3 0 10-6 0V9h6z" clipRule="evenodd" />
-                      </svg>
-                      <span className="truncate">{selectedProject.slug}.local/dashboard</span>
+                  )}
+                  {activeImage ? (
+                    <img
+                      src={activeImage}
+                      alt={selectedProject.title}
+                      className="w-full h-full object-cover transition-all duration-300"
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center p-6 text-center text-muted-foreground-custom font-mono text-xs">
+                      No Screenshot Preview Available
                     </div>
-
-                    {/* Status Pill */}
-                    {selectedProject.status && (
-                      <div className="ml-auto px-2 py-0.5 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-[10px] font-mono font-medium text-emerald-500 dark:text-emerald-400 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                        <span>{selectedProject.status}</span>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Main Large Image Viewport */}
-                  <div className="relative aspect-[16/10] w-full overflow-hidden bg-black/5">
-                    {activeImage ? (
-                      <img
-                        src={activeImage}
-                        alt={selectedProject.title}
-                        className="w-full h-full object-cover transition-all duration-300"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center p-6 text-center text-muted-foreground-custom font-mono text-xs">
-                        No Screenshot Preview Available
-                      </div>
-                    )}
-                  </div>
+                  )}
                 </div>
 
                 {/* Gallery Thumbnails Carousel if multiple images exist */}

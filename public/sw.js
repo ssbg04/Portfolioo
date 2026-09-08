@@ -68,7 +68,7 @@ self.addEventListener('fetch', (event) => {
             return rootCached;
           }
           return new Response(
-            '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Offline - Cris Charles</title><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:sans-serif;background:#090a0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;"><div><h1 style="font-size:1.8rem;margin-bottom:12px;">📶 Offline Mode</h1><p style="color:#888;max-width:400px;margin:0 auto 20px;">You are currently offline. Please reconnect to view new updates or visit previously cached pages.</p><a href="/" style="display:inline-block;padding:10px 20px;border-radius:12px;background:#3b82f6;color:#fff;text-decoration:none;font-weight:600;">Return to Home</a></div></body></html>',
+            '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Offline - Cris Charles</title><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="font-family:sans-serif;background:#090a0f;color:#fff;display:flex;align-items:center;justify-content:center;height:100vh;margin:0;text-align:center;padding:20px;"><div><h1 style="font-size:1.8rem;margin-bottom:12px;">Offline Mode</h1><p style="color:#888;max-width:400px;margin:0 auto 20px;">You are currently offline. Please reconnect to view new updates or visit previously cached pages.</p><a href="/" style="display:inline-block;padding:10px 20px;border-radius:12px;background:#3b82f6;color:#fff;text-decoration:none;font-weight:600;">Return to Home</a></div></body></html>',
             { headers: { 'Content-Type': 'text/html' } }
           );
         })

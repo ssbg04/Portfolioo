@@ -331,9 +331,6 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                 Verified Credentials &amp; Certifications
               </h2>
             </div>
-            <p className="text-sm text-muted-foreground-custom max-w-sm">
-              Official certifications, diplomas, and digitally verified skill badges.
-            </p>
           </div>
         </ScrollReveal>
 
@@ -386,7 +383,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
                 }`}
               >
-                <span>Skill Badges</span>
+                <span>Badges</span>
                 <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${filterMode === 'badges' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
                   {skillBadges.length}
                 </span>
@@ -400,11 +397,11 @@ export default function Certifications({ certifications, extraCerts = [], sectio
           <div className="mb-12">
             {filterMode === 'all' && hasBothTypes && (
               <div className="flex items-center gap-2.5 mb-5">
-                <span className="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-primary-custom" />
                 <h3 className="text-xl sm:text-2xl font-bold font-heading text-foreground-custom tracking-tight">
-                  Official Certificates &amp; Diplomas
+                  Certificates
                 </h3>
-                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-semibold">
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom font-medium">
                   {documentCerts.length} Document{documentCerts.length > 1 ? 's' : ''}
                 </span>
               </div>
@@ -423,7 +420,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     tabIndex={0}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedCert(cert); }}
                     aria-label={`View full certificate document for ${cert.title}`}
-                    className="bento-card p-5 sm:p-6 flex flex-col justify-between h-full group cursor-pointer hover:border-amber-500/50 hover:-translate-y-1.5 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-500"
+                    className="bento-card p-5 sm:p-6 flex flex-col justify-between h-full group cursor-pointer hover:border-primary-custom/40 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
                   >
                     <div>
                       {/* Top Bar: Code & Official Certificate Pill */}
@@ -432,9 +429,9 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                           <span className="text-[10px] font-mono text-muted-foreground-custom font-medium">
                             #{cert.code}
                           </span>
-                          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-                            <span>Certificate Document</span>
+                          <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
+                            <span>Certificate</span>
                           </span>
                         </div>
                         <span className="text-xs font-mono font-bold text-foreground-custom">
@@ -443,7 +440,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       </div>
 
                       {/* Large Document Preview Viewport (Aspect-16/10) */}
-                      <div className="w-full aspect-[16/10] my-2 rounded-2xl bg-foreground-custom/[0.02] border border-border-custom/70 flex items-center justify-center p-3 relative overflow-hidden group-hover:border-amber-500/40 transition-all shadow-inner">
+                      <div className="w-full aspect-[16/10] my-2 rounded-2xl bg-foreground-custom/[0.02] border border-border-custom/70 flex items-center justify-center p-3 relative overflow-hidden group-hover:border-primary-custom/30 transition-all shadow-inner">
                         {cert.badgeImage ? (
                           <img
                             src={cert.badgeImage}
@@ -461,7 +458,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                             }}
                           />
                         ) : null}
-                        <div className={`cert-fallback-icon w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 ${cert.badgeImage ? 'hidden' : ''}`}>
+                        <div className={`cert-fallback-icon w-16 h-16 rounded-2xl bg-foreground-custom/5 flex items-center justify-center text-muted-foreground-custom ${cert.badgeImage ? 'hidden' : ''}`}>
                           <svg className="w-8 h-8" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                           </svg>
@@ -469,7 +466,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
 
                         {/* Interactive Zoom & Drag Callout overlay */}
                         <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center gap-2 text-white text-xs font-medium rounded-2xl backdrop-blur-xs">
-                          <svg className="w-4 h-4 text-amber-400" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
                           </svg>
                           <span className="font-semibold">Click to Zoom &amp; Pan Document</span>
@@ -477,7 +474,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       </div>
 
                       {/* Title & Metadata */}
-                      <h4 className="text-base sm:text-lg font-bold font-heading text-foreground-custom group-hover:text-amber-500 transition-colors leading-snug mt-3">
+                      <h4 className="text-base sm:text-lg font-bold font-heading text-foreground-custom group-hover:text-primary-custom transition-colors leading-snug mt-3">
                         {cert.title}
                       </h4>
                       {cert.description && (
@@ -492,8 +489,8 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       <span className="text-[11px] font-mono text-muted-foreground-custom">
                         {cert.issueDate ? `Issued ${cert.issueDate}` : 'Verified Credential'}
                       </span>
-                      <span className="text-[11px] font-mono text-amber-600 dark:text-amber-400 font-semibold group-hover:underline flex items-center gap-1">
-                        <span>Inspect Document</span>
+                      <span className="text-[11px] font-mono text-primary-custom font-semibold group-hover:underline flex items-center gap-1">
+                        <span>View Certificate</span>
                         <span>↗</span>
                       </span>
                     </div>
@@ -509,11 +506,11 @@ export default function Certifications({ certifications, extraCerts = [], sectio
           <div>
             {filterMode === 'all' && hasBothTypes && (
               <div className="flex items-center gap-2.5 mb-5 pt-4">
-                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="w-2.5 h-2.5 rounded-full bg-primary-custom" />
                 <h3 className="text-xl sm:text-2xl font-bold font-heading text-foreground-custom tracking-tight">
-                  Verified Digital Skill Badges
+                  Badges
                 </h3>
-                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-semibold">
+                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom font-medium">
                   {skillBadges.length} Badge{skillBadges.length > 1 ? 's' : ''}
                 </span>
               </div>
@@ -532,7 +529,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     tabIndex={0}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedCert(badge); }}
                     aria-label={`View details for badge ${badge.title}`}
-                    className="bento-card p-4 sm:p-5 flex flex-col justify-between items-center text-center h-full group cursor-pointer hover:border-emerald-500/50 hover:-translate-y-1.5 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500"
+                    className="bento-card p-4 sm:p-5 flex flex-col justify-between items-center text-center h-full group cursor-pointer hover:border-primary-custom/40 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
                   >
                     <div className="w-full flex flex-col items-center">
                       {/* Top Bar: Code & Skill Badge Pill */}
@@ -540,16 +537,16 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                         <span className="text-[10px] font-mono text-muted-foreground-custom font-medium">
                           #{badge.code}
                         </span>
-                        <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                          <span>Digital Badge</span>
+                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
+                          <span>Badge</span>
                         </span>
                       </div>
 
                       {/* Authentic Digital Badge Viewport (Centered icon with ambient glow) */}
                       <div className="relative w-28 h-28 my-2 flex items-center justify-center">
                         {/* Ambient Backdrop Glow */}
-                        <div className="absolute inset-2 rounded-full bg-emerald-500/10 group-hover:bg-emerald-500/20 blur-md transition-all" />
+                        <div className="absolute inset-2 rounded-full bg-foreground-custom/[0.02] group-hover:bg-foreground-custom/[0.04] blur-md transition-all" />
 
                         {badge.badgeImage ? (
                           <img
@@ -568,7 +565,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                             }}
                           />
                         ) : null}
-                        <div className={`badge-fallback-icon w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500 ${badge.badgeImage ? 'hidden' : ''}`}>
+                        <div className={`badge-fallback-icon w-20 h-20 rounded-full bg-foreground-custom/5 flex items-center justify-center text-muted-foreground-custom ${badge.badgeImage ? 'hidden' : ''}`}>
                           <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
                           </svg>
@@ -576,7 +573,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       </div>
 
                       {/* Badge Title */}
-                      <h4 className="text-sm font-bold font-heading text-foreground-custom group-hover:text-emerald-500 transition-colors leading-snug line-clamp-2 mt-2 px-1">
+                      <h4 className="text-sm font-bold font-heading text-foreground-custom group-hover:text-primary-custom transition-colors leading-snug line-clamp-2 mt-2 px-1">
                         {badge.title}
                       </h4>
 
@@ -592,7 +589,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full py-1.5 px-2.5 rounded-xl bg-foreground-custom/[0.04] hover:bg-emerald-500/10 text-foreground-custom hover:text-emerald-500 border border-border-custom text-[11px] font-mono font-semibold transition-colors flex items-center justify-center gap-1"
+                        className="w-full py-1.5 px-2.5 rounded-xl bg-foreground-custom/[0.04] hover:bg-primary-custom/10 text-foreground-custom hover:text-primary-custom border border-border-custom text-[11px] font-mono font-semibold transition-colors flex items-center justify-center gap-1"
                       >
                         <span>Verify Credential</span>
                         <span>↗</span>
@@ -654,7 +651,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
 
               {/* Zoom & Drag Callout Badge */}
               <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-black/75 hover:bg-black/90 text-white text-xs font-mono font-medium backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg opacity-85 group-hover/preview:opacity-100 transition-all">
-                <svg className="w-3.5 h-3.5 text-primary-custom" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
                 </svg>
                 <span>Click to Zoom &amp; Drag</span>
@@ -664,13 +661,9 @@ export default function Certifications({ certifications, extraCerts = [], sectio
             {/* Title & Metadata */}
             <div className="flex flex-col gap-2 text-center sm:text-left">
               <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <span className={`text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full font-semibold flex items-center gap-1.5 ${
-                  isDocumentCertificate(selectedCert)
-                    ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20'
-                    : 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20'
-                }`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${isDocumentCertificate(selectedCert) ? 'bg-amber-500' : 'bg-emerald-500'}`} />
-                  {isDocumentCertificate(selectedCert) ? 'OFFICIAL CERTIFICATE' : 'VERIFIED DIGITAL BADGE'}
+                <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5 bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom">
+                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
+                  {isDocumentCertificate(selectedCert) ? 'Certificate' : 'Badge'}
                 </span>
                 <span className="text-[10px] font-mono text-muted-foreground-custom px-2.5 py-0.5 rounded-full bg-foreground-custom/5 border border-border-custom">
                   Code: #{selectedCert.code}
@@ -681,7 +674,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                 {selectedCert.title}
               </h3>
 
-              <p className="text-xs font-mono text-primary-custom font-medium">
+              <p className="text-xs font-mono text-muted-foreground-custom font-medium">
                 Issued by {selectedCert.issuer}
                 {selectedCert.issueDate ? ` • ${selectedCert.issueDate}` : ''}
               </p>
@@ -749,8 +742,8 @@ export default function Certifications({ certifications, extraCerts = [], sectio
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col min-w-0 pr-4">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-semibold flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-medium flex items-center gap-1.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
                 {selectedCert.issuer} • #{selectedCert.code}
               </span>
               <h4 className="text-sm sm:text-base font-bold truncate text-zinc-100 mt-0.5">

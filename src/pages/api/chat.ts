@@ -188,7 +188,7 @@ function checkRateLimitAndSpam(ip: string, rawMessage: string): { allowed: boole
   if (entry.lastMessage === trimmed && now - entry.lastTime < 4000) {
     return {
       allowed: false,
-      reason: '⚠️ Duplicate request detected. Please review the response above before asking again.'
+      reason: 'Duplicate request detected. Please review the response above before asking again.'
     };
   }
 
@@ -200,7 +200,7 @@ function checkRateLimitAndSpam(ip: string, rawMessage: string): { allowed: boole
   if (entry.count > 5) {
     return {
       allowed: false,
-      reason: '⏳ **Rate limit reached:** Too many rapid requests. Please pause a few seconds before trying again.'
+      reason: '**Rate limit reached:** Too many rapid requests. Please pause a few seconds before trying again.'
     };
   }
 
@@ -237,17 +237,16 @@ export const POST: APIRoute = async ({ request }) => {
     // Check if the user is trying to prompt like an AI chatbot
     if (isAiPrompt(query)) {
       const geo = await getClientGeo(request);
-      const flagEmoji = geo.flag ? `${geo.flag} ` : '';
       const locationParts = [geo.city, geo.region, geo.country].filter(Boolean);
       const locationStr = locationParts.length > 0 ? locationParts.join(', ') : 'Unknown Location';
 
       const aiTrollReply = 
-        `Whoa there, detective! 🕵️‍♂️\n\n` +
+        `Whoa there, detective!\n\n` +
         `I caught you trying to prompt me like an AI or ChatGPT!\n\n` +
         `Just a reminder: I am a lightweight keyword assistant for Cris's portfolio, not an AI chatbot.\n\n` +
         `Detected Origin:\n` +
         `• IP: ${geo.ip}\n` +
-        `• Location: ${flagEmoji}${locationStr}\n` +
+        `• Location: ${locationStr}\n` +
         `• Network: ${geo.isp || 'Identified Provider'}\n\n` +
         `No GPU servers were harmed! Feel free to ask about Cris's projects, skills, experience, or contact info instead.`;
 

@@ -51,6 +51,49 @@ const getCategoryIcon = (category: string) => {
   );
 };
 
+const getFaClassByName = (name: string): string => {
+  const n = name.toLowerCase();
+  if (n.includes('react')) return 'fa-brands fa-react';
+  if (n.includes('node')) return 'fa-brands fa-node-js';
+  if (n.includes('php')) return 'fa-brands fa-php';
+  if (n.includes('js') || n.includes('javascript')) return 'fa-brands fa-js';
+  if (n.includes('ts') || n.includes('typescript')) return 'fa-brands fa-js';
+  if (n.includes('html')) return 'fa-brands fa-html5';
+  if (n.includes('css')) return 'fa-brands fa-css3-alt';
+  if (n.includes('python')) return 'fa-brands fa-python';
+  if (n.includes('flutter')) return 'fa-solid fa-mobile-screen-button';
+  if (n.includes('mysql') || n.includes('sql') || n.includes('database') || n.includes('mongo')) return 'fa-solid fa-database';
+  if (n.includes('github') || n.includes('git')) return 'fa-brands fa-github';
+  if (n.includes('docker')) return 'fa-brands fa-docker';
+  if (n.includes('secur') || n.includes('cyber') || n.includes('shield')) return 'fa-solid fa-shield-halved';
+  if (n.includes('linux')) return 'fa-brands fa-linux';
+  if (n.includes('java') && !n.includes('script')) return 'fa-brands fa-java';
+  if (n.includes('vue')) return 'fa-brands fa-vuejs';
+  if (n.includes('angular')) return 'fa-brands fa-angular';
+  if (n.includes('bootstrap')) return 'fa-brands fa-bootstrap';
+  if (n.includes('sass')) return 'fa-brands fa-sass';
+  if (n.includes('aws')) return 'fa-brands fa-aws';
+  if (n.includes('network') || n.includes('telemetry') || n.includes('cisco')) return 'fa-solid fa-network-wired';
+  if (n.includes('cloud')) return 'fa-solid fa-cloud';
+  if (n.includes('terminal') || n.includes('bash') || n.includes('cli')) return 'fa-solid fa-terminal';
+  if (n.includes('ai') || n.includes('ml') || n.includes('bot')) return 'fa-solid fa-robot';
+  return 'fa-solid fa-code';
+};
+
+const getSkillFaClass = (skill: Skill): string => {
+  if (skill.icon && skill.icon.trim()) {
+    const raw = skill.icon.trim();
+    if (raw.includes('fa-') && (raw.includes('fa-brands') || raw.includes('fa-solid') || raw.includes('fa-regular') || raw.includes('fab') || raw.includes('fas'))) {
+      return raw;
+    }
+    if (raw.startsWith('fa-')) {
+      return `fa-brands ${raw}`;
+    }
+    return getFaClassByName(raw);
+  }
+  return getFaClassByName(skill.name);
+};
+
 export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: SkillsProps) {
   if (!skills || skills.length === 0) {
     return null;
@@ -98,9 +141,6 @@ export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: Skil
                 Technologies &amp; Tools
               </h2>
             </div>
-            <p className="text-sm text-muted-foreground-custom max-w-sm">
-              Modular bento layout of core languages, database systems, and development toolkits.
-            </p>
           </div>
         </ScrollReveal>
 
@@ -137,9 +177,14 @@ export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: Skil
                             key={skill.name}
                             className="p-3 rounded-xl border border-border-custom/80 bg-foreground-custom/[0.02] hover:bg-foreground-custom/[0.05] hover:border-primary-custom/40 transition-all flex items-center justify-between group/item"
                           >
-                            <span className="text-xs font-semibold text-foreground-custom group-hover/item:text-primary-custom transition-colors">
-                              {skill.name}
-                            </span>
+                            <div className="flex items-center gap-2.5 min-w-0">
+                              <span className="w-7 h-7 rounded-lg bg-primary-custom/10 text-primary-custom flex items-center justify-center text-sm shrink-0 group-hover/item:bg-primary-custom group-hover/item:text-white transition-all shadow-xs">
+                                <i className={getSkillFaClass(skill)} />
+                              </span>
+                              <span className="text-xs font-semibold text-foreground-custom group-hover/item:text-primary-custom transition-colors truncate">
+                                {skill.name}
+                              </span>
+                            </div>
                             <span className="w-1.5 h-1.5 rounded-full bg-primary-custom/40 group-hover/item:bg-primary-custom transition-colors shrink-0 ml-2" />
                           </div>
                         ))}

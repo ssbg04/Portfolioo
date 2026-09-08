@@ -174,7 +174,7 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
 
             {/* Spotify Widget */}
             <Suspense fallback={<div className="h-20 w-full rounded-2xl bg-foreground-custom/5 animate-pulse" />}>
-              <SpotifyWidget />
+              <SpotifyWidget isOpen={isSpotifyModalOpen} />
             </Suspense>
           </div>
         </div>

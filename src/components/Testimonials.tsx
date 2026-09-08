@@ -24,9 +24,6 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                   Client &amp; Peer Testimonials
                 </h2>
               </div>
-              <p className="text-sm text-muted-foreground-custom">
-                Recommendations, supervisor reviews &amp; colleague feedback.
-              </p>
             </div>
           </ScrollReveal>
 
@@ -138,10 +135,6 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
             </div>
 
             <div className="flex items-center gap-3">
-              <p className="text-sm text-muted-foreground-custom hidden sm:block">
-                {testimonials.length} verified recommendations
-              </p>
-
               {/* Slider Controls (Shown only if more than 3) */}
               {isCarousel && (
                 <div className="flex items-center gap-1.5">

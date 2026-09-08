@@ -53,9 +53,6 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
           <h2 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight mt-1">
             Photo Gallery
           </h2>
-          <p className="text-xs text-muted-foreground-custom mt-1">
-            Visual archive of projects, technical milestones, and university events.
-          </p>
         </div>
 
         {/* Categories in top-right */}

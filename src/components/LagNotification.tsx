@@ -91,7 +91,8 @@ export default function LagNotification() {
     setIsEnabledSuccess(true);
     setTimeout(() => {
       setShowNotification(false);
-    }, 1500);
+      window.location.reload();
+    }, 600);
   };
 
   const handleDismiss = () => {

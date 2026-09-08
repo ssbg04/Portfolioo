@@ -112,7 +112,7 @@ export default function PortfolioAssistantFAB() {
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       role: 'assistant',
-      text: "👋 Hello! I'm Cris's Portfolio Assistant.\n\nAsk me anything about Cris's projects, technical skills, certifications, work experience, or contact information."
+      text: "Hello! I'm Cris's Portfolio Assistant.\n\nAsk me anything about Cris's projects, technical skills, certifications, work experience, or contact information."
     }
   ]);
   const [input, setInput] = useState('');
@@ -202,7 +202,7 @@ export default function PortfolioAssistantFAB() {
     if (recentSubmits.current.length >= 3) {
       haptic.tap();
       setCooldown(8); // 8-second penalty cooldown
-      setSpamNotice("⚠️ Slow down! Too many rapid requests (8s pause).");
+      setSpamNotice("Slow down! Too many rapid requests (8s pause).");
       setTimeout(() => setSpamNotice(null), 3500);
       return;
     }
@@ -392,8 +392,11 @@ export default function PortfolioAssistantFAB() {
             className="p-3 border-t border-border-custom flex flex-col gap-1.5 bg-white dark:bg-[#11131c]"
           >
             {spamNotice && (
-              <div className="text-[10px] font-mono font-medium text-rose-500 dark:text-rose-400 px-1 truncate flex items-center gap-1 animate-pulse">
-                <span>⚠️</span> {spamNotice}
+              <div className="text-[10px] font-mono font-medium text-rose-500 dark:text-rose-400 px-1 truncate flex items-center gap-1.5 animate-pulse">
+                <svg className="w-3.5 h-3.5 text-rose-500 dark:text-rose-400 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
+                </svg>
+                <span>{spamNotice}</span>
               </div>
             )}
             <div className="flex items-center gap-2">

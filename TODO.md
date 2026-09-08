@@ -27,3 +27,10 @@ Verified digital credentials from Cisco and industry partners. Each badge repres
 
 <!-- - fix the lite mode only hero section loads when i reload that enabled lite mode
 - make the UI in mobile same as on pc but when lagging notify to turn on the lite mode -->
+
+<!-- - remove title description per sections
+- in project section remove the screenshot picture frame like its a browser in localhost, just make it simple
+- do not use emoji 
+- certifications section -> all categories use simple word and short for title category
+- only fetch spotify widget when modal is open, fix recent play its pausing
+- in tech stack technology add icon fontawesome and update the sanity io -->

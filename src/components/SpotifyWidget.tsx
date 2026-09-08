@@ -15,17 +15,26 @@ const defaultTrack: Track = {
   spotifyUrl: 'https://open.spotify.com'
 };
 
-export default function SpotifyWidget() {
+interface SpotifyWidgetProps {
+  isOpen?: boolean;
+}
+
+export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
   const [track, setTrack] = useState<Track>(defaultTrack);
   const [isPlaying, setIsPlaying] = useState(true);
+  const [isLivePlaying, setIsLivePlaying] = useState(false);
+  const [hasUserManuallyPaused, setHasUserManuallyPaused] = useState(false);
   const [progress, setProgress] = useState(45);
 
   useEffect(() => {
+    if (!isOpen) return;
+
     let interval: NodeJS.Timeout;
+    const controller = new AbortController();
 
     const fetchNowPlaying = async () => {
       try {
-        const response = await fetch('/api/now-playing');
+        const response = await fetch('/api/now-playing', { signal: controller.signal });
         if (response.ok) {
           const data = await response.json();
           if (data.currentPlaying) {
@@ -35,7 +44,10 @@ export default function SpotifyWidget() {
               albumArt: data.currentPlaying.albumArt || defaultTrack.albumArt,
               spotifyUrl: data.currentPlaying.spotifyUrl || defaultTrack.spotifyUrl
             });
-            setIsPlaying(Boolean(data.currentPlaying.isPlaying));
+            setIsLivePlaying(true);
+            if (!hasUserManuallyPaused) {
+              setIsPlaying(Boolean(data.currentPlaying.isPlaying));
+            }
             setProgress(data.currentPlaying.progressPercent || 50);
             return;
           } else if (data.recentlyPlayed) {
@@ -45,24 +57,35 @@ export default function SpotifyWidget() {
               albumArt: data.recentlyPlayed.albumArt || defaultTrack.albumArt,
               spotifyUrl: data.recentlyPlayed.spotifyUrl || defaultTrack.spotifyUrl
             });
-            setIsPlaying(false);
-            setProgress(100);
+            setIsLivePlaying(false);
+            // Fix: Keep vinyl spinning for recently played tracks unless user manually paused!
+            if (!hasUserManuallyPaused) {
+              setIsPlaying(true);
+            }
+            setProgress(60);
             return;
           }
         }
-      } catch {
-        // Fallback to default
+      } catch (err: any) {
+        if (err?.name !== 'AbortError') {
+          // Fallback to default
+        }
       }
     };
 
     fetchNowPlaying();
     interval = setInterval(fetchNowPlaying, 10000);
-    return () => clearInterval(interval);
-  }, []);
+    return () => {
+      controller.abort();
+      clearInterval(interval);
+    };
+  }, [isOpen, hasUserManuallyPaused]);
 
   const togglePlay = () => {
     haptic.tap();
-    setIsPlaying(!isPlaying);
+    const next = !isPlaying;
+    setIsPlaying(next);
+    setHasUserManuallyPaused(!next);
   };
 
   return (
@@ -192,7 +215,7 @@ export default function SpotifyWidget() {
               <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
             )}
             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#1DB954]">
-              {isPlaying ? 'Now Playing' : 'Paused / Recent'}
+              {isPlaying ? (isLivePlaying ? 'Now Playing' : 'Recently Played') : 'Paused'}
             </span>
           </div>
 

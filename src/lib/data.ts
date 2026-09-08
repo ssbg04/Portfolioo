@@ -24,6 +24,7 @@ export interface Skill {
   category: 'Frontend' | 'Backend' | 'Mobile' | 'Database' | 'DevOps' | 'AI/ML' | 'Tools' | 'Cybersecurity' | string;
   proficiency?: number; // optional (deprecated)
   icon?: string;
+  order?: number;
 }
 
 export interface Certification {
@@ -164,14 +165,14 @@ export const mockSocialLinks: SocialLink[] = [
 ];
 
 export const mockSkills: Skill[] = [
-  { name: "HTML5/CSS3/JS", category: "Frontend", proficiency: 90 },
-  { name: "React", category: "Frontend", proficiency: 85 },
-  { name: "PHP", category: "Backend", proficiency: 85 },
-  { name: "Node.js", category: "Backend", proficiency: 85 },
-  { name: "Flutter", category: "Mobile", proficiency: 80 },
-  { name: "MySQL", category: "Database", proficiency: 85 },
-  { name: "Git & GitHub", category: "Tools", proficiency: 90 },
-  { name: "Cybersecurity Basics", category: "Cybersecurity", proficiency: 80 }
+  { name: "HTML5/CSS3/JS", category: "Frontend", icon: "fa-brands fa-html5", order: 1 },
+  { name: "React", category: "Frontend", icon: "fa-brands fa-react", order: 2 },
+  { name: "PHP", category: "Backend", icon: "fa-brands fa-php", order: 1 },
+  { name: "Node.js", category: "Backend", icon: "fa-brands fa-node-js", order: 2 },
+  { name: "Flutter", category: "Mobile", icon: "fa-solid fa-mobile-screen-button", order: 1 },
+  { name: "MySQL", category: "Database", icon: "fa-solid fa-database", order: 1 },
+  { name: "Git & GitHub", category: "Tools", icon: "fa-brands fa-github", order: 1 },
+  { name: "Cybersecurity Basics", category: "Cybersecurity", icon: "fa-solid fa-shield-halved", order: 1 }
 ];
 
 export const mockCertifications: Certification[] = [];
@@ -403,7 +404,8 @@ export async function getSkills(): Promise<Skill[]> {
     return skills.map((s: any) => ({
       name: s.name || 'Skill',
       category: s.category || 'Tools',
-      icon: s.icon
+      icon: s.icon,
+      order: s.order
     }));
   } catch (error) {
     console.error('Error fetching skill from Sanity:', error);

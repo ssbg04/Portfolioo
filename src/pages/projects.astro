@@ -22,9 +22,6 @@ const socialLinks = await getSocialLinks();
 			<h1 class="text-4xl md:text-6xl font-bold font-heading mb-4 text-glow bg-clip-text text-transparent bg-gradient-to-r from-foreground-custom to-primary-custom">
 				All Work
 			</h1>
-			<p class="text-muted-foreground-custom max-w-lg mx-auto">
-				Explore the complete repository of my project work, filterable by technologies.
-			</p>
 		</div>
 
 		<ProjectsList initialProjects={allProjects} showArchiveLink={false} client:load />

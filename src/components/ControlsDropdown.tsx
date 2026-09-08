@@ -107,6 +107,7 @@ export default function ControlsDropdown() {
     const nextTier = next ? 'low' : ((navigator.hardwareConcurrency >= 8 && window.devicePixelRatio >= 2) ? 'high' : 'mid');
     document.documentElement.dataset.tier = nextTier;
     window.dispatchEvent(new CustomEvent('tier-change', { detail: { tier: nextTier } }));
+    window.location.reload();
   };
 
   return (
@@ -334,7 +335,10 @@ export default function ControlsDropdown() {
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
               <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground-custom flex items-center gap-1.5">
-                <span>⚡</span> Lite Mode (Data Saver)
+                <svg className="w-3.5 h-3.5 text-amber-500 fill-current" viewBox="0 0 24 24">
+                  <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
+                </svg>
+                Lite Mode (Data Saver)
               </span>
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
                 isLiteMode ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-semibold' : 'bg-muted-custom/60 text-muted-foreground-custom'
