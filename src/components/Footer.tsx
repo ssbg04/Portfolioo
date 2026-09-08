@@ -3,7 +3,6 @@ import type { SocialLink } from '../lib/data';
 import haptic from '../lib/haptics';
 
 const SpotifyWidget = lazy(() => import('./SpotifyWidget'));
-const GithubContributions = lazy(() => import('./GithubContributions'));
 
 const getFooterIcon = (platform: string) => {
   const p = platform.toLowerCase();
@@ -75,21 +74,11 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
       ];
 
   return (
-    <footer className="relative z-10 border-t border-border-custom bg-muted-custom/20 pt-10 pb-16 sm:pb-10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-6">
-
-        {/* Center: GitHub Contributions Activity Graph */}
-        <div className="w-full flex justify-center">
-          <Suspense fallback={<div className="h-40 w-full max-w-4xl rounded-3xl bg-foreground-custom/5 animate-pulse" />}>
-            <GithubContributions username="ssbg04" />
-          </Suspense>
-        </div>
-
-        {/* Bottom row: copyright, Spotify popup button & social links */}
-        <div className="w-full pt-4 border-t border-border-custom/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground-custom text-center sm:text-left">
-            &copy; {new Date().getFullYear()} {fullName}. Built with Astro &amp; React.
-          </p>
+    <footer className="relative z-10 border-t border-border-custom bg-muted-custom/20 py-8 sm:py-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <p className="text-xs text-muted-foreground-custom text-center sm:text-left">
+          &copy; {new Date().getFullYear()} {fullName}. Built with Astro &amp; React.
+        </p>
 
           <div className="flex items-center gap-2.5">
             {/* Spotify Modal Trigger Button */}
@@ -132,7 +121,6 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
             ))}
           </div>
         </div>
-      </div>
 
       {/* ─── Spotify Now Playing Modal ─── */}
       {isSpotifyModalOpen && (

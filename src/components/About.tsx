@@ -1,19 +1,22 @@
 import React from 'react';
 import type { Education, Experience, SiteSettings } from '../lib/data';
 import ScrollReveal from './ScrollReveal';
+import GithubContributions from './GithubContributions';
 
 interface AboutProps {
   settings: SiteSettings;
   experience: Experience[];
   education?: Education[];
   sectionTag?: string;
+  githubUsername?: string;
 }
 
 export default function About({
   settings,
   experience,
   education = [],
-  sectionTag = '01 // Profile & Background'
+  sectionTag = '01 // Profile & Background',
+  githubUsername = 'ssbg04'
 }: AboutProps) {
   const paragraphs = (settings.biography && settings.biography.length > 0)
     ? settings.biography
@@ -311,6 +314,13 @@ export default function About({
               </ScrollReveal>
             </div>
           )}
+
+          {/* Bento Cell 5: GitHub Contributions Activity Graph (12 cols) */}
+          <div className="lg:col-span-12">
+            <ScrollReveal variant="fade-up" delay={160} className="h-full">
+              <GithubContributions username={githubUsername} />
+            </ScrollReveal>
+          </div>
 
         </div>
 

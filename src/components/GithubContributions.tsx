@@ -17,9 +17,10 @@ interface ApiResponse {
 
 interface Props {
   username?: string;
+  className?: string;
 }
 
-export default function GithubContributions({ username = 'ssbg04' }: Props) {
+export default function GithubContributions({ username = 'ssbg04', className = '' }: Props) {
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
@@ -112,7 +113,7 @@ export default function GithubContributions({ username = 'ssbg04' }: Props) {
   };
 
   return (
-    <div className="w-full max-w-4xl rounded-3xl glass-card border border-border-custom p-4 sm:p-6 flex flex-col gap-4 shadow-sm relative overflow-hidden group">
+    <div className={`w-full rounded-3xl bento-card p-5 sm:p-6 flex flex-col gap-4 shadow-sm relative overflow-hidden group ${className}`}>
       {/* ─── Top Row: Title, Stats & GitHub Link ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-border-custom/50">
         <div className="flex items-center gap-3">
