@@ -41,3 +41,9 @@ Verified digital credentials from Cisco and industry partners. Each badge repres
 # CONTACT SECTION
 - fix the "Let's create something amazing." is under lapping to paragraph element
 - in ultra fast mode the form still has label animation, fix the label to be static and dont move or animate, always show the label above the input field -->
+
+<!-- Project Section
+- make the inpect overview update to open dedicated show case page, use basic words for all buttons, 
+
+Project Dedicated page
+- redesign the layout, remove the background border design, spread all the information, make it responsive, organize the contents -->
