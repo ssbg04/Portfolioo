@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useRef } from 'react';
 import haptic from '../lib/haptics';
 
 interface ContributionDay {
@@ -25,6 +25,7 @@ export default function GithubContributions({ username = 'ssbg04', className = '
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
   const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null);
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -63,6 +64,19 @@ export default function GithubContributions({ username = 'ssbg04', className = '
     return result;
   }, [data]);
 
+  // On mobile / horizontal scroll view, auto-scroll to the latest contributions (rightmost)
+  useEffect(() => {
+    if (scrollContainerRef.current && weeks.length > 0) {
+      const container = scrollContainerRef.current;
+      const timer = setTimeout(() => {
+        if (container) {
+          container.scrollLeft = container.scrollWidth;
+        }
+      }, 60);
+      return () => clearTimeout(timer);
+    }
+  }, [weeks]);
+
   // Generate month headers
   const monthLabels = useMemo(() => {
     if (weeks.length === 0) return [];
@@ -73,7 +87,7 @@ export default function GithubContributions({ username = 'ssbg04', className = '
       if (week.length > 0) {
         const d = new Date(week[0].date);
         const m = d.getMonth();
-        if (m !== lastMonth && index - (labels[labels.length - 1]?.index ?? -10) >= 3) {
+        if (m !== lastMonth && index - (labels[labels.length - 1]?.index ?? -10) >= 4) {
           labels.push({
             name: d.toLocaleDateString('en-US', { month: 'short' }),
             index
@@ -172,53 +186,64 @@ export default function GithubContributions({ username = 'ssbg04', className = '
           />
         </div>
       ) : (
-        <div className="relative flex flex-col gap-1.5">
-          {/* Month Labels along the top */}
-          <div className="flex items-center text-[10px] font-mono text-muted-foreground-custom pl-7 overflow-x-auto no-scrollbar select-none">
-            <div className="flex gap-[3px]">
-              {weeks.map((week, wIdx) => {
-                const label = monthLabels.find((l) => l.index === wIdx);
-                return (
-                  <div key={wIdx} className="w-[11px] h-4 flex items-center shrink-0">
-                    {label && (
-                      <span className="absolute text-[10px] font-mono text-muted-foreground-custom whitespace-nowrap">
-                        {label.name}
-                      </span>
-                    )}
+        <div
+          ref={scrollContainerRef}
+          className="relative flex flex-col gap-1.5 w-full overflow-x-auto no-scrollbar pb-1 touch-pan-x"
+        >
+          <div className="w-full min-w-[670px] md:min-w-0 flex flex-col gap-1.5">
+            {/* Month Labels along the top */}
+            <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] font-mono text-muted-foreground-custom select-none w-full">
+              {/* Spacer matching weekday labels */}
+              <div className="w-5 sm:w-6 shrink-0" />
+
+              {/* Month columns */}
+              <div className="flex-1 min-w-0 flex gap-[2px] sm:gap-[3px]">
+                {weeks.map((week, wIdx) => {
+                  const label = monthLabels.find((l) => l.index === wIdx);
+                  const isNearEnd = wIdx >= weeks.length - 2;
+                  return (
+                    <div key={wIdx} className="flex-1 min-w-0 h-4 flex items-center relative">
+                      {label && (
+                        <span className={`absolute ${isNearEnd ? 'right-0' : 'left-0'} text-[9px] sm:text-[10px] font-mono text-muted-foreground-custom whitespace-nowrap`}>
+                          {label.name}
+                        </span>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Heatmap with Row Labels on Left */}
+            <div className="flex items-stretch gap-1.5 sm:gap-2 w-full">
+              {/* Weekday indicators matching 7 grid rows exactly */}
+              <div className="grid grid-rows-[repeat(7,minmax(0,1fr))] gap-[2px] sm:gap-[3px] text-[8px] sm:text-[9px] font-mono text-muted-foreground-custom select-none shrink-0 w-5 sm:w-6">
+                <span className="flex items-center leading-none">Sun</span>
+                <span className="flex items-center leading-none">Mon</span>
+                <span className="flex items-center leading-none">Tue</span>
+                <span className="flex items-center leading-none">Wed</span>
+                <span className="flex items-center leading-none">Thu</span>
+                <span className="flex items-center leading-none">Fri</span>
+                <span className="flex items-center leading-none">Sat</span>
+              </div>
+
+              {/* Grid Columns (Weeks) */}
+              <div className="flex-1 min-w-0 flex gap-[2px] sm:gap-[3px]">
+                {weeks.map((week, wIdx) => (
+                  <div key={wIdx} className="flex-1 min-w-0 flex flex-col gap-[2px] sm:gap-[3px]">
+                    {week.map((day, dIdx) => (
+                      <div
+                        key={dIdx}
+                        onMouseEnter={() => setHoveredDay(day)}
+                        onMouseLeave={() => setHoveredDay(null)}
+                        onClick={() => setHoveredDay(day)}
+                        className={`w-full aspect-square rounded-[1.5px] sm:rounded-[3px] transition-all cursor-pointer hover:scale-125 hover:z-10 relative ${getLevelColor(day.level)}`}
+                        title={`${day.count} contributions on ${formatDate(day.date)}`}
+                      />
+                    ))}
                   </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Heatmap with Row Labels on Left */}
-          <div className="flex items-start gap-2 overflow-x-auto no-scrollbar pb-1">
-            {/* Weekday indicators */}
-            <div className="flex flex-col gap-[3px] text-[9px] font-mono text-muted-foreground-custom select-none pt-0.5 shrink-0">
-              <span className="h-[11px] leading-[11px]">Sun</span>
-              <span className="h-[11px] leading-[11px]">Mon</span>
-              <span className="h-[11px] leading-[11px]">Tue</span>
-              <span className="h-[11px] leading-[11px]">Wed</span>
-              <span className="h-[11px] leading-[11px]">Thu</span>
-              <span className="h-[11px] leading-[11px]">Fri</span>
-              <span className="h-[11px] leading-[11px]">Sat</span>
-            </div>
-
-            {/* Grid Columns (Weeks) */}
-            <div className="flex gap-[3px] shrink-0">
-              {weeks.map((week, wIdx) => (
-                <div key={wIdx} className="flex flex-col gap-[3px]">
-                  {week.map((day, dIdx) => (
-                    <div
-                      key={dIdx}
-                      onMouseEnter={() => setHoveredDay(day)}
-                      onMouseLeave={() => setHoveredDay(null)}
-                      className={`w-[11px] h-[11px] rounded-[2.5px] transition-all cursor-pointer ${getLevelColor(day.level)}`}
-                      title={`${day.count} contributions on ${formatDate(day.date)}`}
-                    />
-                  ))}
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           </div>
         </div>
@@ -234,7 +259,8 @@ export default function GithubContributions({ username = 'ssbg04', className = '
             </span>
           ) : (
             <span className="text-muted-foreground-custom/80">
-              Hover over squares to see daily contribution activity
+              <span className="hidden sm:inline">Hover over squares to see daily contribution activity</span>
+              <span className="sm:hidden">Swipe matrix horizontally • Tap squares to inspect</span>
             </span>
           )}
         </div>
