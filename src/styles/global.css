@@ -219,58 +219,193 @@ html[data-tier='low'] [data-scroll-reveal] {
 
 body { padding-top: 60px; }
 
-/* ─── Lite-Tier Performance & Solid Contrast Optimization (Active only when Lite Mode is ON) ─── */
+/* ─── ULTRA-FAST STANDARD CSS RETRO/CLASSIC DESIGN (Active when Ultra-Fast / Lite Mode is ON) ─── */
+html[data-tier='low'] {
+  --font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
+  --bento-radius: 4px !important;
+  --glass-blur: 0px !important;
+  --glass-shadow: none !important;
+}
+
+/* 1. Global Performance & Complete Animation/Transition Stripping */
+html[data-tier='low'] *,
+html[data-tier='low'] *::before,
+html[data-tier='low'] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+  text-shadow: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+  text-rendering: optimizeSpeed !important;
+}
+
+/* Ensure all scroll reveal, lazy load & bento elements are immediately 100% visible */
+html[data-tier='low'] .reveal-fade-up,
+html[data-tier='low'] .reveal-scale-up,
+html[data-tier='low'] .bento-enter,
+html[data-tier='low'] .nav-enter,
+html[data-tier='low'] [data-scroll-reveal],
+html[data-tier='low'] .will-change-transform,
+html[data-tier='low'] .will-change-transform-opacity {
+  opacity: 1 !important;
+  transform: none !important;
+  will-change: auto !important;
+}
+
+/* 2. Classic High-Contrast Color Variables */
+html[data-tier='low']:not(.dark) {
+  --bg-color: #ffffff;
+  --fg-color: #111827;
+  --border-color: #d1d5db;
+  --border-hover-color: #9ca3af;
+  --muted-color: #f3f4f6;
+  --muted-fg-color: #4b5563;
+  --primary-color: #0056b3;
+  --nav-bg: #ffffff;
+}
+
+html[data-tier='low'].dark {
+  --bg-color: #0c0d12;
+  --fg-color: #f3f4f6;
+  --border-color: #374151;
+  --border-hover-color: #6b7280;
+  --muted-color: #1a1d26;
+  --muted-fg-color: #9ca3af;
+  --primary-color: #3b82f6;
+  --nav-bg: #0c0d12;
+}
+
+html[data-tier='low'] body {
+  background-color: var(--bg-color) !important;
+  background-image: none !important;
+  color: var(--fg-color) !important;
+  font-family: var(--font-body) !important;
+}
+
+/* 3. Old-Site Standard Boxes, Bento & Cards (Simple 1px Borders, Flat Solid Backgrounds) */
 html[data-tier='low'] .bento-card,
 html[data-tier='low'] .glass-card,
-html[data-tier='low'] .glass-nav,
-html[data-tier='low'] .glass-surface {
+html[data-tier='low'] .browser-frame {
+  border-radius: 4px !important;
+  transform: none !important;
+  transition: none !important;
+  box-shadow: none !important;
   -webkit-backdrop-filter: none !important;
   backdrop-filter: none !important;
 }
 
-/* Light Mode Solid High-Contrast Surfaces on Low-Tier */
 html[data-tier='low']:not(.dark) .bento-card,
-html[data-tier='low']:not(.dark) .glass-card {
+html[data-tier='low']:not(.dark) .glass-card,
+html[data-tier='low']:not(.dark) .browser-frame {
   background-color: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.12) !important;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+  border: 1px solid #d1d5db !important;
 }
 
+html[data-tier='low']:not(.dark) .bento-card:hover,
+html[data-tier='low']:not(.dark) .glass-card:hover,
+html[data-tier='low']:not(.dark) .browser-frame:hover {
+  background-color: #f9fafb !important;
+  border-color: #9ca3af !important;
+  transform: none !important;
+}
+
+html[data-tier='low'].dark .bento-card,
+html[data-tier='low'].dark .glass-card,
+html[data-tier='low'].dark .browser-frame {
+  background-color: #141721 !important;
+  border: 1px solid #2d3342 !important;
+}
+
+html[data-tier='low'].dark .bento-card:hover,
+html[data-tier='low'].dark .glass-card:hover,
+html[data-tier='low'].dark .browser-frame:hover {
+  background-color: #1c202d !important;
+  border-color: #4b5563 !important;
+  transform: none !important;
+}
+
+/* 4. Old-Site Standard Navbar */
 html[data-tier='low']:not(.dark) .glass-nav {
   background-color: #ffffff !important;
-  border-color: rgba(15, 23, 42, 0.1) !important;
-}
-
-/* Dark Mode Solid High-Contrast Surfaces on Low-Tier */
-html[data-tier='low'].dark .bento-card,
-html[data-tier='low'].dark .glass-card {
-  background-color: #0f111a !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3) !important;
+  border-bottom: 1px solid #d1d5db !important;
 }
 
 html[data-tier='low'].dark .glass-nav {
-  background-color: #090a0f !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
+  background-color: #0c0d12 !important;
+  border-bottom: 1px solid #2d3342 !important;
 }
 
-/* ─── Lite Mode / Data Saver Alternate Fast Design ─── */
-html[data-tier='low'] * {
-  text-rendering: optimizeSpeed !important;
+/* 5. Classic Standard Links & Interactive Elements */
+html[data-tier='low'] a:hover {
+  text-decoration: underline;
+}
+
+html[data-tier='low'] button {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+/* 6. Standard Tags, Chips & Impact Pills */
+html[data-tier='low'] .tech-tag,
+html[data-tier='low'] .impact-pill,
+html[data-tier='low'] .section-tag {
+  border-radius: 3px !important;
+  box-shadow: none !important;
+  font-family: var(--font-mono) !important;
+}
+
+html[data-tier='low']:not(.dark) .tech-tag,
+html[data-tier='low']:not(.dark) .impact-pill {
+  background-color: #f3f4f6 !important;
+  border: 1px solid #d1d5db !important;
+  color: #374151 !important;
+}
+
+html[data-tier='low'].dark .tech-tag,
+html[data-tier='low'].dark .impact-pill {
+  background-color: #1f2432 !important;
+  border: 1px solid #374151 !important;
+  color: #e5e7eb !important;
+}
+
+/* 7. Classic Form Inputs */
+html[data-tier='low'] input,
+html[data-tier='low'] textarea,
+html[data-tier='low'] select {
+  border-radius: 4px !important;
+  box-shadow: none !important;
+}
+
+html[data-tier='low']:not(.dark) input,
+html[data-tier='low']:not(.dark) textarea,
+html[data-tier='low']:not(.dark) select {
+  background-color: #ffffff !important;
+  border: 1px solid #9ca3af !important;
+  color: #111827 !important;
+}
+
+html[data-tier='low'].dark input,
+html[data-tier='low'].dark textarea,
+html[data-tier='low'].dark select {
+  background-color: #141721 !important;
+  border: 1px solid #4b5563 !important;
+  color: #f3f4f6 !important;
+}
+
+/* 8. Text Glow & Special Effects Suppression */
+html[data-tier='low'] .text-glow,
+html[data-tier='low'] .glow-effect {
+  text-shadow: none !important;
+  filter: none !important;
 }
 
 html[data-tier='low'] .bg-gradient-mesh {
   background-image: none !important;
-}
-
-html[data-tier='low'] .bento-card:hover,
-html[data-tier='low'] .glass-card:hover {
-  transform: none !important;
-}
-
-html[data-tier='low'] .will-change-transform,
-html[data-tier='low'] .will-change-transform-opacity {
-  will-change: auto !important;
 }
 
 /* ─── Projects Section Mockup & Impact Tokens ─── */

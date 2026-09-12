@@ -57,22 +57,22 @@ const socialLinks = await getSocialLinks();
 			client:load 
 		/>
 		
-		<About settings={settings} experience={experience} education={education} client:visible />
+		<About settings={settings} experience={experience} education={education} client:load />
 
-		<Projects initialProjects={featuredProjects} limit={5} client:visible />
+		<Projects initialProjects={featuredProjects} limit={5} client:load />
 		
-		<Skills skills={skills} client:visible />
+		<Skills skills={skills} client:load />
 		
 		<Certifications certifications={certifications} client:load />
 		
-		<Testimonials testimonials={testimonials} client:visible />
+		<Testimonials testimonials={testimonials} client:load />
 		
 		<ContactForm 
 			socialLinks={socialLinks}
 			contactHeading={settings.contactHeading}
 			contactSubtitle={settings.contactSubtitle}
 			email={settings.email}
-			client:visible 
+			client:load 
 		/>
 	</main>
 

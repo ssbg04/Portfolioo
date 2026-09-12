@@ -262,14 +262,19 @@ export default function Background() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isLowTier, setIsLowTier] = useState(false);
+  const [isLowTier, setIsLowTier] = useState(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
+    }
+    return false;
+  });
   const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     setMounted(true);
 
     const checkTier = () => {
-      setIsLowTier(document.documentElement.dataset.tier === 'low');
+      setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
     };
     checkTier();
     window.addEventListener('tier-change', checkTier);

@@ -25,14 +25,14 @@ export default function ScrollReveal({
 }: ScrollRevealProps) {
   const [isLowTier, setIsLowTier] = useState(() => {
     if (typeof document !== 'undefined') {
-      return document.documentElement.dataset.tier === 'low';
+      return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
     }
     return false;
   });
 
   useEffect(() => {
     const checkTier = () => {
-      setIsLowTier(document.documentElement.dataset.tier === 'low');
+      setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
     };
     checkTier();
     window.addEventListener('tier-change', checkTier);

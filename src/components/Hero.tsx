@@ -14,9 +14,24 @@ interface InteractiveButtonProps {
   className: string;
   children: React.ReactNode;
   variant: 'primary' | 'secondary';
+  isLowTier?: boolean;
 }
 
-function InteractiveButton({ href, onClick, className, children, variant }: InteractiveButtonProps) {
+function InteractiveButton({ href, onClick, className, children, variant, isLowTier }: InteractiveButtonProps) {
+  if (isLowTier) {
+    return (
+      <a
+        href={href}
+        onClick={onClick}
+        className={`relative ${className}`}
+      >
+        <span className="relative z-10 flex items-center justify-center gap-2">
+          {children}
+        </span>
+      </a>
+    );
+  }
+
   const x = useMotionValue(0);
   const y = useMotionValue(0);
 
@@ -157,10 +172,22 @@ export default function Hero({
   socialLinks = []
 }: HeroProps) {
   const [mounted, setMounted] = React.useState(false);
+  const [isLowTier, setIsLowTier] = React.useState(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
+    }
+    return false;
+  });
   const isMobile = useIsMobile();
 
   React.useEffect(() => {
     setMounted(true);
+    const checkTier = () => {
+      setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
+    };
+    checkTier();
+    window.addEventListener('tier-change', checkTier);
+    return () => window.removeEventListener('tier-change', checkTier);
   }, []);
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
@@ -210,14 +237,14 @@ export default function Hero({
         {/* Left Column: Text & Actions */}
         <motion.div
           className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1 will-change-transform-opacity"
-          variants={containerVariants}
-          initial="hidden"
-          animate={mounted ? "visible" : "hidden"}
+          variants={isLowTier ? undefined : containerVariants}
+          initial={isLowTier ? false : "hidden"}
+          animate={mounted || isLowTier ? "visible" : "hidden"}
         >
           {/* Status Badge */}
           {isAvailable !== false && (
             <motion.div
-              variants={itemVariants}
+              variants={isLowTier ? undefined : itemVariants}
               className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-semibold text-primary-custom border border-primary-custom/20 mb-4 sm:mb-6 shadow-sm"
             >
               <span className="flex h-2 w-2 relative">
@@ -230,7 +257,7 @@ export default function Hero({
 
           {/* Heading */}
           <motion.h1
-            variants={itemVariants}
+            variants={isLowTier ? undefined : itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-3 sm:mb-4 text-foreground-custom leading-tight"
           >
             Hi, I'm <span className="text-glow text-primary-custom">{fullName}</span>
@@ -238,7 +265,7 @@ export default function Hero({
 
           {/* Title */}
           <motion.p
-            variants={itemVariants}
+            variants={isLowTier ? undefined : itemVariants}
             className="text-lg sm:text-xl md:text-2xl font-bold text-foreground-custom mb-3 font-heading"
           >
             {title}
@@ -246,7 +273,7 @@ export default function Hero({
 
           {/* Value Proposition */}
           <motion.p
-            variants={itemVariants}
+            variants={isLowTier ? undefined : itemVariants}
             className="text-sm sm:text-base md:text-lg text-foreground-custom/85 dark:text-foreground-custom/90 mb-6 sm:mb-8 max-w-xl leading-relaxed font-normal"
           >
             {valueProposition}
@@ -254,7 +281,7 @@ export default function Hero({
 
           {/* Actions & Social Links */}
           <motion.div
-            variants={itemVariants}
+            variants={isLowTier ? undefined : itemVariants}
             className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 w-full justify-center md:justify-start"
           >
             {/* Social Icons */}
@@ -283,6 +310,7 @@ export default function Hero({
                 href="#projects"
                 onClick={(e) => handleSmoothScroll(e, 'projects')}
                 variant="primary"
+                isLowTier={isLowTier}
                 className="w-1/2 sm:w-auto px-5 py-3 rounded-xl bg-primary-custom text-white font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 text-center cursor-pointer uppercase tracking-wider group flex items-center justify-center gap-1.5"
               >
                 Projects
@@ -294,6 +322,7 @@ export default function Hero({
                 href="#contact"
                 onClick={(e) => handleSmoothScroll(e, 'contact')}
                 variant="secondary"
+                isLowTier={isLowTier}
                 className="w-1/2 sm:w-auto px-5 py-3 rounded-xl glass-card text-foreground-custom font-bold text-xs border border-border-custom hover:border-primary-custom/40 hover:text-primary-custom transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5"
               >
                 Contact
@@ -308,33 +337,48 @@ export default function Hero({
         {/* Right Column: Profile Image Frame */}
         <div className="md:col-span-5 flex justify-center order-1 md:order-2">
           <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center">
-            {/* Subtle Backdrop Aura (Decreased Color Strength, Static) */}
-            <div className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-primary-custom blur-3xl pointer-events-none opacity-15" />
-            <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
-              <TiltedCard
-                imageSrc={heroImage || (ppDay as any).src || ppDay}
-                darkImageSrc={heroImageNight || heroImage || (ppNight as any).src || ppNight}
-                altText={fullName}
-                captionText={availabilityStatus}
-                containerHeight="100%"
-                containerWidth="100%"
-                imageHeight="100%"
-                imageWidth="100%"
-                rotateAmplitude={12}
-                scaleOnHover={1.03}
-                showMobileWarning={false}
-                showTooltip={true}
-                displayOverlayContent={true}
-                overlayContent={
-                  <GlareHover
-                    className="rounded-[15px]"
-                    glareColor="#ffffff"
-                    glareOpacity={0.25}
-                    glareSize={200}
+            {isLowTier ? (
+              <div className="w-full h-full p-2 border border-border-custom bg-card-custom rounded-[4px] flex items-center justify-center shadow-none">
+                <img
+                  src={heroImage || (ppDay as any).src || ppDay}
+                  alt={fullName}
+                  className="w-full h-full object-cover rounded-[2px]"
+                  loading="eager"
+                  width={320}
+                  height={320}
+                />
+              </div>
+            ) : (
+              <>
+                {/* Subtle Backdrop Aura */}
+                <div className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-primary-custom blur-3xl pointer-events-none opacity-15" />
+                <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
+                  <TiltedCard
+                    imageSrc={heroImage || (ppDay as any).src || ppDay}
+                    darkImageSrc={heroImageNight || heroImage || (ppNight as any).src || ppNight}
+                    altText={fullName}
+                    captionText={availabilityStatus}
+                    containerHeight="100%"
+                    containerWidth="100%"
+                    imageHeight="100%"
+                    imageWidth="100%"
+                    rotateAmplitude={12}
+                    scaleOnHover={1.03}
+                    showMobileWarning={false}
+                    showTooltip={true}
+                    displayOverlayContent={true}
+                    overlayContent={
+                      <GlareHover
+                        className="rounded-[15px]"
+                        glareColor="#ffffff"
+                        glareOpacity={0.25}
+                        glareSize={200}
+                      />
+                    }
                   />
-                }
-              />
-            </Suspense>
+                </Suspense>
+              </>
+            )}
           </div>
         </div>
       </div>
