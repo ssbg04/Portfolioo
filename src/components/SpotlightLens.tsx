@@ -7,14 +7,8 @@ export default function SpotlightLens() {
   const [bodySize, setBodySize] = useState({ width: 0, height: 0 });
   const [scroll, setScroll] = useState({ x: 0, y: 0 });
   const [magnifierPos, setMagnifierPos] = useState({ clientX: -100, clientY: -100 });
-  const [isDesktop, setIsDesktop] = useState(() => {
-    if (typeof window !== 'undefined') {
-      const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-      const isLow = document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
-      return fine && !isLow;
-    }
-    return false;
-  });
+  const [mounted, setMounted] = useState(false);
+  const [isDesktop, setIsDesktop] = useState(false);
   const [magnifierEnabled, setMagnifierEnabled] = useState(false);
 
   // Direct DOM ref for 120 FPS cursor (0 React re-renders on mouse movement)
@@ -29,6 +23,7 @@ export default function SpotlightLens() {
   const rafId = useRef<number | null>(null);
 
   useEffect(() => {
+    setMounted(true);
     const checkDesktop = () => {
       const fine = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
       const isLow = document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
@@ -215,7 +210,7 @@ export default function SpotlightLens() {
   const pageX = magnifierPos.clientX + scroll.x;
   const pageY = magnifierPos.clientY + scroll.y;
 
-  if (!isDesktop) return null;
+  if (!mounted || !isDesktop) return null;
 
   return (
     <>

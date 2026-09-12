@@ -16,7 +16,10 @@ const links = allLinks.length > 0
       { platform: 'Facebook', url: 'https://facebook.com', icon: 'facebook', order: 5 },
     ];
 
-const resumeUrl = settings.resumeUrl || '/CV-Cris-Charles-Garcia.pdf';
+const resumeUrl = settings.resumeFile && settings.resumeFile !== '#' ? settings.resumeFile : '/CV-Cris-Charles-Garcia.pdf';
+const downloadUrl = resumeUrl.includes('cdn.sanity.io') 
+  ? `${resumeUrl}${resumeUrl.includes('?') ? '&' : '?'}dl=CV-Cris-Charles-Garcia.pdf`
+  : resumeUrl;
 const profileAvatar = settings.heroImage || settings.logoImage || '/logo.png';
 
 const formatDisplayUrl = (url: string) => {
@@ -124,7 +127,7 @@ const getIconSvg = (platform: string) => {
           </a>
 
           <a
-            href={resumeUrl}
+            href={downloadUrl}
             download="CV-Cris-Charles-Garcia.pdf"
             class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all text-center"
           >

@@ -184,7 +184,7 @@ export default function LocalTimeWeather({
         <span className="font-mono text-muted-foreground-custom">Local Time</span>
         <div className="flex items-center gap-1.5 font-mono text-foreground-custom">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-          <span className="font-semibold text-xs">{dateTime.time}</span>
+          <span className="font-semibold text-xs" suppressHydrationWarning>{dateTime.time}</span>
           <span className="text-[10px] text-muted-foreground-custom font-medium">PHT</span>
         </div>
       </div>
@@ -192,7 +192,7 @@ export default function LocalTimeWeather({
       {/* Date */}
       <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
         <span className="font-mono text-muted-foreground-custom">Date</span>
-        <span className="font-mono text-foreground-custom text-xs font-medium">
+        <span className="font-mono text-foreground-custom text-xs font-medium" suppressHydrationWarning>
           {dateTime.date}
         </span>
       </div>

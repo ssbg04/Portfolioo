@@ -5,6 +5,9 @@ import { getSiteSettings, getSocialLinks } from '../lib/data';
 const settings = await getSiteSettings();
 const socialLinks = await getSocialLinks();
 const resumeUrl = settings.resumeFile && settings.resumeFile !== '#' ? settings.resumeFile : '/CV-Cris-Charles-Garcia.pdf';
+const downloadUrl = resumeUrl.includes('cdn.sanity.io') 
+  ? `${resumeUrl}${resumeUrl.includes('?') ? '&' : '?'}dl=CV-Cris-Charles-Garcia.pdf`
+  : resumeUrl;
 ---
 
 <Layout title={`Under Development | ${settings.fullName}`} description="Cris Charles Garcia — Portfolio currently under development. Please check back later.">
@@ -87,7 +90,7 @@ const resumeUrl = settings.resumeFile && settings.resumeFile !== '#' ? settings.
               View CV
             </a>
             <a
-              href={resumeUrl}
+              href={downloadUrl}
               download="CV-Cris-Charles-Garcia.pdf"
               class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all text-center"
             >

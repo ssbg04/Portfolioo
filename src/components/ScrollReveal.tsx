@@ -23,12 +23,8 @@ export default function ScrollReveal({
   variant = 'fade-up',
   delay = 0 
 }: ScrollRevealProps) {
-  const [isLowTier, setIsLowTier] = useState(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
-    }
-    return false;
-  });
+  const isMobile = useIsMobile();
+  const [isLowTier, setIsLowTier] = useState(false);
 
   useEffect(() => {
     const checkTier = () => {
@@ -52,7 +48,6 @@ export default function ScrollReveal({
   }
 
   const chosenVariant = variantsMap[variant] || variantsMap['fade-up'];
-  const isMobile = useIsMobile();
 
   return (
     <motion.div
