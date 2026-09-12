@@ -61,22 +61,22 @@ void main() {
     // Technical blueprint contour grid lines (standard WebGL compatible without extensions)
     vec2 majorCoord = abs(fract(vUv * vec2(32.0, 24.0) - 0.5) - 0.5);
     float majorDist = min(majorCoord.x, majorCoord.y);
-    float majorLine = smoothstep(0.045, 0.008, majorDist);
+    float majorLine = smoothstep(0.052, 0.006, majorDist);
 
     vec2 minorCoord = abs(fract(vUv * vec2(96.0, 72.0) - 0.5) - 0.5);
     float minorDist = min(minorCoord.x, minorCoord.y);
-    float minorLine = smoothstep(0.025, 0.005, minorDist) * 0.35;
+    float minorLine = smoothstep(0.026, 0.005, minorDist) * 0.4;
 
     float gridMask = max(majorLine, minorLine);
 
-    // Subtle atmospheric distance falloff
-    float depthFade = clamp((16.0 - (-vViewPos.z)) / 9.5, 0.25, 1.0);
+    // Atmospheric distance falloff
+    float depthFade = clamp((18.0 - (-vViewPos.z)) / 11.0, 0.25, 1.0);
 
-    // Dynamic crest glow on wave peaks
-    float crestGlow = smoothstep(-0.25, 0.65, vElevation) * 0.45;
+    // Gentle crest glow on wave peaks
+    float crestGlow = smoothstep(-0.15, 0.55, vElevation) * 0.4;
 
-    vec3 finalColor = mix(uColorBase, uColorGrid, gridMask * 0.85 + crestGlow * 0.5);
-    float alpha = (gridMask * 0.48 + crestGlow * 0.25 + 0.07) * depthFade * uOpacity;
+    vec3 finalColor = mix(uColorBase, uColorGrid, gridMask * 0.9 + crestGlow * 0.5);
+    float alpha = (gridMask * 0.72 + crestGlow * 0.35 + 0.08) * depthFade * uOpacity;
 
     gl_FragColor = vec4(finalColor, alpha);
 }
@@ -296,12 +296,19 @@ export default function Background() {
     let isDisposed = false;
 
     // ─── 1. OGL Renderer Setup ───
-    const renderer = new Renderer({
-      alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance',
-      dpr: Math.min(window.devicePixelRatio || 1, 2)
-    });
+    let renderer: Renderer;
+    try {
+      renderer = new Renderer({
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance',
+        dpr: Math.min(window.devicePixelRatio || 1, 2)
+      });
+    } catch (err) {
+      console.warn('WebGL initialization failed, falling back to CSS 3D grid:', err);
+      setIsLowTier(true);
+      return;
+    }
 
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
@@ -408,17 +415,17 @@ export default function Background() {
     const allBeaconProgs = [skillsBeaconProg, contactBeaconProg];
 
     // ─── 4. BASE LAYER: Abstract Procedural 3D Topographic Mesh ───
-    // At Hero, this abstract landscape is the sole focal background, calm & architectural
+    // Subtle architectural horizon landscape in the lower half
     const terrainGeom = new Plane(gl, {
-      width: 18,
-      height: 14,
-      widthSegments: 38,
-      heightSegments: 28
+      width: 28,
+      height: 19,
+      widthSegments: 50,
+      heightSegments: 36
     });
 
     const terrainMesh = new Mesh(gl, { geometry: terrainGeom, program: terrainProgram });
-    terrainMesh.rotation.set(-1.05, 0.08, -0.15);
-    terrainMesh.position.set(0.0, -1.3, -1.2);
+    terrainMesh.rotation.set(-0.95, 0.06, -0.1);
+    terrainMesh.position.set(0.0, -0.88, -0.9);
     terrainMesh.setParent(scene);
 
     // ─── 5. SECTION-BASED 3D OBJECTS (Appear when respective section is in view) ───
@@ -633,9 +640,9 @@ export default function Background() {
     const applyThemeColors = () => {
       const isDark = document.documentElement.classList.contains('dark');
       if (isDark) {
-        terrainProgram.uniforms.uColorBase.value.set(0.04, 0.09, 0.2);
-        terrainProgram.uniforms.uColorGrid.value.set(0.24, 0.58, 0.98);
-        terrainProgram.uniforms.uOpacity.value = 0.72;
+        terrainProgram.uniforms.uColorBase.value.set(0.03, 0.08, 0.18);
+        terrainProgram.uniforms.uColorGrid.value.set(0.22, 0.55, 0.92);
+        terrainProgram.uniforms.uOpacity.value = 0.70;
 
         allSymbolProgs.forEach((prog) => {
           prog.uniforms.uColorBase.value.set(0.05, 0.12, 0.25);
@@ -650,9 +657,9 @@ export default function Background() {
           prog.uniforms.uColorBeacon.value.set(0.5, 0.95, 1.0);
         });
       } else {
-        terrainProgram.uniforms.uColorBase.value.set(0.76, 0.85, 0.96);
-        terrainProgram.uniforms.uColorGrid.value.set(0.18, 0.44, 0.92);
-        terrainProgram.uniforms.uOpacity.value = 0.52;
+        terrainProgram.uniforms.uColorBase.value.set(0.85, 0.92, 0.98);
+        terrainProgram.uniforms.uColorGrid.value.set(0.16, 0.38, 0.75);
+        terrainProgram.uniforms.uOpacity.value = 0.35;
 
         allSymbolProgs.forEach((prog) => {
           prog.uniforms.uColorBase.value.set(0.82, 0.9, 0.98);
@@ -751,9 +758,9 @@ export default function Background() {
       }
 
       // Abstract Terrain Parallax Motion (undulates and tilts smoothly)
-      const targetTerrainY = -1.3 + (scrollProgress * 0.45) - currentMouseY * 0.15;
-      const targetTerrainRotX = -1.05 + (scrollProgress * 0.25) - currentMouseY * 0.18;
-      const targetTerrainRotY = 0.08 + currentMouseX * 0.22;
+      const targetTerrainY = -0.88 + (scrollProgress * 0.35) - currentMouseY * 0.12;
+      const targetTerrainRotX = -0.95 + (scrollProgress * 0.2) - currentMouseY * 0.15;
+      const targetTerrainRotY = 0.06 + currentMouseX * 0.18;
 
       terrainMesh.position.y += (targetTerrainY - terrainMesh.position.y) * 0.06;
       terrainMesh.rotation.x += (targetTerrainRotX - terrainMesh.rotation.x) * 0.06;
@@ -975,18 +982,29 @@ export default function Background() {
     };
   }, [mounted, isLowTier, reducedMotion]);
 
-  if (!mounted || isLowTier) return null;
+  if (!mounted) return null;
 
   return (
     <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
       {/* Layer 1: Dot Matrix Grid (Static blueprint background with smooth vertical parallax drift) */}
       <div
         ref={gridRef}
-        className="absolute -top-48 -bottom-48 inset-x-0 bg-[radial-gradient(hsla(var(--foreground)/0.12)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_60%,transparent_100%)] opacity-35 will-change-transform"
+        className="absolute -top-48 -bottom-48 inset-x-0 bg-[radial-gradient(hsla(var(--foreground)/0.1)_1px,transparent_1px)] [background-size:24px_24px] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_60%,transparent_100%)] opacity-25 will-change-transform"
       />
 
       {/* Layer 2: Abstract Topographic 3D Horizon with Section-Based Revealed Symbols */}
-      <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+      {!isLowTier && (
+        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+      )}
+
+      {/* Layer 3: Fallback / Lite Mode 3D Perspective Grid Wave */}
+      {isLowTier && (
+        <div className="absolute inset-0 overflow-hidden pointer-events-none [perspective:800px]">
+          <div 
+            className="absolute inset-x-0 -bottom-24 h-[60vh] origin-bottom [transform:rotateX(65deg)] bg-[linear-gradient(to_right,rgba(59,130,246,0.15)_1px,transparent_1px),linear-gradient(to_bottom,rgba(59,130,246,0.15)_1px,transparent_1px)] [background-size:40px_40px] [mask-image:radial-gradient(ellipse_80%_60%_at_50%_100%,#000_50%,transparent_100%)] opacity-40"
+          />
+        </div>
+      )}
     </div>
   );
 }
