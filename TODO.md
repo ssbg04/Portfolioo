@@ -33,4 +33,11 @@ Verified digital credentials from Cisco and industry partners. Each badge repres
 - do not use emoji 
 - certifications section -> all categories use simple word and short for title category
 - only fetch spotify widget when modal is open, fix recent play its pausing
-- in tech stack technology add icon fontawesome and update the sanity io -->
+- in tech stack technology add icon fontawesome and update the sanity io -->
+
+<!-- # TECHNOLOGIES & TOOLS
+- make the per categories simple and easy to read, remove some uneccessary components, remove the per skills has its box
+
+# CONTACT SECTION
+- fix the "Let's create something amazing." is under lapping to paragraph element
+- in ultra fast mode the form still has label animation, fix the label to be static and dont move or animate, always show the label above the input field -->

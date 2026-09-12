@@ -101,30 +101,6 @@ export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: Skil
 
   const categories = Array.from(new Set(skills.map((s) => s.category || 'Core')));
 
-  // Bento span calculation to produce aesthetic varying card proportions
-  const getBentoSpan = (index: number, total: number) => {
-    if (total === 1) return 'lg:col-span-12';
-    if (total === 2) return 'lg:col-span-6';
-    if (total === 3) {
-      if (index === 0) return 'lg:col-span-12';
-      return 'lg:col-span-6';
-    }
-    if (total === 4) {
-      if (index === 0) return 'lg:col-span-7';
-      if (index === 1) return 'lg:col-span-5';
-      return 'lg:col-span-6';
-    }
-    if (total >= 5) {
-      if (index === 0) return 'lg:col-span-7 md:col-span-12';
-      if (index === 1) return 'lg:col-span-5 md:col-span-12';
-      if (index === 2) return 'lg:col-span-4 md:col-span-6';
-      if (index === 3) return 'lg:col-span-4 md:col-span-6';
-      if (index === 4) return 'lg:col-span-4 md:col-span-12';
-      return 'lg:col-span-6';
-    }
-    return 'lg:col-span-4';
-  };
-
   return (
     <section id="skills" className="py-20 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
@@ -144,18 +120,17 @@ export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: Skil
           </div>
         </ScrollReveal>
 
-        {/* ─── Bento Box Grid for Tech Stack ─── */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-5">
+        {/* Clean, Easy-to-Read Categories Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {categories.map((category, idx) => {
             const categorySkills = skills.filter((s) => (s.category || 'Core') === category);
-            const spanClass = getBentoSpan(idx, categories.length);
 
             return (
-              <div key={category} className={`${spanClass} col-span-12`}>
-                <ScrollReveal variant="fade-up" delay={idx * 60} className="h-full">
-                  <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group">
+              <div key={category} className="col-span-1">
+                <ScrollReveal variant="fade-up" delay={idx * 50} className="h-full">
+                  <div className="bento-card p-5 sm:p-6 flex flex-col justify-between h-full group">
                     <div>
-                      {/* Header */}
+                      {/* Category Header */}
                       <div className="flex items-center justify-between pb-3 mb-4 border-b border-border-custom">
                         <div className="flex items-center gap-2.5">
                           <span className="p-1.5 rounded-lg bg-primary-custom/10 text-primary-custom">
@@ -170,31 +145,18 @@ export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: Skil
                         </span>
                       </div>
 
-                      {/* Skill Items List / Pills */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 my-2">
+                      {/* Clean Skill Items without individual boxes */}
+                      <div className="flex flex-wrap gap-x-5 gap-y-3 py-1">
                         {categorySkills.map((skill) => (
                           <div
                             key={skill.name}
-                            className="p-3 rounded-xl border border-border-custom/80 bg-foreground-custom/[0.02] hover:bg-foreground-custom/[0.05] hover:border-primary-custom/40 transition-all flex items-center justify-between group/item"
+                            className="flex items-center gap-2 text-xs font-medium text-foreground-custom/90 hover:text-primary-custom transition-colors"
                           >
-                            <div className="flex items-center gap-2.5 min-w-0">
-                              <span className="w-7 h-7 rounded-lg bg-primary-custom/10 text-primary-custom flex items-center justify-center text-sm shrink-0 group-hover/item:bg-primary-custom group-hover/item:text-white transition-all shadow-xs">
-                                <i className={getSkillFaClass(skill)} />
-                              </span>
-                              <span className="text-xs font-semibold text-foreground-custom group-hover/item:text-primary-custom transition-colors truncate">
-                                {skill.name}
-                              </span>
-                            </div>
-                            <span className="w-1.5 h-1.5 rounded-full bg-primary-custom/40 group-hover/item:bg-primary-custom transition-colors shrink-0 ml-2" />
+                            <i className={`${getSkillFaClass(skill)} text-primary-custom text-sm shrink-0`} />
+                            <span>{skill.name}</span>
                           </div>
                         ))}
                       </div>
-                    </div>
-
-                    {/* Bento Cell Foot */}
-                    <div className="pt-3 mt-4 border-t border-border-custom flex items-center justify-between text-[10px] font-mono text-muted-foreground-custom">
-                      <span>CATEGORY // {category.toUpperCase()}</span>
-                      <span className="w-1.5 h-1.5 rounded-full bg-primary-custom/60" />
                     </div>
                   </div>
                 </ScrollReveal>

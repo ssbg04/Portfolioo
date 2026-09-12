@@ -373,12 +373,31 @@ html[data-tier='low'].dark .impact-pill {
   color: #e5e7eb !important;
 }
 
-/* 7. Classic Form Inputs */
+/* 7. Classic Form Inputs & Static Labels (No floating animations in low tier) */
 html[data-tier='low'] input,
 html[data-tier='low'] textarea,
 html[data-tier='low'] select {
   border-radius: 4px !important;
   box-shadow: none !important;
+}
+
+html[data-tier='low'] #contact label {
+  position: static !important;
+  transform: none !important;
+  display: block !important;
+  margin-bottom: 6px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  color: var(--fg-color) !important;
+  opacity: 1 !important;
+  z-index: auto !important;
+  animation: none !important;
+  transition: none !important;
+}
+
+html[data-tier='low'] #contact .peer-focus\:-translate-y-6,
+html[data-tier='low'] #contact [class*="translate-y"] {
+  transform: none !important;
 }
 
 html[data-tier='low']:not(.dark) input,

@@ -56,6 +56,21 @@ export default function ContactForm({
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLowTier, setIsLowTier] = useState(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
+    }
+    return false;
+  });
+
+  React.useEffect(() => {
+    const checkTier = () => {
+      setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
+    };
+    checkTier();
+    window.addEventListener('tier-change', checkTier);
+    return () => window.removeEventListener('tier-change', checkTier);
+  }, []);
 
   const linksToRender = socialLinks.length > 0
     ? socialLinks.filter(l => l.url && l.url !== '#' && !l.url.includes('/N/A'))
@@ -112,7 +127,7 @@ export default function ContactForm({
           {/* Left Side: Info */}
           <div className="lg:col-span-2 flex flex-col justify-center h-full">
             <ScrollReveal variant="fade-right">
-              <h2 className="text-4xl md:text-5xl font-black font-heading mb-6 text-glow bg-clip-text text-transparent bg-gradient-to-r from-foreground-custom to-primary-custom/80">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-heading mb-5 leading-tight tracking-tight text-foreground-custom block">
                 {contactHeading}
               </h2>
               <p className="text-muted-foreground-custom text-base md:text-lg mb-8 leading-relaxed">
@@ -148,9 +163,9 @@ export default function ContactForm({
                   {status === 'success' ? (
                     <motion.div
                       key="success"
-                      initial={{ opacity: 0, scale: 0.95 }}
+                      initial={isLowTier ? false : { opacity: 0, scale: 0.95 }}
                       animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 1.05 }}
+                      exit={isLowTier ? undefined : { opacity: 0, scale: 1.05 }}
                       className="text-center py-12 flex flex-col items-center justify-center min-h-[400px]"
                     >
                       <div className="w-20 h-20 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
@@ -166,7 +181,7 @@ export default function ContactForm({
                       </p>
                       <button
                         onClick={() => setStatus('idle')}
-                        className="px-8 py-3.5 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/10 text-foreground-custom text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        className="px-8 py-3.5 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/10 text-foreground-custom text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
                       >
                         Send Another
                       </button>
@@ -174,88 +189,153 @@ export default function ContactForm({
                   ) : (
                     <motion.form
                       key="form"
-                      initial={{ opacity: 0 }}
+                      initial={isLowTier ? false : { opacity: 0 }}
                       animate={{ opacity: 1 }}
-                      exit={{ opacity: 0 }}
+                      exit={isLowTier ? undefined : { opacity: 0 }}
                       onSubmit={handleSubmit} 
-                      className="flex flex-col gap-8"
+                      className="flex flex-col gap-6"
                     >
                       {status === 'error' && (
-                        <div className="p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-sm font-medium">
+                        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-sm font-medium">
                           {errorMessage}
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        {/* Floating Name */}
-                        <div className="relative z-0 w-full group">
-                          <input
-                            type="text"
-                            name="name"
-                            id="name"
-                            className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors"
-                            placeholder=" "
-                            required
-                            value={formData.name}
-                            onChange={handleChange}
-                            disabled={status === 'sending'}
-                          />
-                          <label
-                            htmlFor="name"
-                            className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                          >
-                            Full Name
-                          </label>
-                        </div>
+                      {/* Low-tier / Ultra-fast mode: Always Static Labels Above Inputs (No animation) */}
+                      {isLowTier ? (
+                        <div className="flex flex-col gap-5">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            {/* Static Full Name */}
+                            <div className="flex flex-col gap-1.5 w-full">
+                              <label htmlFor="name" className="text-xs font-semibold text-foreground-custom">
+                                Full Name
+                              </label>
+                              <input
+                                type="text"
+                                name="name"
+                                id="name"
+                                className="block py-2.5 px-3 w-full text-sm text-foreground-custom bg-background-custom border border-border-custom rounded-md focus:outline-none focus:border-primary-custom"
+                                placeholder="Your full name"
+                                required
+                                value={formData.name}
+                                onChange={handleChange}
+                                disabled={status === 'sending'}
+                              />
+                            </div>
 
-                        {/* Floating Email */}
-                        <div className="relative z-0 w-full group">
-                          <input
-                            type="email"
-                            name="email"
-                            id="email"
-                            className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors"
-                            placeholder=" "
-                            required
-                            value={formData.email}
-                            onChange={handleChange}
-                            disabled={status === 'sending'}
-                          />
-                          <label
-                            htmlFor="email"
-                            className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                          >
-                            Email Address
-                          </label>
-                        </div>
-                      </div>
+                            {/* Static Email */}
+                            <div className="flex flex-col gap-1.5 w-full">
+                              <label htmlFor="email" className="text-xs font-semibold text-foreground-custom">
+                                Email Address
+                              </label>
+                              <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                className="block py-2.5 px-3 w-full text-sm text-foreground-custom bg-background-custom border border-border-custom rounded-md focus:outline-none focus:border-primary-custom"
+                                placeholder="you@example.com"
+                                required
+                                value={formData.email}
+                                onChange={handleChange}
+                                disabled={status === 'sending'}
+                              />
+                            </div>
+                          </div>
 
-                      {/* Floating Message */}
-                      <div className="relative z-0 w-full group mt-2">
-                        <textarea
-                          name="message"
-                          id="message"
-                          rows={4}
-                          className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors resize-none"
-                          placeholder=" "
-                          required
-                          value={formData.message}
-                          onChange={handleChange}
-                          disabled={status === 'sending'}
-                        />
-                        <label
-                          htmlFor="message"
-                          className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                        >
-                          How can I help you?
-                        </label>
-                      </div>
+                          {/* Static Message */}
+                          <div className="flex flex-col gap-1.5 w-full">
+                            <label htmlFor="message" className="text-xs font-semibold text-foreground-custom">
+                              How can I help you?
+                            </label>
+                            <textarea
+                              name="message"
+                              id="message"
+                              rows={4}
+                              className="block py-2.5 px-3 w-full text-sm text-foreground-custom bg-background-custom border border-border-custom rounded-md focus:outline-none focus:border-primary-custom resize-none"
+                              placeholder="Your message or project inquiry..."
+                              required
+                              value={formData.message}
+                              onChange={handleChange}
+                              disabled={status === 'sending'}
+                            />
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex flex-col gap-8">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            {/* Floating Name */}
+                            <div className="relative z-0 w-full group">
+                              <input
+                                type="text"
+                                name="name"
+                                id="name"
+                                className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors"
+                                placeholder=" "
+                                required
+                                value={formData.name}
+                                onChange={handleChange}
+                                disabled={status === 'sending'}
+                              />
+                              <label
+                                htmlFor="name"
+                                className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                              >
+                                Full Name
+                              </label>
+                            </div>
+
+                            {/* Floating Email */}
+                            <div className="relative z-0 w-full group">
+                              <input
+                                type="email"
+                                name="email"
+                                id="email"
+                                className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors"
+                                placeholder=" "
+                                required
+                                value={formData.email}
+                                onChange={handleChange}
+                                disabled={status === 'sending'}
+                              />
+                              <label
+                                htmlFor="email"
+                                className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                              >
+                                Email Address
+                              </label>
+                            </div>
+                          </div>
+
+                          {/* Floating Message */}
+                          <div className="relative z-0 w-full group mt-2">
+                            <textarea
+                              name="message"
+                              id="message"
+                              rows={4}
+                              className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors resize-none"
+                              placeholder=" "
+                              required
+                              value={formData.message}
+                              onChange={handleChange}
+                              disabled={status === 'sending'}
+                            />
+                            <label
+                              htmlFor="message"
+                              className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
+                            >
+                              How can I help you?
+                            </label>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Submit Button */}
                       <button
                         type="submit"
                         disabled={status === 'sending'}
-                        className="group relative w-full sm:w-auto self-end mt-4 px-8 py-4 rounded-full bg-primary-custom text-white font-bold text-sm shadow-xl shadow-primary-custom/20 hover:shadow-primary-custom/40 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3"
+                        className={`group relative w-full sm:w-auto self-end mt-2 px-8 py-3.5 rounded-full bg-primary-custom text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer ${
+                          isLowTier ? 'hover:scale-100 active:scale-100 rounded-md' : 'hover:scale-[1.02] active:scale-[0.98]'
+                        }`}
                       >
                         <span className="relative z-10 flex items-center gap-2">
                           {status === 'sending' ? 'Sending...' : 'Send Message'}
@@ -271,8 +351,9 @@ export default function ContactForm({
                             </svg>
                           )}
                         </span>
-                        {/* Hover flare effect */}
-                        <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+                        {!isLowTier && (
+                          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
+                        )}
                       </button>
                     </motion.form>
                   )}
