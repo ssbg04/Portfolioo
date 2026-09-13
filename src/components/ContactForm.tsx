@@ -56,6 +56,9 @@ export default function ContactForm({
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
+  const [deviceId, setDeviceId] = useState('');
+  const [dailySentCount, setDailySentCount] = useState(0);
+  const [isDailyLimitReached, setIsDailyLimitReached] = useState(false);
   const [isLowTier, setIsLowTier] = useState(() => {
     if (typeof document !== 'undefined') {
       return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
@@ -63,11 +66,40 @@ export default function ContactForm({
     return false;
   });
 
+  const refreshRateLimitState = () => {
+    if (typeof window === 'undefined') return;
+
+    // Get or initialize persistent client device UUID
+    let storedId = localStorage.getItem('portfolio_device_id');
+    if (!storedId) {
+      storedId = typeof crypto !== 'undefined' && crypto.randomUUID
+        ? crypto.randomUUID()
+        : 'dev_' + Math.random().toString(36).substring(2) + Date.now().toString(36);
+      localStorage.setItem('portfolio_device_id', storedId);
+    }
+    setDeviceId(storedId);
+
+    // Read contact submission history from the last 24h
+    try {
+      const storedLog = localStorage.getItem('portfolio_contact_log');
+      const timestamps: number[] = storedLog ? JSON.parse(storedLog) : [];
+      const now = Date.now();
+      const valid = timestamps.filter(t => typeof t === 'number' && now - t < 24 * 60 * 60 * 1000);
+      localStorage.setItem('portfolio_contact_log', JSON.stringify(valid));
+      setDailySentCount(valid.length);
+      setIsDailyLimitReached(valid.length >= 2);
+    } catch {
+      setDailySentCount(0);
+      setIsDailyLimitReached(false);
+    }
+  };
+
   React.useEffect(() => {
     const checkTier = () => {
       setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
     };
     checkTier();
+    refreshRateLimitState();
     window.addEventListener('tier-change', checkTier);
     return () => window.removeEventListener('tier-change', checkTier);
   }, []);
@@ -87,6 +119,13 @@ export default function ContactForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (isDailyLimitReached) {
+      setStatus('error');
+      setErrorMessage('Daily limit reached (2/2 emails). To prevent spam and abuse, please try again tomorrow.');
+      return;
+    }
+
     if (!formData.name || !formData.email || !formData.message) {
       setStatus('error');
       setErrorMessage('Please fill in all fields.');
@@ -100,15 +139,32 @@ export default function ContactForm({
       const response = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
+        body: JSON.stringify({
+          ...formData,
+          deviceId
+        })
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        // Record successful transmission timestamp locally
+        try {
+          const storedLog = localStorage.getItem('portfolio_contact_log');
+          const timestamps: number[] = storedLog ? JSON.parse(storedLog) : [];
+          timestamps.push(Date.now());
+          localStorage.setItem('portfolio_contact_log', JSON.stringify(timestamps));
+          refreshRateLimitState();
+        } catch {
+          // ignore storage error
+        }
+
         setStatus('success');
         setFormData({ name: '', email: '', message: '' });
       } else {
+        if (response.status === 429 || data.limitReached) {
+          setIsDailyLimitReached(true);
+        }
         setStatus('error');
         setErrorMessage(data.message || 'Something went wrong. Please try again.');
       }
@@ -179,12 +235,18 @@ export default function ContactForm({
                       <p className="text-base text-muted-foreground-custom leading-relaxed max-w-sm mb-8">
                         Thanks for reaching out! I'm thrilled to hear from you and will respond as soon as I can.
                       </p>
-                      <button
-                        onClick={() => setStatus('idle')}
-                        className="px-8 py-3.5 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/10 text-foreground-custom text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
-                      >
-                        Send Another
-                      </button>
+                      {isDailyLimitReached ? (
+                        <div className="p-3.5 rounded-2xl bg-foreground-custom/5 border border-border-hover/10 text-xs text-muted-foreground-custom text-center max-w-xs">
+                          Daily message quota reached (2/2). For urgent matters, reach out through the direct email or social channels below.
+                        </div>
+                      ) : (
+                        <button
+                          onClick={() => setStatus('idle')}
+                          className="px-8 py-3.5 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/10 text-foreground-custom text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                        >
+                          Send Another ({2 - dailySentCount} remaining)
+                        </button>
+                      )}
                     </motion.div>
                   ) : (
                     <motion.form
@@ -329,17 +391,36 @@ export default function ContactForm({
                         </div>
                       )}
 
+                      {/* Security & Rate Limiting Notice */}
+                      <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-foreground-custom/4 border border-border-hover/10 text-xs text-muted-foreground-custom leading-relaxed mt-1">
+                        <svg className="w-4 h-4 text-primary-custom shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+                        </svg>
+                        <div className="flex-1">
+                          <span className="font-semibold text-foreground-custom">Security Notice:</span> Submissions are limited to <strong className="text-foreground-custom font-semibold">2 messages per day</strong> per IP, device, and email address to prevent automated spam, bot attacks, and server abuse.
+                          {dailySentCount > 0 && (
+                            <span className="block mt-1 font-medium text-primary-custom">
+                              Daily usage: {dailySentCount}/2 messages sent today.
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
                       {/* Submit Button */}
                       <button
                         type="submit"
-                        disabled={status === 'sending'}
-                        className={`group relative w-full sm:w-auto self-end mt-2 px-8 py-3.5 rounded-full bg-primary-custom text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer ${
+                        disabled={status === 'sending' || isDailyLimitReached}
+                        className={`group relative w-full sm:w-auto self-end mt-2 px-8 py-3.5 rounded-full bg-primary-custom text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer ${
                           isLowTier ? 'hover:scale-100 active:scale-100 rounded-md' : 'hover:scale-[1.02] active:scale-[0.98]'
                         }`}
                       >
                         <span className="relative z-10 flex items-center gap-2">
-                          {status === 'sending' ? 'Sending...' : 'Send Message'}
-                          {status !== 'sending' && (
+                          {status === 'sending'
+                            ? 'Sending...'
+                            : isDailyLimitReached
+                            ? 'Daily Limit Reached (2/2)'
+                            : 'Send Message'}
+                          {status !== 'sending' && !isDailyLimitReached && (
                             <svg className="w-4 h-4 transform group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
                             </svg>
