@@ -56,3 +56,10 @@ Project Dedicated page
 <!-- Technologies & tools section
 - make it 12 limit
 - remove duplication of showing x of n technologies -->
+
+<!-- - link page fix the layout in landscape and mobile view
+- remove the link in navigation bar
+- gallery page -> add next/previous, zoom in/zoom out, and image display change to image grid in web in modal view
+- in mobile view -> move the settings button inside the hamburger menu
+- in mobile view -> hamburger menu render from under the navigation bar to the bottom occupy the full screen
+- after all of these git commit -->

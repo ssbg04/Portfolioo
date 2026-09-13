@@ -9,7 +9,6 @@ const navItems = [
   { label: 'About', href: '/about', icon: 'fa-solid fa-user' },
   { label: 'Certifications', href: '/certifications', icon: 'fa-solid fa-award' },
   { label: 'Gallery', href: '/gallery', icon: 'fa-solid fa-images' },
-  { label: 'Links', href: '/links', icon: 'fa-solid fa-link' },
   { label: 'Contact', href: '/contact', icon: 'fa-solid fa-envelope' },
 ];
 
@@ -135,91 +134,90 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
             </span>
           </a>
 
-          {/* Right Controls: Display & Accessibility Dropdown + Mobile Hamburger */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
-              <ControlsDropdown />
-            </Suspense>
-
-            {/* Hamburger Button with Smooth Animation to 'X' */}
-            <button
-              className="relative flex items-center justify-center w-9 h-9 rounded-xl hover:bg-foreground-custom/8 active:bg-foreground-custom/15 transition-colors focus:outline-none cursor-pointer border border-border-custom"
-              onClick={() => {
-                haptic.tap();
-                setDrawerOpen((prev) => !prev);
-              }}
-              aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              aria-expanded={drawerOpen}
-            >
-              <div className="w-4.5 h-3.5 relative flex flex-col justify-between">
-                <span
-                  className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
-                    drawerOpen ? 'rotate-45 translate-y-[6px]' : ''
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-200 ${
-                    drawerOpen ? 'opacity-0 scale-x-0' : 'opacity-100'
-                  }`}
-                />
-                <span
-                  className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
-                    drawerOpen ? '-rotate-45 -translate-y-[6px]' : ''
-                  }`}
-                />
-              </div>
-            </button>
-          </div>
+          {/* Right Controls: Mobile Hamburger (Settings moved inside menu) */}
+          <button
+            className="relative flex items-center justify-center w-10 h-10 rounded-xl hover:bg-foreground-custom/8 active:bg-foreground-custom/15 transition-colors focus:outline-none cursor-pointer border border-border-custom shrink-0"
+            onClick={() => {
+              haptic.tap();
+              setDrawerOpen((prev) => !prev);
+            }}
+            aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-expanded={drawerOpen}
+          >
+            <div className="w-4.5 h-3.5 relative flex flex-col justify-between">
+              <span
+                className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
+                  drawerOpen ? 'rotate-45 translate-y-[6px]' : ''
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-200 ${
+                  drawerOpen ? 'opacity-0 scale-x-0' : 'opacity-100'
+                }`}
+              />
+              <span
+                className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
+                  drawerOpen ? '-rotate-45 -translate-y-[6px]' : ''
+                }`}
+              />
+            </div>
+          </button>
         </div>
       </header>
 
-      {/* ── Mobile Navigation Dropdown (Directly on body below top navbar, top nav stays visible) ── */}
+      {/* ── Mobile Navigation Full-Screen Overlay (From under top navbar to bottom) ── */}
       {drawerOpen && (
         <div
-          className="md:hidden fixed inset-0 top-[60px] z-40 bg-black/60 backdrop-blur-xs transition-opacity animate-modal-fade"
-          onClick={() => setDrawerOpen(false)}
-          aria-hidden="true"
+          className="md:hidden fixed inset-x-0 top-[60px] bottom-0 z-40 bg-background-custom/98 dark:bg-[#090a0f]/98 backdrop-blur-xl border-t border-border-custom flex flex-col justify-between overflow-hidden animate-modal-fade select-none"
+          style={{ height: 'calc(100dvh - 60px)' }}
         >
-          <div
-            className="w-full bg-white dark:bg-[#090a0f] border-b border-border-custom shadow-2xl flex flex-col p-4 sm:p-5 max-h-[calc(100vh-60px)] overflow-y-auto animate-modal-scale"
-            onClick={(e) => e.stopPropagation()}
-          >
-            {/* Navigation Links */}
-            <nav className="flex flex-col gap-1" aria-label="Mobile navigation links">
-              {navItems.map((item) => {
-                const active = isActive(item.href);
-                return (
-                  <a
-                    key={item.label}
-                    href={item.href}
-                    onClick={() => setDrawerOpen(false)}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
-                      active
-                        ? 'text-foreground-custom font-bold'
-                        : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <i className={`${item.icon} text-sm w-4 text-center transition-colors ${active ? 'text-primary-custom' : 'text-muted-foreground-custom/70'}`} />
-                      <span>{item.label}</span>
-                    </div>
-                    {active && <span className="w-1.5 h-1.5 rounded-full bg-primary-custom shrink-0" />}
-                  </a>
-                );
-              })}
-            </nav>
+          {/* Scrollable Navigation Links */}
+          <nav className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-1.5" aria-label="Mobile navigation links">
+            {navItems.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setDrawerOpen(false)}
+                  className={`flex items-center justify-between px-4 py-3.5 rounded-2xl text-base transition-all duration-200 ${
+                    active
+                      ? 'text-primary-custom font-bold bg-primary-custom/10 border border-primary-custom/25'
+                      : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
+                  }`}
+                >
+                  <div className="flex items-center gap-3.5">
+                    <i className={`${item.icon} text-base w-5 text-center transition-colors ${active ? 'text-primary-custom' : 'text-muted-foreground-custom/70'}`} />
+                    <span>{item.label}</span>
+                  </div>
+                  {active && <span className="w-2 h-2 rounded-full bg-primary-custom shrink-0 shadow-xs" />}
+                </a>
+              );
+            })}
+          </nav>
+
+          {/* Bottom Drawer Footer: Settings inside menu + Contact CTA */}
+          <div className="p-5 border-t border-border-custom bg-foreground-custom/[0.02] flex flex-col gap-3.5 shrink-0">
+            {/* Preferences / Settings row */}
+            <div className="flex items-center justify-between px-1 py-1">
+              <span className="text-xs font-mono text-muted-foreground-custom flex items-center gap-2">
+                <i className="fa-solid fa-sliders text-primary-custom" />
+                <span>Preferences &amp; Settings</span>
+              </span>
+              <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+                <ControlsDropdown />
+              </Suspense>
+            </div>
 
             {/* Mobile Contact Button */}
-            <div className="pt-4 mt-3 border-t border-border-custom">
-              <a
-                href="/contact"
-                onClick={() => setDrawerOpen(false)}
-                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-95 transition-all shadow-sm"
-              >
-                <span>Get in Touch</span>
-                <i className="fa-solid fa-arrow-right text-[10px]" />
-              </a>
-            </div>
+            <a
+              href="/contact"
+              onClick={() => setDrawerOpen(false)}
+              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-md"
+            >
+              <span>Get in Touch</span>
+              <i className="fa-solid fa-arrow-right text-[10px]" />
+            </a>
           </div>
         </div>
       )}

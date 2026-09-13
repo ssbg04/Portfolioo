@@ -60,13 +60,35 @@ const getIconSvg = (platform: string) => {
     body {
       padding-top: 0 !important;
     }
+    /* Reset Layout.astro defaults on links page since there is no navbar */
+    #magnify-content {
+      padding-top: 0 !important;
+      padding-left: 0 !important;
+    }
+    @media (orientation: landscape) and (max-height: 500px) {
+      .links-main-container {
+        padding-top: 0.75rem !important;
+        padding-bottom: 2.5rem !important;
+      }
+      .links-profile-card {
+        padding: 0.875rem !important;
+      }
+      .links-avatar {
+        width: 3.25rem !important;
+        height: 3.25rem !important;
+        margin-bottom: 0.35rem !important;
+      }
+      .links-header-pills {
+        margin-bottom: 0.625rem !important;
+      }
+    }
   </style>
 
   {/* True Linktree Style: No Header Nav and No Footer */}
-  <main class="min-h-screen pt-6 sm:pt-8 pb-12 px-4 sm:px-6 flex flex-col items-center justify-center relative">
+  <main class="min-h-screen py-6 sm:py-8 px-4 sm:px-6 flex flex-col items-center justify-start md:justify-center relative links-main-container">
     
-    {/* Return to Main Portfolio Pill */}
-    <div class="w-full max-w-md flex justify-between items-center mb-5">
+    {/* Return to Main Portfolio Pill & Status */}
+    <div class="w-full max-w-md md:max-w-4xl lg:max-w-5xl flex justify-between items-center mb-4 sm:mb-6 links-header-pills">
       <a
         href="/"
         class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/10 text-muted-foreground-custom hover:text-foreground-custom text-xs font-mono border border-border-custom transition-all"
@@ -86,11 +108,12 @@ const getIconSvg = (platform: string) => {
       )}
     </div>
 
-    <div class="w-full max-w-md flex flex-col items-center relative z-10">
+    {/* Content Container: Single Column on Portrait, Responsive 2-Column Grid on Landscape & Desktop */}
+    <div class="w-full max-w-md md:max-w-4xl lg:max-w-5xl grid grid-cols-1 md:grid-cols-12 landscape:grid-cols-12 gap-4 sm:gap-6 items-start relative z-10">
       
-      {/* Profile Header Bento Card */}
-      <div class="w-full bento-card p-6 sm:p-7 text-center flex flex-col items-center mb-4">
-        <div class="w-20 h-20 rounded-full overflow-hidden border-2 border-border-custom shadow-xs mb-3.5 bg-muted-custom/20">
+      {/* Left Column: Profile Header Bento Card */}
+      <div class="w-full md:col-span-5 landscape:col-span-5 md:sticky md:top-6 landscape:sticky landscape:top-3 bento-card p-5 sm:p-6 text-center flex flex-col items-center links-profile-card">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-border-custom shadow-xs mb-3 bg-muted-custom/20 links-avatar">
           <img
             src={profileAvatar}
             alt={settings.fullName}
@@ -99,7 +122,7 @@ const getIconSvg = (platform: string) => {
           />
         </div>
 
-        <h1 class="text-xl sm:text-2xl font-bold font-heading text-foreground-custom tracking-tight">
+        <h1 class="text-lg sm:text-xl md:text-2xl font-bold font-heading text-foreground-custom tracking-tight">
           {settings.fullName}
         </h1>
         
@@ -139,14 +162,14 @@ const getIconSvg = (platform: string) => {
         </div>
       </div>
 
-      {/* Social Links List */}
-      <div class="w-full flex flex-col gap-2.5">
+      {/* Right Column: Social Links List */}
+      <div class="w-full md:col-span-7 landscape:col-span-7 flex flex-col gap-2.5">
         {links.map((link) => (
           <a
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="bento-card p-3.5 sm:p-4 flex items-center justify-between group hover:border-primary-custom/40 active:scale-[0.99] transition-all cursor-pointer"
+            class="bento-card p-3 sm:p-3.5 md:p-4 flex items-center justify-between group hover:border-primary-custom/40 active:scale-[0.99] transition-all cursor-pointer"
           >
             <div class="flex items-center gap-3.5 min-w-0">
               <div class="w-9 h-9 rounded-xl bg-foreground-custom/5 border border-border-custom flex items-center justify-center text-primary-custom shrink-0 group-hover:scale-105 transition-transform" set:html={getIconSvg(link.platform)}></div>
@@ -169,7 +192,7 @@ const getIconSvg = (platform: string) => {
         {/* Main Portfolio Destination Card */}
         <a
           href="/"
-          class="bento-card p-3.5 sm:p-4 flex items-center justify-between group hover:border-primary-custom/40 transition-all mt-1"
+          class="bento-card p-3 sm:p-3.5 md:p-4 flex items-center justify-between group hover:border-primary-custom/40 transition-all mt-0.5"
         >
           <div class="flex items-center gap-3.5">
             <div class="w-9 h-9 rounded-xl bg-primary-custom/10 text-primary-custom flex items-center justify-center shrink-0">
@@ -182,7 +205,7 @@ const getIconSvg = (platform: string) => {
                 Main Portfolio
               </span>
               <span class="text-[10px] sm:text-[11px] font-mono text-muted-foreground-custom">
-                Explore full case studies & skills
+                Explore full case studies &amp; skills
               </span>
             </div>
           </div>
@@ -191,12 +214,12 @@ const getIconSvg = (platform: string) => {
             →
           </span>
         </a>
-      </div>
 
-      {/* Minimal Footer Stamp */}
-      <p class="text-[10px] font-mono text-muted-foreground-custom text-center mt-8">
-        &copy; {new Date().getFullYear()} {settings.fullName} • Link Directory
-      </p>
+        {/* Minimal Footer Stamp */}
+        <p class="text-[10px] font-mono text-muted-foreground-custom text-center md:text-left mt-3 pt-2">
+          &copy; {new Date().getFullYear()} {settings.fullName} • Official Directory
+        </p>
+      </div>
 
     </div>
   </main>

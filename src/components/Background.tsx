@@ -69,14 +69,19 @@ void main() {
 
     float gridMask = max(majorLine, minorLine);
 
-    // Atmospheric distance falloff
-    float depthFade = clamp((18.0 - (-vViewPos.z)) / 11.0, 0.25, 1.0);
+    // Smooth perimeter edge fade so the plane melts seamlessly into the dark background without any sharp cutouts
+    float edgeFadeY = smoothstep(1.0, 0.55, vUv.y) * smoothstep(0.0, 0.12, vUv.y);
+    float edgeFadeX = smoothstep(0.0, 0.08, vUv.x) * smoothstep(1.0, 0.92, vUv.x);
+    float edgeFade = edgeFadeX * edgeFadeY;
+
+    // Atmospheric distance falloff (softly fades to 0 at distance)
+    float depthFade = smoothstep(22.0, 9.0, -vViewPos.z);
 
     // Gentle crest glow on wave peaks
     float crestGlow = smoothstep(-0.15, 0.55, vElevation) * 0.4;
 
     vec3 finalColor = mix(uColorBase, uColorGrid, gridMask * 0.9 + crestGlow * 0.5);
-    float alpha = (gridMask * 0.72 + crestGlow * 0.35 + 0.08) * depthFade * uOpacity;
+    float alpha = (gridMask * 0.72 + crestGlow * 0.35 + 0.08) * depthFade * edgeFade * uOpacity;
 
     gl_FragColor = vec4(finalColor, alpha);
 }
@@ -415,12 +420,12 @@ export default function Background() {
     const allBeaconProgs = [skillsBeaconProg, contactBeaconProg];
 
     // ─── 4. BASE LAYER: Abstract Procedural 3D Topographic Mesh ───
-    // Subtle architectural horizon landscape in the lower half
+    // Subtle architectural horizon landscape with generous coverage for all viewports
     const terrainGeom = new Plane(gl, {
-      width: 28,
-      height: 19,
-      widthSegments: 50,
-      heightSegments: 36
+      width: 32,
+      height: 34,
+      widthSegments: 54,
+      heightSegments: 48
     });
 
     const terrainMesh = new Mesh(gl, { geometry: terrainGeom, program: terrainProgram });
@@ -1083,7 +1088,10 @@ export default function Background() {
 
       {/* Layer 2: Abstract Topographic 3D Horizon with Section-Based Revealed Symbols */}
       {!isLowTier && (
-        <div ref={containerRef} className="absolute inset-0 w-full h-full" />
+        <div
+          ref={containerRef}
+          className="absolute inset-0 w-full h-full [mask-image:linear-gradient(to_bottom,transparent_0%,black_10%,black_100%)]"
+        />
       )}
 
       {/* Layer 3: Fallback / Lite Mode 3D Perspective Grid Wave */}

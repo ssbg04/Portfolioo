@@ -231,7 +231,7 @@ export default function Hero({
   return (
     <section
       id="home"
-      className="relative min-h-[calc(100vh-60px)] flex flex-col md:flex-row items-center justify-start md:justify-center pt-2 sm:pt-4 md:pt-8 pb-10 md:pb-12 overflow-hidden"
+      className="relative min-h-[calc(100vh-60px)] flex flex-col md:flex-row items-center justify-start md:justify-center pt-2 sm:pt-4 md:pt-8 pb-10 md:pb-12 overflow-x-clip"
     >
       <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
@@ -350,8 +350,8 @@ export default function Hero({
               </div>
             ) : (
               <>
-                {/* Subtle Backdrop Aura */}
-                <div className="absolute w-[85%] h-[85%] rounded-[36px] bg-gradient-to-tr from-primary-custom via-secondary-custom to-primary-custom blur-3xl pointer-events-none opacity-15" />
+                {/* Subtle Backdrop Aura (smooth circular halo without sharp rectangular edges) */}
+                <div className="absolute inset-1 rounded-full bg-gradient-to-tr from-primary-custom/25 via-secondary-custom/15 to-primary-custom/25 blur-2xl pointer-events-none" />
                 <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
                   <TiltedCard
                     imageSrc={heroImage || (ppDay as any).src || ppDay}
