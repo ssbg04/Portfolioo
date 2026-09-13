@@ -701,7 +701,7 @@ export default function Background() {
     window.addEventListener('resize', handleResize);
     handleResize();
 
-    // ─── 8. Mouse Parallax Input ───
+    // ─── 8. Mouse & Mobile Gyroscope Parallax Input ───
     let mouseTargetX = 0;
     let mouseTargetY = 0;
     let currentMouseX = 0;
@@ -717,6 +717,74 @@ export default function Background() {
     };
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
+
+    // Mobile / Tablet Gyroscope Tilt Handler (DeviceOrientation)
+    const handleDeviceOrientation = (e: DeviceOrientationEvent) => {
+      if (e.gamma === null || e.beta === null) return;
+
+      // Screen rotation adjustment (portrait vs landscape)
+      const orientationAngle =
+        (screen.orientation && screen.orientation.angle) !== undefined
+          ? screen.orientation.angle
+          : (typeof window.orientation === 'number' ? window.orientation : 0);
+
+      let rawX = 0;
+      let rawY = 0;
+
+      if (orientationAngle === 90) {
+        // Landscape (turned 90deg clockwise)
+        rawX = -e.beta;
+        rawY = e.gamma;
+      } else if (orientationAngle === -90 || orientationAngle === 270) {
+        // Landscape (turned 90deg counter-clockwise)
+        rawX = e.beta;
+        rawY = -e.gamma;
+      } else if (orientationAngle === 180) {
+        // Upside down
+        rawX = -e.gamma;
+        rawY = -(e.beta - 45);
+      } else {
+        // Standard Portrait:
+        // gamma: left (-)/right (+) roll tilt (-25deg to +25deg)
+        // beta: front/back pitch tilt (natural resting hand angle is ~45deg)
+        rawX = e.gamma;
+        rawY = e.beta - 45;
+      }
+
+      // Smooth normalization based on natural 25-degree hand movement
+      const maxTilt = 25;
+      mouseTargetX = Math.min(Math.max(rawX / maxTilt, -1.2), 1.2);
+      mouseTargetY = Math.min(Math.max(rawY / maxTilt, -1.2), 1.2);
+    };
+
+    let iosPermissionRequested = false;
+    const requestIOSOrientation = () => {
+      if (iosPermissionRequested) return;
+      iosPermissionRequested = true;
+
+      if (
+        typeof DeviceOrientationEvent !== 'undefined' &&
+        typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+      ) {
+        (DeviceOrientationEvent as any)
+          .requestPermission()
+          .then((state: string) => {
+            if (state === 'granted') {
+              window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
+            }
+          })
+          .catch(() => {});
+      }
+    };
+
+    if (
+      typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof (DeviceOrientationEvent as any).requestPermission === 'function'
+    ) {
+      window.addEventListener('touchend', requestIOSOrientation, { once: true, passive: true });
+    } else if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
+      window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
+    }
 
     // ─── 9. Render & Parallax Loop ───
     let isVisible = true;
@@ -747,21 +815,25 @@ export default function Background() {
 
       terrainProgram.uniforms.uScrollProgress.value = scrollProgress;
 
-      // Mouse Parallax Damping
+      // Mouse & Device Tilt Parallax Damping
       currentMouseX += (mouseTargetX - currentMouseX) * 0.05;
       currentMouseY += (mouseTargetY - currentMouseY) * 0.05;
 
-      // Static Blueprint Dot Grid Parallax
+      // Static Blueprint Dot Grid Parallax with device tilt
       if (gridRef.current && !reducedMotion) {
         const gridParallaxY = -(currentScrollY * 0.12);
-        gridRef.current.style.transform = `translate3d(0, ${gridParallaxY}px, 0)`;
+        const gridTiltX = currentMouseX * 14;
+        const gridTiltY = gridParallaxY + currentMouseY * 14;
+        gridRef.current.style.transform = `translate3d(${gridTiltX.toFixed(1)}px, ${gridTiltY.toFixed(1)}px, 0)`;
       }
 
-      // Abstract Terrain Parallax Motion (undulates and tilts smoothly)
-      const targetTerrainY = -0.88 + (scrollProgress * 0.35) - currentMouseY * 0.12;
-      const targetTerrainRotX = -0.95 + (scrollProgress * 0.2) - currentMouseY * 0.15;
-      const targetTerrainRotY = 0.06 + currentMouseX * 0.18;
+      // Abstract Terrain Parallax Motion (undulates and tilts smoothly with mouse or phone tilt)
+      const targetTerrainY = -0.88 + (scrollProgress * 0.35) - currentMouseY * 0.14;
+      const targetTerrainRotX = -0.95 + (scrollProgress * 0.2) - currentMouseY * 0.2;
+      const targetTerrainRotY = 0.06 + currentMouseX * 0.22;
+      const targetTerrainX = currentMouseX * 0.3;
 
+      terrainMesh.position.x += (targetTerrainX - terrainMesh.position.x) * 0.06;
       terrainMesh.position.y += (targetTerrainY - terrainMesh.position.y) * 0.06;
       terrainMesh.rotation.x += (targetTerrainRotX - terrainMesh.rotation.x) * 0.06;
       terrainMesh.rotation.y += (targetTerrainRotY - terrainMesh.rotation.y) * 0.06;
@@ -967,6 +1039,8 @@ export default function Background() {
       document.removeEventListener('visibilitychange', handleVisibility);
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('deviceorientation', handleDeviceOrientation);
+      window.removeEventListener('touchend', requestIOSOrientation);
 
       try {
         if (gl.canvas && gl.canvas.parentElement) {

@@ -231,9 +231,9 @@ export default function Hero({
   return (
     <section
       id="home"
-      className="relative min-h-[calc(100vh-60px)] flex flex-col md:flex-row items-center justify-center pt-6 sm:pt-8 pb-10 md:pb-12 overflow-hidden"
+      className="relative min-h-[calc(100vh-60px)] flex flex-col md:flex-row items-center justify-start md:justify-center pt-2 sm:pt-4 md:pt-8 pb-10 md:pb-12 overflow-hidden"
     >
-      <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12 items-center">
+      <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
         <motion.div
           className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1 will-change-transform-opacity"
