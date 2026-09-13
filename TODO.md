@@ -1,12 +1,53 @@
-<!-- - testimonial section stars add in sanity studio
+<!-- ✅ COMPLETED in UI Polish Pass (Sept 2026):
+- Browser frame / chrome dots removed from project screenshots → simple rounded-2xl containers
+- Mobile navigation: moved settings into hamburger menu, full-screen glassmorphism drawer from under navbar
+- Desktop navigation: left sidebar active indicator upgraded (left border accent + blue dot glow)
+- Mobile nav drawer: glassmorphism treatment (backdrop-blur:20px) replaces flat Material design
+- Footer: 3-column layout (copyright | spotify | socials), social icons no longer clipped by BackToTop
+- Section headers: removed bottom border dividers for minimalist feel (About, Skills)
+- Missing CSS utilities defined: .text-glow, .glow-effect, .bg-gradient-mesh, .reveal-fade-left/right, .animate-drawer-slide
+- Dark mode aurora ambient gradient added to body
+- iOS safe area (pb-safe) added to mobile nav drawer and footer
+- Tap targets (44px min) added to all interactive mobile elements
+- All pages: consistent responsive padding (about, projects, certifications, contact, gallery)
+- Sidebar uses glass-nav (glassmorphism) instead of flat bg-background-custom
+- AGENT.md updated to reflect all of the above as canonical patterns
+-->
+
+<!-- # PENDING TASKS
+
+- testimonial section stars add in sanity studio
 - accessibility dropdown background color in light mode it has transparent
-- add a photo gallery in gallery page -> uploads from sanity title(optional), photo upload/url, description (optional), category(optional) -> hover overlay blur + show title + show description + click show full image in a modal with cross button in top right -> add filter by category in top right -> display all the photos in a grid layout. -> responsive grid layout for mobile, tablet and desktop -> animation for the photo grid when loaded from the bottom
-- optimize the low end mobile color theme -> dark mode, light mode -> colors, background, buttons, text, links, icons, everything minimize the blur effect
-- chat bot remove from navigation bar and its page -> turn the chat bot into FAB -> keyword-matching search assistant for chat -> dont use api, dont label it as ai chat bot label it as Portfolio Assistant
-- footer make the spotify like on messenger/instagram chat music disk spinning when playing if not its not sppining disk -> layout the socials that is not blocked by bring to top button
-- link page -> optimize the theme colors, layout, animation for low end mobile -> make it linktree style that no header and footer 
-- navigation bar in mobile -> fix the background colors theme -> fix not working minimize or bring back icon 
-  -->
+- add a photo gallery in gallery page → uploads from sanity title(optional), photo upload/url, description (optional), category(optional) → hover overlay blur + show title + show description + click show full image in a modal → add filter by category → responsive grid layout → animation on scroll-in
+- optimize the low end mobile color theme → dark mode, light mode → colors, background, buttons, text, links, icons
+- chat bot → turn into FAB → keyword-matching search assistant → label as Portfolio Assistant (not AI)
+- footer Spotify → spinning disk animation when playing
+- link page → linktree style, no header/footer, optimize for low-end mobile
+-->
+
+<!-- - fix certifications page title and numbering it should be 3, tech stack is 2
+- redesign certificate cards: large picture, badge/cert code, issuing org, title → click opens modal with full info
+- in about section bento cell 2 make the image optimize load
+- link page cv url /CV-Cris-Charles-Garcia.pdf → available work chip fetch from sanity
+- certifications page: remove "03 // Credentials & Badges" prefix from title
+- background shapes in landscape the right side shapes collides
+-->
+
+<!-- - Lite mode default the toggle is disabled
+- hide the magnifier lens settings if detected mobile
+- limit portfolio assistant pre selections
+-->
+
+<!-- - fix the lite mode only hero section loads when i reload that enabled lite mode
+- make the UI in mobile same as on pc but when lagging notify to turn on the lite mode
+-->
+
+<!-- - Project dedicated page: redesign layout, remove background border design, spread all the information, make it responsive
+- Gallery page → add next/previous, zoom in/zoom out
+- fix the gallery page modal view the description is not readable
+- in the certificates if the picture is portrait make the modal scrollable and responsive
+-->
+
 
 <!-- - fix certifications page title and numbering it should be 3, tech stack is 2
 - redesign the card of certificates large picture, badge/cert code, issuing org, and title only -> hover and when click show all the information of the certificate in a modal -> dont make verify button only on credly or other platform 

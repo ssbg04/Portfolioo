@@ -112,7 +112,7 @@ export default function About({
 
         {/* Section Header */}
         <ScrollReveal variant="fade-up" className="mb-5 sm:mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
                 About &amp; Background
@@ -176,14 +176,14 @@ export default function About({
               <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full">
                 <div>
                   <div className="flex items-center gap-4 pb-4 mb-4 border-b border-border-custom">
-                    <div className="w-14 h-14 rounded-2xl overflow-hidden border border-border-custom shadow-xs bg-muted-custom/20 shrink-0">
+                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-border-custom shadow-xs bg-muted-custom/20 shrink-0 aspect-square">
                       <img
                         src={profileAvatar}
                         alt={settings.fullName}
                         loading="lazy"
                         decoding="async"
-                        width="56"
-                        height="56"
+                        width="64"
+                        height="64"
                         className="w-full h-full object-cover transition-opacity duration-300"
                       />
                     </div>

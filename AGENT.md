@@ -634,11 +634,12 @@ The portfolio should feel like a premium modern operating system rather than a t
 
 Primary inspiration:
 
-- Android 17 Material Design
-- Material You
-- Frosted Glass (Glassmorphism)
+- Android 17 Material Design (desktop sidebar only)
+- Material You (color tokens, dynamic palette)
+- Frosted Glass (Glassmorphism) — primary UI language
 - Apple-like smooth animations
 - Subtle depth without unnecessary effects
+- Bento Grid layout for section content
 
 Goals:
 
@@ -702,6 +703,15 @@ Performance rules:
 - Reduce blur automatically on low-powered devices.
 - Disable excessive transparency when GPU performance is poor.
 - Keep animations at 60fps whenever possible.
+- Mobile nav drawer uses glassmorphism (backdrop-blur:20px, not flat opaque).
+
+## Project Screenshots
+
+**NO browser frame chrome.** Project screenshots are displayed as clean rounded image containers:
+- `rounded-2xl overflow-hidden border border-border-custom` — no .browser-frame class
+- No fake browser dots or chrome header
+- Flagship: `aspect-[16/10]`, secondary cards: `aspect-[16/9]`
+- Hover overlay with "View Project" CTA
 
 ## Navigation Bar
 

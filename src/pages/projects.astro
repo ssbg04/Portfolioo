@@ -17,11 +17,12 @@ const socialLinks = await getSocialLinks();
 >
 	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
-	<main class="flex-1 pt-2 sm:pt-6 pb-16">
-		<div class="container mx-auto px-4 sm:px-6 max-w-5xl text-center mb-2 sm:mb-5">
-			<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold font-heading tracking-tight text-foreground-custom">
+	<main class="flex-1 pt-4 sm:pt-8 pb-16">
+		<div class="container mx-auto px-4 sm:px-6 max-w-6xl text-center mb-4 sm:mb-8">
+			<h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-heading tracking-tight text-foreground-custom">
 				All Work
 			</h1>
+			<p class="text-sm text-muted-foreground-custom mt-2 max-w-md mx-auto">Every project, prototype and open-source contribution.</p>
 		</div>
 
 		<ProjectsList initialProjects={allProjects} showArchiveLink={false} client:load />

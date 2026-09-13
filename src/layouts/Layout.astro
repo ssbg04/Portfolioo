@@ -210,8 +210,7 @@ const isRootPage = Astro.url.pathname === '/';
 	</head>
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
 		<Background client:load transition:persist="main-bg" />
-		<div id="magnify-content" class="w-full max-w-full min-h-screen flex flex-col pt-[60px] md:pt-0 md:pl-64 overflow-x-clip">
-			<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>
+		<div id="magnify-content" data-vaul-drawer-wrapper class="w-full max-w-full min-h-screen flex flex-col pt-0 md:pl-[var(--sidebar-width)] overflow-x-clip">
 			<slot />
 		</div>
 		<BackToTop client:idle transition:persist="back-to-top" />

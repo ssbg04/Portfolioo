@@ -81,7 +81,7 @@ export default function Skills({
 
         {/* Section Header */}
         <ScrollReveal variant="fade-up" className="mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
                 Technologies &amp; Tools
@@ -122,8 +122,10 @@ export default function Skills({
                 <div
                   key={skill.name}
                   className="flex items-center gap-3 p-3 rounded-xl bg-foreground-custom/3 hover:bg-primary-custom/10 border border-border-custom hover:border-primary-custom/30 text-foreground-custom hover:text-primary-custom transition-all group cursor-default"
+                  aria-label={skill.name}
+                  role="listitem"
                 >
-                  <i className={`${getSkillFaClass(skill)} text-lg text-primary-custom shrink-0 group-hover:scale-110 transition-transform`} />
+                  <i className={`${getSkillFaClass(skill)} text-xl text-primary-custom shrink-0 group-hover:scale-110 transition-transform`} />
                   <div className="min-w-0 flex-1">
                     <span className="text-xs sm:text-sm font-semibold truncate block text-foreground-custom group-hover:text-primary-custom transition-colors">
                       {skill.name}
@@ -146,7 +148,7 @@ export default function Skills({
                 </span>
                 <a
                   href={seeAllHref}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-custom/10 hover:bg-primary-custom text-primary-custom hover:text-white border border-primary-custom/20 hover:border-primary-custom text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 shadow-xs active:scale-95 group"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-custom/10 hover:bg-primary-custom text-primary-custom hover:text-white border border-primary-custom/20 hover:border-primary-custom text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 shadow-xs active:scale-95 group focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none"
                 >
                   <span>See All Technologies ({skills.length})</span>
                   <i className="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-0.5 transition-transform" />

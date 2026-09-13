@@ -34,7 +34,7 @@ export default function Projects({
   const secondaryProjects = isAllView && filteredProjects.length > 0 ? filteredProjects.slice(1) : filteredProjects;
 
   return (
-    <section id="projects" className={`${showArchiveLink ? 'py-20' : 'pt-0 pb-16'} relative`}>
+    <section id="projects" className={`${showArchiveLink ? 'py-16 sm:py-20' : 'pt-0 pb-12 sm:pb-16'} relative`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
@@ -89,7 +89,7 @@ export default function Projects({
                 <div className="lg:col-span-7 flex flex-col justify-between">
                   <a 
                     href={`/projects/${flagshipProject.slug}`}
-                    className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-border-custom bg-muted-custom/20 shadow-lg group/mockup block"
+                    className="relative aspect-[16/10] w-full rounded-2xl overflow-hidden border border-border-custom bg-muted-custom/20 shadow-md group/mockup block"
                     aria-label={`View ${flagshipProject.title}`}
                   >
                     {flagshipProject.status && (

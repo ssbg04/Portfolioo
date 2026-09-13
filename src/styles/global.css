@@ -8,17 +8,22 @@
     --font-body: 'Inter', system-ui, sans-serif;
     --font-mono: 'Geist Mono', monospace;
 
+    /* Layout */
+    --sidebar-width: 256px;
+    --nav-height: 60px;
+
     /* Minimalist Light Palette */
     --bg-color: #fafafa;
     --fg-color: #0f1117;
     --primary-color: #2563eb;
     --primary-fg-color: #ffffff;
+    --primary-glow: rgba(37, 99, 235, 0.3);
     --secondary-color: #0284c7;
     --muted-color: rgba(15, 17, 23, 0.03);
     --muted-fg-color: #64748b;
     --border-color: rgba(15, 17, 23, 0.06);
     --border-hover-color: rgba(37, 99, 235, 0.3);
-    --nav-bg: rgba(250, 250, 250, 0.8);
+    --nav-bg: rgba(250, 250, 250, 0.85);
 
     /* ─── Optimized Glassmorphism Tokens (Desktop / Base) ─── */
     --glass-bg: rgba(255, 255, 255, 0.90);
@@ -42,6 +47,7 @@
     --fg-color: #f1f5f9;
     --primary-color: #3b82f6;
     --primary-fg-color: #ffffff;
+    --primary-glow: rgba(59, 130, 246, 0.35);
     --secondary-color: #38bdf8;
     --muted-color: rgba(241, 245, 249, 0.04);
     --muted-fg-color: #94a3b8;
@@ -50,7 +56,7 @@
     --nav-bg: rgba(9, 10, 15, 0.92);
 
     /* ─── Optimized Dark Glass Surfaces (Crisp contrast over 3D background) ─── */
-    --glass-bg: rgba(13, 16, 26, 0.90);
+    --glass-bg: rgba(13, 16, 26, 0.88);
     --glass-border: rgba(255, 255, 255, 0.09);
     --glass-blur: 16px;
     --glass-saturate: 140%;
@@ -93,6 +99,7 @@
   html {
     scrollbar-gutter: stable;
     overflow-y: scroll;
+    scroll-behavior: smooth;
     background-color: var(--bg-color);
   }
 
@@ -118,6 +125,8 @@
     font-size: 15px;
     line-height: 1.65;
     transition: background-color 0.25s ease, color 0.25s ease;
+    /* iOS safe area bottom padding */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -148,6 +157,22 @@
 
 @variant dark (&:where(.dark, .dark *));
 
+/* ─── Dark Mode Aurora Ambient Gradient ─── */
+.dark .bg-gradient-mesh {
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(56, 189, 248, 0.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 100%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+.bg-gradient-mesh {
+  /* Light mode: very subtle warm gradient */
+  background-image:
+    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(37, 99, 235, 0.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(2, 132, 199, 0.03) 0%, transparent 55%);
+  background-attachment: fixed;
+}
+
 /* ─── High-Performance Glassmorphism (Calibrated across all devices) ─── */
 .bento-card, .glass-card {
   background: var(--glass-bg);
@@ -173,14 +198,14 @@
   .bento-card:hover, .glass-card:hover {
     border-color: var(--border-hover-color);
     background: rgba(255, 255, 255, 0.96);
-    transform: translateY(-2px) translateZ(0);
+    transform: translateY(-3px) translateZ(0);
     box-shadow: var(--glass-shadow-hover), var(--glass-highlight);
   }
 
   .dark .bento-card:hover, .dark .glass-card:hover {
     border-color: var(--border-hover-color);
     background: rgba(18, 22, 36, 0.95);
-    transform: translateY(-2px) translateZ(0);
+    transform: translateY(-3px) translateZ(0);
     box-shadow: var(--glass-shadow-hover), var(--glass-highlight);
   }
 }
@@ -235,6 +260,18 @@
   gap: var(--bento-gap);
 }
 
+/* ─── Text Glow Effect (used on hero name & accent text) ─── */
+.text-glow {
+  text-shadow:
+    0 0 20px var(--primary-glow),
+    0 0 40px rgba(59, 130, 246, 0.15);
+}
+
+/* ─── Element Glow (generic glow wrapper) ─── */
+.glow-effect {
+  filter: drop-shadow(0 0 8px var(--primary-glow));
+}
+
 /* ─── Minimalist Clean Chips (No heavy background boxes) ─── */
 .tech-tag {
   font-family: var(--font-mono);
@@ -265,7 +302,7 @@
   gap: 6px;
 }
 
-/* ─── Page Reveal Animation ─── */
+/* ─── Page Reveal Animations ─── */
 @keyframes bentoReveal {
   from { opacity: 0; transform: translateY(14px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -274,6 +311,11 @@
 @keyframes navSlideDown {
   from { opacity: 0; transform: translateY(-100%); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes drawerSlideDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .nav-enter { animation: navSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
@@ -286,13 +328,33 @@ html[data-tier='low'] .nav-enter { animation: none; opacity: 1; transform: none;
   .bento-enter, .nav-enter { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 
-.reveal-fade-up, .reveal-scale-up {
+/* ─── Scroll Reveal Variants ─── */
+.reveal-fade-up,
+.reveal-fade-down,
+.reveal-fade-left,
+.reveal-fade-right,
+.reveal-scale-up {
   opacity: 0;
   transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: transform, opacity;
 }
 
+.reveal-fade-up    { transform: translateY(16px); }
+.reveal-fade-down  { transform: translateY(-16px); }
+.reveal-fade-left  { transform: translateX(16px); }
+.reveal-fade-right { transform: translateX(-16px); }
+.reveal-scale-up   { transform: scale(0.99); }
+
+.reveal-fade-up.active,
+.reveal-fade-down.active,
+.reveal-fade-left.active,
+.reveal-fade-right.active { opacity: 1; transform: translate(0, 0); }
+.reveal-scale-up.active   { opacity: 1; transform: scale(1); }
+
 html[data-tier='low'] .reveal-fade-up,
+html[data-tier='low'] .reveal-fade-down,
+html[data-tier='low'] .reveal-fade-left,
+html[data-tier='low'] .reveal-fade-right,
 html[data-tier='low'] .reveal-scale-up,
 html[data-tier='low'] .will-change-transform-opacity,
 html[data-tier='low'] [data-scroll-reveal] {
@@ -302,11 +364,6 @@ html[data-tier='low'] [data-scroll-reveal] {
   animation: none !important;
 }
 
-.reveal-fade-up { transform: translateY(16px); }
-.reveal-fade-up.active { opacity: 1; transform: translateY(0); }
-.reveal-scale-up { transform: scale(0.99); }
-.reveal-scale-up.active { opacity: 1; transform: scale(1); }
-
 ::-webkit-scrollbar { width: 4px; height: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.2); border-radius: 4px; }
@@ -315,7 +372,12 @@ html[data-tier='low'] [data-scroll-reveal] {
 .no-scrollbar { scrollbar-width: none; }
 .no-scrollbar::-webkit-scrollbar { display: none; }
 
-body { padding-top: 60px; }
+/* Mobile top nav height offset */
+body { padding-top: var(--nav-height); }
+@media (min-width: 768px) { body { padding-top: 0; } }
+
+/* iOS safe area bottom */
+.pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
 
 /* ─── ULTRA-FAST STANDARD CSS RETRO/CLASSIC DESIGN (Active when Ultra-Fast / Lite Mode is ON) ─── */
 html[data-tier='low'] {
@@ -348,6 +410,9 @@ html[data-tier='low'] *::after {
 
 /* Ensure all scroll reveal, lazy load & bento elements are immediately 100% visible */
 html[data-tier='low'] .reveal-fade-up,
+html[data-tier='low'] .reveal-fade-down,
+html[data-tier='low'] .reveal-fade-left,
+html[data-tier='low'] .reveal-fade-right,
 html[data-tier='low'] .reveal-scale-up,
 html[data-tier='low'] .bento-enter,
 html[data-tier='low'] .nav-enter,
@@ -603,9 +668,19 @@ html[data-tier='low'] .bg-gradient-mesh {
   animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.animate-drawer-slide {
+  animation: drawerSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
 html[data-tier='low'] .animate-modal-fade,
-html[data-tier='low'] .animate-modal-scale {
+html[data-tier='low'] .animate-modal-scale,
+html[data-tier='low'] .animate-drawer-slide {
   animation: none !important;
 }
 
+/* ─── Responsive Utilities ─── */
+/* Fluid section spacing */
+.section-py { padding-top: clamp(3rem, 6vw, 5rem); padding-bottom: clamp(3rem, 6vw, 5rem); }
 
+/* Touch-friendly minimum tap target */
+.tap-target { min-height: 44px; min-width: 44px; }

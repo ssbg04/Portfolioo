@@ -4,12 +4,12 @@ import haptic from '../lib/haptics';
 const ControlsDropdown = lazy(() => import('./ControlsDropdown'));
 
 const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'About', href: '/about' },
+  { label: 'Home',           href: '/' },
+  { label: 'Projects',       href: '/projects' },
+  { label: 'About',          href: '/about' },
   { label: 'Certifications', href: '/certifications' },
-  { label: 'Gallery', href: '/gallery' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Gallery',        href: '/gallery' },
+  { label: 'Contact',        href: '/contact' },
 ];
 
 interface NavbarProps {
@@ -35,19 +35,14 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
     }
   }, [currentPath]);
 
-  // Sync route and close drawer on Astro page transitions & browser navigation
   useEffect(() => {
     const handleRoute = () => {
-      if (typeof window !== 'undefined') {
-        setActivePath(window.location.pathname);
-      }
+      if (typeof window !== 'undefined') setActivePath(window.location.pathname);
       setDrawerOpen(false);
     };
-
     document.addEventListener('astro:page-load', handleRoute);
     document.addEventListener('astro:after-swap', handleRoute);
     window.addEventListener('popstate', handleRoute);
-
     return () => {
       document.removeEventListener('astro:page-load', handleRoute);
       document.removeEventListener('astro:after-swap', handleRoute);
@@ -61,23 +56,15 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close drawer on resize
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 768) setDrawerOpen(false); };
     window.addEventListener('resize', onResize, { passive: true });
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Lock scroll when mobile drawer is open
   useEffect(() => {
-    if (drawerOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = 'unset';
-    }
-    return () => {
-      document.body.style.overflow = 'unset';
-    };
+    document.body.style.overflow = drawerOpen ? 'hidden' : 'unset';
+    return () => { document.body.style.overflow = 'unset'; };
   }, [drawerOpen]);
 
   const isActive = (href: string) => {
@@ -87,31 +74,54 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
     return current === target || current.startsWith(target + '/');
   };
 
+
   return (
     <>
-      {/* ── Desktop / Landscape Fixed Left Sidebar (Permanent, no hamburger, no minimize/maximize) ── */}
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* DESKTOP — Premium Glassmorphism Fixed Left Sidebar    */}
+      {/* ══════════════════════════════════════════════════════ */}
       <aside
-        className="hidden md:flex fixed top-0 left-0 bottom-0 z-40 w-64 h-full flex-col border-r border-border-custom bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md select-none overflow-hidden overscroll-contain"
+        className="hidden md:flex fixed top-0 left-0 bottom-0 z-40 w-[var(--sidebar-width)] h-full flex-col select-none overflow-hidden overscroll-contain"
+        style={{
+          background: 'var(--glass-bg)',
+          borderRight: '1px solid var(--glass-border)',
+          backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate))',
+          WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate))',
+          boxShadow: '4px 0 32px -4px rgba(0,0,0,0.18), inset -1px 0 0 0 rgba(255,255,255,0.06)',
+        }}
         aria-label="Desktop sidebar navigation"
       >
-        {/* Top: Brand Header - Only name, no icon and no full-stack developer label */}
-        <div className="shrink-0 px-5 pt-5 pb-3 flex flex-col gap-3">
+        {/* Top accent gradient strip */}
+        <div
+          className="absolute top-0 inset-x-0 h-0.5 pointer-events-none"
+          style={{ background: 'linear-gradient(90deg, transparent, var(--primary-color), transparent)', opacity: 0.6 }}
+        />
+
+        {/* ── Brand ── */}
+        <div className="shrink-0 px-5 pt-6 pb-4 flex flex-col gap-4">
           <a
             href="/"
             onClick={() => setActivePath('/')}
-            className="flex items-center group focus:outline-none py-0.5"
+            className="flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom rounded-xl"
           >
-            <span className="font-heading font-bold text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors truncate">
+            <span className="font-heading font-bold text-sm tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors truncate leading-tight">
               {fullName}
+            </span>
+            <span className="text-[10px] font-mono text-muted-foreground-custom mt-0.5 truncate">
+              Portfolio
             </span>
           </a>
 
-          <div className="h-px w-full bg-border-custom/80" />
+          {/* Separator */}
+          <div
+            className="h-px w-full"
+            style={{ background: 'linear-gradient(90deg, transparent, var(--glass-border), transparent)' }}
+          />
         </div>
 
-        {/* Center: Vertical Navigation Links (Text-only, no icons, min-h-0 prevents flexbox twitch loop) */}
+        {/* ── Navigation Links ── */}
         <nav
-          className="flex-1 min-h-0 overflow-y-auto px-4 py-2 flex flex-col gap-1"
+          className="flex-1 min-h-0 overflow-y-auto px-3 py-1 flex flex-col gap-0.5"
           aria-label="Sidebar main links"
         >
           {navItems.map((item) => {
@@ -121,33 +131,51 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                 key={item.label}
                 href={item.href}
                 onClick={() => setActivePath(item.href)}
-                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 shrink-0 ${
-                  active
-                    ? 'text-foreground-custom font-semibold bg-foreground-custom/[0.04]'
-                    : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
-                }`}
+                aria-current={active ? 'page' : undefined}
+                className="group relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 shrink-0 overflow-hidden"
+                style={active ? {
+                  color: 'var(--primary-color)',
+                  fontWeight: 600,
+                  background: 'rgba(59,130,246,0.10)',
+                  boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07)',
+                } : {
+                  color: 'var(--muted-fg-color)',
+                }}
               >
-                <div className="flex items-center gap-2.5">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
-                      active
-                        ? 'bg-primary-custom scale-100 shadow-[0_0_8px_var(--primary-color)]'
-                        : 'bg-transparent scale-0'
-                    }`}
-                  />
-                  <span className="truncate">{item.label}</span>
-                </div>
+                {/* Active left bar */}
+                <span
+                  className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full transition-all duration-300"
+                  style={{
+                    width: '3px',
+                    height: active ? '20px' : '0px',
+                    background: 'var(--primary-color)',
+                    boxShadow: active ? '0 0 8px var(--primary-glow)' : 'none',
+                    opacity: active ? 1 : 0,
+                  }}
+                />
+
+                <span className="truncate">{item.label}</span>
+
+                {/* Hover fill */}
+                <span
+                  className="absolute inset-0 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                  style={{ background: 'var(--muted-color)' }}
+                />
               </a>
             );
           })}
         </nav>
 
-        {/* Bottom: Controls & Status */}
-        <div className="shrink-0 px-5 py-4 border-t border-border-custom/80 flex flex-col gap-3 mt-auto bg-background-custom/40 dark:bg-[#090a0f]/40">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-mono text-muted-foreground-custom">
-              Preferences
-            </span>
+        {/* ── Bottom Controls & CTA ── */}
+        <div
+          className="shrink-0 px-4 py-4 flex flex-col gap-3 mt-auto"
+          style={{
+            borderTop: '1px solid var(--glass-border)',
+            background: 'rgba(0,0,0,0.06)',
+          }}
+        >
+          <div className="flex items-center justify-between px-1">
+            <span className="text-[11px] font-mono text-muted-foreground-custom tracking-wide">Preferences</span>
             <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
               <ControlsDropdown />
             </Suspense>
@@ -156,118 +184,186 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
           <a
             href="/contact"
             onClick={() => setActivePath('/contact')}
-            className="flex items-center justify-center w-full px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-sm"
+            className="relative flex items-center justify-center w-full px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider text-white overflow-hidden transition-all duration-200 active:scale-[0.98] focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none group"
+            style={{
+              background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)',
+              boxShadow: '0 4px 14px -2px var(--primary-glow)',
+            }}
           >
-            <span>Get in Touch</span>
+            <span className="relative z-10">Get in Touch</span>
+            <span className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-xl"
+              style={{ background: 'rgba(255,255,255,0.12)' }}
+            />
           </a>
         </div>
       </aside>
 
-      {/* ── Mobile Sticky Top Header (Only on screens < md) ── */}
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* MOBILE — Glassmorphism Top Header                     */}
+      {/* ══════════════════════════════════════════════════════ */}
       <header
-        className={`md:hidden fixed top-0 inset-x-0 z-50 glass-nav transition-all duration-300 touch-manipulation ${scrolled || drawerOpen ? 'shadow-md bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md' : ''}`}
-        style={{ height: '60px', touchAction: 'manipulation' }}
+        className="md:hidden fixed top-0 inset-x-0 z-50 glass-nav touch-manipulation"
+        style={{
+          height: 'var(--nav-height)',
+          boxShadow: scrolled || drawerOpen
+            ? '0 4px 20px -4px rgba(0,0,0,0.18)'
+            : '0 1px 0 0 var(--glass-border)',
+          transition: 'box-shadow 0.3s ease',
+        }}
       >
-        <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-3">
-          {/* Brand - Only Name, no icon */}
-          <a href="/" className="flex items-center shrink-0 group focus:outline-none">
-            <span className="font-heading font-bold text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors">
+        {/* Top accent line */}
+        <div
+          className="absolute top-0 inset-x-0 h-px pointer-events-none"
+          style={{ background: 'linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%)', opacity: 0.5 }}
+        />
+
+        <div className="px-4 h-full flex items-center justify-between gap-3">
+          {/* Brand */}
+          <a
+            href="/"
+            className="flex items-center group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom rounded-xl"
+          >
+            <span className="font-heading font-bold text-sm tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors">
               {fullName}
             </span>
           </a>
 
-          {/* Right Controls: Mobile Hamburger (Settings moved inside menu) */}
+          {/* Hamburger */}
           <button
-            className="relative flex items-center justify-center w-10 h-10 rounded-xl hover:bg-foreground-custom/8 active:bg-foreground-custom/15 transition-colors focus:outline-none cursor-pointer border border-border-custom shrink-0"
-            onClick={() => {
-              haptic.tap();
-              setDrawerOpen((prev) => !prev);
+            className="tap-target relative flex items-center justify-center w-10 h-10 rounded-xl cursor-pointer shrink-0 transition-all duration-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom overflow-hidden"
+            style={{
+              background: drawerOpen ? 'rgba(59,130,246,0.12)' : 'var(--muted-color)',
+              border: `1px solid ${drawerOpen ? 'rgba(59,130,246,0.3)' : 'var(--glass-border)'}`,
             }}
+            onClick={() => { haptic.tap(); setDrawerOpen(prev => !prev); }}
             aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
             aria-expanded={drawerOpen}
+            aria-controls="mobile-nav-drawer"
           >
-            <div className="w-4.5 h-3.5 relative flex flex-col justify-between">
-              <span
-                className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
-                  drawerOpen ? 'rotate-45 translate-y-[6px]' : ''
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-200 ${
-                  drawerOpen ? 'opacity-0 scale-x-0' : 'opacity-100'
-                }`}
-              />
-              <span
-                className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
-                  drawerOpen ? '-rotate-45 -translate-y-[6px]' : ''
-                }`}
-              />
+            <div className="w-[18px] h-[14px] relative flex flex-col justify-between">
+              <span className={`block h-0.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${drawerOpen ? 'rotate-45 translate-y-[6px] w-[18px]' : 'w-[18px]'}`} />
+              <span className={`block h-0.5 rounded-full bg-foreground-custom transition-all duration-200 ${drawerOpen ? 'opacity-0 scale-x-0 w-[18px]' : 'opacity-100 w-[13px]'}`} />
+              <span className={`block h-0.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${drawerOpen ? '-rotate-45 -translate-y-[6px] w-[18px]' : 'w-[18px]'}`} />
             </div>
           </button>
         </div>
       </header>
 
-      {/* ── Mobile Navigation Full-Screen Overlay (From under top navbar to bottom) ── */}
+      {/* ══════════════════════════════════════════════════════ */}
+      {/* MOBILE — Full-Screen Glassmorphism Drawer             */}
+      {/* ══════════════════════════════════════════════════════ */}
       {drawerOpen && (
         <div
-          className="md:hidden fixed inset-x-0 top-[60px] bottom-0 z-40 bg-background-custom dark:bg-[#090a0f] border-t border-border-custom flex flex-col justify-between overflow-hidden animate-modal-fade select-none"
-          style={{ height: 'calc(100dvh - 60px)' }}
+          id="mobile-nav-drawer"
+          className="md:hidden fixed inset-x-0 bottom-0 z-40 flex flex-col justify-between overflow-hidden animate-drawer-slide select-none"
+          style={{ top: 'var(--nav-height)', height: 'calc(100dvh - var(--nav-height))' }}
         >
-          {/* Scrollable Navigation Links (Text-only, no icons, subtle active indicator dot) */}
-          <nav className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-1.5" aria-label="Mobile navigation links">
-            {navItems.map((item) => {
+          {/* Frosted glass base */}
+          <div
+            className="absolute inset-0"
+            style={{
+              background: 'var(--glass-bg)',
+              backdropFilter: 'blur(24px) saturate(160%)',
+              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
+            }}
+          />
+
+          {/* Ambient blue glow top-right */}
+          <div
+            className="absolute top-0 right-0 w-72 h-72 rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(59,130,246,0.10) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+            }}
+          />
+          {/* Ambient glow bottom-left */}
+          <div
+            className="absolute bottom-0 left-0 w-64 h-64 rounded-full pointer-events-none"
+            style={{
+              background: 'radial-gradient(circle, rgba(56,189,248,0.07) 0%, transparent 70%)',
+              filter: 'blur(40px)',
+            }}
+          />
+
+          {/* ── Nav Links ── */}
+          <nav
+            className="relative flex-1 overflow-y-auto px-5 py-8 flex flex-col gap-1.5"
+            aria-label="Mobile navigation links"
+          >
+            {navItems.map((item, i) => {
               const active = isActive(item.href);
               return (
                 <a
                   key={item.label}
                   href={item.href}
-                  onClick={() => {
-                    setActivePath(item.href);
-                    setDrawerOpen(false);
+                  onClick={() => { setActivePath(item.href); setDrawerOpen(false); }}
+                  aria-current={active ? 'page' : undefined}
+                  className="group relative flex items-center gap-4 px-4 py-3.5 rounded-2xl text-base font-medium transition-all duration-200 overflow-hidden"
+                  style={{
+                    animationDelay: `${i * 30}ms`,
+                    ...(active ? {
+                      color: 'var(--primary-color)',
+                      fontWeight: 700,
+                      background: 'rgba(59,130,246,0.10)',
+                      boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.07), 0 2px 12px -4px rgba(59,130,246,0.2)',
+                    } : {
+                      color: 'var(--muted-fg-color)',
+                    }),
                   }}
-                  className={`group flex items-center justify-between px-4 py-3 rounded-xl text-base transition-all duration-200 ${
-                    active
-                      ? 'text-foreground-custom font-bold bg-foreground-custom/[0.04]'
-                      : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
-                  }`}
                 >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                        active
-                          ? 'bg-primary-custom scale-100 shadow-[0_0_8px_var(--primary-color)]'
-                          : 'bg-transparent scale-0'
-                      }`}
-                    />
-                    <span>{item.label}</span>
-                  </div>
+                  {/* Left accent */}
+                  <span
+                    className="absolute left-0 top-1/2 -translate-y-1/2 rounded-r-full"
+                    style={{
+                      width: '3px',
+                      height: active ? '24px' : '0px',
+                      background: 'var(--primary-color)',
+                      boxShadow: active ? '0 0 10px var(--primary-glow)' : 'none',
+                      transition: 'height 0.25s ease, box-shadow 0.25s ease',
+                    }}
+                  />
+
+                  <span className="font-heading">{item.label}</span>
+
+                  {/* Hover ripple */}
+                  <span
+                    className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
+                    style={{ background: 'var(--muted-color)' }}
+                  />
                 </a>
               );
             })}
           </nav>
 
-          {/* Bottom Drawer Footer: Settings inside menu + Contact CTA */}
-          <div className="p-5 border-t border-border-custom bg-foreground-custom/[0.02] flex flex-col gap-3.5 shrink-0">
-            {/* Preferences / Settings row */}
-            <div className="flex items-center justify-between px-1 py-1">
-              <span className="text-xs font-mono text-muted-foreground-custom">
-                Preferences &amp; Settings
-              </span>
+          {/* ── Bottom Footer ── */}
+          <div
+            className="relative px-5 py-5 flex flex-col gap-3.5 shrink-0 pb-safe"
+            style={{
+              borderTop: '1px solid var(--glass-border)',
+              background: 'rgba(0,0,0,0.06)',
+            }}
+          >
+            <div className="flex items-center justify-between px-1">
+              <span className="text-xs font-mono text-muted-foreground-custom">Preferences &amp; Settings</span>
               <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
                 <ControlsDropdown />
               </Suspense>
             </div>
 
-            {/* Mobile Contact Button (Clean text, no icon) */}
             <a
               href="/contact"
-              onClick={() => {
-                setActivePath('/contact');
-                setDrawerOpen(false);
+              onClick={() => { setActivePath('/contact'); setDrawerOpen(false); }}
+              className="tap-target relative flex items-center justify-center w-full px-4 py-3.5 rounded-2xl text-sm font-bold uppercase tracking-wider text-white overflow-hidden active:scale-[0.98] transition-transform focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none group"
+              style={{
+                background: 'linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%)',
+                boxShadow: '0 6px 24px -4px var(--primary-glow)',
               }}
-              className="flex items-center justify-center w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-md"
             >
-              <span>Get in Touch</span>
+              <span className="relative z-10">Get in Touch</span>
+              <span
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-200 rounded-2xl"
+                style={{ background: 'rgba(255,255,255,0.12)' }}
+              />
             </a>
           </div>
         </div>

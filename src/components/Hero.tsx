@@ -245,7 +245,7 @@ export default function Hero({
           {isAvailable !== false && (
             <motion.div
               variants={isLowTier ? undefined : itemVariants}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-semibold text-primary-custom border border-primary-custom/20 mb-4 sm:mb-6 shadow-sm"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-semibold text-primary-custom border border-primary-custom/20 mb-4 sm:mb-6 shadow-sm shadow-emerald-500/10"
             >
               <span className="flex h-2 w-2 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -293,7 +293,7 @@ export default function Hero({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-10 h-10 rounded-full glass-card text-foreground-custom hover:text-primary-custom hover:border-primary-custom/40 transition-all duration-250 flex items-center justify-center shadow-sm"
+                    className="tap-target w-10 h-10 rounded-full glass-card text-foreground-custom hover:text-primary-custom hover:border-primary-custom/40 hover:bg-primary-custom/10 transition-all duration-200 flex items-center justify-center shadow-sm"
                     aria-label={`Visit Cris on ${link.platform}`}
                     title={link.platform}
                   >
