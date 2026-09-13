@@ -119,8 +119,83 @@ export default function PortfolioAssistantFAB() {
   const [loading, setLoading] = useState(false);
   const [cooldown, setCooldown] = useState(0);
   const [spamNotice, setSpamNotice] = useState<string | null>(null);
+  const [isBtnHidden, setIsBtnHidden] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Hide on scroll down, show on scroll up in mobile view
+  useEffect(() => {
+    let lastY = typeof window !== 'undefined' ? window.scrollY : 0;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (window.innerWidth >= 768) {
+        setIsBtnHidden(false);
+        return;
+      }
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+
+          // Always show at top of page or negative bounce
+          if (currentY <= 20) {
+            setIsBtnHidden(false);
+            lastY = currentY;
+            ticking = false;
+            return;
+          }
+
+          // Keep button visible while chat is open
+          if (isOpen) {
+            setIsBtnHidden(false);
+            lastY = currentY;
+            ticking = false;
+            return;
+          }
+
+          const diff = currentY - lastY;
+
+          // Scrolling down: hide
+          if (diff > 8 && currentY > 60) {
+            setIsBtnHidden(true);
+          } else if (diff < -8) {
+            // Scrolling up: reveal
+            setIsBtnHidden(false);
+          }
+
+          lastY = currentY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [isOpen]);
+
+  useEffect(() => {
+    const onResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsBtnHidden(false);
+      }
+    };
+    window.addEventListener('resize', onResize, { passive: true });
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  useEffect(() => {
+    const handleRoute = () => {
+      setIsBtnHidden(false);
+    };
+    document.addEventListener('astro:page-load', handleRoute);
+    document.addEventListener('astro:after-swap', handleRoute);
+    return () => {
+      document.removeEventListener('astro:page-load', handleRoute);
+      document.removeEventListener('astro:after-swap', handleRoute);
+    };
+  }, []);
 
   // Anti-spam countdown timer for pre-selections
   useEffect(() => {
@@ -250,7 +325,16 @@ export default function PortfolioAssistantFAB() {
   return (
     <>
       {/* ─── Floating Action Button (FAB) ─── */}
-      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-7 z-40">
+      <div
+        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-7 z-40"
+        style={{
+          transform: isBtnHidden && !isOpen ? 'translateY(calc(100% + 2rem))' : 'translateY(0)',
+          opacity: isBtnHidden && !isOpen ? 0 : 1,
+          pointerEvents: isBtnHidden && !isOpen ? 'none' : 'auto',
+          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease',
+          willChange: 'transform, opacity',
+        }}
+      >
         <button
           onClick={() => {
             haptic.tap();

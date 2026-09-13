@@ -26,6 +26,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isNavHidden, setIsNavHidden] = useState(false);
 
   useEffect(() => {
     if (currentPath) {
@@ -39,6 +40,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
     const handleRoute = () => {
       if (typeof window !== 'undefined') setActivePath(window.location.pathname);
       setDrawerOpen(false);
+      setIsNavHidden(false);
     };
     document.addEventListener('astro:page-load', handleRoute);
     document.addEventListener('astro:after-swap', handleRoute);
@@ -51,13 +53,61 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
   }, []);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    let lastY = typeof window !== 'undefined' ? window.scrollY : 0;
+    let ticking = false;
+
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentY = window.scrollY;
+
+          // Always show at top of page or negative iOS bounce
+          if (currentY <= 20) {
+            setScrolled(false);
+            setIsNavHidden(false);
+            lastY = currentY;
+            ticking = false;
+            return;
+          }
+
+          setScrolled(currentY > 8);
+
+          // If drawer is open, keep navbar visible
+          if (drawerOpen) {
+            setIsNavHidden(false);
+            lastY = currentY;
+            ticking = false;
+            return;
+          }
+
+          const diff = currentY - lastY;
+
+          // Scrolling down: hide when moved down past header
+          if (diff > 8 && currentY > 60) {
+            setIsNavHidden(true);
+          } else if (diff < -8) {
+            // Scrolling up: reveal navbar
+            setIsNavHidden(false);
+          }
+
+          lastY = currentY;
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [drawerOpen]);
 
   useEffect(() => {
-    const onResize = () => { if (window.innerWidth >= 768) setDrawerOpen(false); };
+    const onResize = () => {
+      if (window.innerWidth >= 768) {
+        setDrawerOpen(false);
+        setIsNavHidden(false);
+      }
+    };
     window.addEventListener('resize', onResize, { passive: true });
     return () => window.removeEventListener('resize', onResize);
   }, []);
@@ -205,10 +255,13 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
         className="md:hidden fixed top-0 inset-x-0 z-50 glass-nav touch-manipulation"
         style={{
           height: 'var(--nav-height)',
+          transform: isNavHidden && !drawerOpen ? 'translateY(-100%)' : 'translateY(0)',
           boxShadow: scrolled || drawerOpen
             ? '0 4px 20px -4px rgba(0,0,0,0.18)'
             : '0 1px 0 0 var(--glass-border)',
-          transition: 'box-shadow 0.3s ease',
+          transition: 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease',
+          willChange: 'transform',
+          pointerEvents: isNavHidden && !drawerOpen ? 'none' : 'auto',
         }}
       >
         {/* Top accent line */}
