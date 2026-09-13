@@ -757,10 +757,17 @@ export default function Background() {
       mouseTargetY = Math.min(Math.max(rawY / maxTilt, -1.2), 1.2);
     };
 
-    let iosPermissionRequested = false;
-    const requestIOSOrientation = () => {
-      if (iosPermissionRequested) return;
-      iosPermissionRequested = true;
+    // 1. Attach immediately on mount for Android & standard browsers (0 taps required)
+    if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
+      window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
+    }
+
+    // 2. For iOS Safari (which requires explicit user permission gesture), listen to ANY interaction
+    // across the entire document (touch, scroll, click) with capture: true so user NEVER has to tap the background!
+    let permissionRequested = false;
+    const activateOrientationOnInteraction = () => {
+      if (permissionRequested) return;
+      permissionRequested = true;
 
       if (
         typeof DeviceOrientationEvent !== 'undefined' &&
@@ -774,17 +781,15 @@ export default function Background() {
             }
           })
           .catch(() => {});
+      } else if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
+        window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
       }
     };
 
-    if (
-      typeof DeviceOrientationEvent !== 'undefined' &&
-      typeof (DeviceOrientationEvent as any).requestPermission === 'function'
-    ) {
-      window.addEventListener('touchend', requestIOSOrientation, { once: true, passive: true });
-    } else if (typeof window !== 'undefined' && 'DeviceOrientationEvent' in window) {
-      window.addEventListener('deviceorientation', handleDeviceOrientation, { passive: true });
-    }
+    const interactionEvents = ['touchstart', 'touchend', 'pointerdown', 'click', 'scroll'];
+    interactionEvents.forEach((evt) => {
+      document.addEventListener(evt, activateOrientationOnInteraction, { capture: true, once: true, passive: true });
+    });
 
     // ─── 9. Render & Parallax Loop ───
     let isVisible = true;
@@ -878,9 +883,16 @@ export default function Background() {
       const opacityMult = isPortrait ? 0.35 : 0.95;
 
       // ─── REAL-TIME SECTION-BASED REVEAL LOGIC ───
-      // Each section's 3D object only surfaces when that specific section is active in view.
-      // At Hero (top of page), all objects are hidden, keeping the initial hero background static & calm.
-
+      // On mobile view (isPortrait / width < 768), hide all 3D section objects completely
+      // to keep mobile content reading clean and avoid background clutter when scrolling down.
+      if (isPortrait) {
+        aboutGroup.visible = false;
+        projectsGroup.visible = false;
+        skillsGroup.visible = false;
+        certGroup.visible = false;
+        testGroup.visible = false;
+        contactGroup.visible = false;
+      } else {
       // 1. About Section -> Developer Code Monolith
       const aboutState = getSectionState('about');
       aboutGroup.visible = aboutState.progress > 0.01;
@@ -1020,6 +1032,7 @@ export default function Background() {
         const pulseScale = 0.8 + pulseCycle * 0.9;
         pulseRingMesh.scale.set(pulseScale, pulseScale, pulseScale);
       }
+      }
 
       // Render Scene with safe guard for frame teardown
       try {
@@ -1040,7 +1053,9 @@ export default function Background() {
       window.removeEventListener('resize', handleResize);
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('deviceorientation', handleDeviceOrientation);
-      window.removeEventListener('touchend', requestIOSOrientation);
+      interactionEvents.forEach((evt) => {
+        document.removeEventListener(evt, activateOrientationOnInteraction, true);
+      });
 
       try {
         if (gl.canvas && gl.canvas.parentElement) {
