@@ -599,16 +599,16 @@ export default function Certifications({ certifications, extraCerts = [], sectio
         )}
       </div>
 
-      {/* ─── Detail Modal (Works for Both Documents & Badges) ─── */}
+      {/* ─── Detail Modal (Responsive 2-Column Desktop, Scrollable Mobile) ─── */}
       {selectedCert && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/80 backdrop-blur-md animate-modal-fade"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/80 backdrop-blur-md animate-modal-fade select-none"
           onClick={() => setSelectedCert(null)}
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-2xl sm:max-w-3xl bento-card p-6 sm:p-8 bg-white dark:bg-[#0f111a] border border-border-custom rounded-3xl shadow-2xl flex flex-col gap-4 text-foreground-custom max-h-[90vh] overflow-y-auto animate-modal-scale"
+            className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-white dark:bg-[#0f111a] border border-border-custom rounded-3xl shadow-2xl flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto animate-modal-scale"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close 'X' Button in Top Right */}
@@ -617,109 +617,119 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                 haptic.tap();
                 setSelectedCert(null);
               }}
-              className="absolute top-5 right-5 w-8 h-8 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/15 text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom z-10"
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/15 text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom z-20"
               aria-label="Close modal"
             >
               ✕
             </button>
 
-            {/* Clickable Large Viewport (Launches Zoom & Drag Modal) */}
-            <div
-              onClick={() => {
-                if (selectedCert.badgeImage) {
-                  haptic.tap();
-                  setZoom(1);
-                  setPan({ x: 0, y: 0 });
-                  setIsZoomOpen(true);
-                }
-              }}
-              className={`w-full ${isDocumentCertificate(selectedCert) ? 'max-h-[52vh]' : 'max-h-[44vh]'} flex items-center justify-center bg-foreground-custom/[0.02] dark:bg-black/40 rounded-2xl border border-border-custom/70 p-4 sm:p-6 overflow-hidden shadow-inner relative group/preview cursor-zoom-in`}
-              title="Click to open zoom and drag lightbox"
-            >
-              {selectedCert.badgeImage ? (
-                <img
-                  src={selectedCert.badgeImage}
-                  alt={selectedCert.title}
-                  referrerPolicy="no-referrer"
-                  className={`${isDocumentCertificate(selectedCert) ? 'max-h-[48vh] w-auto max-w-full' : 'max-h-[36vh] w-auto'} object-contain rounded-lg drop-shadow-md transition-transform duration-300 group-hover/preview:scale-[1.02]`}
-                />
-              ) : null}
+            {/* Responsive Grid Container: 2-Column on Web/Desktop, Stacked Scrollable on Mobile */}
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-start pt-1">
+              
+              {/* Left Column: Certificate / Badge Image Viewport (shrink-0 ensures it NEVER squishes) */}
+              <div className="w-full md:col-span-6 lg:col-span-6 flex flex-col items-center shrink-0">
+                <div
+                  onClick={() => {
+                    if (selectedCert.badgeImage) {
+                      haptic.tap();
+                      setZoom(1);
+                      setPan({ x: 0, y: 0 });
+                      setIsZoomOpen(true);
+                    }
+                  }}
+                  className={`w-full min-h-[260px] sm:min-h-[320px] md:min-h-[440px] max-h-[45vh] md:max-h-[65vh] flex items-center justify-center bg-foreground-custom/[0.02] dark:bg-black/40 rounded-2xl border border-border-custom/70 p-3 sm:p-5 overflow-hidden shadow-inner relative group/preview cursor-zoom-in shrink-0`}
+                  title="Click to open zoom and drag lightbox"
+                >
+                  {selectedCert.badgeImage ? (
+                    <img
+                      src={selectedCert.badgeImage}
+                      alt={selectedCert.title}
+                      referrerPolicy="no-referrer"
+                      className={`max-h-[42vh] md:max-h-[60vh] w-auto max-w-full object-contain rounded-lg drop-shadow-md transition-transform duration-300 group-hover/preview:scale-[1.02]`}
+                    />
+                  ) : null}
 
-              {/* Zoom & Drag Callout Badge */}
-              <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-black/75 hover:bg-black/90 text-white text-xs font-mono font-medium backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg opacity-85 group-hover/preview:opacity-100 transition-all">
-                <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
-                </svg>
-                <span>Click to Zoom &amp; Drag</span>
-              </div>
-            </div>
-
-            {/* Title & Metadata */}
-            <div className="flex flex-col gap-2 text-center sm:text-left">
-              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-2">
-                <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5 bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom">
-                  <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
-                  {isDocumentCertificate(selectedCert) ? 'Certificate' : 'Badge'}
-                </span>
-                <span className="text-[10px] font-mono text-muted-foreground-custom px-2.5 py-0.5 rounded-full bg-foreground-custom/5 border border-border-custom">
-                  Code: #{selectedCert.code}
-                </span>
-              </div>
-
-              <h3 className="text-lg sm:text-2xl font-bold font-heading text-foreground-custom leading-tight">
-                {selectedCert.title}
-              </h3>
-
-              <p className="text-xs font-mono text-muted-foreground-custom font-medium">
-                Issued by {selectedCert.issuer}
-                {selectedCert.issueDate ? ` • ${selectedCert.issueDate}` : ''}
-              </p>
-            </div>
-
-            {/* Full Description */}
-            {selectedCert.description && (
-              <div className="p-4 rounded-2xl bg-foreground-custom/[0.03] border border-border-custom text-xs sm:text-sm text-foreground-custom/90 leading-relaxed">
-                {selectedCert.description}
-              </div>
-            )}
-
-            {/* Validated Skills / Competencies */}
-            {selectedCert.skills && selectedCert.skills.length > 0 && (
-              <div>
-                <p className="text-[11px] font-mono text-muted-foreground-custom uppercase tracking-wider mb-2 font-semibold">
-                  Validated Competencies
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {selectedCert.skills.map((s) => (
-                    <span key={s} className="tech-tag text-[11px]">
-                      {s}
-                    </span>
-                  ))}
+                  {/* Zoom & Drag Callout Badge */}
+                  <div className="absolute bottom-3 right-3 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-black/75 hover:bg-black/90 text-white text-[11px] sm:text-xs font-mono font-medium backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg opacity-85 group-hover/preview:opacity-100 transition-all">
+                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+                    </svg>
+                    <span>Click to Zoom</span>
+                  </div>
                 </div>
               </div>
-            )}
 
-            {/* Modal Bottom Actions */}
-            <div className="pt-3 border-t border-border-custom flex items-center gap-3">
-              {selectedCert.badgeUrl && (
-                <a
-                  href={selectedCert.badgeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex-1 py-2.5 px-4 rounded-xl bg-primary-custom text-white font-semibold text-xs text-center hover:bg-primary-custom/90 transition-all flex items-center justify-center gap-1.5 shadow-sm"
-                >
-                  {getVerifyButtonLabel(selectedCert)}
-                </a>
-              )}
-              <button
-                onClick={() => {
-                  haptic.tap();
-                  setSelectedCert(null);
-                }}
-                className="py-2.5 px-4 rounded-xl border border-border-custom text-xs font-semibold text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 transition-colors cursor-pointer"
-              >
-                Close
-              </button>
+              {/* Right Column: Title, Metadata, Description & Validated Competencies */}
+              <div className="w-full md:col-span-6 lg:col-span-6 flex flex-col gap-3.5 sm:gap-4 md:max-h-[65vh] md:overflow-y-auto md:pr-1">
+                {/* Title & Metadata */}
+                <div className="flex flex-col gap-2 text-left">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5 bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom">
+                      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
+                      {isDocumentCertificate(selectedCert) ? 'Certificate' : 'Badge'}
+                    </span>
+                    <span className="text-[10px] font-mono text-muted-foreground-custom px-2.5 py-0.5 rounded-full bg-foreground-custom/5 border border-border-custom">
+                      Code: #{selectedCert.code}
+                    </span>
+                  </div>
+
+                  <h3 className="text-lg sm:text-xl md:text-2xl font-bold font-heading text-foreground-custom leading-snug">
+                    {selectedCert.title}
+                  </h3>
+
+                  <p className="text-xs font-mono text-muted-foreground-custom font-medium">
+                    Issued by {selectedCert.issuer}
+                    {selectedCert.issueDate ? ` • ${selectedCert.issueDate}` : ''}
+                  </p>
+                </div>
+
+                {/* Full Description */}
+                {selectedCert.description && (
+                  <div className="p-3.5 sm:p-4 rounded-2xl bg-foreground-custom/[0.03] border border-border-custom text-xs sm:text-sm text-foreground-custom/90 leading-relaxed max-h-48 overflow-y-auto">
+                    {selectedCert.description}
+                  </div>
+                )}
+
+                {/* Validated Skills / Competencies */}
+                {selectedCert.skills && selectedCert.skills.length > 0 && (
+                  <div>
+                    <p className="text-[11px] font-mono text-muted-foreground-custom uppercase tracking-wider mb-2 font-semibold">
+                      Validated Competencies
+                    </p>
+                    <div className="flex flex-wrap gap-1.5">
+                      {selectedCert.skills.map((s) => (
+                        <span key={s} className="tech-tag text-[11px]">
+                          {s}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Modal Bottom Actions */}
+                <div className="pt-3 border-t border-border-custom flex items-center gap-3 mt-auto">
+                  {selectedCert.badgeUrl && (
+                    <a
+                      href={selectedCert.badgeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-primary-custom text-white font-semibold text-xs text-center hover:bg-primary-custom/90 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                    >
+                      {getVerifyButtonLabel(selectedCert)}
+                    </a>
+                  )}
+                  <button
+                    onClick={() => {
+                      haptic.tap();
+                      setSelectedCert(null);
+                    }}
+                    className="py-2.5 px-4 rounded-xl border border-border-custom text-xs font-semibold text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 transition-colors cursor-pointer"
+                  >
+                    Close
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         </div>

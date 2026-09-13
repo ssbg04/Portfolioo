@@ -34,11 +34,11 @@ export default function Projects({
   const secondaryProjects = isAllView && filteredProjects.length > 0 ? filteredProjects.slice(1) : filteredProjects;
 
   return (
-    <section id="projects" className="py-20 relative">
+    <section id="projects" className={`${showArchiveLink ? 'py-20' : 'pt-0 pb-16'} relative`}>
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
-        <ScrollReveal variant="fade-up" className="mb-10">
+        <ScrollReveal variant="fade-up" className={showArchiveLink ? 'mb-10' : 'mb-6'}>
           {showArchiveLink && (
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
               <div>

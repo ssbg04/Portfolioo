@@ -444,21 +444,21 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
 
               {/* Modal Caption Box */}
               {(activeItem.title || activeItem.description || activeItem.category) && (
-                <div className="mt-2.5 p-3 sm:p-3.5 rounded-xl bg-zinc-900/90 border border-zinc-700/80 text-center max-w-xl w-full shrink-0">
-                  <div className="flex items-center justify-center gap-2 mb-0.5">
+                <div className="mt-3 p-3.5 sm:p-4 rounded-2xl bg-zinc-950/85 backdrop-blur-md border border-white/15 text-center max-w-2xl w-full shrink-0 shadow-lg">
+                  <div className="flex items-center justify-center gap-2 mb-1.5 flex-wrap">
                     {activeItem.category && (
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-primary-custom px-2 py-0.5 rounded-full bg-primary-custom/15 border border-primary-custom/30">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-primary-custom px-2.5 py-0.5 rounded-full bg-primary-custom/15 border border-primary-custom/30 font-medium">
                         {activeItem.category}
                       </span>
                     )}
                     {activeItem.title && (
-                      <h4 className="text-xs sm:text-sm font-bold text-white font-heading truncate">
+                      <h4 className="text-sm sm:text-base font-bold text-white font-heading tracking-tight">
                         {activeItem.title}
                       </h4>
                     )}
                   </div>
                   {activeItem.description && (
-                    <p className="text-[11px] sm:text-xs text-zinc-300 leading-relaxed line-clamp-2">
+                    <p className="text-xs sm:text-sm text-zinc-100/95 leading-relaxed font-normal max-h-28 sm:max-h-36 overflow-y-auto pr-1 select-text">
                       {activeItem.description}
                     </p>
                   )}

@@ -63,3 +63,10 @@ Project Dedicated page
 - in mobile view -> move the settings button inside the hamburger menu
 - in mobile view -> hamburger menu render from under the navigation bar to the bottom occupy the full screen
 - after all of these git commit -->
+
+<!-- - projects page -> fix the title too much space consume
+- fix the gallery page modal view the description is not readable
+- in the certificates if the picture is portrait and it has many information the picture is not visible, make the modal scrollable and responsive -->
+
+- fix that on mobile view in all of the pages in navigation it has huge space at top, keep the home page layout
+- fix that in landscape or desktop view that the active color indicator jumps to home to where you click a tab, and fix that the navigation bar zooming out in landscape view
