@@ -47,14 +47,50 @@ const isRootPage = Astro.url.pathname === '/';
 		<!-- FontAwesome 6 Icons -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		
-		<!-- Theme Initialization Script (Prevents FOUC) -->
+		<!-- Theme Initialization Script (Prevents FOUC & auto-detects system theme) -->
 		<script is:inline>
 			(function() {
-				const storedTheme = localStorage.getItem('theme');
-				if (storedTheme === 'dark' || (!storedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-					document.documentElement.classList.add('dark');
-				} else {
-					document.documentElement.classList.remove('dark');
+				function getResolvedTheme() {
+					var storedTheme = localStorage.getItem('theme');
+					var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+					if (storedTheme === 'dark') return 'dark';
+					if (storedTheme === 'light') return 'light';
+					// Default: auto-detect system theme (storedTheme is null or 'system')
+					return prefersDark ? 'dark' : 'light';
+				}
+
+				function applyTheme() {
+					var theme = getResolvedTheme();
+					if (theme === 'dark') {
+						document.documentElement.classList.add('dark');
+					} else {
+						document.documentElement.classList.remove('dark');
+					}
+				}
+
+				applyTheme();
+
+				// Automatically adapt if user has not set a manual override or selected system
+				try {
+					var darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
+					var listener = function(e) {
+						var stored = localStorage.getItem('theme');
+						if (!stored || stored === 'system') {
+							if (e.matches) {
+								document.documentElement.classList.add('dark');
+							} else {
+								document.documentElement.classList.remove('dark');
+							}
+							window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: e.matches ? 'dark' : 'light' } }));
+						}
+					};
+					if (darkQuery.addEventListener) {
+						darkQuery.addEventListener('change', listener);
+					} else if (darkQuery.addListener) {
+						darkQuery.addListener(listener);
+					}
+				} catch (err) {
+					// Ignore older browser issues
 				}
 			})();
 		</script>
@@ -109,7 +145,7 @@ const isRootPage = Astro.url.pathname === '/';
 	</head>
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
 		<Background client:load />
-		<div id="magnify-content">
+		<div id="magnify-content" class="w-full min-h-screen flex flex-col pt-[60px] md:pt-0 md:pl-64">
 			<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>
 			<slot />
 		</div>

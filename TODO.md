@@ -46,4 +46,10 @@ Verified digital credentials from Cisco and industry partners. Each badge repres
 - make the inpect overview update to open dedicated show case page, use basic words for all buttons, 
 
 Project Dedicated page
-- redesign the layout, remove the background border design, spread all the information, make it responsive, organize the contents -->
+- redesign the layout, remove the background border design, spread all the information, make it responsive, organize the contents -->
+
+
+<!-- - Swap the placement of section Projects and Techstack
+- in landscape view or the desktop view make the navigation to left side bar, do not add hamburger bar has doesnt minimize or maximize
+- Redesign the Techstack, use one section for all the techstack, do not add sub section or sub boxes for all categories, just make it simple -->
+

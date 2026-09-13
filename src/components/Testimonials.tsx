@@ -16,11 +16,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
           <ScrollReveal variant="fade-up" className="mb-10">
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
               <div>
-                <span className="section-tag">
-                  <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                  05 // Endorsements
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
+                <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
                   Client &amp; Peer Testimonials
                 </h2>
               </div>
@@ -125,11 +121,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
         <ScrollReveal variant="fade-up" className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
             <div>
-              <span className="section-tag">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                05 // Endorsements
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
                 Client &amp; Peer Testimonials
               </h2>
             </div>

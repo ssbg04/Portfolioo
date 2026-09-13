@@ -1,15 +1,16 @@
 import React, { useState, useEffect, Suspense, lazy } from 'react';
+import haptic from '../lib/haptics';
 
 const ControlsDropdown = lazy(() => import('./ControlsDropdown'));
 
 const navItems = [
-  { label: 'Home', href: '/' },
-  { label: 'Projects', href: '/projects' },
-  { label: 'About', href: '/about' },
-  { label: 'Certifications', href: '/certifications' },
-  { label: 'Gallery', href: '/gallery' },
-  { label: 'Links', href: '/links' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'Home', href: '/', icon: 'fa-solid fa-house' },
+  { label: 'Projects', href: '/projects', icon: 'fa-solid fa-diagram-project' },
+  { label: 'About', href: '/about', icon: 'fa-solid fa-user' },
+  { label: 'Certifications', href: '/certifications', icon: 'fa-solid fa-award' },
+  { label: 'Gallery', href: '/gallery', icon: 'fa-solid fa-images' },
+  { label: 'Links', href: '/links', icon: 'fa-solid fa-link' },
+  { label: 'Contact', href: '/contact', icon: 'fa-solid fa-envelope' },
 ];
 
 interface NavbarProps {
@@ -60,149 +61,168 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
   return (
     <>
-      {/* ── Universal Sticky Top Nav ── */}
-      <header
-        className={`nav-enter fixed top-0 inset-x-0 z-50 glass-nav transition-all duration-300 ${scrolled ? 'shadow-md' : ''}`}
-        style={{ height: '60px' }}
+      {/* ── Desktop / Landscape Fixed Left Sidebar (Permanent, no hamburger, no minimize/maximize) ── */}
+      <aside
+        className="hidden md:flex fixed top-0 left-0 bottom-0 z-40 w-64 h-screen flex-col justify-between border-r border-border-custom bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md p-5 select-none"
+        aria-label="Desktop sidebar navigation"
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-full flex items-center justify-between gap-4">
-
-          {/* Brand */}
-          <a href="/" className="flex items-center gap-2.5 shrink-0 group focus:outline-none">
-            <img
-              src={logoImage || '/logo.png'}
-              alt={fullName}
-              className="w-7 h-7 rounded-full object-cover ring-1 ring-border-custom group-hover:ring-primary-custom/50 transition-all"
-            />
-            <span className="font-heading font-bold text-sm tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors hidden sm:inline">
+        {/* Top: Brand Header - Only name, no icon and no full-stack developer label */}
+        <div className="flex flex-col gap-4">
+          <a href="/" className="flex items-center group focus:outline-none py-1">
+            <span className="font-heading font-bold text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors truncate">
               {fullName}
             </span>
           </a>
 
-          {/* Desktop Nav Links */}
-          <nav className="hidden md:flex items-center gap-0.5" aria-label="Main navigation">
-            {navItems.map((item) => {
-              const active = isActive(item.href);
-              return (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  className={`relative px-3.5 py-1.5 text-xs font-semibold tracking-wide rounded-lg transition-colors duration-200 ${
-                    active
-                      ? 'text-primary-custom'
-                      : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
-                  }`}
-                >
-                  {item.label}
-                  {/* Animated underline indicator */}
-                  {active && (
-                    <span
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 h-[2px] w-4 rounded-full bg-primary-custom"
-                      style={{ transition: 'width 0.2s ease' }}
-                    />
-                  )}
-                </a>
-              );
-            })}
-          </nav>
-
-          {/* Right Controls: Display & Accessibility Dropdown */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
-              <ControlsDropdown />
-            </Suspense>
-
-            {/* Hamburger / Toggle — mobile only */}
-            <button
-              className="md:hidden flex flex-col items-center justify-center gap-1.5 w-9 h-9 rounded-xl hover:bg-foreground-custom/8 active:bg-foreground-custom/15 transition-colors focus:outline-none cursor-pointer border border-border-custom"
-              onClick={() => setDrawerOpen((prev) => !prev)}
-              aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
-              aria-expanded={drawerOpen}
-            >
-              <span className={`block w-4.5 h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? 'rotate-45 translate-y-2' : ''}`} />
-              <span className={`block h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? 'w-0 opacity-0' : 'w-4.5'}`} />
-              <span className={`block w-4.5 h-0.5 rounded-full bg-foreground-custom transition-all duration-300 ${drawerOpen ? '-rotate-45 -translate-y-2' : ''}`} />
-            </button>
-          </div>
-        </div>
-      </header>
-
-      {/* ── Mobile Drawer Backdrop ── */}
-      {drawerOpen && (
-        <div
-          className="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-xs transition-opacity"
-          onClick={() => setDrawerOpen(false)}
-          aria-hidden="true"
-        />
-      )}
-
-      {/* ── Mobile Drawer (Solid Opaque Theme with Close Button) ── */}
-      <aside
-        className={`md:hidden fixed top-0 right-0 bottom-0 z-50 w-72 bg-white dark:bg-[#090a0f] text-foreground-custom border-l border-border-custom shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
-          drawerOpen ? 'translate-x-0' : 'translate-x-full'
-        }`}
-        aria-label="Mobile navigation"
-      >
-        {/* Drawer Header */}
-        <div className="flex items-center justify-between px-5 h-[60px] border-b border-border-custom bg-muted-custom/20">
-          <div className="flex items-center gap-2">
-            <img
-              src={logoImage || '/logo.png'}
-              alt={fullName}
-              className="w-6 h-6 rounded-full object-cover"
-            />
-            <span className="font-heading font-bold text-xs text-foreground-custom">
-              Navigation
-            </span>
-          </div>
-
-          <button
-            onClick={() => setDrawerOpen(false)}
-            aria-label="Close menu"
-            className="w-8 h-8 rounded-lg flex items-center justify-center text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/10 transition-colors cursor-pointer"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="h-px w-full bg-border-custom/80" />
         </div>
 
-        {/* Drawer Navigation Links */}
-        <nav className="flex flex-col gap-1 p-4 overflow-y-auto">
+        {/* Center: Vertical Navigation Links */}
+        <nav className="flex flex-col gap-1 py-4 overflow-y-auto flex-1 my-2" aria-label="Sidebar main links">
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (
               <a
                 key={item.label}
                 href={item.href}
-                onClick={() => setDrawerOpen(false)}
-                className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs tracking-wide transition-all duration-200 ${
                   active
-                    ? 'bg-primary-custom/10 text-primary-custom font-bold border border-primary-custom/20'
-                    : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
+                    ? 'text-foreground-custom font-bold'
+                    : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
                 }`}
               >
-                <span>{item.label}</span>
-                {active && <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />}
+                <i className={`${item.icon} text-sm w-4 text-center shrink-0 transition-colors ${active ? 'text-primary-custom' : 'text-muted-foreground-custom/70'}`} />
+                <span className="truncate">{item.label}</span>
+                {active && (
+                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary-custom shrink-0" />
+                )}
               </a>
             );
           })}
         </nav>
 
-        {/* Drawer Footer */}
-        <div className="mt-auto p-4 border-t border-border-custom bg-muted-custom/10">
+        {/* Bottom: Controls & Status */}
+        <div className="flex flex-col gap-3 pt-4 border-t border-border-custom/80">
+          <div className="flex items-center justify-between">
+            <span className="text-[11px] font-mono text-muted-foreground-custom">
+              Preferences
+            </span>
+            <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+              <ControlsDropdown />
+            </Suspense>
+          </div>
+
           <a
             href="/contact"
-            onClick={() => setDrawerOpen(false)}
-            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-95 transition-all shadow-sm"
+            className="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-sm"
           >
-            Get in Touch
-            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-            </svg>
+            <span>Get in Touch</span>
+            <i className="fa-solid fa-arrow-right text-[10px]" />
           </a>
         </div>
       </aside>
+
+      {/* ── Mobile Sticky Top Header (Only on screens < md) ── */}
+      <header
+        className={`md:hidden nav-enter fixed top-0 inset-x-0 z-50 glass-nav transition-all duration-300 ${scrolled || drawerOpen ? 'shadow-md bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md' : ''}`}
+        style={{ height: '60px' }}
+      >
+        <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-3">
+          {/* Brand - Only Name, no icon */}
+          <a href="/" className="flex items-center shrink-0 group focus:outline-none">
+            <span className="font-heading font-bold text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors">
+              {fullName}
+            </span>
+          </a>
+
+          {/* Right Controls: Display & Accessibility Dropdown + Mobile Hamburger */}
+          <div className="flex items-center gap-2 shrink-0">
+            <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
+              <ControlsDropdown />
+            </Suspense>
+
+            {/* Hamburger Button with Smooth Animation to 'X' */}
+            <button
+              className="relative flex items-center justify-center w-9 h-9 rounded-xl hover:bg-foreground-custom/8 active:bg-foreground-custom/15 transition-colors focus:outline-none cursor-pointer border border-border-custom"
+              onClick={() => {
+                haptic.tap();
+                setDrawerOpen((prev) => !prev);
+              }}
+              aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
+              aria-expanded={drawerOpen}
+            >
+              <div className="w-4.5 h-3.5 relative flex flex-col justify-between">
+                <span
+                  className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
+                    drawerOpen ? 'rotate-45 translate-y-[6px]' : ''
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-200 ${
+                    drawerOpen ? 'opacity-0 scale-x-0' : 'opacity-100'
+                  }`}
+                />
+                <span
+                  className={`block h-0.5 w-4.5 rounded-full bg-foreground-custom transition-all duration-300 origin-center ${
+                    drawerOpen ? '-rotate-45 -translate-y-[6px]' : ''
+                  }`}
+                />
+              </div>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Mobile Navigation Dropdown (Directly on body below top navbar, top nav stays visible) ── */}
+      {drawerOpen && (
+        <div
+          className="md:hidden fixed inset-0 top-[60px] z-40 bg-black/60 backdrop-blur-xs transition-opacity animate-modal-fade"
+          onClick={() => setDrawerOpen(false)}
+          aria-hidden="true"
+        >
+          <div
+            className="w-full bg-white dark:bg-[#090a0f] border-b border-border-custom shadow-2xl flex flex-col p-4 sm:p-5 max-h-[calc(100vh-60px)] overflow-y-auto animate-modal-scale"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Navigation Links */}
+            <nav className="flex flex-col gap-1" aria-label="Mobile navigation links">
+              {navItems.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => setDrawerOpen(false)}
+                    className={`flex items-center justify-between px-4 py-3 rounded-xl text-sm transition-all duration-200 ${
+                      active
+                        ? 'text-foreground-custom font-bold'
+                        : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
+                    }`}
+                  >
+                    <div className="flex items-center gap-3">
+                      <i className={`${item.icon} text-sm w-4 text-center transition-colors ${active ? 'text-primary-custom' : 'text-muted-foreground-custom/70'}`} />
+                      <span>{item.label}</span>
+                    </div>
+                    {active && <span className="w-1.5 h-1.5 rounded-full bg-primary-custom shrink-0" />}
+                  </a>
+                );
+              })}
+            </nav>
+
+            {/* Mobile Contact Button */}
+            <div className="pt-4 mt-3 border-t border-border-custom">
+              <a
+                href="/contact"
+                onClick={() => setDrawerOpen(false)}
+                className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-95 transition-all shadow-sm"
+              >
+                <span>Get in Touch</span>
+                <i className="fa-solid fa-arrow-right text-[10px]" />
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 }

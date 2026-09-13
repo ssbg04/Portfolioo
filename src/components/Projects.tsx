@@ -13,7 +13,7 @@ export default function Projects({
   initialProjects,
   showArchiveLink = true,
   limit,
-  sectionTag = '02 // Projects'
+  sectionTag = 'Projects'
 }: ProjectsProps) {
   const [filter, setFilter] = useState<string>('All');
 
@@ -39,20 +39,18 @@ export default function Projects({
 
         {/* Section Header */}
         <ScrollReveal variant="fade-up" className="mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
-            <div>
-              <span className="section-tag">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-pulse" />
-                {sectionTag}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
-                Featured Work
-              </h2>
+          {showArchiveLink && (
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
+              <div>
+                <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
+                  Featured Work
+                </h2>
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Filter Pills */}
-          <div className="flex flex-wrap items-center gap-2 mt-5">
+          <div className={`flex flex-wrap items-center gap-2 ${showArchiveLink ? 'mt-5' : ''}`}>
             {filterOptions.map((opt) => (
               <button
                 key={opt}

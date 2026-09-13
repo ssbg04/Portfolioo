@@ -11,7 +11,7 @@ interface Props {
 
 type FilterMode = 'all' | 'certificates' | 'badges';
 
-export default function Certifications({ certifications, extraCerts = [], sectionTag = '04 // Certifications' }: Props) {
+export default function Certifications({ certifications, extraCerts = [], sectionTag = 'Certifications' }: Props) {
   const baseCerts = (certifications && certifications.length > 0) ? certifications : mockCertifications;
   const allCerts = [...baseCerts, ...extraCerts];
 
@@ -323,11 +323,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
         <ScrollReveal variant="fade-up" className="mb-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
             <div>
-              <span className="section-tag">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                {sectionTag}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
                 Verified Credentials &amp; Certifications
               </h2>
             </div>
@@ -516,8 +512,8 @@ export default function Certifications({ certifications, extraCerts = [], sectio
               </div>
             )}
 
-            {/* Skill Badges Grid (Compact, dense 3-4 column layout centered on authentic digital badge graphics) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
+            {/* Skill Badges Grid (Compact 2-col on mobile, dense 3-4 col on desktop) */}
+            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-4 lg:gap-5">
               {skillBadges.map((badge, idx) => (
                 <ScrollReveal key={badge.id || idx} variant="fade-up" delay={idx * 40} className="h-full">
                   <div
@@ -529,24 +525,24 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     tabIndex={0}
                     onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedCert(badge); }}
                     aria-label={`View details for badge ${badge.title}`}
-                    className="bento-card p-4 sm:p-5 flex flex-col justify-between items-center text-center h-full group cursor-pointer hover:border-primary-custom/40 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
+                    className="bento-card p-3 sm:p-5 flex flex-col justify-between items-center text-center h-full group cursor-pointer hover:border-primary-custom/40 hover:-translate-y-1 transition-all duration-300 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
                   >
                     <div className="w-full flex flex-col items-center">
                       {/* Top Bar: Code & Skill Badge Pill */}
-                      <div className="w-full flex items-center justify-between pb-2.5 border-b border-border-custom text-xs mb-3">
-                        <span className="text-[10px] font-mono text-muted-foreground-custom font-medium">
+                      <div className="w-full flex items-center justify-between pb-1.5 sm:pb-2.5 border-b border-border-custom text-xs mb-2 sm:mb-3">
+                        <span className="text-[9px] sm:text-[10px] font-mono text-muted-foreground-custom font-medium truncate max-w-[60px] sm:max-w-none">
                           #{badge.code}
                         </span>
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
+                        <span className="text-[9px] sm:text-[10px] font-mono font-medium px-1.5 sm:px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1 sm:gap-1.5">
+                          <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-muted-foreground-custom/60" />
                           <span>Badge</span>
                         </span>
                       </div>
 
                       {/* Authentic Digital Badge Viewport (Centered icon with ambient glow) */}
-                      <div className="relative w-28 h-28 my-2 flex items-center justify-center">
+                      <div className="relative w-16 h-16 sm:w-28 sm:h-28 my-1 sm:my-2 flex items-center justify-center">
                         {/* Ambient Backdrop Glow */}
-                        <div className="absolute inset-2 rounded-full bg-foreground-custom/[0.02] group-hover:bg-foreground-custom/[0.04] blur-md transition-all" />
+                        <div className="absolute inset-1 sm:inset-2 rounded-full bg-foreground-custom/[0.02] group-hover:bg-foreground-custom/[0.04] blur-md transition-all" />
 
                         {badge.badgeImage ? (
                           <img
@@ -554,7 +550,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                             alt={badge.title}
                             loading="lazy"
                             referrerPolicy="no-referrer"
-                            className="relative z-10 w-24 h-24 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300"
+                            className="relative z-10 w-14 h-14 sm:w-24 sm:h-24 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300"
                             onError={(e) => {
                               const parent = (e.currentTarget as HTMLElement).parentElement;
                               if (parent) {
@@ -565,33 +561,33 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                             }}
                           />
                         ) : null}
-                        <div className={`badge-fallback-icon w-20 h-20 rounded-full bg-foreground-custom/5 flex items-center justify-center text-muted-foreground-custom ${badge.badgeImage ? 'hidden' : ''}`}>
-                          <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
+                        <div className={`badge-fallback-icon w-12 h-12 sm:w-20 sm:h-20 rounded-full bg-foreground-custom/5 flex items-center justify-center text-muted-foreground-custom ${badge.badgeImage ? 'hidden' : ''}`}>
+                          <svg className="w-6 h-6 sm:w-10 sm:h-10" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12c0 1.268-.63 2.39-1.593 3.068a3.745 3.745 0 0 1-1.043 3.296 3.745 3.745 0 0 1-3.296 1.043A3.745 3.745 0 0 1 12 21c-1.268 0-2.39-.63-3.068-1.593a3.746 3.746 0 0 1-3.296-1.043 3.745 3.745 0 0 1-1.043-3.296A3.745 3.745 0 0 1 3 12c0-1.268.63-2.39 1.593-3.068a3.745 3.745 0 0 1 1.043-3.296 3.746 3.746 0 0 1 3.296-1.043A3.746 3.746 0 0 1 12 3c1.268 0 2.39.63 3.068 1.593a3.746 3.746 0 0 1 3.296 1.043 3.746 3.746 0 0 1 1.043 3.296A3.745 3.745 0 0 1 21 12Z" />
                           </svg>
                         </div>
                       </div>
 
                       {/* Badge Title */}
-                      <h4 className="text-sm font-bold font-heading text-foreground-custom group-hover:text-primary-custom transition-colors leading-snug line-clamp-2 mt-2 px-1">
+                      <h4 className="text-xs sm:text-sm font-bold font-heading text-foreground-custom group-hover:text-primary-custom transition-colors leading-tight sm:leading-snug line-clamp-2 mt-1 sm:mt-2 px-0.5 sm:px-1">
                         {badge.title}
                       </h4>
 
-                      <p className="text-[11px] font-mono text-muted-foreground-custom mt-1">
+                      <p className="text-[10px] sm:text-[11px] font-mono text-muted-foreground-custom mt-0.5 sm:mt-1 truncate w-full">
                         Issued by {badge.issuer}
                       </p>
                     </div>
 
                     {/* Direct 1-Click Verification Link Button */}
-                    <div className="w-full pt-3 mt-3 border-t border-border-custom/60 flex items-center justify-center">
+                    <div className="w-full pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-border-custom/60 flex items-center justify-center">
                       <a
                         href={badge.badgeUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full py-1.5 px-2.5 rounded-xl bg-foreground-custom/[0.04] hover:bg-primary-custom/10 text-foreground-custom hover:text-primary-custom border border-border-custom text-[11px] font-mono font-semibold transition-colors flex items-center justify-center gap-1"
+                        className="w-full py-1 sm:py-1.5 px-2 sm:px-2.5 rounded-lg sm:rounded-xl bg-foreground-custom/[0.04] hover:bg-primary-custom/10 text-foreground-custom hover:text-primary-custom border border-border-custom text-[10px] sm:text-[11px] font-mono font-semibold transition-colors flex items-center justify-center gap-1"
                       >
-                        <span>Verify Credential</span>
+                        <span>Verify</span>
                         <span>↗</span>
                       </a>
                     </div>

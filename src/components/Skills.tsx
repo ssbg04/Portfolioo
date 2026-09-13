@@ -1,55 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { Skill } from '../lib/data';
 import ScrollReveal from './ScrollReveal';
 
 interface SkillsProps {
   skills: Skill[];
   sectionTag?: string;
+  limit?: number;
+  showSeeAll?: boolean;
+  seeAllHref?: string;
 }
-
-const getCategoryIcon = (category: string) => {
-  const cat = category.toLowerCase();
-  if (cat.includes('front')) {
-    return (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 17.25v1.007a3 3 0 0 1-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0 1 15 18.257V17.25m6-12V15a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 15V5.25m18 0A2.25 2.25 0 0 0 18.75 3H5.25A2.25 2.25 0 0 0 3 5.25m18 0H3" />
-      </svg>
-    );
-  }
-  if (cat.includes('back')) {
-    return (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M5.25 14.25h13.5m-13.5 0a3 3 0 0 1-3-3m3 3a3 3 0 1 0 0 6h13.5a3 3 0 1 0 0-6m-16.5-3a3 3 0 0 1 3-3h13.5a3 3 0 0 1 3 3m-19.5 0a4.5 4.5 0 0 1 .9-2.7L5.75 5.1a3 3 0 0 1 2.4-1.1h7.7a3 3 0 0 1 2.4 1.1l2.6 3.45a4.5 4.5 0 0 1 .9 2.7" />
-      </svg>
-    );
-  }
-  if (cat.includes('data') || cat.includes('sql')) {
-    return (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 6.375c0 2.278-3.694 4.125-8.25 4.125S3.75 8.653 3.75 6.375m16.5 0c0-2.278-3.694-4.125-8.25-4.125S3.75 4.097 3.75 6.375m16.5 0v11.25c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125V6.375m16.5 5.625c0 2.278-3.694 4.125-8.25 4.125s-8.25-1.847-8.25-4.125" />
-      </svg>
-    );
-  }
-  if (cat.includes('mobile')) {
-    return (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 0 0 6 3.75v16.5a2.25 2.25 0 0 0 2.25 2.25h7.5A2.25 2.25 0 0 0 18 20.25V3.75a2.25 2.25 0 0 0-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 18.75h3" />
-      </svg>
-    );
-  }
-  if (cat.includes('secur') || cat.includes('cyber')) {
-    return (
-      <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z" />
-      </svg>
-    );
-  }
-  return (
-    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M11.42 15.17 17.25 21A2.652 2.652 0 0 0 21 17.25l-5.877-5.877M11.42 15.17l2.496-3.03c.317-.384.74-.626 1.208-.766M11.42 15.17l-4.655 5.653a2.548 2.548 0 1 1-3.586-3.586l6.837-5.63m5.108-.233c.55-.164 1.163-.188 1.743-.14a4.5 4.5 0 0 0 4.486-6.32l-3.276 3.277a1.5 1.5 0 0 1-2.122-2.122l3.277-3.276a4.5 4.5 0 0 0-6.32 4.486c.048.58.024 1.193-.14 1.743" />
-    </svg>
-  );
-};
 
 const getFaClassByName = (name: string): string => {
   const n = name.toLowerCase();
@@ -62,7 +21,7 @@ const getFaClassByName = (name: string): string => {
   if (n.includes('css')) return 'fa-brands fa-css3-alt';
   if (n.includes('python')) return 'fa-brands fa-python';
   if (n.includes('flutter')) return 'fa-solid fa-mobile-screen-button';
-  if (n.includes('mysql') || n.includes('sql') || n.includes('database') || n.includes('mongo')) return 'fa-solid fa-database';
+  if (n.includes('mysql') || n.includes('sql') || n.includes('database') || n.includes('mongo') || n.includes('postgres')) return 'fa-solid fa-database';
   if (n.includes('github') || n.includes('git')) return 'fa-brands fa-github';
   if (n.includes('docker')) return 'fa-brands fa-docker';
   if (n.includes('secur') || n.includes('cyber') || n.includes('shield')) return 'fa-solid fa-shield-halved';
@@ -71,7 +30,7 @@ const getFaClassByName = (name: string): string => {
   if (n.includes('vue')) return 'fa-brands fa-vuejs';
   if (n.includes('angular')) return 'fa-brands fa-angular';
   if (n.includes('bootstrap')) return 'fa-brands fa-bootstrap';
-  if (n.includes('sass')) return 'fa-brands fa-sass';
+  if (n.includes('sass') || n.includes('scss')) return 'fa-brands fa-sass';
   if (n.includes('aws')) return 'fa-brands fa-aws';
   if (n.includes('network') || n.includes('telemetry') || n.includes('cisco')) return 'fa-solid fa-network-wired';
   if (n.includes('cloud')) return 'fa-solid fa-cloud';
@@ -94,78 +53,109 @@ const getSkillFaClass = (skill: Skill): string => {
   return getFaClassByName(skill.name);
 };
 
-export default function Skills({ skills, sectionTag = '03 // Tech Stack' }: SkillsProps) {
+export default function Skills({
+  skills,
+  sectionTag = 'Tech Stack',
+  limit,
+  showSeeAll = false,
+  seeAllHref = '/about#skills'
+}: SkillsProps) {
   if (!skills || skills.length === 0) {
     return null;
   }
 
-  const categories = Array.from(new Set(skills.map((s) => s.category || 'Core')));
+  const [activeFilter, setActiveFilter] = useState<string>('All');
+
+  const categories = Array.from(new Set(skills.map((s) => s.category).filter(Boolean) as string[]));
+  const filterOptions = ['All', ...categories];
+
+  const filteredSkills = activeFilter === 'All'
+    ? skills
+    : skills.filter((s) => s.category === activeFilter);
+
+  const displayedSkills = limit ? filteredSkills.slice(0, limit) : filteredSkills;
 
   return (
-    <section id="skills" className="py-20 relative">
+    <section id="skills" className="py-20 relative scroll-mt-20">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
         <ScrollReveal variant="fade-up" className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
             <div>
-              <span className="section-tag">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-                {sectionTag}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom mt-1 tracking-tight">
+              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
                 Technologies &amp; Tools
               </h2>
             </div>
+            <span className="text-xs font-mono text-muted-foreground-custom">
+              {limit ? `Showing ${displayedSkills.length} of ${skills.length} technologies` : `${skills.length} total technologies`}
+            </span>
           </div>
+
+          {/* Simple Filter Pills */}
+          {categories.length > 1 && !limit && (
+            <div className="flex flex-wrap items-center gap-2 mt-5">
+              {filterOptions.map((opt) => (
+                <button
+                  key={opt}
+                  onClick={() => setActiveFilter(opt)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-mono transition-all cursor-pointer ${
+                    activeFilter === opt
+                      ? 'bg-primary-custom text-white font-bold shadow-sm'
+                      : 'bg-foreground-custom/5 text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/10'
+                  }`}
+                >
+                  {opt}
+                </button>
+              ))}
+            </div>
+          )}
         </ScrollReveal>
 
-        {/* Clean, Easy-to-Read Categories Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-          {categories.map((category, idx) => {
-            const categorySkills = skills.filter((s) => (s.category || 'Core') === category);
-
-            return (
-              <div key={category} className="col-span-1">
-                <ScrollReveal variant="fade-up" delay={idx * 50} className="h-full">
-                  <div className="bento-card p-5 sm:p-6 flex flex-col justify-between h-full group">
-                    <div>
-                      {/* Category Header */}
-                      <div className="flex items-center justify-between pb-3 mb-4 border-b border-border-custom">
-                        <div className="flex items-center gap-2.5">
-                          <span className="p-1.5 rounded-lg bg-primary-custom/10 text-primary-custom">
-                            {getCategoryIcon(category)}
-                          </span>
-                          <h3 className="text-base font-bold font-heading text-foreground-custom tracking-tight">
-                            {category}
-                          </h3>
-                        </div>
-                        <span className="text-[10px] font-mono text-primary-custom px-2 py-0.5 rounded-full bg-primary-custom/10 border border-primary-custom/20 font-medium">
-                          {categorySkills.length} {categorySkills.length === 1 ? 'skill' : 'skills'}
-                        </span>
-                      </div>
-
-                      {/* Clean Skill Items without individual boxes */}
-                      <div className="flex flex-wrap gap-x-5 gap-y-3 py-1">
-                        {categorySkills.map((skill) => (
-                          <div
-                            key={skill.name}
-                            className="flex items-center gap-2 text-xs font-medium text-foreground-custom/90 hover:text-primary-custom transition-colors"
-                          >
-                            <i className={`${getSkillFaClass(skill)} text-primary-custom text-sm shrink-0`} />
-                            <span>{skill.name}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+        {/* Single Unified Tech Stack Section */}
+        <ScrollReveal variant="fade-up" delay={100}>
+          <div className="bento-card p-6 sm:p-8">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+              {displayedSkills.map((skill) => (
+                <div
+                  key={skill.name}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-foreground-custom/3 hover:bg-primary-custom/10 border border-border-custom hover:border-primary-custom/30 text-foreground-custom hover:text-primary-custom transition-all group cursor-default"
+                >
+                  <i className={`${getSkillFaClass(skill)} text-lg text-primary-custom shrink-0 group-hover:scale-110 transition-transform`} />
+                  <div className="min-w-0 flex-1">
+                    <span className="text-xs sm:text-sm font-semibold truncate block text-foreground-custom group-hover:text-primary-custom transition-colors">
+                      {skill.name}
+                    </span>
+                    {skill.category && (
+                      <span className="text-[10px] text-muted-foreground-custom truncate block font-mono">
+                        {skill.category}
+                      </span>
+                    )}
                   </div>
-                </ScrollReveal>
+                </div>
+              ))}
+            </div>
+
+            {/* See All Button when limited */}
+            {(showSeeAll || limit) && skills.length > (limit || 0) && (
+              <div className="mt-8 pt-6 border-t border-border-custom flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span className="text-xs font-mono text-muted-foreground-custom">
+                  Previewing {displayedSkills.length} of {skills.length} core technologies
+                </span>
+                <a
+                  href={seeAllHref}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-custom/10 hover:bg-primary-custom text-primary-custom hover:text-white border border-primary-custom/20 hover:border-primary-custom text-xs font-mono font-bold tracking-wider uppercase transition-all duration-200 shadow-xs active:scale-95 group"
+                >
+                  <span>See All Technologies ({skills.length})</span>
+                  <i className="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-0.5 transition-transform" />
+                </a>
               </div>
-            );
-          })}
-        </div>
+            )}
+          </div>
+        </ScrollReveal>
 
       </div>
     </section>
   );
 }
+

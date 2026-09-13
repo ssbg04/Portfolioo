@@ -46,11 +46,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
       {/* ─── Filter Bar ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 pb-4 border-b border-border-custom">
         <div>
-          <span className="section-tag">
-            <span className="w-1.5 h-1.5 rounded-full bg-primary-custom" />
-            06 // Visual Log
-          </span>
-          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight mt-1">
+          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight">
             Photo Gallery
           </h2>
         </div>
