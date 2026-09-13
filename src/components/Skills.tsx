@@ -87,9 +87,11 @@ export default function Skills({
                 Technologies &amp; Tools
               </h2>
             </div>
-            <span className="text-xs font-mono text-muted-foreground-custom">
-              {limit ? `Showing ${displayedSkills.length} of ${skills.length} technologies` : `${skills.length} total technologies`}
-            </span>
+            {!limit && (
+              <span className="text-xs font-mono text-muted-foreground-custom">
+                {skills.length} total technologies
+              </span>
+            )}
           </div>
 
           {/* Simple Filter Pills */}
@@ -140,7 +142,7 @@ export default function Skills({
             {(showSeeAll || limit) && skills.length > (limit || 0) && (
               <div className="mt-8 pt-6 border-t border-border-custom flex flex-col sm:flex-row items-center justify-between gap-4">
                 <span className="text-xs font-mono text-muted-foreground-custom">
-                  Previewing {displayedSkills.length} of {skills.length} core technologies
+                  Showing {displayedSkills.length} of {skills.length} technologies
                 </span>
                 <a
                   href={seeAllHref}

@@ -53,3 +53,6 @@ Project Dedicated page
 - in landscape view or the desktop view make the navigation to left side bar, do not add hamburger bar has doesnt minimize or maximize
 - Redesign the Techstack, use one section for all the techstack, do not add sub section or sub boxes for all categories, just make it simple -->
 
+<!-- Technologies & tools section
+- make it 12 limit
+- remove duplication of showing x of n technologies -->
