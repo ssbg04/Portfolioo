@@ -23,28 +23,32 @@ export default function ControlsDropdown() {
 
     setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches);
 
-    // Detect theme preferences: System default or manual stored
+    // Detect theme preferences: Dark default or manual stored
     const stored = localStorage.getItem('theme') as ThemeMode | null;
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
-    if (stored === 'light' || stored === 'dark') {
-      setThemeMode(stored);
-      setResolvedTheme(stored);
-      if (stored === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
-    } else {
-      // Default: auto-detect system theme!
+    if (stored === 'light') {
+      setThemeMode('light');
+      setResolvedTheme('light');
+      document.documentElement.classList.remove('dark');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#fafafa');
+    } else if (stored === 'system') {
       setThemeMode('system');
       const detectedTheme = systemDark ? 'dark' : 'light';
       setResolvedTheme(detectedTheme);
-      if (systemDark) {
+      if (detectedTheme === 'dark') {
         document.documentElement.classList.add('dark');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#090a0f');
       } else {
         document.documentElement.classList.remove('dark');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#fafafa');
       }
+    } else {
+      // Default: dark mode signature theme
+      setThemeMode('dark');
+      setResolvedTheme('dark');
+      document.documentElement.classList.add('dark');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#090a0f');
     }
 
     const checkLite = () => {
@@ -52,6 +56,8 @@ export default function ControlsDropdown() {
     };
     checkLite();
     window.addEventListener('tier-change', checkLite);
+    document.addEventListener('astro:after-swap', checkLite);
+    document.addEventListener('astro:page-load', checkLite);
 
     const savedMag = localStorage.getItem('magnifierEnabled');
     setMagnifierEnabled(savedMag === 'true');
@@ -93,6 +99,8 @@ export default function ControlsDropdown() {
 
     return () => {
       window.removeEventListener('tier-change', checkLite);
+      document.removeEventListener('astro:after-swap', checkLite);
+      document.removeEventListener('astro:page-load', checkLite);
       if (darkQuery.removeEventListener) {
         darkQuery.removeEventListener('change', handleSystemThemeChange);
       }
@@ -126,24 +134,26 @@ export default function ControlsDropdown() {
     haptic.tap();
     setThemeMode(mode);
 
+    let resolved: 'light' | 'dark' = 'dark';
     if (mode === 'system') {
-      localStorage.removeItem('theme');
+      localStorage.setItem('theme', 'system');
       const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      setResolvedTheme(systemDark ? 'dark' : 'light');
-      if (systemDark) {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      resolved = systemDark ? 'dark' : 'light';
     } else {
       localStorage.setItem('theme', mode);
-      setResolvedTheme(mode);
-      if (mode === 'dark') {
-        document.documentElement.classList.add('dark');
-      } else {
-        document.documentElement.classList.remove('dark');
-      }
+      resolved = mode;
     }
+
+    setResolvedTheme(resolved);
+    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+    if (resolved === 'dark') {
+      document.documentElement.classList.add('dark');
+      metaThemeColor?.setAttribute('content', '#090a0f');
+    } else {
+      document.documentElement.classList.remove('dark');
+      metaThemeColor?.setAttribute('content', '#fafafa');
+    }
+    window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: resolved } }));
   };
 
   const toggleMagnifier = () => {

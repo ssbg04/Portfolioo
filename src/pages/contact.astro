@@ -14,9 +14,9 @@ const socialLinks = await getSocialLinks();
 	description="Get in touch with Cris Charles Garcia for opportunities, consulting, or project collaborations."
 	image={settings.heroImage || settings.logoImage || '/logo.png'}
 >
-	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
+	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
-	<main class="flex-1 pt-6 sm:pt-10 pb-16">
+	<main class="flex-1 pt-2 sm:pt-6 pb-16">
 		<ContactForm 
 			socialLinks={socialLinks}
 			contactHeading={settings.contactHeading}

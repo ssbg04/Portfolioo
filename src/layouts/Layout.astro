@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import { ClientRouter } from 'astro:transitions';
 import BackToTop from '../components/BackToTop';
 import Background from '../components/Background';
 import SpotlightLens from '../components/SpotlightLens';
@@ -27,10 +28,10 @@ const isRootPage = Astro.url.pathname === '/';
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
 		<link rel="icon" type="image/png" href="/logo.png" />
 		<link rel="apple-touch-icon" href="/logo.png" />
 		<!-- PWA & Mobile Web App Manifest -->
@@ -46,41 +47,57 @@ const isRootPage = Astro.url.pathname === '/';
 		
 		<!-- FontAwesome 6 Icons -->
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+		<!-- Astro ClientRouter for seamless SPA page transitions (no reload, no twitch) -->
+		<ClientRouter />
 		
-		<!-- Theme Initialization Script (Prevents FOUC & auto-detects system theme) -->
+		<!-- Theme Initialization Script (Prevents FOUC & preserves theme on Astro transitions) -->
 		<script is:inline>
 			(function() {
 				function getResolvedTheme() {
 					var storedTheme = localStorage.getItem('theme');
-					var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-					if (storedTheme === 'dark') return 'dark';
 					if (storedTheme === 'light') return 'light';
-					// Default: auto-detect system theme (storedTheme is null or 'system')
-					return prefersDark ? 'dark' : 'light';
+					if (storedTheme === 'dark') return 'dark';
+					if (storedTheme === 'system') {
+						return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+					}
+					// Default: dark mode signature theme
+					return 'dark';
 				}
 
-				function applyTheme() {
+				function applyTheme(doc) {
+					var targetDoc = doc || document;
 					var theme = getResolvedTheme();
+					var metaThemeColor = targetDoc.querySelector('meta[name="theme-color"]');
 					if (theme === 'dark') {
-						document.documentElement.classList.add('dark');
+						targetDoc.documentElement.classList.add('dark');
+						if (metaThemeColor) metaThemeColor.setAttribute('content', '#090a0f');
 					} else {
-						document.documentElement.classList.remove('dark');
+						targetDoc.documentElement.classList.remove('dark');
+						if (metaThemeColor) metaThemeColor.setAttribute('content', '#fafafa');
 					}
 				}
 
-				applyTheme();
+				applyTheme(document);
 
-				// Automatically adapt if user has not set a manual override or selected system
+				// Crucial for Astro ClientRouter: re-apply theme on before-swap, after-swap and page-load
+				document.addEventListener('astro:before-swap', function(e) {
+					if (e.newDocument) applyTheme(e.newDocument);
+				});
+				document.addEventListener('astro:after-swap', function() {
+					applyTheme(document);
+				});
+				document.addEventListener('astro:page-load', function() {
+					applyTheme(document);
+				});
+
+				// Automatically adapt if user explicitly selected system
 				try {
 					var darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 					var listener = function(e) {
 						var stored = localStorage.getItem('theme');
-						if (!stored || stored === 'system') {
-							if (e.matches) {
-								document.documentElement.classList.add('dark');
-							} else {
-								document.documentElement.classList.remove('dark');
-							}
+						if (stored === 'system') {
+							applyTheme(document);
 							window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: e.matches ? 'dark' : 'light' } }));
 						}
 					};
@@ -98,37 +115,85 @@ const isRootPage = Astro.url.pathname === '/';
 		<!-- Orientation Stamp Script (Prevents nav layout shift) -->
 		<script is:inline>
 			(function() {
-				function setOrientation() {
+				function setOrientation(doc) {
+					var targetDoc = doc || document;
 					const isPortrait = window.matchMedia('(orientation: portrait)').matches;
 					const isNarrowLandscape = !isPortrait && window.innerWidth < 1024;
-					document.documentElement.dataset.orientation = isPortrait
+					targetDoc.documentElement.dataset.orientation = isPortrait
 						? 'portrait'
 						: isNarrowLandscape
 							? 'landscape-compact'
 							: 'landscape';
 				}
-				setOrientation();
-				window.addEventListener('resize', setOrientation, { passive: true });
-				window.addEventListener('orientationchange', setOrientation, { passive: true });
+				setOrientation(document);
+				window.addEventListener('resize', function() { setOrientation(document); }, { passive: true });
+				window.addEventListener('orientationchange', function() { setOrientation(document); }, { passive: true });
+				document.addEventListener('astro:before-swap', function(e) {
+					if (e.newDocument) setOrientation(e.newDocument);
+				});
+				document.addEventListener('astro:after-swap', function() {
+					setOrientation(document);
+				});
 			})();
 		</script>
-		<!-- Performance Tier & Lite Mode Detection -->
+		<!-- Performance Tier, Ultra-Fast Design & Lite Mode Detection (Persists across all page transitions) -->
 		<script is:inline>
 			(function() {
-				var manualLite = localStorage.getItem('liteMode');
-				var tier = 'mid';
-				if (manualLite === 'true') {
-					tier = 'low';
-				} else {
-					// Lite mode default is disabled (Off) unless explicitly enabled by user
-					var cores = navigator.hardwareConcurrency || 4;
-					if (cores >= 8 && window.devicePixelRatio >= 2) {
-						tier = 'high';
+				function applyTier(doc) {
+					var targetDoc = doc || document;
+					var manualLite = localStorage.getItem('liteMode');
+					var tier = 'mid';
+					if (manualLite === 'true') {
+						tier = 'low';
 					} else {
-						tier = 'mid';
+						// Lite mode default is disabled (Off) unless explicitly enabled by user
+						var cores = navigator.hardwareConcurrency || 4;
+						if (cores >= 8 && window.devicePixelRatio >= 2) {
+							tier = 'high';
+						} else {
+							tier = 'mid';
+						}
+					}
+					targetDoc.documentElement.dataset.tier = tier;
+					return tier;
+				}
+
+				function applyFontZoom(doc) {
+					var targetDoc = doc || document;
+					var savedZoom = localStorage.getItem('pageZoom');
+					if (savedZoom) {
+						var zoomVal = parseInt(savedZoom, 10);
+						if (!isNaN(zoomVal) && zoomVal >= 80 && zoomVal <= 130) {
+							targetDoc.documentElement.style.fontSize = ((zoomVal / 100) * 15) + 'px';
+						}
 					}
 				}
-				document.documentElement.dataset.tier = tier;
+
+				function initPreferences(doc) {
+					var targetDoc = doc || document;
+					var tier = applyTier(targetDoc);
+					applyFontZoom(targetDoc);
+					return tier;
+				}
+
+				initPreferences(document);
+
+				// Crucial for Astro ClientRouter: Apply to e.newDocument BEFORE swap to prevent attribute loss
+				document.addEventListener('astro:before-swap', function(e) {
+					if (e.newDocument) {
+						initPreferences(e.newDocument);
+					}
+				});
+
+				// Ensure Ultra-Fast Design & Zoom persist across ALL pages during client router transitions
+				document.addEventListener('astro:after-swap', function() {
+					var tier = initPreferences(document);
+					window.dispatchEvent(new CustomEvent('tier-change', { detail: { tier: tier } }));
+				});
+				document.addEventListener('astro:page-load', function() {
+					var tier = initPreferences(document);
+					window.dispatchEvent(new CustomEvent('tier-change', { detail: { tier: tier } }));
+				});
 			})();
 		</script>
 
@@ -144,16 +209,16 @@ const isRootPage = Astro.url.pathname === '/';
 		</script>
 	</head>
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
-		<Background client:load />
-		<div id="magnify-content" class="w-full min-h-screen flex flex-col pt-[60px] md:pt-0 md:pl-64">
+		<Background client:load transition:persist="main-bg" />
+		<div id="magnify-content" class="w-full max-w-full min-h-screen flex flex-col pt-[60px] md:pt-0 md:pl-64 overflow-x-clip">
 			<div class="hidden glass-card glass-nav text-glow glow-effect reveal-fade-up reveal-fade-down reveal-fade-left reveal-fade-right reveal-scale-up"></div>
 			<slot />
 		</div>
-		<BackToTop client:idle />
-		<PortfolioAssistantFAB client:idle />
-		<SpotlightLens client:load />
-		<NetworkStatus client:load />
-		<LagNotification client:load />
+		<BackToTop client:idle transition:persist="back-to-top" />
+		<PortfolioAssistantFAB client:idle transition:persist="portfolio-assistant" />
+		<SpotlightLens client:load transition:persist="spotlight-lens" />
+		<NetworkStatus client:load transition:persist="network-status" />
+		<LagNotification client:load transition:persist="lag-notification" />
         <Analytics />
 	</body>
 </html>

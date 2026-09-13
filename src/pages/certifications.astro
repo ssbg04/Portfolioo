@@ -15,7 +15,7 @@ const socialLinks = await getSocialLinks();
   description="Verified credentials and certifications earned by Cris Charles Garcia from Cisco and other industry-recognized programs."
   image={settings.heroImage || settings.logoImage || '/logo.png'}
 >
-  <Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
+  <Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
   <main class="flex-1 min-h-screen pb-16">
     <Certifications certifications={certifications} client:load />

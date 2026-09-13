@@ -4,28 +4,55 @@ import haptic from '../lib/haptics';
 const ControlsDropdown = lazy(() => import('./ControlsDropdown'));
 
 const navItems = [
-  { label: 'Home', href: '/', icon: 'fa-solid fa-house' },
-  { label: 'Projects', href: '/projects', icon: 'fa-solid fa-diagram-project' },
-  { label: 'About', href: '/about', icon: 'fa-solid fa-user' },
-  { label: 'Certifications', href: '/certifications', icon: 'fa-solid fa-award' },
-  { label: 'Gallery', href: '/gallery', icon: 'fa-solid fa-images' },
-  { label: 'Contact', href: '/contact', icon: 'fa-solid fa-envelope' },
+  { label: 'Home', href: '/' },
+  { label: 'Projects', href: '/projects' },
+  { label: 'About', href: '/about' },
+  { label: 'Certifications', href: '/certifications' },
+  { label: 'Gallery', href: '/gallery' },
+  { label: 'Contact', href: '/contact' },
 ];
 
 interface NavbarProps {
   fullName?: string;
   logoImage?: string;
+  currentPath?: string;
 }
 
-export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.png' }: NavbarProps) {
-  const [activePath, setActivePath] = useState('/');
+export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.png', currentPath }: NavbarProps) {
+  const [activePath, setActivePath] = useState<string>(() => {
+    if (currentPath) return currentPath;
+    if (typeof window !== 'undefined') return window.location.pathname;
+    return '/';
+  });
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (currentPath) {
+      setActivePath(currentPath);
+    } else if (typeof window !== 'undefined') {
       setActivePath(window.location.pathname);
     }
+  }, [currentPath]);
+
+  // Sync route and close drawer on Astro page transitions & browser navigation
+  useEffect(() => {
+    const handleRoute = () => {
+      if (typeof window !== 'undefined') {
+        setActivePath(window.location.pathname);
+      }
+      setDrawerOpen(false);
+    };
+
+    document.addEventListener('astro:page-load', handleRoute);
+    document.addEventListener('astro:after-swap', handleRoute);
+    window.addEventListener('popstate', handleRoute);
+
+    return () => {
+      document.removeEventListener('astro:page-load', handleRoute);
+      document.removeEventListener('astro:after-swap', handleRoute);
+      window.removeEventListener('popstate', handleRoute);
+    };
   }, []);
 
   useEffect(() => {
@@ -34,7 +61,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // Close drawer on route change / resize
+  // Close drawer on resize
   useEffect(() => {
     const onResize = () => { if (window.innerWidth >= 768) setDrawerOpen(false); };
     window.addEventListener('resize', onResize, { passive: true });
@@ -54,20 +81,26 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
   }, [drawerOpen]);
 
   const isActive = (href: string) => {
-    if (href === '/') return activePath === '/';
-    return activePath === href || activePath.startsWith(href + '/');
+    const current = (activePath || '').replace(/\/+$/, '') || '/';
+    const target = (href || '').replace(/\/+$/, '') || '/';
+    if (target === '/') return current === '/';
+    return current === target || current.startsWith(target + '/');
   };
 
   return (
     <>
       {/* ── Desktop / Landscape Fixed Left Sidebar (Permanent, no hamburger, no minimize/maximize) ── */}
       <aside
-        className="hidden md:flex fixed top-0 left-0 bottom-0 z-40 w-64 h-screen flex-col justify-between border-r border-border-custom bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md p-5 select-none"
+        className="hidden md:flex fixed top-0 left-0 bottom-0 z-40 w-64 h-full flex-col border-r border-border-custom bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md select-none overflow-hidden overscroll-contain"
         aria-label="Desktop sidebar navigation"
       >
         {/* Top: Brand Header - Only name, no icon and no full-stack developer label */}
-        <div className="flex flex-col gap-4">
-          <a href="/" className="flex items-center group focus:outline-none py-1">
+        <div className="shrink-0 px-5 pt-5 pb-3 flex flex-col gap-3">
+          <a
+            href="/"
+            onClick={() => setActivePath('/')}
+            className="flex items-center group focus:outline-none py-0.5"
+          >
             <span className="font-heading font-bold text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors truncate">
               {fullName}
             </span>
@@ -76,34 +109,43 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
           <div className="h-px w-full bg-border-custom/80" />
         </div>
 
-        {/* Center: Vertical Navigation Links */}
-        <nav className="flex flex-col gap-1 py-4 overflow-y-auto flex-1 my-2" aria-label="Sidebar main links">
+        {/* Center: Vertical Navigation Links (Text-only, no icons, min-h-0 prevents flexbox twitch loop) */}
+        <nav
+          className="flex-1 min-h-0 overflow-y-auto px-4 py-2 flex flex-col gap-1"
+          aria-label="Sidebar main links"
+        >
           {navItems.map((item) => {
             const active = isActive(item.href);
             return (
               <a
                 key={item.label}
                 href={item.href}
-                className={`flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-xs tracking-wide transition-all duration-200 ${
+                onClick={() => setActivePath(item.href)}
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm transition-all duration-200 shrink-0 ${
                   active
-                    ? 'text-foreground-custom font-bold'
+                    ? 'text-foreground-custom font-semibold bg-foreground-custom/[0.04]'
                     : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
                 }`}
               >
-                <i className={`${item.icon} text-sm w-4 text-center shrink-0 transition-colors ${active ? 'text-primary-custom' : 'text-muted-foreground-custom/70'}`} />
-                <span className="truncate">{item.label}</span>
-                {active && (
-                  <span className="ml-auto w-1.5 h-1.5 rounded-full bg-primary-custom shrink-0" />
-                )}
+                <div className="flex items-center gap-2.5">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                      active
+                        ? 'bg-primary-custom scale-100 shadow-[0_0_8px_var(--primary-color)]'
+                        : 'bg-transparent scale-0'
+                    }`}
+                  />
+                  <span className="truncate">{item.label}</span>
+                </div>
               </a>
             );
           })}
         </nav>
 
         {/* Bottom: Controls & Status */}
-        <div className="flex flex-col gap-3 pt-4 border-t border-border-custom/80">
+        <div className="shrink-0 px-5 py-4 border-t border-border-custom/80 flex flex-col gap-3 mt-auto bg-background-custom/40 dark:bg-[#090a0f]/40">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-mono text-muted-foreground-custom">
+            <span className="text-xs font-mono text-muted-foreground-custom">
               Preferences
             </span>
             <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
@@ -113,18 +155,18 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
           <a
             href="/contact"
-            className="flex items-center justify-center gap-2 w-full px-3.5 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-sm"
+            onClick={() => setActivePath('/contact')}
+            className="flex items-center justify-center w-full px-4 py-2.5 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-sm"
           >
             <span>Get in Touch</span>
-            <i className="fa-solid fa-arrow-right text-[10px]" />
           </a>
         </div>
       </aside>
 
       {/* ── Mobile Sticky Top Header (Only on screens < md) ── */}
       <header
-        className={`md:hidden nav-enter fixed top-0 inset-x-0 z-50 glass-nav transition-all duration-300 ${scrolled || drawerOpen ? 'shadow-md bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md' : ''}`}
-        style={{ height: '60px' }}
+        className={`md:hidden fixed top-0 inset-x-0 z-50 glass-nav transition-all duration-300 touch-manipulation ${scrolled || drawerOpen ? 'shadow-md bg-background-custom/95 dark:bg-[#090a0f]/95 backdrop-blur-md' : ''}`}
+        style={{ height: '60px', touchAction: 'manipulation' }}
       >
         <div className="max-w-7xl mx-auto px-4 h-full flex items-center justify-between gap-3">
           {/* Brand - Only Name, no icon */}
@@ -168,10 +210,10 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
       {/* ── Mobile Navigation Full-Screen Overlay (From under top navbar to bottom) ── */}
       {drawerOpen && (
         <div
-          className="md:hidden fixed inset-x-0 top-[60px] bottom-0 z-40 bg-background-custom/98 dark:bg-[#090a0f]/98 backdrop-blur-xl border-t border-border-custom flex flex-col justify-between overflow-hidden animate-modal-fade select-none"
+          className="md:hidden fixed inset-x-0 top-[60px] bottom-0 z-40 bg-background-custom dark:bg-[#090a0f] border-t border-border-custom flex flex-col justify-between overflow-hidden animate-modal-fade select-none"
           style={{ height: 'calc(100dvh - 60px)' }}
         >
-          {/* Scrollable Navigation Links */}
+          {/* Scrollable Navigation Links (Text-only, no icons, subtle active indicator dot) */}
           <nav className="flex-1 overflow-y-auto px-5 py-6 flex flex-col gap-1.5" aria-label="Mobile navigation links">
             {navItems.map((item) => {
               const active = isActive(item.href);
@@ -179,18 +221,26 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                 <a
                   key={item.label}
                   href={item.href}
-                  onClick={() => setDrawerOpen(false)}
-                  className={`flex items-center justify-between px-4 py-3.5 rounded-2xl text-base transition-all duration-200 ${
+                  onClick={() => {
+                    setActivePath(item.href);
+                    setDrawerOpen(false);
+                  }}
+                  className={`group flex items-center justify-between px-4 py-3 rounded-xl text-base transition-all duration-200 ${
                     active
-                      ? 'text-primary-custom font-bold bg-primary-custom/10 border border-primary-custom/25'
+                      ? 'text-foreground-custom font-bold bg-foreground-custom/[0.04]'
                       : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 font-medium'
                   }`}
                 >
-                  <div className="flex items-center gap-3.5">
-                    <i className={`${item.icon} text-base w-5 text-center transition-colors ${active ? 'text-primary-custom' : 'text-muted-foreground-custom/70'}`} />
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                        active
+                          ? 'bg-primary-custom scale-100 shadow-[0_0_8px_var(--primary-color)]'
+                          : 'bg-transparent scale-0'
+                      }`}
+                    />
                     <span>{item.label}</span>
                   </div>
-                  {active && <span className="w-2 h-2 rounded-full bg-primary-custom shrink-0 shadow-xs" />}
                 </a>
               );
             })}
@@ -200,23 +250,24 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
           <div className="p-5 border-t border-border-custom bg-foreground-custom/[0.02] flex flex-col gap-3.5 shrink-0">
             {/* Preferences / Settings row */}
             <div className="flex items-center justify-between px-1 py-1">
-              <span className="text-xs font-mono text-muted-foreground-custom flex items-center gap-2">
-                <i className="fa-solid fa-sliders text-primary-custom" />
-                <span>Preferences &amp; Settings</span>
+              <span className="text-xs font-mono text-muted-foreground-custom">
+                Preferences &amp; Settings
               </span>
               <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
                 <ControlsDropdown />
               </Suspense>
             </div>
 
-            {/* Mobile Contact Button */}
+            {/* Mobile Contact Button (Clean text, no icon) */}
             <a
               href="/contact"
-              onClick={() => setDrawerOpen(false)}
-              className="flex items-center justify-center gap-2 w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-md"
+              onClick={() => {
+                setActivePath('/contact');
+                setDrawerOpen(false);
+              }}
+              className="flex items-center justify-center w-full px-4 py-3 rounded-xl text-xs font-bold uppercase tracking-wider bg-primary-custom text-white hover:bg-primary-custom/90 active:scale-98 transition-all shadow-md"
             >
               <span>Get in Touch</span>
-              <i className="fa-solid fa-arrow-right text-[10px]" />
             </a>
           </div>
         </div>

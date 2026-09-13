@@ -15,10 +15,10 @@ const socialLinks = await getSocialLinks();
 	description="View all full-stack development and AI projects developed by Cris Charles Garcia."
 	image={settings.heroImage || settings.logoImage || '/logo.png'}
 >
-	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
+	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
-	<main class="flex-1 pt-4 sm:pt-6 pb-16">
-		<div class="container mx-auto px-4 sm:px-6 max-w-5xl text-center mb-3 sm:mb-5">
+	<main class="flex-1 pt-2 sm:pt-6 pb-16">
+		<div class="container mx-auto px-4 sm:px-6 max-w-5xl text-center mb-2 sm:mb-5">
 			<h1 class="text-2xl sm:text-3xl md:text-4xl font-bold font-heading tracking-tight text-foreground-custom">
 				All Work
 			</h1>

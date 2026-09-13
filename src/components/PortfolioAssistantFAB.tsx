@@ -250,7 +250,7 @@ export default function PortfolioAssistantFAB() {
   return (
     <>
       {/* ─── Floating Action Button (FAB) ─── */}
-      <div className="fixed bottom-6 right-5 sm:right-7 z-40">
+      <div className="fixed bottom-4 sm:bottom-6 right-4 sm:right-7 z-40">
         <button
           onClick={() => {
             haptic.tap();
@@ -258,7 +258,7 @@ export default function PortfolioAssistantFAB() {
           }}
           aria-label={isOpen ? "Close Portfolio Assistant" : "Open Portfolio Assistant"}
           aria-expanded={isOpen}
-          className="relative group p-3.5 rounded-2xl bg-primary-custom text-white shadow-xl hover:bg-primary-custom/90 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-white/20"
+          className="relative group p-3 sm:p-3.5 rounded-2xl bg-primary-custom text-white shadow-xl hover:bg-primary-custom/90 hover:scale-105 active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-white/20"
         >
           {/* Animated ping circle */}
           {!isOpen && (
@@ -274,7 +274,7 @@ export default function PortfolioAssistantFAB() {
               <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a.75.75 0 0 1-1.154-.63 4.887 4.887 0 0 0 1.28-3.138A7.834 7.834 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
               </svg>
-              <span className="hidden sm:inline text-xs font-bold font-heading pr-0.5">
+              <span className="hidden md:inline landscape:hidden lg:landscape:inline text-xs font-bold font-heading pr-0.5">
                 Portfolio Assistant
               </span>
             </>

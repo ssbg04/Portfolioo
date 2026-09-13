@@ -15,9 +15,9 @@ const socialLinks = await getSocialLinks();
   description="Visual showcase and photo archive of project milestones, developer activities, and academic experiences of Cris Charles Garcia."
   image={settings.heroImage || settings.logoImage || '/logo.png'}
 >
-  <Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
+  <Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
-  <main class="flex-1 min-h-screen pt-6 sm:pt-8 pb-16 px-4 sm:px-6">
+  <main class="flex-1 min-h-screen pt-3 sm:pt-8 pb-16 px-4 sm:px-6">
     <div class="max-w-6xl mx-auto">
       <PhotoGallery items={galleryItems} client:load />
     </div>

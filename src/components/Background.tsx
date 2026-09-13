@@ -283,6 +283,8 @@ export default function Background() {
     };
     checkTier();
     window.addEventListener('tier-change', checkTier);
+    document.addEventListener('astro:after-swap', checkTier);
+    document.addEventListener('astro:page-load', checkTier);
 
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       setReducedMotion(true);
@@ -290,6 +292,8 @@ export default function Background() {
 
     return () => {
       window.removeEventListener('tier-change', checkTier);
+      document.removeEventListener('astro:after-swap', checkTier);
+      document.removeEventListener('astro:page-load', checkTier);
     };
   }, []);
 
@@ -809,6 +813,7 @@ export default function Background() {
       animationFrameId = requestAnimationFrame(renderLoop);
 
       if (!isVisible) return;
+      if (document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true') return;
 
       const tSec = now * 0.001;
 

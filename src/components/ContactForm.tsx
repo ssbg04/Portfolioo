@@ -175,18 +175,18 @@ export default function ContactForm({
   };
 
   return (
-    <section id="contact" className="py-24 relative overflow-hidden">
-      <div className="container mx-auto px-6 max-w-6xl relative z-10">
+    <section id="contact" className="pt-2 sm:pt-12 md:pt-16 pb-16 sm:pb-24 relative overflow-hidden">
+      <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
         
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 lg:gap-8 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8 items-start">
           
           {/* Left Side: Info */}
           <div className="lg:col-span-2 flex flex-col justify-center h-full">
             <ScrollReveal variant="fade-right">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-heading mb-5 leading-tight tracking-tight text-foreground-custom block">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black font-heading mb-3 sm:mb-5 leading-tight tracking-tight text-foreground-custom block">
                 {contactHeading}
               </h2>
-              <p className="text-muted-foreground-custom text-base md:text-lg mb-8 leading-relaxed">
+              <p className="text-muted-foreground-custom text-base md:text-lg mb-5 sm:mb-8 leading-relaxed">
                 {contactSubtitle}
               </p>
               

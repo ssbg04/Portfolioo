@@ -18,7 +18,7 @@ const socialLinks = await getSocialLinks();
 	description="Learn more about Cris Charles Garcia's professional history, technical expertise, education, and developer biography."
 	image={settings.heroImage || settings.logoImage || '/logo.png'}
 >
-	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
+	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
 	<main class="flex-1 pb-16">
 		<AboutDetails settings={settings} experience={experience} education={education} client:load />

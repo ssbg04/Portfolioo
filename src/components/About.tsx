@@ -107,11 +107,11 @@ export default function About({
   };
 
   return (
-    <section id="about" className="py-12 sm:py-16 relative">
+    <section id="about" className="pt-3 sm:pt-12 pb-12 sm:pb-16 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
-        <ScrollReveal variant="fade-up" className="mb-10">
+        <ScrollReveal variant="fade-up" className="mb-5 sm:mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">

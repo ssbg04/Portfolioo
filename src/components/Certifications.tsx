@@ -316,11 +316,11 @@ export default function Certifications({ certifications, extraCerts = [], sectio
   const hasBothTypes = documentCerts.length > 0 && skillBadges.length > 0;
 
   return (
-    <section id="certifications" className="pt-6 sm:pt-10 pb-16 sm:pb-20 relative">
+    <section id="certifications" className="pt-3 sm:pt-10 pb-16 sm:pb-20 relative">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
-        <ScrollReveal variant="fade-up" className="mb-8">
+        <ScrollReveal variant="fade-up" className="mb-4 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
             <div>
               <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
@@ -332,7 +332,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
 
         {/* ─── Category Filter Tabs (Shown when both document certificates and skill badges exist) ─── */}
         {hasBothTypes && (
-          <ScrollReveal variant="fade-up" delay={50} className="mb-8">
+          <ScrollReveal variant="fade-up" delay={50} className="mb-5 sm:mb-8">
             <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-foreground-custom/[0.03] border border-border-custom w-fit">
               <button
                 onClick={() => {

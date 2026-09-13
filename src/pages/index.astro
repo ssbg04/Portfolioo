@@ -41,7 +41,7 @@ const socialLinks = await getSocialLinks();
 	image={settings.heroImage || settings.logoImage || '/logo.png'}
 >
 	<!-- Navigation bar -->
-	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} client:load />
+	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
 	<!-- Main sections -->
 	<main class="flex-1">
