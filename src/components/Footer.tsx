@@ -77,19 +77,14 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
 
   return (
     <footer
-      className="relative z-10 pb-safe"
+      className="relative z-10 pb-safe bg-card-custom border-t-3 border-border-custom"
       style={{
-        background: 'var(--glass-bg)',
-        borderTop: '1px solid var(--glass-border)',
-        backdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate))',
-        WebkitBackdropFilter: 'blur(var(--glass-blur)) saturate(var(--glass-saturate))',
-        boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.06)',
+        boxShadow: '0 -4px 0 0 var(--border-color)',
       }}
     >
-      {/* Top accent gradient line */}
+      {/* Top accent neo stripe */}
       <div
-        className="absolute top-0 inset-x-0 h-px pointer-events-none"
-        style={{ background: 'linear-gradient(90deg, transparent 0%, var(--primary-color) 50%, transparent 100%)', opacity: 0.35 }}
+        className="absolute top-0 inset-x-0 h-1 bg-[#facc15] pointer-events-none"
       />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-5 sm:py-6">
@@ -98,45 +93,24 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
           {/* Left: Copyright + Built with */}
           <div className="flex flex-col items-center sm:items-start gap-1 order-3 sm:order-1 shrink-0">
             <p className="text-xs text-muted-foreground-custom font-mono">
-              &copy; {new Date().getFullYear()} <span className="text-foreground-custom font-semibold">{fullName}</span>
+              &copy; {new Date().getFullYear()} <span className="text-foreground-custom font-bold">{fullName}</span>
             </p>
-            <p className="text-[10px] text-muted-foreground-custom/70 font-mono flex items-center gap-1.5">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <p className="text-[10px] text-muted-foreground-custom font-mono flex items-center gap-1.5 font-medium">
+              <svg className="w-3 h-3 text-[#facc15]" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17.25 6.75L22.5 12l-5.25 5.25m-10.5 0L1.5 12l5.25-5.25m7.5-3l-4.5 16.5" />
               </svg>
               Built with Astro &amp; React
             </p>
           </div>
 
-          {/* Center: Spotify glass pill */}
+          {/* Center: Spotify neo pill */}
           <div className="order-1 sm:order-2 shrink-0">
             <button
               onClick={() => { haptic.tap(); setIsSpotifyModalOpen(true); }}
               aria-label="Open Spotify Now Playing"
               title="Now playing on Spotify"
-              className="group relative flex items-center gap-2.5 px-4 py-2 rounded-full cursor-pointer transition-all duration-300 active:scale-[0.97] overflow-hidden"
-              style={{
-                background: 'var(--glass-bg)',
-                border: '1px solid var(--glass-border)',
-                backdropFilter: 'blur(12px)',
-                WebkitBackdropFilter: 'blur(12px)',
-                boxShadow: '0 2px 12px -2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)',
-              }}
-              onMouseEnter={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'rgba(29,185,84,0.5)';
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 4px 20px -4px rgba(29,185,84,0.25), inset 0 1px 0 rgba(255,255,255,0.08)';
-              }}
-              onMouseLeave={e => {
-                (e.currentTarget as HTMLButtonElement).style.borderColor = 'var(--glass-border)';
-                (e.currentTarget as HTMLButtonElement).style.boxShadow = '0 2px 12px -2px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.08)';
-              }}
+              className="group relative flex items-center gap-2.5 px-4 py-2 rounded-xl cursor-pointer transition-all duration-150 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none overflow-hidden bg-card-custom border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] hover:shadow-[4px_4px_0_0_var(--border-color)] hover:bg-[#1DB954]/15"
             >
-              {/* Subtle green ambient glow */}
-              <div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none rounded-full"
-                style={{ background: 'radial-gradient(circle at center, rgba(29,185,84,0.08), transparent 70%)' }}
-              />
-
               {/* Spotify logo + pulse */}
               <div className="relative shrink-0">
                 <svg className="w-4 h-4 fill-current text-[#1DB954] group-hover:scale-110 transition-transform duration-200" viewBox="0 0 24 24">
@@ -150,7 +124,7 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
                 {[1, 0.5, 0.8, 0.3, 0.9].map((h, i) => (
                   <span
                     key={i}
-                    className="w-0.5 rounded-full bg-[#1DB954] opacity-70"
+                    className="w-0.5 rounded-full bg-[#1DB954]"
                     style={{
                       height: `${h * 14}px`,
                       animation: `soundBar${i} 0.8s ease-in-out infinite alternate`,
@@ -160,7 +134,7 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
                 ))}
               </div>
 
-              <span className="text-xs font-mono text-muted-foreground-custom group-hover:text-foreground-custom transition-colors relative">
+              <span className="text-xs font-mono font-bold text-foreground-custom relative">
                 Spotify
               </span>
             </button>
@@ -176,26 +150,7 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
                 rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
                 aria-label={link.platform}
                 title={link.platform}
-                className="tap-target group w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-200 relative overflow-hidden"
-                style={{
-                  border: '1px solid var(--glass-border)',
-                  background: 'var(--muted-color)',
-                  color: 'var(--muted-fg-color)',
-                }}
-                onMouseEnter={e => {
-                  const el = e.currentTarget as HTMLAnchorElement;
-                  el.style.background = 'rgba(59,130,246,0.10)';
-                  el.style.borderColor = 'rgba(59,130,246,0.30)';
-                  el.style.color = 'var(--primary-color)';
-                  el.style.boxShadow = '0 4px 14px -4px var(--primary-glow)';
-                }}
-                onMouseLeave={e => {
-                  const el = e.currentTarget as HTMLAnchorElement;
-                  el.style.background = 'var(--muted-color)';
-                  el.style.borderColor = 'var(--glass-border)';
-                  el.style.color = 'var(--muted-fg-color)';
-                  el.style.boxShadow = 'none';
-                }}
+                className="tap-target group w-9 h-9 flex items-center justify-center rounded-xl transition-all duration-150 relative overflow-hidden bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] hover:shadow-[3px_3px_0_0_var(--border-color)] hover:bg-[#facc15] hover:text-black text-foreground-custom active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               >
                 {getFooterIcon(link.platform)}
               </a>
@@ -217,55 +172,39 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
       {/* ─── Spotify Modal — rendered via portal to escape footer stacking context ─── */}
       {mounted && isSpotifyModalOpen && ReactDOM.createPortal(
         <div
-          className="fixed inset-0 z-[999] flex items-center justify-center p-4 animate-modal-fade"
-          style={{ background: 'rgba(0,0,0,0.65)', backdropFilter: 'blur(8px)', WebkitBackdropFilter: 'blur(8px)' }}
+          className="fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/75 animate-modal-fade"
           onClick={() => { haptic.tap(); setIsSpotifyModalOpen(false); }}
         >
           <div
-            className="relative w-full max-w-sm rounded-3xl p-5 flex flex-col gap-4 animate-modal-scale"
-            style={{
-              background: 'var(--glass-bg)',
-              border: '1px solid var(--glass-border)',
-              backdropFilter: 'blur(24px) saturate(160%)',
-              WebkitBackdropFilter: 'blur(24px) saturate(160%)',
-              boxShadow: '0 24px 80px -12px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.08)',
-            }}
+            className="relative w-full max-w-sm rounded-2xl p-5 flex flex-col gap-4 animate-modal-scale bg-card-custom border-3 border-border-custom shadow-[8px_8px_0_0_var(--border-color)]"
             onClick={e => e.stopPropagation()}
           >
-            {/* Modal top accent */}
-            <div
-              className="absolute top-0 inset-x-8 h-px rounded-full pointer-events-none"
-              style={{ background: 'linear-gradient(90deg, transparent, rgba(29,185,84,0.5), transparent)' }}
-            />
-
             {/* Modal Header */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between pb-3 border-b-2 border-border-custom">
               <div className="flex items-center gap-2.5">
                 <div
-                  className="w-8 h-8 rounded-xl flex items-center justify-center"
-                  style={{ background: 'rgba(29,185,84,0.15)', border: '1px solid rgba(29,185,84,0.25)' }}
+                  className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#1DB954]/20 border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)]"
                 >
                   <svg className="w-4 h-4 text-[#1DB954] fill-current" viewBox="0 0 24 24">
                     <path d="M12 .007c-6.627 0-12 5.371-12 12s5.373 12 12 12 12-5.371 12-12-5.373-12-12-12zm5.49 17.31c-.22.361-.69.479-1.05.261-2.91-1.781-6.57-2.181-10.89-1.191-.41.09-.82-.17-.91-.58-.09-.41.17-.82.58-.91 4.73-1.08 8.77-.63 12.01 1.35.36.21.48.68.26 1.04zm1.04-3.261c-.28.45-.87.6-1.32.32-3.33-2.04-8.41-2.64-12.35-1.45-.51.15-1.04-.14-1.2-.65-.15-.51.14-1.04.65-1.2 4.51-1.37 10.11-.7 13.9 1.62.45.28.6.87.32 1.32zm.09-3.38c-3.99-2.37-10.58-2.59-14.39-1.43-.61.19-1.26-.14-1.45-.75-.19-.61.14-1.26.75-1.45 4.38-1.33 11.64-1.08 16.23 1.65.55.33.73 1.04.4 1.59-.33.55-1.04.73-1.59.4z" />
                   </svg>
                 </div>
-                <span className="text-sm font-bold font-heading text-foreground-custom">Spotify Status</span>
+                <span className="text-sm font-black font-heading text-foreground-custom tracking-tight">SPOTIFY STATUS</span>
               </div>
 
               <button
                 onClick={() => { haptic.tap(); setIsSpotifyModalOpen(false); }}
                 aria-label="Close Spotify Modal"
-                className="w-7 h-7 flex items-center justify-center rounded-lg text-muted-foreground-custom hover:text-foreground-custom transition-colors cursor-pointer"
-                style={{ background: 'var(--muted-color)', border: '1px solid var(--glass-border)' }}
+                className="w-8 h-8 flex items-center justify-center rounded-xl bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] text-foreground-custom hover:bg-rose-500 hover:text-white transition-all cursor-pointer active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
               >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
             </div>
 
             {/* Spotify Widget */}
-            <Suspense fallback={<div className="h-24 w-full rounded-2xl animate-pulse" style={{ background: 'var(--muted-color)' }} />}>
+            <Suspense fallback={<div className="h-24 w-full rounded-xl animate-pulse bg-muted-custom border-2 border-border-custom" />}>
               <SpotifyWidget isOpen={isSpotifyModalOpen} />
             </Suspense>
           </div>

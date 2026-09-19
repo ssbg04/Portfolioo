@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ScrollReveal from './ScrollReveal';
+import SectionBackground from './SectionBackground';
 import { mockCertifications, isDocumentCertificate, type Certification } from '../lib/data';
 import haptic from '../lib/haptics';
 
@@ -317,6 +318,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
 
   return (
     <section id="certifications" className="pt-3 sm:pt-10 pb-16 sm:pb-20 relative">
+      <SectionBackground variant="certifications" />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
@@ -333,20 +335,20 @@ export default function Certifications({ certifications, extraCerts = [], sectio
         {/* ─── Category Filter Tabs (Shown when both document certificates and skill badges exist) ─── */}
         {hasBothTypes && (
           <ScrollReveal variant="fade-up" delay={50} className="mb-5 sm:mb-8">
-            <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-foreground-custom/[0.03] border border-border-custom w-fit">
+            <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-card-custom border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] w-fit">
               <button
                 onClick={() => {
                   haptic.tap();
                   setFilterMode('all');
                 }}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold font-mono transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border-2 ${
                   filterMode === 'all'
-                    ? 'bg-primary-custom text-white shadow-sm'
-                    : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
+                    ? 'bg-[#facc15] text-black border-black shadow-[2px_2px_0_0_#000]'
+                    : 'bg-card-custom text-foreground-custom border-transparent hover:bg-[#00f0ff] hover:text-black'
                 }`}
               >
                 <span>All</span>
-                <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-white/20 text-white font-bold">
+                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-extrabold ${filterMode === 'all' ? 'bg-black text-[#facc15]' : 'bg-foreground-custom/10 text-foreground-custom'}`}>
                   {allCerts.length}
                 </span>
               </button>
@@ -356,14 +358,14 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                   haptic.tap();
                   setFilterMode('certificates');
                 }}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold font-mono transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border-2 ${
                   filterMode === 'certificates'
-                    ? 'bg-primary-custom text-white shadow-sm'
-                    : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
+                    ? 'bg-[#facc15] text-black border-black shadow-[2px_2px_0_0_#000]'
+                    : 'bg-card-custom text-foreground-custom border-transparent hover:bg-[#00f0ff] hover:text-black'
                 }`}
               >
                 <span>Certificates</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${filterMode === 'certificates' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-extrabold ${filterMode === 'certificates' ? 'bg-black text-[#facc15]' : 'bg-foreground-custom/10 text-foreground-custom'}`}>
                   {documentCerts.length}
                 </span>
               </button>
@@ -373,14 +375,14 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                   haptic.tap();
                   setFilterMode('badges');
                 }}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold font-mono transition-all cursor-pointer flex items-center gap-2 ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-mono font-extrabold uppercase tracking-wider transition-all cursor-pointer flex items-center gap-2 border-2 ${
                   filterMode === 'badges'
-                    ? 'bg-primary-custom text-white shadow-sm'
-                    : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5'
+                    ? 'bg-[#facc15] text-black border-black shadow-[2px_2px_0_0_#000]'
+                    : 'bg-card-custom text-foreground-custom border-transparent hover:bg-[#00f0ff] hover:text-black'
                 }`}
               >
                 <span>Badges</span>
-                <span className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${filterMode === 'badges' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
+                <span className={`text-[10px] px-1.5 py-0.5 rounded font-mono font-extrabold ${filterMode === 'badges' ? 'bg-black text-[#facc15]' : 'bg-foreground-custom/10 text-foreground-custom'}`}>
                   {skillBadges.length}
                 </span>
               </button>
@@ -579,13 +581,13 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     </div>
 
                     {/* Direct 1-Click Verification Link Button */}
-                    <div className="w-full pt-2 sm:pt-3 mt-2 sm:mt-3 border-t border-border-custom/60 flex items-center justify-center">
+                    <div className="w-full pt-2 sm:pt-3 mt-2 sm:mt-3 border-t-2 border-border-custom flex items-center justify-center">
                       <a
                         href={badge.badgeUrl}
                         target="_blank"
                         rel="noopener noreferrer"
                         onClick={(e) => e.stopPropagation()}
-                        className="w-full py-1 sm:py-1.5 px-2 sm:px-2.5 rounded-lg sm:rounded-xl bg-foreground-custom/[0.04] hover:bg-primary-custom/10 text-foreground-custom hover:text-primary-custom border border-border-custom text-[10px] sm:text-[11px] font-mono font-semibold transition-colors flex items-center justify-center gap-1"
+                        className="w-full py-1.5 px-2.5 rounded-xl bg-card-custom border-2 border-border-custom text-foreground-custom text-[11px] font-mono font-extrabold uppercase tracking-wider shadow-[2px_2px_0_0_var(--border-color)] hover:bg-[#facc15] hover:text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-1"
                       >
                         <span>Verify</span>
                         <span>↗</span>
@@ -602,13 +604,14 @@ export default function Certifications({ certifications, extraCerts = [], sectio
       {/* ─── Detail Modal (Responsive 2-Column Desktop, Scrollable Mobile) ─── */}
       {selectedCert && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/80 backdrop-blur-md animate-modal-fade select-none"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md animate-modal-fade select-none"
+          style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
           onClick={() => setSelectedCert(null)}
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-white dark:bg-[#0f111a] border border-border-custom rounded-3xl shadow-2xl flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto animate-modal-scale"
+            className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-card-custom border-3 border-border-custom rounded-2xl shadow-[10px_10px_0_0_var(--border-color)] flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto animate-modal-scale"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close 'X' Button in Top Right */}
@@ -617,7 +620,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                 haptic.tap();
                 setSelectedCert(null);
               }}
-              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/15 text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom z-20"
+              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-xl bg-card-custom hover:bg-[#ff2a85] hover:text-white text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none z-20 font-bold"
               aria-label="Close modal"
             >
               ✕
@@ -637,24 +640,42 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       setIsZoomOpen(true);
                     }
                   }}
-                  className={`w-full min-h-[260px] sm:min-h-[320px] md:min-h-[440px] max-h-[45vh] md:max-h-[65vh] flex items-center justify-center bg-foreground-custom/[0.02] dark:bg-black/40 rounded-2xl border border-border-custom/70 p-3 sm:p-5 overflow-hidden shadow-inner relative group/preview cursor-zoom-in shrink-0`}
+                  className={`w-full min-h-[260px] sm:min-h-[320px] md:min-h-[440px] max-h-[45vh] md:max-h-[65vh] flex flex-col items-center justify-between bg-card-custom rounded-2xl border-3 border-border-custom overflow-hidden shadow-[6px_6px_0_0_var(--border-color)] relative group/preview cursor-zoom-in shrink-0`}
                   title="Click to open zoom and drag lightbox"
                 >
-                  {selectedCert.badgeImage ? (
-                    <img
-                      src={selectedCert.badgeImage}
-                      alt={selectedCert.title}
-                      referrerPolicy="no-referrer"
-                      className={`max-h-[42vh] md:max-h-[60vh] w-auto max-w-full object-contain rounded-lg drop-shadow-md transition-transform duration-300 group-hover/preview:scale-[1.02]`}
-                    />
-                  ) : null}
+                  {/* Retro Window Header Bar */}
+                  <div className="w-full flex items-center justify-between px-3.5 py-2 bg-foreground-custom/5 border-b-3 border-border-custom shrink-0">
+                    <div className="flex items-center gap-1.5">
+                      <span className="w-2.5 h-2.5 rounded-full border-1.5 border-black bg-[#ff2a85]" />
+                      <span className="w-2.5 h-2.5 rounded-full border-1.5 border-black bg-[#facc15]" />
+                      <span className="w-2.5 h-2.5 rounded-full border-1.5 border-black bg-[#00f0ff]" />
+                    </div>
+                    <span className="text-[10px] font-mono font-black uppercase tracking-wider text-muted-foreground-custom">
+                      CERT // PREVIEW
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-muted-foreground-custom">
+                      #{selectedCert.code}
+                    </span>
+                  </div>
 
-                  {/* Zoom & Drag Callout Badge */}
-                  <div className="absolute bottom-3 right-3 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-xl bg-black/75 hover:bg-black/90 text-white text-[11px] sm:text-xs font-mono font-medium backdrop-blur-md border border-white/20 flex items-center gap-1.5 shadow-lg opacity-85 group-hover/preview:opacity-100 transition-all">
-                    <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
-                    </svg>
-                    <span>Click to Zoom</span>
+                  {/* Image Viewport Canvas */}
+                  <div className="w-full flex-1 flex items-center justify-center p-3 sm:p-5 relative overflow-hidden">
+                    {selectedCert.badgeImage ? (
+                      <img
+                        src={selectedCert.badgeImage}
+                        alt={selectedCert.title}
+                        referrerPolicy="no-referrer"
+                        className={`max-h-[38vh] md:max-h-[52vh] w-auto max-w-full object-contain rounded-lg border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] transition-transform duration-300 group-hover/preview:scale-[1.02] bg-white`}
+                      />
+                    ) : null}
+
+                    {/* Neo Zoom Callout Badge */}
+                    <div className="absolute bottom-3 right-3 px-3 py-1.5 rounded-xl bg-[#facc15] text-black text-xs font-mono font-black border-2 border-black flex items-center gap-1.5 shadow-[3px_3px_0_0_#000] group-hover/preview:shadow-[4px_4px_0_0_#000] group-hover/preview:-translate-x-0.5 group-hover/preview:-translate-y-0.5 transition-all">
+                      <svg className="w-3.5 h-3.5 text-black stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.607 10.607ZM10.5 7.5v6m3-3h-6" />
+                      </svg>
+                      <span>CLICK TO EXPAND</span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -707,13 +728,13 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                 )}
 
                 {/* Modal Bottom Actions */}
-                <div className="pt-3 border-t border-border-custom flex items-center gap-3 mt-auto">
+                <div className="pt-3 border-t-2 border-border-custom flex items-center gap-3 mt-auto">
                   {selectedCert.badgeUrl && (
                     <a
                       href={selectedCert.badgeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 py-2.5 px-4 rounded-xl bg-primary-custom text-white font-semibold text-xs text-center hover:bg-primary-custom/90 transition-all flex items-center justify-center gap-1.5 shadow-sm"
+                      className="flex-1 py-2.5 px-4 rounded-xl bg-[#facc15] text-black font-extrabold text-xs text-center border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider"
                     >
                       {getVerifyButtonLabel(selectedCert)}
                     </a>
@@ -723,7 +744,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       haptic.tap();
                       setSelectedCert(null);
                     }}
-                    className="py-2.5 px-4 rounded-xl border border-border-custom text-xs font-semibold text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 transition-colors cursor-pointer"
+                    className="py-2.5 px-4 rounded-xl border-2 border-border-custom bg-card-custom text-xs font-bold uppercase tracking-wider text-foreground-custom shadow-[2px_2px_0_0_var(--border-color)] hover:bg-[#00f0ff] hover:text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                   >
                     Close
                   </button>
@@ -738,35 +759,39 @@ export default function Certifications({ certifications, extraCerts = [], sectio
       {/* ─── Fullscreen Zoom & Drag Lightbox Modal ─── */}
       {isZoomOpen && selectedCert?.badgeImage && (
         <div
-          className="fixed inset-0 z-[60] bg-black/92 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-6 overflow-hidden select-none animate-modal-fade touch-none overscroll-none"
-          style={{ touchAction: 'none', overscrollBehavior: 'none' }}
+          className="fixed inset-0 z-[60] bg-black/75 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-6 overflow-hidden select-none animate-modal-fade touch-none overscroll-none"
+          style={{ touchAction: 'none', overscrollBehavior: 'none', backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
           onClick={() => setIsZoomOpen(false)}
         >
-          {/* Top Bar: Certificate Title, Issuer & Close Button */}
+          {/* Top Bar: Certificate Title, Issuer & Close Button in Neo-Brutalist Strip */}
           <div
-            className="w-full max-w-5xl flex items-center justify-between text-white pb-3 border-b border-white/10 shrink-0 z-10"
+            className="w-full max-w-5xl flex items-center justify-between p-3 sm:p-4 bg-card-custom text-foreground-custom border-3 border-border-custom shadow-[6px_6px_0_0_var(--border-color)] rounded-2xl shrink-0 z-10"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex flex-col min-w-0 pr-4">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 font-medium flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
-                {selectedCert.issuer} • #{selectedCert.code}
-              </span>
-              <h4 className="text-sm sm:text-base font-bold truncate text-zinc-100 mt-0.5">
+              <div className="flex items-center gap-2">
+                <span className="text-[10px] font-mono uppercase tracking-wider font-black px-2.5 py-0.5 rounded-lg bg-[#facc15] text-black border-2 border-black shadow-[2px_2px_0_0_#000]">
+                  {selectedCert.issuer}
+                </span>
+                <span className="text-[10px] font-mono font-bold text-muted-foreground-custom">
+                  #{selectedCert.code}
+                </span>
+              </div>
+              <h4 className="text-sm sm:text-base font-extrabold font-heading truncate text-foreground-custom mt-1">
                 {selectedCert.title}
               </h4>
             </div>
 
             <div className="flex items-center gap-3 shrink-0">
-              <span className="hidden sm:inline text-[11px] font-mono text-zinc-400">
-                Press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white text-[10px] border border-white/15">ESC</kbd> to exit
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-mono text-muted-foreground-custom font-medium">
+                Press <kbd className="px-2 py-0.5 rounded-lg bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] text-[10px] font-bold text-foreground-custom">ESC</kbd> to exit
               </span>
               <button
                 onClick={() => {
                   haptic.tap();
                   setIsZoomOpen(false);
                 }}
-                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-colors cursor-pointer border border-white/20"
+                className="w-9 h-9 rounded-xl bg-card-custom hover:bg-[#ff2a85] hover:text-white text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none font-bold"
                 aria-label="Close zoom viewer"
               >
                 ✕
@@ -799,7 +824,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
               alt={selectedCert.title}
               referrerPolicy="no-referrer"
               draggable={false}
-              className="max-w-[92vw] max-h-[72vh] object-contain drop-shadow-2xl pointer-events-none select-none rounded-lg touch-none"
+              className="max-w-[92vw] max-h-[72vh] object-contain border-3 border-black dark:border-white shadow-[8px_8px_0_0_#000] dark:shadow-[8px_8px_0_0_#fff] pointer-events-none select-none rounded-xl touch-none bg-white p-2"
               style={{
                 transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom})`,
                 transformOrigin: 'center center',
@@ -811,10 +836,10 @@ export default function Certifications({ certifications, extraCerts = [], sectio
 
           {/* Floating Bottom Control Bar */}
           <div
-            className="shrink-0 z-10 flex flex-col items-center gap-1.5"
+            className="shrink-0 z-10 flex flex-col items-center gap-2"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-zinc-900/90 border border-white/15 backdrop-blur-xl shadow-2xl text-white">
+            <div className="flex items-center gap-2 px-3.5 py-2 rounded-2xl bg-card-custom border-3 border-border-custom shadow-[6px_6px_0_0_var(--border-color)] text-foreground-custom">
               {/* Zoom Out Button */}
               <button
                 onClick={() => {
@@ -822,7 +847,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                   setZoom((z) => Math.max(Number((z - 0.25).toFixed(2)), 0.75));
                 }}
                 disabled={zoom <= 0.75}
-                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+                className="w-8 h-8 rounded-xl bg-card-custom hover:bg-[#facc15] hover:text-black disabled:opacity-30 disabled:hover:bg-card-custom disabled:hover:text-foreground-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center transition-all cursor-pointer text-sm font-black"
                 aria-label="Zoom out"
                 title="Zoom Out (-)"
               >
@@ -830,7 +855,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
               </button>
 
               {/* Zoom Level Indicator */}
-              <span className="text-xs font-mono font-semibold min-w-[3.5rem] text-center text-zinc-200">
+              <span className="text-xs font-mono font-black min-w-[3.5rem] text-center text-foreground-custom px-2 py-1 rounded-lg bg-foreground-custom/5 border border-border-custom">
                 {Math.round(zoom * 100)}%
               </span>
 
@@ -841,7 +866,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                   setZoom((z) => Math.min(Number((z + 0.25).toFixed(2)), 4));
                 }}
                 disabled={zoom >= 4}
-                className="w-7 h-7 rounded-full bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer text-sm font-bold"
+                className="w-8 h-8 rounded-xl bg-card-custom hover:bg-[#facc15] hover:text-black disabled:opacity-30 disabled:hover:bg-card-custom disabled:hover:text-foreground-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center transition-all cursor-pointer text-sm font-black"
                 aria-label="Zoom in"
                 title="Zoom In (+)"
               >
@@ -849,7 +874,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
               </button>
 
               {/* Separator */}
-              <div className="w-px h-4 bg-white/20 mx-1" />
+              <div className="w-0.5 h-5 bg-border-custom mx-1" />
 
               {/* Reset Viewport Button */}
               <button
@@ -858,17 +883,17 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                   setZoom(1);
                   setPan({ x: 0, y: 0 });
                 }}
-                className="px-2.5 py-1 rounded-full bg-white/10 hover:bg-white/20 text-xs font-mono transition-colors cursor-pointer flex items-center gap-1 text-zinc-300 hover:text-white"
+                className="px-3 py-1.5 rounded-xl bg-[#facc15] hover:bg-[#ffe066] text-black text-xs font-mono font-bold border-2 border-black shadow-[2px_2px_0_0_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer flex items-center gap-1.5"
                 title="Reset zoom & position (0)"
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99" />
                 </svg>
                 <span>Reset</span>
               </button>
             </div>
 
-            <p className="text-[10px] font-mono text-zinc-400 text-center">
+            <p className="text-[10px] font-mono font-bold text-white bg-black/75 px-3 py-1 rounded-lg border border-white/20 shadow-md text-center">
               Pinch or double-tap to zoom • Drag to pan
             </p>
           </div>

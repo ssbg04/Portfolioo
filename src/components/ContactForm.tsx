@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ScrollReveal from './ScrollReveal';
+import SectionBackground from './SectionBackground';
 import type { SocialLink } from '../lib/data';
 
 const getContactIcon = (platform: string) => {
@@ -176,6 +177,7 @@ export default function ContactForm({
 
   return (
     <section id="contact" className="pt-2 sm:pt-12 md:pt-16 pb-16 sm:pb-24 relative overflow-hidden">
+      <SectionBackground variant="contact" />
       <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
         
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8 items-start">
@@ -191,7 +193,7 @@ export default function ContactForm({
               </p>
               
               <div className="flex flex-col gap-4">
-                <p className="text-sm font-bold uppercase tracking-widest text-foreground-custom/50 mb-2">Connect with me</p>
+                <p className="text-xs font-mono font-extrabold uppercase tracking-widest text-muted-foreground-custom mb-2">Connect with me</p>
                 <div className="flex flex-wrap gap-3">
                   {linksToRender.map((link) => (
                     <a
@@ -199,7 +201,7 @@ export default function ContactForm({
                       href={link.url}
                       target={link.url.startsWith('http') ? '_blank' : undefined}
                       rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      className="group flex items-center justify-center w-12 h-12 rounded-2xl bg-foreground-custom/5 border border-border-hover/10 text-foreground-custom/70 hover:text-primary-custom hover:bg-primary-custom/10 hover:scale-105 active:scale-95 transition-all shadow-sm"
+                      className="tap-target group flex items-center justify-center w-12 h-12 rounded-xl bg-card-custom border-2 border-border-custom text-foreground-custom shadow-[3px_3px_0_0_var(--border-color)] hover:bg-[#facc15] hover:text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all"
                       aria-label={link.platform}
                       title={link.platform}
                     >
@@ -214,7 +216,7 @@ export default function ContactForm({
           {/* Right Side: Form */}
           <div className="lg:col-span-3">
             <ScrollReveal variant="fade-left" delay={150}>
-              <div className="glass-card p-8 md:p-10 rounded-3xl border border-border-hover/10 shadow-[0_8px_30px_rgb(0,0,0,0.04)] relative overflow-hidden">
+              <div className="bento-card p-6 sm:p-8 md:p-10 rounded-2xl border-2 sm:border-3 border-border-custom shadow-[6px_6px_0_0_var(--border-color)] relative overflow-hidden bg-card-custom">
                 <AnimatePresence mode="wait">
                   {status === 'success' ? (
                     <motion.div
@@ -224,7 +226,7 @@ export default function ContactForm({
                       exit={isLowTier ? undefined : { opacity: 0, scale: 1.05 }}
                       className="text-center py-12 flex flex-col items-center justify-center min-h-[400px]"
                     >
-                      <div className="w-20 h-20 rounded-full bg-emerald-500/10 text-emerald-500 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                      <div className="w-20 h-20 rounded-2xl bg-[#22c55e] text-black border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] flex items-center justify-center mb-6">
                         <svg className="w-10 h-10" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
@@ -236,13 +238,13 @@ export default function ContactForm({
                         Thanks for reaching out! I'm thrilled to hear from you and will respond as soon as I can.
                       </p>
                       {isDailyLimitReached ? (
-                        <div className="p-3.5 rounded-2xl bg-foreground-custom/5 border border-border-hover/10 text-xs text-muted-foreground-custom text-center max-w-xs">
+                        <div className="p-3.5 rounded-xl bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] text-xs text-muted-foreground-custom text-center max-w-xs font-mono">
                           Daily message quota reached (2/2). For urgent matters, reach out through the direct email or social channels below.
                         </div>
                       ) : (
                         <button
                           onClick={() => setStatus('idle')}
-                          className="px-8 py-3.5 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/10 text-foreground-custom text-sm font-bold shadow-sm hover:scale-[1.02] active:scale-[0.98] transition-all cursor-pointer"
+                          className="px-6 py-3 rounded-xl bg-[#facc15] text-black text-xs font-extrabold uppercase tracking-wider border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer"
                         >
                           Send Another ({2 - dailySentCount} remaining)
                         </button>
@@ -258,149 +260,79 @@ export default function ContactForm({
                       className="flex flex-col gap-6"
                     >
                       {status === 'error' && (
-                        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-500 text-sm font-medium">
+                        <div className="p-4 rounded-xl bg-rose-500/10 border-2 border-rose-500 text-rose-600 dark:text-rose-400 text-sm font-bold shadow-[2px_2px_0_0_#e11d48]">
                           {errorMessage}
                         </div>
                       )}
 
-                      {/* Low-tier / Ultra-fast mode: Always Static Labels Above Inputs (No animation) */}
-                      {isLowTier ? (
-                        <div className="flex flex-col gap-5">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                            {/* Static Full Name */}
-                            <div className="flex flex-col gap-1.5 w-full">
-                              <label htmlFor="name" className="text-xs font-semibold text-foreground-custom">
-                                Full Name
-                              </label>
-                              <input
-                                type="text"
-                                name="name"
-                                id="name"
-                                className="block py-2.5 px-3 w-full text-sm text-foreground-custom bg-background-custom border border-border-custom rounded-md focus:outline-none focus:border-primary-custom"
-                                placeholder="Your full name"
-                                required
-                                value={formData.name}
-                                onChange={handleChange}
-                                disabled={status === 'sending'}
-                              />
-                            </div>
-
-                            {/* Static Email */}
-                            <div className="flex flex-col gap-1.5 w-full">
-                              <label htmlFor="email" className="text-xs font-semibold text-foreground-custom">
-                                Email Address
-                              </label>
-                              <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                className="block py-2.5 px-3 w-full text-sm text-foreground-custom bg-background-custom border border-border-custom rounded-md focus:outline-none focus:border-primary-custom"
-                                placeholder="you@example.com"
-                                required
-                                value={formData.email}
-                                onChange={handleChange}
-                                disabled={status === 'sending'}
-                              />
-                            </div>
-                          </div>
-
-                          {/* Static Message */}
+                      <div className="flex flex-col gap-5">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                          {/* Full Name */}
                           <div className="flex flex-col gap-1.5 w-full">
-                            <label htmlFor="message" className="text-xs font-semibold text-foreground-custom">
-                              How can I help you?
+                            <label htmlFor="name" className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">
+                              Full Name
                             </label>
-                            <textarea
-                              name="message"
-                              id="message"
-                              rows={4}
-                              className="block py-2.5 px-3 w-full text-sm text-foreground-custom bg-background-custom border border-border-custom rounded-md focus:outline-none focus:border-primary-custom resize-none"
-                              placeholder="Your message or project inquiry..."
+                            <input
+                              type="text"
+                              name="name"
+                              id="name"
+                              className="block py-3 px-3.5 w-full text-sm font-medium text-foreground-custom bg-card-custom border-2 border-border-custom rounded-xl shadow-[2px_2px_0_0_var(--border-color)] focus:outline-none focus:shadow-[3px_3px_0_0_var(--border-color)] focus:border-[#facc15] transition-all"
+                              placeholder="Your full name"
                               required
-                              value={formData.message}
+                              value={formData.name}
+                              onChange={handleChange}
+                              disabled={status === 'sending'}
+                            />
+                          </div>
+
+                          {/* Email */}
+                          <div className="flex flex-col gap-1.5 w-full">
+                            <label htmlFor="email" className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">
+                              Email Address
+                            </label>
+                            <input
+                              type="email"
+                              name="email"
+                              id="email"
+                              className="block py-3 px-3.5 w-full text-sm font-medium text-foreground-custom bg-card-custom border-2 border-border-custom rounded-xl shadow-[2px_2px_0_0_var(--border-color)] focus:outline-none focus:shadow-[3px_3px_0_0_var(--border-color)] focus:border-[#facc15] transition-all"
+                              placeholder="you@example.com"
+                              required
+                              value={formData.email}
                               onChange={handleChange}
                               disabled={status === 'sending'}
                             />
                           </div>
                         </div>
-                      ) : (
-                        <div className="flex flex-col gap-8">
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {/* Floating Name */}
-                            <div className="relative z-0 w-full group">
-                              <input
-                                type="text"
-                                name="name"
-                                id="name"
-                                className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors"
-                                placeholder=" "
-                                required
-                                value={formData.name}
-                                onChange={handleChange}
-                                disabled={status === 'sending'}
-                              />
-                              <label
-                                htmlFor="name"
-                                className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                              >
-                                Full Name
-                              </label>
-                            </div>
 
-                            {/* Floating Email */}
-                            <div className="relative z-0 w-full group">
-                              <input
-                                type="email"
-                                name="email"
-                                id="email"
-                                className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors"
-                                placeholder=" "
-                                required
-                                value={formData.email}
-                                onChange={handleChange}
-                                disabled={status === 'sending'}
-                              />
-                              <label
-                                htmlFor="email"
-                                className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                              >
-                                Email Address
-                              </label>
-                            </div>
-                          </div>
-
-                          {/* Floating Message */}
-                          <div className="relative z-0 w-full group mt-2">
-                            <textarea
-                              name="message"
-                              id="message"
-                              rows={4}
-                              className="block py-3 px-0 w-full text-base text-foreground-custom bg-transparent border-0 border-b-2 border-border-hover/30 appearance-none focus:outline-none focus:ring-0 focus:border-primary-custom peer transition-colors resize-none"
-                              placeholder=" "
-                              required
-                              value={formData.message}
-                              onChange={handleChange}
-                              disabled={status === 'sending'}
-                            />
-                            <label
-                              htmlFor="message"
-                              className="peer-focus:font-medium absolute text-sm text-muted-foreground-custom duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-primary-custom peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-                            >
-                              How can I help you?
-                            </label>
-                          </div>
+                        {/* Message */}
+                        <div className="flex flex-col gap-1.5 w-full">
+                          <label htmlFor="message" className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">
+                            How can I help you?
+                          </label>
+                          <textarea
+                            name="message"
+                            id="message"
+                            rows={4}
+                            className="block py-3 px-3.5 w-full text-sm font-medium text-foreground-custom bg-card-custom border-2 border-border-custom rounded-xl shadow-[2px_2px_0_0_var(--border-color)] focus:outline-none focus:shadow-[3px_3px_0_0_var(--border-color)] focus:border-[#facc15] transition-all resize-none"
+                            placeholder="Your message or project inquiry..."
+                            required
+                            value={formData.message}
+                            onChange={handleChange}
+                            disabled={status === 'sending'}
+                          />
                         </div>
-                      )}
+                      </div>
 
                       {/* Security & Rate Limiting Notice */}
-                      <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-foreground-custom/4 border border-border-hover/10 text-xs text-muted-foreground-custom leading-relaxed mt-1">
+                      <div className="flex items-start gap-2.5 p-3.5 rounded-xl bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] text-xs text-muted-foreground-custom leading-relaxed mt-1">
                         <svg className="w-4 h-4 text-primary-custom shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
                         </svg>
-                        <div className="flex-1">
-                          <span className="font-semibold text-foreground-custom">Security Notice:</span> Submissions are limited to <strong className="text-foreground-custom font-semibold">2 messages per day</strong> per IP, device, and email address to prevent automated spam, bot attacks, and server abuse.
+                        <div className="flex-1 font-mono">
+                          <span className="font-bold text-foreground-custom">SECURITY // NOTICE:</span> Submissions are limited to <strong className="text-foreground-custom font-bold">2 messages/day</strong> to prevent spam.
                           {dailySentCount > 0 && (
-                            <span className="block mt-1 font-medium text-primary-custom">
-                              Daily usage: {dailySentCount}/2 messages sent today.
+                            <span className="block mt-1 font-bold text-primary-custom">
+                              DAILY USAGE: {dailySentCount}/2 messages sent today.
                             </span>
                           )}
                         </div>
@@ -410,9 +342,7 @@ export default function ContactForm({
                       <button
                         type="submit"
                         disabled={status === 'sending' || isDailyLimitReached}
-                        className={`group relative w-full sm:w-auto self-end mt-2 px-8 py-3.5 rounded-full bg-primary-custom text-white font-bold text-sm shadow-md hover:shadow-lg transition-all duration-200 overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer ${
-                          isLowTier ? 'hover:scale-100 active:scale-100 rounded-md' : 'hover:scale-[1.02] active:scale-[0.98]'
-                        }`}
+                        className="group relative w-full sm:w-auto self-end mt-2 px-8 py-3.5 rounded-xl bg-[#facc15] text-black font-extrabold text-xs uppercase tracking-wider border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-3 cursor-pointer"
                       >
                         <span className="relative z-10 flex items-center gap-2">
                           {status === 'sending'
@@ -426,15 +356,12 @@ export default function ContactForm({
                             </svg>
                           )}
                           {status === 'sending' && (
-                            <svg className="animate-spin w-4 h-4 text-white" fill="none" viewBox="0 0 24 24">
+                            <svg className="animate-spin w-4 h-4 text-black" fill="none" viewBox="0 0 24 24">
                               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                             </svg>
                           )}
                         </span>
-                        {!isLowTier && (
-                          <div className="absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:animate-[shimmer_1.5s_infinite]" />
-                        )}
                       </button>
                     </motion.form>
                   )}

@@ -45,22 +45,20 @@ export default function NetworkStatus() {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-2.5 text-xs font-medium transition-all duration-300 pointer-events-none select-none ${
-        isOnline
-          ? 'bg-emerald-950/80 border border-emerald-500/30 text-emerald-200'
-          : 'bg-zinc-900/90 border border-amber-500/40 text-amber-200'
+      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl border-2 sm:border-3 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] flex items-center gap-2.5 text-xs font-mono font-bold transition-all duration-300 pointer-events-none select-none bg-card-custom text-foreground-custom ${
+        isOnline ? '' : 'text-amber-500'
       }`}
       style={{ animation: 'bentoReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
     >
       <span
-        className={`w-2 h-2 rounded-full shrink-0 ${
+        className={`w-2.5 h-2.5 rounded-full shrink-0 border border-border-custom ${
           isOnline ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
         }`}
       />
       <span>
         {isOnline
-          ? 'Connected • Fresh updates synced'
-          : 'Offline Mode • Browsing saved portfolio'}
+          ? 'ONLINE • Live Updates Synced'
+          : 'OFFLINE • Browsing Cached Portfolio'}
       </span>
     </div>
   );

@@ -38,17 +38,14 @@ export default function BackToTop() {
               initial={{ opacity: 0, scale: 0.8, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.8, y: 20 }}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
               transition={{ type: 'spring', stiffness: 260, damping: 20 }}
-              className="pointer-events-auto p-3 rounded-full glass-card border border-border-hover/10 shadow-2xl hover:bg-primary-custom/10 hover:text-primary-custom transition-all cursor-pointer group"
+              className="pointer-events-auto p-3 rounded-xl bg-[#facc15] text-black border-2 sm:border-3 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] hover:shadow-[5px_5px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer group"
               aria-label="Back to top"
             >
               <svg
-                className="w-5 h-5 text-foreground-custom group-hover:text-primary-custom transition-colors"
+                className="w-5 h-5 text-black stroke-[3] group-hover:-translate-y-0.5 transition-transform"
                 fill="none"
                 stroke="currentColor"
-                strokeWidth="2.5"
                 viewBox="0 0 24 24"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />

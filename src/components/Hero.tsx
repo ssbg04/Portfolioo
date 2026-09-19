@@ -4,6 +4,7 @@ import { useIsMobile } from '../lib/hooks';
 import type { SocialLink } from '../lib/data';
 import ppDay from '../assets/pp-day.webp';
 import ppNight from '../assets/pp-night.webp';
+import SectionBackground from './SectionBackground';
 
 const TiltedCard = lazy(() => import('./reactbits/TiltedCard'));
 const GlareHover = lazy(() => import('./reactbits/GlareHover'));
@@ -233,6 +234,7 @@ export default function Hero({
       id="home"
       className="relative min-h-[calc(100vh-60px)] flex flex-col md:flex-row items-center justify-start md:justify-center pt-2 sm:pt-4 md:pt-8 pb-10 md:pb-12 overflow-x-clip"
     >
+      <SectionBackground variant="hero" />
       <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
         <motion.div
@@ -245,11 +247,11 @@ export default function Hero({
           {isAvailable !== false && (
             <motion.div
               variants={isLowTier ? undefined : itemVariants}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full glass-card text-xs font-semibold text-primary-custom border border-primary-custom/20 mb-4 sm:mb-6 shadow-sm shadow-emerald-500/10"
+              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-card-custom text-xs font-bold text-foreground-custom border-2 border-border-custom mb-4 sm:mb-6 shadow-[3px_3px_0_0_var(--border-color)] uppercase tracking-wider"
             >
-              <span className="flex h-2 w-2 relative">
+              <span className="flex h-2.5 w-2.5 relative">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
               </span>
               {availabilityStatus}
             </motion.div>
@@ -260,7 +262,7 @@ export default function Hero({
             variants={isLowTier ? undefined : itemVariants}
             className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-3 sm:mb-4 text-foreground-custom leading-tight"
           >
-            Hi, I'm <span className="text-glow text-primary-custom">{fullName}</span>
+            Hi, I'm <span className="bg-[#facc15] text-black px-2.5 py-0.5 border-2 border-black shadow-[3px_3px_0_0_#000] inline-block -rotate-1 mx-1">{fullName}</span>
           </motion.h1>
 
           {/* Title */}
@@ -293,7 +295,7 @@ export default function Hero({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="tap-target w-10 h-10 rounded-full glass-card text-foreground-custom hover:text-primary-custom hover:border-primary-custom/40 hover:bg-primary-custom/10 transition-all duration-200 flex items-center justify-center shadow-sm"
+                    className="tap-target w-10 h-10 rounded-xl bg-card-custom border-2 border-border-custom text-foreground-custom hover:bg-[#facc15] hover:text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 flex items-center justify-center shadow-[3px_3px_0_0_var(--border-color)]"
                     aria-label={`Visit Cris on ${link.platform}`}
                     title={link.platform}
                   >
@@ -301,7 +303,7 @@ export default function Hero({
                   </a>
                 ))}
               </div>
-              <div className="hidden sm:block w-px h-8 bg-border-custom" />
+              <div className="hidden sm:block w-0.5 h-8 bg-border-custom" />
             </div>
 
             {/* CTA Buttons */}
@@ -311,7 +313,7 @@ export default function Hero({
                 onClick={(e) => handleSmoothScroll(e, 'projects')}
                 variant="primary"
                 isLowTier={isLowTier}
-                className="w-1/2 sm:w-auto px-5 py-3 rounded-xl bg-primary-custom text-white font-bold text-xs shadow-md hover:shadow-lg transition-all duration-200 text-center cursor-pointer uppercase tracking-wider group flex items-center justify-center gap-1.5"
+                className="w-1/2 sm:w-auto px-6 py-3 rounded-xl bg-[#facc15] text-black font-extrabold text-xs uppercase tracking-wider border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-1.5 group"
               >
                 Projects
                 <svg className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -323,7 +325,7 @@ export default function Hero({
                 onClick={(e) => handleSmoothScroll(e, 'contact')}
                 variant="secondary"
                 isLowTier={isLowTier}
-                className="w-1/2 sm:w-auto px-5 py-3 rounded-xl glass-card text-foreground-custom font-bold text-xs border border-border-custom hover:border-primary-custom/40 hover:text-primary-custom transition-all duration-200 text-center cursor-pointer uppercase tracking-wider flex items-center justify-center gap-1.5"
+                className="w-1/2 sm:w-auto px-6 py-3 rounded-xl bg-card-custom text-foreground-custom font-extrabold text-xs uppercase tracking-wider border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] hover:bg-[#00f0ff] hover:text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-1.5"
               >
                 Contact
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -334,52 +336,64 @@ export default function Hero({
           </motion.div>
         </motion.div>
 
-        {/* Right Column: Profile Image Frame */}
+        {/* Right Column: Profile Image Frame with Pop Up Spring Animation */}
         <div className="md:col-span-5 flex justify-center order-1 md:order-2">
-          <div className="relative w-48 h-48 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center">
-            {isLowTier ? (
-              <div className="w-full h-full p-2 border border-border-custom bg-card-custom rounded-[4px] flex items-center justify-center shadow-none">
-                <img
-                  src={heroImage || (ppDay as any).src || ppDay}
-                  alt={fullName}
-                  className="w-full h-full object-cover rounded-[2px]"
-                  loading="eager"
-                  width={320}
-                  height={320}
+          <motion.div
+            initial={{ scale: 0, rotate: -6, opacity: 0 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1 }}
+            transition={{
+              type: 'spring',
+              stiffness: 240,
+              damping: 15,
+              delay: 0.15
+            }}
+            whileHover={{ scale: 1.03, rotate: 1, transition: { duration: 0.2 } }}
+            className="relative w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center p-2 rounded-2xl border-3 border-border-custom bg-card-custom shadow-[8px_8px_0_0_var(--border-color)]"
+          >
+            {/* Corner Sticker Stamp with Slap Pop-In */}
+            <motion.div
+              initial={{ scale: 0, rotate: -30, y: -20 }}
+              animate={{ scale: 1, rotate: -2, y: 0 }}
+              transition={{
+                type: 'spring',
+                stiffness: 400,
+                damping: 12,
+                delay: 0.45
+              }}
+              whileHover={{ rotate: 3, scale: 1.1 }}
+              className="absolute -top-3 -right-2 z-20 px-2.5 py-0.5 rounded-md bg-[#facc15] text-black text-[10px] font-mono font-black uppercase border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] select-none cursor-default"
+            >
+              DEV // 01
+            </motion.div>
+
+            <div className="w-full h-full rounded-xl overflow-hidden relative">
+              <Suspense fallback={<div className="w-full h-full rounded-xl bg-card-custom animate-pulse border-2 border-border-custom" />}>
+                <TiltedCard
+                  imageSrc={heroImage || (ppDay as any).src || ppDay}
+                  darkImageSrc={heroImageNight || heroImage || (ppNight as any).src || ppNight}
+                  altText={fullName}
+                  captionText={availabilityStatus}
+                  containerHeight="100%"
+                  containerWidth="100%"
+                  imageHeight="100%"
+                  imageWidth="100%"
+                  rotateAmplitude={10}
+                  scaleOnHover={1.02}
+                  showMobileWarning={false}
+                  showTooltip={true}
+                  displayOverlayContent={true}
+                  overlayContent={
+                    <GlareHover
+                      className="rounded-xl"
+                      glareColor="#ffffff"
+                      glareOpacity={0.2}
+                      glareSize={200}
+                    />
+                  }
                 />
-              </div>
-            ) : (
-              <>
-                {/* Subtle Backdrop Aura (smooth circular halo without sharp rectangular edges) */}
-                <div className="absolute inset-1 rounded-full bg-gradient-to-tr from-primary-custom/25 via-secondary-custom/15 to-primary-custom/25 blur-2xl pointer-events-none" />
-                <Suspense fallback={<div className="w-full h-full rounded-[36px] bg-foreground-custom/5 animate-pulse-slow" />}>
-                  <TiltedCard
-                    imageSrc={heroImage || (ppDay as any).src || ppDay}
-                    darkImageSrc={heroImageNight || heroImage || (ppNight as any).src || ppNight}
-                    altText={fullName}
-                    captionText={availabilityStatus}
-                    containerHeight="100%"
-                    containerWidth="100%"
-                    imageHeight="100%"
-                    imageWidth="100%"
-                    rotateAmplitude={12}
-                    scaleOnHover={1.03}
-                    showMobileWarning={false}
-                    showTooltip={true}
-                    displayOverlayContent={true}
-                    overlayContent={
-                      <GlareHover
-                        className="rounded-[15px]"
-                        glareColor="#ffffff"
-                        glareOpacity={0.25}
-                        glareSize={200}
-                      />
-                    }
-                  />
-                </Suspense>
-              </>
-            )}
-          </div>
+              </Suspense>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

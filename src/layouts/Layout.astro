@@ -8,7 +8,6 @@ import PortfolioAssistantFAB from '../components/PortfolioAssistantFAB';
 import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
 import NetworkStatus from '../components/NetworkStatus';
-import LagNotification from '../components/LagNotification';
 
 interface Props {
 	title?: string;
@@ -28,7 +27,7 @@ const isRootPage = Astro.url.pathname === '/';
 ---
 
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="en">
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
@@ -36,7 +35,7 @@ const isRootPage = Astro.url.pathname === '/';
 		<link rel="apple-touch-icon" href="/logo.png" />
 		<!-- PWA & Mobile Web App Manifest -->
 		<link rel="manifest" href="/manifest.webmanifest" />
-		<meta name="theme-color" content="#090a0f" />
+		<meta name="theme-color" content="#faf6f0" />
 		<meta name="mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
@@ -61,8 +60,8 @@ const isRootPage = Astro.url.pathname === '/';
 					if (storedTheme === 'system') {
 						return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 					}
-					// Default: dark mode signature theme
-					return 'dark';
+					// Default: light mode signature theme
+					return 'light';
 				}
 
 				function applyTheme(doc) {
@@ -71,10 +70,10 @@ const isRootPage = Astro.url.pathname === '/';
 					var metaThemeColor = targetDoc.querySelector('meta[name="theme-color"]');
 					if (theme === 'dark') {
 						targetDoc.documentElement.classList.add('dark');
-						if (metaThemeColor) metaThemeColor.setAttribute('content', '#090a0f');
+						if (metaThemeColor) metaThemeColor.setAttribute('content', '#0d0e15');
 					} else {
 						targetDoc.documentElement.classList.remove('dark');
-						if (metaThemeColor) metaThemeColor.setAttribute('content', '#fafafa');
+						if (metaThemeColor) metaThemeColor.setAttribute('content', '#faf6f0');
 					}
 				}
 
@@ -217,7 +216,6 @@ const isRootPage = Astro.url.pathname === '/';
 		<PortfolioAssistantFAB client:idle transition:persist="portfolio-assistant" />
 		<SpotlightLens client:load transition:persist="spotlight-lens" />
 		<NetworkStatus client:load transition:persist="network-status" />
-		<LagNotification client:load transition:persist="lag-notification" />
         <Analytics />
 	</body>
 </html>

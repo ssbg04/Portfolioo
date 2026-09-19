@@ -4,6 +4,7 @@ import type { Education, Experience, SiteSettings } from '../lib/data';
 import ScrollReveal from './ScrollReveal';
 import GithubContributions from './GithubContributions';
 import LocalTimeWeather from './LocalTimeWeather';
+import SectionBackground from './SectionBackground';
 
 interface AboutProps {
   settings: SiteSettings;
@@ -108,6 +109,7 @@ export default function About({
 
   return (
     <section id="about" className="pt-3 sm:pt-12 pb-12 sm:pb-16 relative">
+      <SectionBackground variant="about" />
       <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
@@ -129,16 +131,15 @@ export default function About({
             <ScrollReveal variant="fade-up" className="h-full">
               <div className="bento-card p-6 sm:p-8 flex flex-col justify-between h-full group">
                 <div>
-                  <div className="flex items-center justify-between gap-2 pb-4 mb-5 border-b border-border-custom">
+                  <div className="flex items-center justify-between gap-2 pb-4 mb-5 border-b-2 border-border-custom">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-primary-custom" />
-                      <span className="text-[11px] font-mono uppercase tracking-widest text-primary-custom font-semibold">
+                      <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono font-extrabold uppercase tracking-widest bg-[#facc15] text-black border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)]">
                         Biography
                       </span>
                     </div>
                     {settings.isAvailable !== false && (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-medium">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-mono bg-card-custom text-foreground-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] font-bold">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                         {settings.availabilityStatus || 'Open to Opportunities'}
                       </span>
                     )}
@@ -158,11 +159,11 @@ export default function About({
                 </div>
 
                 {/* Footer Metadata */}
-                <div className="mt-8 pt-4 border-t border-border-custom flex flex-wrap items-center justify-between gap-3 text-xs">
+                <div className="mt-8 pt-4 border-t-2 border-border-custom flex flex-wrap items-center justify-between gap-3 text-xs">
                   <span className="text-muted-foreground-custom font-mono">
-                    Role: <span className="text-foreground-custom font-medium">{settings.title}</span>
+                    Role: <span className="text-foreground-custom font-bold">{settings.title}</span>
                   </span>
-                  <span className="font-mono text-primary-custom font-medium">
+                  <span className="font-mono text-primary-custom font-bold">
                     {settings.location}
                   </span>
                 </div>
@@ -175,8 +176,8 @@ export default function About({
             <ScrollReveal variant="fade-up" delay={60} className="h-full">
               <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full">
                 <div>
-                  <div className="flex items-center gap-4 pb-4 mb-4 border-b border-border-custom">
-                    <div className="w-16 h-16 rounded-2xl overflow-hidden border border-border-custom shadow-xs bg-muted-custom/20 shrink-0 aspect-square">
+                  <div className="flex items-center gap-4 pb-4 mb-4 border-b-2 border-border-custom">
+                    <div className="w-16 h-16 rounded-xl overflow-hidden border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] bg-card-custom shrink-0 aspect-square">
                       <img
                         src={profileAvatar}
                         alt={settings.fullName}
@@ -191,7 +192,7 @@ export default function About({
                       <h4 className="text-base font-bold font-heading text-foreground-custom truncate">
                         {settings.fullName}
                       </h4>
-                      <p className="text-xs font-mono text-primary-custom mt-0.5 truncate">
+                      <p className="text-xs font-mono text-primary-custom font-bold mt-0.5 truncate">
                         {settings.title}
                       </p>
                     </div>
@@ -200,17 +201,17 @@ export default function About({
                   {/* Fact Matrix */}
                   <div className="flex flex-col gap-2.5 text-xs">
                     <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
-                      <span className="font-mono text-muted-foreground-custom">Location</span>
-                      <span className="font-medium text-foreground-custom">{settings.location}</span>
+                      <span className="font-mono text-muted-foreground-custom font-semibold">Location</span>
+                      <span className="font-bold text-foreground-custom">{settings.location}</span>
                     </div>
 
                     <LocalTimeWeather latitude={14.130792771445167} longitude={121.43629230199042} />
 
                     <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
-                      <span className="font-mono text-muted-foreground-custom">Contact</span>
+                      <span className="font-mono text-muted-foreground-custom font-semibold">Contact</span>
                       <a 
                         href={`mailto:${settings.email}`} 
-                        className="font-mono text-primary-custom hover:underline truncate max-w-[170px]"
+                        className="font-mono text-primary-custom font-bold hover:underline truncate max-w-[170px]"
                         title={settings.email}
                       >
                         {settings.email}
@@ -219,8 +220,8 @@ export default function About({
 
                     {settings.availabilityStatus && (
                       <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
-                        <span className="font-mono text-muted-foreground-custom">Status</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-medium truncate max-w-[170px]">
+                        <span className="font-mono text-muted-foreground-custom font-semibold">Status</span>
+                        <span className="text-emerald-600 dark:text-emerald-400 font-bold truncate max-w-[170px]">
                           {settings.availabilityStatus}
                         </span>
                       </div>
@@ -229,18 +230,18 @@ export default function About({
                 </div>
 
                 {/* CV Action Buttons */}
-                <div className="mt-6 pt-4 border-t border-border-custom flex flex-col gap-2">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground-custom">
+                <div className="mt-6 pt-4 border-t-2 border-border-custom flex flex-col gap-2">
+                  <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground-custom font-bold">
                     Curriculum Vitae
                   </span>
-                  <div className="grid grid-cols-2 gap-2">
+                  <div className="grid grid-cols-2 gap-2.5">
                     <button
                       type="button"
                       onClick={() => setIsPreviewOpen(true)}
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all cursor-pointer text-center shadow-xs"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-[#facc15] text-black text-xs font-extrabold uppercase tracking-wider border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer text-center"
                       title="Preview CV"
                     >
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                       </svg>
@@ -251,7 +252,7 @@ export default function About({
                       type="button"
                       onClick={handleDownload}
                       disabled={isDownloading}
-                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all cursor-pointer text-center disabled:opacity-60"
+                      className="inline-flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl bg-card-custom border-2 border-border-custom text-foreground-custom text-xs font-extrabold uppercase tracking-wider shadow-[3px_3px_0_0_var(--border-color)] hover:bg-[#00f0ff] hover:text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all cursor-pointer text-center disabled:opacity-60"
                       title="Download CV file"
                     >
                       {isDownloading ? (
@@ -264,7 +265,7 @@ export default function About({
                         </>
                       ) : (
                         <>
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                           </svg>
                           Download
@@ -426,14 +427,14 @@ export default function About({
           aria-label="Curriculum Vitae Preview"
         >
           <div
-            className="w-full max-w-4xl h-[88vh] max-h-[900px] flex flex-col rounded-2xl bg-card-custom border border-border-custom shadow-2xl overflow-hidden"
+            className="w-full max-w-4xl h-[88vh] max-h-[900px] flex flex-col rounded-2xl bg-card-custom border-3 border-border-custom shadow-[10px_10px_0_0_var(--border-color)] overflow-hidden"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="px-4 sm:px-6 py-3.5 border-b border-border-custom flex items-center justify-between gap-3 bg-card-custom shrink-0">
+            <div className="px-4 sm:px-6 py-3.5 border-b-2 border-border-custom flex items-center justify-between gap-3 bg-card-custom shrink-0">
               <div className="flex items-center gap-2.5 min-w-0">
-                <span className="p-1.5 rounded-lg bg-primary-custom/10 text-primary-custom shrink-0">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <span className="p-1.5 rounded-lg bg-[#facc15] text-black border-2 border-border-custom shadow-[1.5px_1.5px_0_0_var(--border-color)] shrink-0">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z" />
                   </svg>
                 </span>
@@ -453,7 +454,7 @@ export default function About({
                   type="button"
                   onClick={handleDownload}
                   disabled={isDownloading}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all cursor-pointer shadow-xs disabled:opacity-60"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#facc15] text-black text-xs font-extrabold uppercase tracking-wider border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer disabled:opacity-60"
                   title="Download CV"
                 >
                   {isDownloading ? (
@@ -466,7 +467,7 @@ export default function About({
                     </>
                   ) : (
                     <>
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
                       </svg>
                       <span>Download</span>
@@ -478,9 +479,9 @@ export default function About({
                   type="button"
                   onClick={() => setIsPreviewOpen(false)}
                   aria-label="Close modal"
-                  className="p-1.5 rounded-xl border border-border-custom hover:border-primary-custom/40 text-muted-foreground-custom hover:text-foreground-custom transition-all cursor-pointer"
+                  className="p-1.5 rounded-xl border-2 border-border-custom text-foreground-custom hover:bg-[#ff2a85] hover:text-white shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
                 >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
                   </svg>
                 </button>

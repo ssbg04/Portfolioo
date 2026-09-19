@@ -24,29 +24,6 @@ export default function ScrollReveal({
   delay = 0 
 }: ScrollRevealProps) {
   const isMobile = useIsMobile();
-  const [isLowTier, setIsLowTier] = useState(false);
-
-  useEffect(() => {
-    const checkTier = () => {
-      setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
-    };
-    checkTier();
-    window.addEventListener('tier-change', checkTier);
-    return () => window.removeEventListener('tier-change', checkTier);
-  }, []);
-
-  if (isLowTier) {
-    return (
-      <div 
-        data-scroll-reveal="true" 
-        className={className} 
-        style={{ opacity: 1, transform: 'none' }}
-      >
-        {children}
-      </div>
-    );
-  }
-
   const chosenVariant = variantsMap[variant] || variantsMap['fade-up'];
 
   return (
@@ -54,10 +31,10 @@ export default function ScrollReveal({
       data-scroll-reveal="true"
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, amount: 0.05 }}
+      viewport={{ once: true, margin: "0px 0px -25% 0px", amount: 0.2 }}
       variants={chosenVariant}
       transition={{ 
-        duration: isMobile ? 0.35 : 0.65, 
+        duration: isMobile ? 0.35 : 0.55, 
         delay: delay / 1000, 
         ease: [0.16, 1, 0.3, 1] 
       }}

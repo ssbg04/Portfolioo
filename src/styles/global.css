@@ -1,98 +1,116 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Geist+Mono:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
 
 @import "tailwindcss";
 
 @layer base {
   :root {
-    --font-heading: 'Outfit', system-ui, sans-serif;
-    --font-body: 'Inter', system-ui, sans-serif;
-    --font-mono: 'Geist Mono', monospace;
+    --font-heading: 'Space Grotesk', system-ui, sans-serif;
+    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+    --font-mono: 'Space Mono', monospace;
 
     /* Layout */
     --sidebar-width: 256px;
     --nav-height: 60px;
 
-    /* Minimalist Light Palette */
-    --bg-color: #fafafa;
-    --fg-color: #0f1117;
+    /* ─── Neo-Brutalism Design Tokens (Light Palette) ─── */
+    --bg-color: #faf6f0;
+    --fg-color: #000000;
     --primary-color: #2563eb;
     --primary-fg-color: #ffffff;
-    --primary-glow: rgba(37, 99, 235, 0.3);
-    --secondary-color: #0284c7;
-    --muted-color: rgba(15, 17, 23, 0.03);
-    --muted-fg-color: #64748b;
-    --border-color: rgba(15, 17, 23, 0.06);
-    --border-hover-color: rgba(37, 99, 235, 0.3);
-    --nav-bg: rgba(250, 250, 250, 0.85);
+    --primary-neo: #facc15;
+    --secondary-color: #00f0ff;
+    --accent-pink: #ff2a85;
+    --accent-green: #22c55e;
+    --muted-color: rgba(0, 0, 0, 0.04);
+    --muted-fg-color: #4b5563;
+    --border-color: #000000;
+    --border-hover-color: #000000;
+    --nav-bg: #ffffff;
+    --nav-drawer-bg: #faf6f0;
+    --card-bg: #ffffff;
 
-    /* ─── Optimized Glassmorphism Tokens (Desktop / Base) ─── */
-    --glass-bg: rgba(255, 255, 255, 0.90);
-    --glass-border: rgba(15, 17, 23, 0.08);
-    --glass-blur: 16px;
-    --glass-saturate: 140%;
-    --glass-shadow: 0 4px 24px -4px rgba(0, 0, 0, 0.06);
-    --glass-shadow-hover: 0 12px 32px -4px rgba(0, 0, 0, 0.1);
-    --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.85);
+    /* Neo-Brutalist Hard Shadows & Outlines */
+    --neo-border: 2.5px solid #000000;
+    --neo-shadow: 5px 5px 0px 0px #000000;
+    --neo-shadow-hover: 8px 8px 0px 0px #000000;
+    --neo-shadow-active: 2px 2px 0px 0px #000000;
+    --neo-shadow-sm: 3px 3px 0px 0px #000000;
+
+    --glass-bg: #ffffff;
+    --glass-border: #000000;
+    --glass-shadow: var(--neo-shadow);
+    --glass-shadow-hover: var(--neo-shadow-hover);
+    --glass-highlight: none;
 
     --bento-gap: 1.25rem;
-    --bento-radius: 24px;
+    --bento-radius: 18px;
     --primary: 217 91% 60%;
-    --background: 0 0% 98%;
-    --foreground: 222 47% 7%;
+    --background: 40 33% 96%;
+    --foreground: 0 0% 0%;
   }
 
   .dark {
-    /* Minimalist Dark Palette */
-    --bg-color: #090a0f;
-    --fg-color: #f1f5f9;
-    --primary-color: #3b82f6;
-    --primary-fg-color: #ffffff;
-    --primary-glow: rgba(59, 130, 246, 0.35);
-    --secondary-color: #38bdf8;
-    --muted-color: rgba(241, 245, 249, 0.04);
-    --muted-fg-color: #94a3b8;
-    --border-color: rgba(241, 245, 249, 0.08);
-    --border-hover-color: rgba(59, 130, 246, 0.4);
-    --nav-bg: rgba(9, 10, 15, 0.92);
+    /* ─── Neo-Brutalism Dark Palette (High-Contrast Neon-Pop) ─── */
+    --bg-color: #0d0e15;
+    --fg-color: #ffffff;
+    --primary-color: #38bdf8;
+    --primary-fg-color: #000000;
+    --primary-neo: #facc15;
+    --secondary-color: #a855f7;
+    --accent-pink: #ff2a85;
+    --accent-green: #4ade80;
+    --muted-color: rgba(255, 255, 255, 0.06);
+    --muted-fg-color: #9ca3af;
+    --border-color: #ffffff;
+    --border-hover-color: #facc15;
+    --nav-bg: #141622;
+    --nav-drawer-bg: #0d0e15;
+    --card-bg: #161826;
 
-    /* ─── Optimized Dark Glass Surfaces (Crisp contrast over 3D background) ─── */
-    --glass-bg: rgba(13, 16, 26, 0.88);
-    --glass-border: rgba(255, 255, 255, 0.09);
-    --glass-blur: 16px;
-    --glass-saturate: 140%;
-    --glass-shadow: 0 8px 32px -8px rgba(0, 0, 0, 0.6);
-    --glass-shadow-hover: 0 16px 40px -6px rgba(0, 0, 0, 0.75);
-    --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.08);
+    /* Neo-Brutalist Dark Hard Shadows & Outlines */
+    --neo-border: 2px solid #ffffff;
+    --neo-shadow: 5px 5px 0px 0px #facc15;
+    --neo-shadow-hover: 8px 8px 0px 0px #facc15;
+    --neo-shadow-active: 2px 2px 0px 0px #facc15;
+    --neo-shadow-sm: 3px 3px 0px 0px #facc15;
 
-    --primary: 217 91% 60%;
-    --background: 230 25% 5%;
-    --foreground: 210 40% 98%;
+    --glass-bg: #161826;
+    --glass-border: #ffffff;
+    --glass-shadow: var(--neo-shadow);
+    --glass-shadow-hover: var(--neo-shadow-hover);
+    --glass-highlight: none;
+
+    --primary: 199 89% 60%;
+    --background: 235 24% 7%;
+    --foreground: 0 0% 100%;
   }
 
-  /* ─── Device-Tiered Glassmorphism Optimization (Mobile & Tablet GPU Savings) ─── */
+  /* ─── Device-Tiered Neo-Brutalism Sizing ─── */
   @media (max-width: 767px) {
     :root {
-      --glass-blur: 10px;
-      --glass-saturate: 120%;
-      --glass-bg: rgba(255, 255, 255, 0.94);
-      --glass-shadow: 0 2px 14px -2px rgba(0, 0, 0, 0.05);
+      --neo-shadow: 4px 4px 0px 0px #000000;
+      --neo-shadow-hover: 6px 6px 0px 0px #000000;
+      --neo-shadow-active: 1px 1px 0px 0px #000000;
+      --bento-radius: 14px;
     }
     .dark {
-      --glass-blur: 10px;
-      --glass-saturate: 120%;
-      --glass-bg: rgba(13, 16, 26, 0.93);
-      --glass-shadow: 0 4px 20px -4px rgba(0, 0, 0, 0.5);
+      --neo-shadow: 4px 4px 0px 0px #facc15;
+      --neo-shadow-hover: 6px 6px 0px 0px #facc15;
+      --neo-shadow-active: 1px 1px 0px 0px #facc15;
+      --bento-radius: 14px;
     }
   }
 
   @media (min-width: 768px) and (max-width: 1023px) {
     :root {
-      --glass-blur: 13px;
-      --glass-saturate: 130%;
+      --glass-blur: 20px;
+      --glass-saturate: 170%;
+      --glass-bg: rgba(255, 255, 255, 0.50);
     }
     .dark {
-      --glass-blur: 13px;
-      --glass-saturate: 130%;
+      --glass-blur: 20px;
+      --glass-saturate: 170%;
+      --glass-bg: rgba(10, 14, 26, 0.45);
     }
   }
 
@@ -173,61 +191,46 @@
   background-attachment: fixed;
 }
 
-/* ─── High-Performance Glassmorphism (Calibrated across all devices) ─── */
+/* ─── Neo-Brutalism Core Cards (High Contrast, Bold Borders, Hard Drop Shadows) ─── */
 .bento-card, .glass-card {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
+  background: var(--card-bg, #ffffff);
+  border: var(--neo-border);
   border-radius: var(--bento-radius);
-  box-shadow: var(--glass-shadow), var(--glass-highlight);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-
-  /* GPU Compositing layer (prevents full-screen repaints during 3D background scrolling) */
-  isolation: isolate;
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-  backface-visibility: hidden;
-  -webkit-backface-visibility: hidden;
-
-  transition: border-color 0.25s ease, transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s ease, box-shadow 0.25s ease;
+  box-shadow: var(--neo-shadow);
   position: relative;
+  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.15s ease;
+  will-change: transform, box-shadow;
 }
 
-/* Mouse Hover States (Desktop / pointer-capable only, prevents sticky hover on mobile touch) */
+/* Mouse Hover States (Mechanical Lift) */
 @media (hover: hover) and (pointer: fine) {
   .bento-card:hover, .glass-card:hover {
-    border-color: var(--border-hover-color);
-    background: rgba(255, 255, 255, 0.96);
-    transform: translateY(-3px) translateZ(0);
-    box-shadow: var(--glass-shadow-hover), var(--glass-highlight);
+    transform: translate(-3px, -3px);
+    box-shadow: var(--neo-shadow-hover);
   }
 
   .dark .bento-card:hover, .dark .glass-card:hover {
-    border-color: var(--border-hover-color);
-    background: rgba(18, 22, 36, 0.95);
-    transform: translateY(-3px) translateZ(0);
-    box-shadow: var(--glass-shadow-hover), var(--glass-highlight);
+    transform: translate(-3px, -3px);
+    box-shadow: var(--neo-shadow-hover);
+    border-color: #facc15;
   }
 }
 
-/* Mobile & Touch Device Tap Feedback */
-@media (hover: none) {
-  .bento-card:active, .glass-card:active {
-    transform: scale(0.995) translateZ(0);
-    transition: transform 0.1s ease;
-  }
+/* Physical Mechanical Tap / Click Feedback */
+.bento-card:active, .glass-card:active {
+  transform: translate(2px, 2px);
+  box-shadow: var(--neo-shadow-active);
+  transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
-/* Glass Navigation Bar */
+/* Neo-Brutalist Navigation Bar */
 .glass-nav {
   background: var(--nav-bg);
-  border-bottom: 1px solid var(--glass-border);
-  box-shadow: 0 4px 20px -2px rgba(0, 0, 0, 0.12), var(--glass-highlight);
+  border-bottom: var(--neo-border);
+  box-shadow: 0 4px 0px 0px var(--border-color);
   isolation: isolate;
   transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
-  -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
-  backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-saturate));
 }
 
 /* Fallback for Browsers Without Backdrop-Filter Support */
@@ -272,31 +275,39 @@
   filter: drop-shadow(0 0 8px var(--primary-glow));
 }
 
-/* ─── Minimalist Clean Chips (No heavy background boxes) ─── */
+/* ─── Neo-Brutalist Chips & Badges ─── */
 .tech-tag {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 500;
-  padding: 2px 8px;
-  border-radius: 6px;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  color: var(--muted-fg-color);
-  transition: all 0.15s ease;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 8px;
+  background: var(--card-bg, #ffffff);
+  border: 1.5px solid var(--border-color);
+  box-shadow: 2px 2px 0px 0px var(--border-color);
+  color: var(--fg-color);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
 .tech-tag:hover {
-  color: var(--fg-color);
-  border-color: var(--primary-color);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px 0px var(--border-color);
+  background: var(--primary-neo, #facc15);
+  color: #000000;
 }
 
 .section-tag {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 800;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--primary-color);
+  padding: 4px 12px;
+  border-radius: 9999px;
+  border: 2px solid var(--border-color);
+  box-shadow: 2px 2px 0px 0px var(--border-color);
+  background: var(--primary-neo, #facc15);
+  color: #000000;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -452,6 +463,12 @@ html[data-tier='low'] body {
   background-image: none !important;
   color: var(--fg-color) !important;
   font-family: var(--font-body) !important;
+}
+
+/* Remove all ambient blobs and blurred glow spheres in Ultra Fast Design mode */
+html[data-tier='low'] [class*="blur-"],
+html[data-tier='low'] [class*="blur-["] {
+  display: none !important;
 }
 
 /* 3. Old-Site Standard Boxes, Bento & Cards (Simple 1px Borders, Flat Solid Backgrounds) */
@@ -626,27 +643,81 @@ html[data-tier='low'] .bg-gradient-mesh {
 .impact-pill {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 700;
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 3px 9px;
-  border-radius: 9999px;
-  background: rgba(37, 99, 235, 0.06);
-  border: 1px solid rgba(37, 99, 235, 0.18);
-  color: var(--primary-color);
-  transition: all 0.2s ease;
-}
-
-.dark .impact-pill {
-  background: rgba(59, 130, 246, 0.1);
-  border-color: rgba(59, 130, 246, 0.25);
-  color: #93c5fd;
+  padding: 3px 10px;
+  border-radius: 6px;
+  background: var(--card-bg, #ffffff);
+  border: 1.5px solid var(--border-color);
+  box-shadow: 2px 2px 0px 0px var(--border-color);
+  color: var(--fg-color);
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
 }
 
 .impact-pill:hover {
-  background: rgba(37, 99, 235, 0.12);
-  border-color: var(--primary-color);
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px 0px var(--border-color);
+  background: var(--primary-neo, #facc15);
+  color: #000000;
+}
+
+/* ─── Neo-Brutalist Component Utilities ─── */
+.neo-btn {
+  font-family: var(--font-heading);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 2px solid var(--border-color);
+  box-shadow: 3px 3px 0px 0px var(--border-color);
+  border-radius: 12px;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+}
+
+.neo-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0px 0px var(--border-color);
+}
+
+.neo-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: 0px 0px 0px 0px var(--border-color);
+}
+
+.neo-btn-primary {
+  background-color: var(--primary-neo, #facc15);
+  color: #000000;
+}
+
+.neo-btn-secondary {
+  background-color: var(--card-bg, #ffffff);
+  color: var(--fg-color);
+}
+
+.neo-btn-secondary:hover {
+  background-color: var(--secondary-color, #00f0ff);
+  color: #000000;
+}
+
+.neo-input {
+  border: 2px solid var(--border-color);
+  background-color: var(--card-bg, #ffffff);
+  color: var(--fg-color);
+  border-radius: 10px;
+  box-shadow: 2px 2px 0px 0px var(--border-color);
+  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.neo-input:focus {
+  outline: none;
+  box-shadow: 3px 3px 0px 0px var(--border-color);
+  border-color: var(--primary-neo, #facc15);
 }
 
 /* ─── Modal Animations ─── */
@@ -684,3 +755,115 @@ html[data-tier='low'] .animate-drawer-slide {
 
 /* Touch-friendly minimum tap target */
 .tap-target { min-height: 44px; min-width: 44px; }
+
+/* ─── Static Abstract Animated Background Keyframes ─── */
+@keyframes abstractFloat1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -25px) scale(1.08); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes abstractFloat2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-35px, 20px) scale(0.94); }
+  66% { transform: translate(25px, -30px) scale(1.06); }
+}
+
+@keyframes abstractFloat3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, 25px) scale(1.05); }
+}
+
+@keyframes abstractSpinSlow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes abstractSpinReverse {
+  from { transform: rotate(360deg); }
+  to { transform: rotate(0deg); }
+}
+
+@keyframes abstractPulseSoft {
+  0%, 100% { opacity: 0.35; transform: scale(1); }
+  50% { opacity: 0.75; transform: scale(1.04); }
+}
+
+@keyframes abstractWaveDrift {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(-40px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes abstractWaveDriftReverse {
+  0% { transform: translateX(0); }
+  50% { transform: translateX(40px); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes abstractScanbeam {
+  0% { transform: translateY(-100%); opacity: 0; }
+  30% { opacity: 0.6; }
+  70% { opacity: 0.6; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+@keyframes abstractDashFlow {
+  to { stroke-dashoffset: -100; }
+}
+
+@keyframes abstractRadarSweep {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes abstractRippleExpand {
+  0% { transform: scale(0.65); opacity: 0.8; }
+  50% { opacity: 0.4; }
+  100% { transform: scale(1.35); opacity: 0; }
+}
+
+.anim-abstract-float-1 { animation: abstractFloat1 18s ease-in-out infinite; will-change: transform; }
+.anim-abstract-float-2 { animation: abstractFloat2 22s ease-in-out infinite; will-change: transform; }
+.anim-abstract-float-3 { animation: abstractFloat3 15s ease-in-out infinite; will-change: transform; }
+.anim-abstract-spin-slow { animation: abstractSpinSlow 45s linear infinite; will-change: transform; }
+.anim-abstract-spin-reverse { animation: abstractSpinReverse 55s linear infinite; will-change: transform; }
+.anim-abstract-pulse { animation: abstractPulseSoft 8s ease-in-out infinite; will-change: opacity, transform; }
+.anim-abstract-wave { animation: abstractWaveDrift 20s ease-in-out infinite; will-change: transform; }
+.anim-abstract-wave-reverse { animation: abstractWaveDriftReverse 24s ease-in-out infinite; will-change: transform; }
+.anim-abstract-scanbeam { animation: abstractScanbeam 7s ease-in-out infinite; will-change: transform, opacity; }
+.anim-abstract-dash { stroke-dasharray: 6 12; animation: abstractDashFlow 12s linear infinite; }
+.anim-abstract-radar { animation: abstractRadarSweep 12s linear infinite; transform-origin: center; will-change: transform; }
+.anim-abstract-ripple { animation: abstractRippleExpand 5s cubic-bezier(0.2, 0.8, 0.4, 1) infinite; transform-origin: center; will-change: transform, opacity; }
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-abstract-float-1,
+  .anim-abstract-float-2,
+  .anim-abstract-float-3,
+  .anim-abstract-spin-slow,
+  .anim-abstract-spin-reverse,
+  .anim-abstract-pulse,
+  .anim-abstract-wave,
+  .anim-abstract-wave-reverse,
+  .anim-abstract-scanbeam,
+  .anim-abstract-dash,
+  .anim-abstract-radar,
+  .anim-abstract-ripple {
+    animation: none !important;
+  }
+}
+
+html[data-tier='low'] .anim-abstract-float-1,
+html[data-tier='low'] .anim-abstract-float-2,
+html[data-tier='low'] .anim-abstract-float-3,
+html[data-tier='low'] .anim-abstract-spin-slow,
+html[data-tier='low'] .anim-abstract-spin-reverse,
+html[data-tier='low'] .anim-abstract-pulse,
+html[data-tier='low'] .anim-abstract-wave,
+html[data-tier='low'] .anim-abstract-wave-reverse,
+html[data-tier='low'] .anim-abstract-scanbeam,
+html[data-tier='low'] .anim-abstract-dash,
+html[data-tier='low'] .anim-abstract-radar,
+html[data-tier='low'] .anim-abstract-ripple {
+  animation: none !important;
+}

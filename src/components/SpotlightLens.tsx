@@ -222,7 +222,7 @@ export default function SpotlightLens() {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ duration: 0.12 }}
-            className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-2 border-primary-custom/80 shadow-[0_0_40px_rgba(56,189,248,0.35)] bg-background-custom"
+            className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-3 border-border-custom shadow-[6px_6px_0_0_var(--border-color)] bg-background-custom"
             style={{
               width: LENS_SIZE,
               height: LENS_SIZE,
@@ -240,8 +240,8 @@ export default function SpotlightLens() {
               }}
               dangerouslySetInnerHTML={{ __html: cloneHtml }}
             />
-            <div className="absolute inset-0 rounded-full bg-gradient-to-tr from-transparent via-white/10 to-transparent mix-blend-overlay" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-primary-custom shadow-[0_0_8px_var(--primary-custom)]" />
+            <div className="absolute inset-0 rounded-full border-2 border-black pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#facc15] border-2 border-black shadow-[1px_1px_0_0_#000]" />
           </motion.div>
         )}
       </AnimatePresence>
@@ -249,10 +249,10 @@ export default function SpotlightLens() {
       {/* ─── Redesigned Single Fluid Cursor Ring (No Center Dot) ─── */}
       {!active && (
         <div className="fixed inset-0 pointer-events-none z-[99998] overflow-hidden select-none" aria-hidden="true">
-          {/* Outer Spring Ring (36px, Lerp follow, smooth expand on hover) */}
+          {/* Outer Spring Ring (32px, Lerp follow, smooth expand on hover) */}
           <div
             ref={ringRef}
-            className="fixed top-0 left-0 w-9 h-9 rounded-full border border-primary-custom/40 bg-primary-custom/[0.04] backdrop-blur-[0.5px] pointer-events-none will-change-transform transition-[border-color,background-color,box-shadow] duration-200"
+            className="fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-border-custom bg-[#facc15]/20 pointer-events-none will-change-transform"
             style={{
               transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)',
               opacity: 0,

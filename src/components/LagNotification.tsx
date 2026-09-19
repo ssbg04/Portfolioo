@@ -109,19 +109,19 @@ export default function LagNotification() {
       role="alert"
       aria-live="polite"
     >
-      <div className="glass-card p-4 rounded-2xl border border-amber-500/30 dark:border-amber-500/40 shadow-2xl backdrop-blur-xl bg-background-custom/90 dark:bg-zinc-950/90 flex flex-col gap-3">
+      <div className="p-4 rounded-2xl border-3 border-border-custom shadow-[6px_6px_0_0_var(--border-color)] bg-card-custom flex flex-col gap-3">
         <div className="flex items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 shrink-0">
-              <svg className="w-4 h-4 animate-pulse" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+            <div className="w-8 h-8 rounded-xl bg-[#facc15] border-2 border-black flex items-center justify-center text-black shrink-0 shadow-[2px_2px_0_0_#000]">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
               </svg>
             </div>
             <div>
-              <h4 className="text-xs font-bold text-foreground-custom font-heading">
+              <h4 className="text-xs font-black text-foreground-custom font-heading uppercase tracking-tight">
                 {isEnabledSuccess ? 'Lite Mode Enabled' : 'Experiencing Stutter?'}
               </h4>
-              <p className="text-[11px] text-muted-foreground-custom leading-tight mt-0.5">
+              <p className="text-[11px] text-muted-foreground-custom leading-tight mt-0.5 font-mono">
                 {isEnabledSuccess 
                   ? 'High-performance rendering is now active.'
                   : 'Turn on Lite Mode for faster scrolling and smoother performance.'}
@@ -131,28 +131,28 @@ export default function LagNotification() {
           <button
             onClick={handleDismiss}
             aria-label="Dismiss lag notification"
-            className="text-muted-foreground-custom hover:text-foreground-custom p-1 rounded-lg hover:bg-foreground-custom/5 transition-colors cursor-pointer"
+            className="text-foreground-custom p-1.5 rounded-lg bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] hover:bg-rose-500 hover:text-white transition-all cursor-pointer active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
 
         {!isEnabledSuccess && (
-          <div className="flex items-center gap-2 pt-1 border-t border-border-custom/50">
+          <div className="flex items-center gap-2 pt-2 border-t-2 border-border-custom">
             <button
               onClick={handleEnableLiteMode}
-              className="flex-1 py-1.5 px-3 rounded-xl bg-primary-custom hover:bg-primary-custom/90 text-white text-xs font-semibold transition-all shadow-sm flex items-center justify-center gap-1.5 cursor-pointer"
+              className="flex-1 py-1.5 px-3 rounded-xl bg-[#facc15] hover:bg-black hover:text-white text-black text-xs font-black transition-all border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Enable Lite Mode</span>
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.2" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
               </svg>
             </button>
             <button
               onClick={handleDismiss}
-              className="py-1.5 px-3 rounded-xl text-xs font-medium text-muted-foreground-custom hover:text-foreground-custom hover:bg-foreground-custom/5 transition-colors cursor-pointer"
+              className="py-1.5 px-3 rounded-xl text-xs font-bold text-muted-foreground-custom hover:text-foreground-custom border-2 border-border-custom bg-card-custom shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all cursor-pointer"
             >
               Not now
             </button>
