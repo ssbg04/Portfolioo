@@ -122,6 +122,9 @@ export default function TiltedCard({
             <motion.img
               src={imageSrc}
               alt={altText}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)] dark:hidden block"
               style={{
                 width: imageWidth,
@@ -131,6 +134,9 @@ export default function TiltedCard({
             <motion.img
               src={darkImageSrc}
               alt={altText}
+              loading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)] hidden dark:block"
               style={{
                 width: imageWidth,
@@ -142,6 +148,9 @@ export default function TiltedCard({
           <motion.img
             src={imageSrc}
             alt={altText}
+            loading="eager"
+            decoding="async"
+            fetchPriority="high"
             className="absolute top-0 left-0 object-cover rounded-[15px] will-change-transform [transform:translateZ(0)]"
             style={{
               width: imageWidth,

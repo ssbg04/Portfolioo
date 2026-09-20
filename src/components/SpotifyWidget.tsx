@@ -131,6 +131,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
               alt={track.title}
               className="w-full h-full object-cover"
               loading="lazy"
+              decoding="async"
             />
           </div>
 
@@ -149,6 +150,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
             alt={track.title}
             className="w-full h-full object-cover transition-transform duration-500 group-hover/sleeve:scale-105"
             loading="lazy"
+            decoding="async"
           />
 
           {/* Top-left Neo Play/Pause Button */}

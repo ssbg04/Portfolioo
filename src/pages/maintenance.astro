@@ -23,6 +23,8 @@ const downloadUrl = resumeUrl.includes('cdn.sanity.io')
             src={settings.logoImage || settings.heroImage || '/logo.png'}
             alt={settings.fullName}
             class="w-10 h-10 rounded-full object-cover ring-1 ring-border-custom shadow-xs"
+            loading="eager"
+            decoding="async"
           />
           <div>
             <h1 class="text-base font-bold text-foreground-custom tracking-tight">

@@ -111,6 +111,9 @@ const nextProject = currentIndex < allProjects.length - 1 ? allProjects[currentI
 					<img 
 						src={project.coverImage} 
 						alt={project.title}
+						loading="eager"
+						decoding="async"
+						fetchpriority="high"
 						class="w-full h-full object-cover group-hover:scale-[1.01] transition-transform duration-500"
 					/>
 					{project.status && (
@@ -186,6 +189,8 @@ const nextProject = currentIndex < allProjects.length - 1 ? allProjects[currentI
 											alt={`${project.title} screenshot ${i + 1}`} 
 											class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
 											loading="lazy"
+											decoding="async"
+											fetchpriority="auto"
 										/>
 									</div>
 								))}

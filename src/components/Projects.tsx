@@ -104,8 +104,9 @@ export default function Projects({
                       <img
                         src={flagshipProject.coverImage}
                         alt={flagshipProject.title}
-                        loading="lazy"
+                        loading="eager"
                         decoding="async"
+                        fetchPriority="high"
                         className="w-full h-full object-cover group-hover/hero:scale-[1.02] transition-transform duration-500 ease-out"
                       />
                     ) : (
@@ -265,6 +266,7 @@ export default function Projects({
                             alt={project.title}
                             loading="lazy"
                             decoding="async"
+                            fetchPriority="auto"
                             className="w-full h-full object-cover group-hover/submockup:scale-[1.03] transition-transform duration-500 ease-out"
                           />
                           {/* Hover overlay hint */}

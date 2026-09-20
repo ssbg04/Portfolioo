@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import haptic from '../lib/haptics';
 
 const ControlsDropdown = lazy(() => import('./ControlsDropdown'));
@@ -27,6 +27,8 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isNavHidden, setIsNavHidden] = useState(false);
+  const drawerOpenRef = useRef(false);
+  const justClosedDrawerRef = useRef(false);
 
   useEffect(() => {
     if (currentPath) {
@@ -72,9 +74,16 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
           setScrolled(currentY > 8);
 
-          // If drawer is open, keep navbar visible
-          if (drawerOpen) {
+          // If drawer is open, keep navbar visible and sync lastY
+          if (drawerOpenRef.current) {
             setIsNavHidden(false);
+            lastY = currentY;
+            ticking = false;
+            return;
+          }
+
+          // Prevent hiding if drawer was just closed
+          if (justClosedDrawerRef.current) {
             lastY = currentY;
             ticking = false;
             return;
@@ -99,7 +108,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, [drawerOpen]);
+  }, []);
 
   useEffect(() => {
     const onResize = () => {
@@ -113,7 +122,26 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
   }, []);
 
   useEffect(() => {
-    document.body.style.overflow = drawerOpen ? 'hidden' : 'unset';
+    drawerOpenRef.current = drawerOpen;
+
+    if (drawerOpen) {
+      justClosedDrawerRef.current = false;
+      setIsNavHidden(false);
+      document.body.style.overflow = 'hidden';
+    } else if (!drawerOpen && drawerOpenRef.current) {
+      // Drawer was just closed
+      justClosedDrawerRef.current = true;
+      setIsNavHidden(false);
+      document.body.style.overflow = 'unset';
+      
+      const timer = setTimeout(() => {
+        justClosedDrawerRef.current = false;
+      }, 1000);
+      return () => {
+        clearTimeout(timer);
+        document.body.style.overflow = 'unset';
+      };
+    }
     return () => { document.body.style.overflow = 'unset'; };
   }, [drawerOpen]);
 
@@ -213,7 +241,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
           boxShadow: '0 3px 0px 0px var(--border-color)',
           transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
           willChange: 'transform',
-          pointerEvents: isNavHidden && !drawerOpen ? 'none' : 'auto',
+          pointerEvents: 'auto',
         }}
       >
         <div className="px-4 h-full flex items-center justify-between gap-3">

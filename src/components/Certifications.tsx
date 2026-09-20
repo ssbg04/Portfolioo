@@ -443,7 +443,9 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                           <img
                             src={cert.badgeImage}
                             alt={cert.title}
-                            loading="lazy"
+                            loading={idx === 0 ? 'eager' : 'lazy'}
+                            decoding="async"
+                            fetchPriority={idx === 0 ? 'high' : 'auto'}
                             referrerPolicy="no-referrer"
                             className="max-h-full max-w-full object-contain rounded-lg drop-shadow-md group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
@@ -550,7 +552,9 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                           <img
                             src={badge.badgeImage}
                             alt={badge.title}
-                            loading="lazy"
+                            loading={idx < 2 ? 'eager' : 'lazy'}
+                            decoding="async"
+                            fetchPriority={idx < 2 ? 'high' : 'auto'}
                             referrerPolicy="no-referrer"
                             className="relative z-10 w-14 h-14 sm:w-24 sm:h-24 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300"
                             onError={(e) => {
@@ -664,6 +668,8 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       <img
                         src={selectedCert.badgeImage}
                         alt={selectedCert.title}
+                        loading="lazy"
+                        decoding="async"
                         referrerPolicy="no-referrer"
                         className={`max-h-[38vh] md:max-h-[52vh] w-auto max-w-full object-contain rounded-lg border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] transition-transform duration-300 group-hover/preview:scale-[1.02] bg-white`}
                       />
@@ -822,6 +828,8 @@ export default function Certifications({ certifications, extraCerts = [], sectio
             <img
               src={selectedCert.badgeImage}
               alt={selectedCert.title}
+              loading="eager"
+              decoding="async"
               referrerPolicy="no-referrer"
               draggable={false}
               className="max-w-[92vw] max-h-[72vh] object-contain border-3 border-black dark:border-white shadow-[8px_8px_0_0_#000] dark:shadow-[8px_8px_0_0_#fff] pointer-events-none select-none rounded-xl touch-none bg-white p-2"

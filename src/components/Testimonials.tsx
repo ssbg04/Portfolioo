@@ -200,6 +200,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                         src={test.avatar}
                         alt={test.name}
                         loading="lazy"
+                        decoding="async"
                         className="w-10 h-10 rounded-xl object-cover border-2 border-border-custom shadow-[1.5px_1.5px_0_0_var(--border-color)]"
                       />
                     ) : (
@@ -280,6 +281,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                             src={test.avatar}
                             alt={test.name}
                             loading="lazy"
+                            decoding="async"
                             className="w-10 h-10 rounded-xl object-cover border-2 border-border-custom shadow-[1.5px_1.5px_0_0_var(--border-color)]"
                           />
                         ) : (

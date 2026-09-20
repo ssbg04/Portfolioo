@@ -183,6 +183,7 @@ export default function GithubContributions({ username = 'ssbg04', className = '
             alt="GitHub Contributions Chart"
             className="max-w-full rounded-xl opacity-90 invert dark:invert-0"
             loading="lazy"
+            decoding="async"
           />
         </div>
       ) : (

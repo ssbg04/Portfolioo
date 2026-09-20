@@ -89,9 +89,6 @@ export default function ControlsDropdown() {
     window.addEventListener('theme-change', handleCustomThemeChange as EventListener);
 
     return () => {
-      window.removeEventListener('tier-change', checkLite);
-      document.removeEventListener('astro:after-swap', checkLite);
-      document.removeEventListener('astro:page-load', checkLite);
       if (darkQuery.removeEventListener) {
         darkQuery.removeEventListener('change', handleSystemThemeChange);
       }

@@ -214,7 +214,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               <img
                 src={item.photo}
                 alt={item.title || 'Portfolio Gallery Photo'}
-                loading="lazy"
+                loading={idx < 3 ? 'eager' : 'lazy'}
+                decoding="async"
+                fetchPriority={idx < 3 ? 'high' : 'auto'}
                 className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
               />
 
@@ -379,6 +381,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                     <img
                       src={item.photo}
                       alt={item.title || 'Photo thumbnail'}
+                      loading="lazy"
+                      decoding="async"
+                      fetchPriority="low"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
@@ -434,6 +439,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                   src={activeItem.photo}
                   alt={activeItem.title || 'Full Photo'}
                   draggable={false}
+                  loading="eager"
+                  decoding="async"
+                  fetchPriority="high"
                   style={{
                     transform: `translate3d(${panPosition.x}px, ${panPosition.y}px, 0) scale(${zoomLevel})`,
                     transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
@@ -493,6 +501,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                   <img
                     src={item.photo}
                     alt={item.title || `Thumbnail ${idx + 1}`}
+                    loading="lazy"
+                    decoding="async"
+                    fetchPriority="low"
                     className="w-full h-full object-cover"
                   />
                 </button>
