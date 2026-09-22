@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro';
 import nodemailer from 'nodemailer';
+export const prerender = false;
 
 // In-memory sliding window rate limiter: 2 emails per 24 hours per IP, Email, and Device ID
 interface RateRecord {

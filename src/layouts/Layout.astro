@@ -1,4 +1,5 @@
 ---
+export const prerender = true;
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
 import BackToTop from '../components/BackToTop';
@@ -8,6 +9,7 @@ import PortfolioAssistantFAB from '../components/PortfolioAssistantFAB';
 import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
 import NetworkStatus from '../components/NetworkStatus';
+
 
 interface Props {
 	title?: string;

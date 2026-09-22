@@ -1,23 +1,39 @@
 ---
+export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { getProjects, getSiteSettings, getSocialLinks } from '../../lib/data';
 
-const { slug } = Astro.params;
+export async function getStaticPaths() {
+	const projects = await getProjects();
+
+	return projects.map((project) => ({
+		params: {
+			slug: project.slug
+		},
+		props: {
+			project
+		}
+	}));
+}
+
+const { project } = Astro.props;
+
 const allProjects = await getProjects();
-const currentIndex = allProjects.findIndex(p => p.slug === slug);
-const project = allProjects[currentIndex];
+const currentIndex = allProjects.findIndex((p) => p.slug === project.slug);
+
 const settings = await getSiteSettings();
 const socialLinks = await getSocialLinks();
 
-if (!project) {
-	return Astro.redirect('/404');
-}
-
 // Adjacent projects for bottom navigation
-const prevProject = currentIndex > 0 ? allProjects[currentIndex - 1] : null;
-const nextProject = currentIndex < allProjects.length - 1 ? allProjects[currentIndex + 1] : null;
+const prevProject =
+	currentIndex > 0 ? allProjects[currentIndex - 1] : null;
+
+const nextProject =
+	currentIndex < allProjects.length - 1
+		? allProjects[currentIndex + 1]
+		: null;
 ---
 
 <Layout 
