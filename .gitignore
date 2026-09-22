@@ -30,7 +30,9 @@ Sanity-studio/
 # misc
 .DS_Store
 *.pem
-
+MDs/
+AGENT.md
+TODO.md
 scripts/
 # debug
 npm-debug.log*
