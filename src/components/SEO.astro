@@ -16,8 +16,8 @@ const {
   publishedTime,
 } = Astro.props;
 
-const canonicalURL = Astro.props.canonicalURL || new URL(Astro.url.pathname, Astro.site || Astro.url.origin || 'https://crischarles.dev').href;
-const socialImageURL = new URL(image, Astro.site || Astro.url.origin || 'https://crischarles.dev').href;
+const canonicalURL = Astro.props.canonicalURL || new URL(Astro.url.pathname, Astro.site || Astro.url.origin || 'https://crischarles.com').href;
+const socialImageURL = new URL(image, Astro.site || Astro.url.origin || 'https://crischarles.com').href;
 
 // JSON-LD Structured Data Schema (Person & WebSite)
 const schemaData = {
@@ -25,20 +25,20 @@ const schemaData = {
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://crischarles.top/#website",
-      "url": "https://crischarles.top",
+      "@id": "https://crischarles.com/#website",
+      "url": "https://crischarles.com",
       "name": "Cris Charles Garcia Portfolio",
       "description": description,
       "publisher": {
-        "@id": "https://crischarles.top/#person"
+        "@id": "https://crischarles.com/#person"
       },
       "inLanguage": "en-US"
     },
     {
       "@type": "Person",
-      "@id": "https://crischarles.top/#person",
+      "@id": "https://crischarles.com/#person",
       "name": "Cris Charles Garcia",
-      "url": "https://crischarles.top",
+      "url": "https://crischarles.com",
       "image": socialImageURL,
       "jobTitle": "Full-Stack Developer & Software Engineer",
       "description": description,
@@ -60,10 +60,10 @@ const schemaData = {
       "url": canonicalURL,
       "name": title,
       "isPartOf": {
-        "@id": "https://crischarles.top/#website"
+        "@id": "https://crischarles.com/#website"
       },
       "mainEntity": {
-        "@id": "https://crischarles.top/#person"
+        "@id": "https://crischarles.com/#person"
       }
     }
   ]
