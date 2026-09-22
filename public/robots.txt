@@ -18,4 +18,4 @@ Allow: /
 # Crawl-delay: 1
 
 # Reference to sitemap
-Sitemap: https://portfolioo-two-delta.vercel.app/sitemap.xml
+Sitemap: https://crischarles.com/sitemap.xml
