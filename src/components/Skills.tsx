@@ -20,6 +20,7 @@ const getFaClassByName = (name: string): string => {
   if (n.includes('ts') || n.includes('typescript')) return 'fa-brands fa-js';
   if (n.includes('html')) return 'fa-brands fa-html5';
   if (n.includes('css')) return 'fa-brands fa-css3-alt';
+  if (n.includes('tailwind')) return 'fa-brands fa-tailwind-css';
   if (n.includes('python')) return 'fa-brands fa-python';
   if (n.includes('flutter')) return 'fa-solid fa-mobile-screen-button';
   if (n.includes('mysql') || n.includes('sql') || n.includes('database') || n.includes('mongo') || n.includes('postgres')) return 'fa-solid fa-database';

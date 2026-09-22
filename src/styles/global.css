@@ -2,6 +2,8 @@
 
 @import "tailwindcss";
 
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
 @layer base {
   :root {
     --font-heading: 'Space Grotesk', system-ui, sans-serif;
