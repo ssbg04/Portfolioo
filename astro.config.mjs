@@ -7,12 +7,16 @@ import tailwindcss from '@tailwindcss/vite';
 import vercel from '@astrojs/vercel';
 
 import basicSsl from '@vitejs/plugin-basic-ssl';
+import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
   site: 'https://crischarles.com',
   output: 'server',
-  integrations: [react()],
+  integrations: [
+    react(),
+    sitemap()
+  ],
 
   vite: {
     plugins: [tailwindcss(), basicSsl()],
