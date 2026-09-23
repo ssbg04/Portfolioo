@@ -1,11 +1,11 @@
 # Robots.txt for ssbg04/Portfolioo Portfolio
-# This file helps search engines navigate and index your portfolio site
 
 User-agent: *
 Allow: /
 Disallow: /api/
 Disallow: /.vercel/
 Disallow: /.astro/
+Disallow: /maintenance
 
 # Allow specific crawlers
 User-agent: Googlebot
@@ -14,8 +14,10 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
+Host: crischarles.com
+
 # Crawl delay (optional - uncomment if needed)
 # Crawl-delay: 1
 
 # Reference to sitemap
-Sitemap: https://crischarles.com/sitemap.xml
+Sitemap: https://crischarles.com/sitemap-index.xml
