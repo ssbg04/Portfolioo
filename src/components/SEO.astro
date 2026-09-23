@@ -16,8 +16,29 @@ const {
   publishedTime,
 } = Astro.props;
 
-const canonicalURL = Astro.props.canonicalURL || new URL(Astro.url.pathname, Astro.site || Astro.url.origin || 'https://crischarles.com').href;
-const socialImageURL = new URL(image, Astro.site || Astro.url.origin || 'https://crischarles.com').href;
+const siteOrigin = Astro.site ? new URL(Astro.site).origin : 'https://crischarles.com';
+const normalizedPath = Astro.url.pathname === '/' ? '/' : Astro.url.pathname.replace(/\/+$/, '');
+const canonicalURL =
+  Astro.props.canonicalURL ||
+  new URL(normalizedPath, siteOrigin).href;
+
+const imagePath = image.startsWith('http')
+  ? image
+  : image.startsWith('/')
+    ? image
+    : `/${image}`;
+
+const socialImageURL = new URL(imagePath, siteOrigin).href;
+
+const isIndexablePage =
+  !Astro.url.pathname.startsWith('/api/') &&
+  !Astro.url.pathname.startsWith('/maintenance') &&
+  !Astro.url.pathname.startsWith('/_astro') &&
+  !Astro.url.pathname.startsWith('/_image');
+
+const robotsValue = isIndexablePage
+  ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+  : 'noindex, nofollow';
 
 const socialProfiles = [
   'https://github.com/ssbg04',
@@ -86,7 +107,7 @@ const schemaData = {
 <meta name="title" content={title} />
 <meta name="description" content={description} />
 <meta name="author" content="Cris Charles Garcia" />
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+<meta name="robots" content={robotsValue} />
 <link rel="canonical" href={canonicalURL} />
 
 <!-- Open Graph / Facebook -->
