@@ -23,12 +23,9 @@ import {
 
 // Server-side fetch from Sanity (with resilient fallbacks)
 const settings = await getSiteSettings();
-const allProjects = await getProjects();
-const featuredProjects = allProjects.length > 0
-  ? (allProjects.some(p => p.featured) ? allProjects.filter(p => p.featured) : allProjects).slice(0, 5)
-  : [];
+const featuredProjects = await getProjects(true);
 const skills = await getSkills();
-const certifications = await getCertifications();
+const certifications = await getCertifications(true);
 const experience = await getExperience();
 const education = await getEducation();
 const testimonials = await getTestimonials();

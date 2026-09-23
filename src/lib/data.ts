@@ -413,64 +413,80 @@ export async function getSkills(): Promise<Skill[]> {
   }
 }
 
-export async function getCertifications(): Promise<Certification[]> {
+export async function getCertifications(featuredOnly = false): Promise<Certification[]> {
   try {
     if (!sanityClient) return mockCertifications;
-    const certs = await sanityClient.fetch(`*[_type == "certification" && featured == true] | order(coalesce(order, 99) asc)`);
+
+    const query = featuredOnly
+      ? `*[_type == "certification" && featured == true] | order(coalesce(order, 99) asc)`
+      : `*[_type == "certification"] | order(coalesce(order, 99) asc)`;
+
+    const certs = await sanityClient.fetch(query);
+
     if (!certs || certs.length === 0) return mockCertifications;
-    const sanityCerts = certs.map((c: any, idx: number) => {
-      const badgeImg = c.badgeImage ? urlFor(c.badgeImage) : (c.badgeImageUrl || '');
-      return {
-        id: c._id || `cert-${idx}`,
-        code: c.code || (idx + 1 < 10 ? `0${idx + 1}` : `${idx + 1}`),
-        title: c.title || 'Certification',
-        issuer: c.issuer || 'Credential Issuer',
-        description: c.description || '',
-        badgeImage: badgeImg,
-        badgeUrl: c.badgeUrl || '#',
-        category: c.category || 'General',
-        skills: Array.isArray(c.skills) ? c.skills : [],
-        issueDate: c.issueDate,
-        featured: c.featured ?? true,
-        order: typeof c.order === 'number' ? c.order : idx + 1,
-        type: c.type || (c.badgeUrl?.includes('credly.com') ? 'badge' : (c.title?.toLowerCase().includes('badge') ? 'badge' : 'certificate'))
-      };
-    });
-    return sanityCerts;
+
+    return certs.map((c: any, idx: number) => ({
+      id: c._id || `cert-${idx}`,
+      code: c.code || (idx + 1 < 10 ? `0${idx + 1}` : `${idx + 1}`),
+      title: c.title || 'Certification',
+      issuer: c.issuer || 'Credential Issuer',
+      description: c.description || '',
+      badgeImage: c.badgeImage ? urlFor(c.badgeImage) : (c.badgeImageUrl || ''),
+      badgeUrl: c.badgeUrl || '#',
+      category: c.category || 'General',
+      skills: Array.isArray(c.skills) ? c.skills : [],
+      issueDate: c.issueDate,
+      featured: c.featured === true,
+      order: typeof c.order === 'number' ? c.order : idx + 1,
+      type: c.type || (
+        c.badgeUrl?.includes('credly.com')
+          ? 'badge'
+          : (c.title?.toLowerCase().includes('badge') ? 'badge' : 'certificate')
+      )
+    }));
   } catch (error) {
     console.error('Error fetching certification from Sanity:', error);
     return [];
   }
 }
 
-export async function getProjects(): Promise<Project[]> {
+export async function getProjects(featuredOnly = false): Promise<Project[]> {
   try {
     if (!sanityClient) return mockProjects;
-    const projects = await sanityClient.fetch(`*[_type == "project" && featured == true] | order(coalesce(order, 99) asc)`);
+
+    const query = featuredOnly
+      ? `*[_type == "project" && featured == true] | order(coalesce(order, 99) asc)`
+      : `*[_type == "project"] | order(coalesce(order, 99) asc)`;
+
+    const projects = await sanityClient.fetch(query);
+
     if (!projects || projects.length === 0) return mockProjects;
-    return projects.map((p: any, idx: number) => {
-      const slugVal = p.slug?.current || (typeof p.slug === 'string' ? p.slug : (p.title ? p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : `project-${idx}`));
-      const gallery = Array.isArray(p.gallery) ? p.gallery.map((img: any) => urlFor(img)).filter(Boolean) : [];
-      return {
-        title: p.title || 'Untitled Project',
-        slug: slugVal,
-        summary: p.summary || p.description || '',
-        description: p.description || p.summary || '',
-        category: p.category || 'Software Project',
-        status: p.status || 'LIVE PRODUCTION',
-        coverImage: p.coverImage ? urlFor(p.coverImage) : undefined,
-        gallery,
-        technologies: Array.isArray(p.technologies) ? p.technologies : [],
-        highlights: Array.isArray(p.highlights) ? p.highlights : [],
-        repositoryUrl: p.repositoryUrl,
-        liveUrl: p.liveUrl,
-        featured: p.featured ?? true,
-        order: typeof p.order === 'number' ? p.order : idx + 1,
-        publishedAt: p.publishedAt ? String(p.publishedAt) : '2026'
-      };
-    });
+
+    return projects.map((p: any, idx: number) => ({
+      title: p.title || 'Untitled Project',
+      slug: p.slug?.current || (
+        typeof p.slug === 'string'
+          ? p.slug
+          : p.title?.toLowerCase().replace(/[^a-z0-9]+/g, '-') || `project-${idx}`
+      ),
+      summary: p.summary || p.description || '',
+      description: p.description || p.summary || '',
+      category: p.category || 'Software Project',
+      status: p.status || 'LIVE PRODUCTION',
+      coverImage: p.coverImage ? urlFor(p.coverImage) : undefined,
+      gallery: Array.isArray(p.gallery)
+        ? p.gallery.map((img: any) => urlFor(img)).filter(Boolean)
+        : [],
+      technologies: Array.isArray(p.technologies) ? p.technologies : [],
+      highlights: Array.isArray(p.highlights) ? p.highlights : [],
+      repositoryUrl: p.repositoryUrl,
+      liveUrl: p.liveUrl,
+      featured: p.featured === true,
+      order: typeof p.order === 'number' ? p.order : idx + 1,
+      publishedAt: p.publishedAt ? String(p.publishedAt) : '2026'
+    }));
   } catch (error) {
-    console.error('Error fetching project from Sanity:', error);
+    console.error('Error fetching projects from Sanity:', error);
     return mockProjects;
   }
 }
