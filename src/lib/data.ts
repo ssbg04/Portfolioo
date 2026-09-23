@@ -416,7 +416,7 @@ export async function getSkills(): Promise<Skill[]> {
 export async function getCertifications(): Promise<Certification[]> {
   try {
     if (!sanityClient) return mockCertifications;
-    const certs = await sanityClient.fetch(`*[_type == "certification"] | order(coalesce(order, 99) asc)`);
+    const certs = await sanityClient.fetch(`*[_type == "certification" && featured == true] | order(coalesce(order, 99) asc)`);
     if (!certs || certs.length === 0) return mockCertifications;
     const sanityCerts = certs.map((c: any, idx: number) => {
       const badgeImg = c.badgeImage ? urlFor(c.badgeImage) : (c.badgeImageUrl || '');
@@ -446,7 +446,7 @@ export async function getCertifications(): Promise<Certification[]> {
 export async function getProjects(): Promise<Project[]> {
   try {
     if (!sanityClient) return mockProjects;
-    const projects = await sanityClient.fetch(`*[_type == "project"] | order(coalesce(order, 99) asc)`);
+    const projects = await sanityClient.fetch(`*[_type == "project" && featured == true] | order(coalesce(order, 99) asc)`);
     if (!projects || projects.length === 0) return mockProjects;
     return projects.map((p: any, idx: number) => {
       const slugVal = p.slug?.current || (typeof p.slug === 'string' ? p.slug : (p.title ? p.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : `project-${idx}`));
