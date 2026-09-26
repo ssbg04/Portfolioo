@@ -42,63 +42,134 @@ const robotsValue = isIndexablePage
 
 const socialProfiles = [
   'https://github.com/ssbg04',
+  'https://www.facebook.com/kristyarls345/',
+  'https://www.tiktok.com/@sisibigi',
   'https://crischarles.com',
 ];
 
-// JSON-LD Structured Data Schema (Person & WebSite)
+// Navigation structure for Google Organic Sitelinks
+const navigationElements = [
+  {
+    name: 'Projects',
+    description: 'Explore full-stack software applications, information systems, and developer projects built by Cris Charles Garcia.',
+    path: '/projects'
+  },
+  {
+    name: 'About',
+    description: "Learn more about Cris Charles Garcia's professional history, technical expertise, education, and developer biography.",
+    path: '/about'
+  },
+  {
+    name: 'Certifications',
+    description: 'Verified credentials and certifications earned by Cris Charles Garcia from Cisco and other industry-recognized programs.',
+    path: '/certifications'
+  },
+  {
+    name: 'Gallery',
+    description: 'Visual showcase and photo archive of project milestones, developer activities, and academic experiences.',
+    path: '/gallery'
+  },
+  {
+    name: 'Contact',
+    description: 'Get in touch with Cris Charles Garcia for development inquiries, consulting, or project collaborations.',
+    path: '/contact'
+  }
+];
+
+const pathSegments = normalizedPath.split('/').filter(Boolean);
+const breadcrumbSchema = pathSegments.length > 0 ? {
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": siteOrigin
+    },
+    ...pathSegments.map((seg, idx) => ({
+      "@type": "ListItem",
+      "position": idx + 2,
+      "name": seg.charAt(0).toUpperCase() + seg.slice(1).replace(/-/g, ' '),
+      "item": `${siteOrigin}/${pathSegments.slice(0, idx + 1).join('/')}`
+    }))
+  ]
+} : null;
+
+// JSON-LD Structured Data Schema (Person, WebSite, SiteNavigation, Breadcrumbs)
+const schemaGraph: any[] = [
+  {
+    "@type": "WebSite",
+    "@id": `${siteOrigin}/#website`,
+    "url": siteOrigin,
+    "name": "Cris Charles Garcia",
+    "alternateName": ["Cris Charles", "Cris Charles Garcia Portfolio"],
+    "description": description,
+    "publisher": {
+      "@id": `${siteOrigin}/#person`
+    },
+    "inLanguage": "en-US",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": `${siteOrigin}/?q={search_term_string}`,
+      "query-input": "required name=search_term_string"
+    }
+  },
+  {
+    "@type": "Person",
+    "@id": `${siteOrigin}/#person`,
+    "name": "Cris Charles Garcia",
+    "url": siteOrigin,
+    "image": socialImageURL,
+    "jobTitle": "Full-Stack Developer & Software Engineer",
+    "description": description,
+    "sameAs": socialProfiles,
+    "knowsAbout": [
+      "Web Development",
+      "React",
+      "Astro",
+      "TypeScript",
+      "Node.js",
+      "PHP",
+      "MySQL",
+      "Cloud Architecture",
+      "Sanity CMS",
+      "Tailwind CSS",
+      "Artificial Intelligence"
+    ]
+  },
+  {
+    "@type": "ItemList",
+    "@id": `${siteOrigin}/#navigation`,
+    "name": "Site Navigation",
+    "itemListElement": navigationElements.map((item, index) => ({
+      "@type": "SiteNavigationElement",
+      "position": index + 1,
+      "name": item.name,
+      "description": item.description,
+      "url": `${siteOrigin}${item.path}`
+    }))
+  },
+  {
+    "@type": "ProfilePage",
+    "@id": canonicalURL,
+    "url": canonicalURL,
+    "name": title,
+    "isPartOf": {
+      "@id": `${siteOrigin}/#website`
+    },
+    "mainEntity": {
+      "@id": `${siteOrigin}/#person`
+    }
+  }
+];
+
+if (breadcrumbSchema) {
+  schemaGraph.push(breadcrumbSchema);
+}
+
 const schemaData = {
   "@context": "https://schema.org",
-  "@graph": [
-    {
-      "@type": "WebSite",
-      "@id": "https://crischarles.com/#website",
-      "url": "https://crischarles.com",
-      "name": "Cris Charles Garcia Portfolio",
-      "description": description,
-      "publisher": {
-        "@id": "https://crischarles.com/#person"
-      },
-      "inLanguage": "en-US",
-      "potentialAction": {
-        "@type": "SearchAction",
-        "target": "https://crischarles.com/?q={search_term_string}",
-        "query-input": "required name=search_term_string"
-      }
-    },
-    {
-      "@type": "Person",
-      "@id": "https://crischarles.com/#person",
-      "name": "Cris Charles Garcia",
-      "url": "https://crischarles.com",
-      "image": socialImageURL,
-      "jobTitle": "Full-Stack Developer & Software Engineer",
-      "description": description,
-      "sameAs": socialProfiles,
-      "knowsAbout": [
-        "Web Development",
-        "React",
-        "Astro",
-        "TypeScript",
-        "Node.js",
-        "Cloud Architecture",
-        "Sanity CMS",
-        "Tailwind CSS",
-        "Artificial Intelligence"
-      ]
-    },
-    {
-      "@type": "ProfilePage",
-      "@id": canonicalURL,
-      "url": canonicalURL,
-      "name": title,
-      "isPartOf": {
-        "@id": "https://crischarles.com/#website"
-      },
-      "mainEntity": {
-        "@id": "https://crischarles.com/#person"
-      }
-    }
-  ]
+  "@graph": schemaGraph
 };
 ---
 
