@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import haptic from '../lib/haptics';
 import { useIsMobile } from '../lib/hooks';
+import { switchTheme } from '../lib/theme';
 
 type ThemeMode = 'system' | 'light' | 'dark';
 
@@ -133,15 +134,10 @@ export default function ControlsDropdown() {
     }
 
     setResolvedTheme(resolved);
-    const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-    if (resolved === 'dark') {
-      document.documentElement.classList.add('dark');
-      metaThemeColor?.setAttribute('content', '#000000');
-    } else {
-      document.documentElement.classList.remove('dark');
-      metaThemeColor?.setAttribute('content', '#fafafa');
+    switchTheme(resolved);
+    if (mode === 'system') {
+      localStorage.setItem('theme', 'system');
     }
-    window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: resolved } }));
   };
 
   const toggleMagnifier = () => {

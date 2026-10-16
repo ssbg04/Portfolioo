@@ -24,8 +24,31 @@ export default function GithubContributions({ username = 'ssbg04', className = '
   const [data, setData] = useState<ApiResponse | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<boolean>(false);
-  const [hoveredDay, setHoveredDay] = useState<ContributionDay | null>(null);
+  const footerStatusRef = useRef<HTMLDivElement | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+
+  const handlePointerOver = (e: React.PointerEvent<HTMLDivElement>) => {
+    const target = (e.target as HTMLElement).closest<HTMLElement>('[data-day-count]');
+    if (!target || !footerStatusRef.current) return;
+    const count = target.dataset.dayCount || '0';
+    const dateFormatted = target.dataset.dayDate || '';
+    footerStatusRef.current.innerHTML = `
+      <span class="text-foreground-custom flex items-center gap-1.5 animate-fadeIn">
+        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+        <strong class="font-semibold">${count}</strong> contributions on ${dateFormatted}
+      </span>
+    `;
+  };
+
+  const handlePointerLeave = () => {
+    if (!footerStatusRef.current) return;
+    footerStatusRef.current.innerHTML = `
+      <span class="text-muted-foreground-custom/80">
+        <span class="hidden sm:inline">Hover over squares to see daily contribution activity</span>
+        <span class="sm:hidden">Swipe matrix horizontally • Tap squares to inspect</span>
+      </span>
+    `;
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -228,17 +251,21 @@ export default function GithubContributions({ username = 'ssbg04', className = '
                 <span className="flex items-center leading-none">Sat</span>
               </div>
 
-              {/* Grid Columns (Weeks) */}
-              <div className="flex-1 min-w-0 flex gap-[2px] sm:gap-[3px]">
+              {/* Grid Columns (Weeks) with Event Delegation and Cursor Stability */}
+              <div
+                className="flex-1 min-w-0 flex gap-[2px] sm:gap-[3px]"
+                data-cursor="pointer"
+                onPointerOver={handlePointerOver}
+                onPointerLeave={handlePointerLeave}
+              >
                 {weeks.map((week, wIdx) => (
                   <div key={wIdx} className="flex-1 min-w-0 flex flex-col gap-[2px] sm:gap-[3px]">
                     {week.map((day, dIdx) => (
                       <div
                         key={dIdx}
-                        onMouseEnter={() => setHoveredDay(day)}
-                        onMouseLeave={() => setHoveredDay(null)}
-                        onClick={() => setHoveredDay(day)}
-                        className={`w-full aspect-square rounded-[1.5px] sm:rounded-[3px] transition-all cursor-pointer hover:scale-125 hover:z-10 relative ${getLevelColor(day.level)}`}
+                        data-day-count={day.count}
+                        data-day-date={formatDate(day.date)}
+                        className={`w-full aspect-square rounded-[1.5px] sm:rounded-[3px] transition-transform duration-75 ease-out hover:scale-125 hover:z-10 will-change-transform relative ${getLevelColor(day.level)}`}
                         title={`${day.count} contributions on ${formatDate(day.date)}`}
                       />
                     ))}
@@ -252,18 +279,11 @@ export default function GithubContributions({ username = 'ssbg04', className = '
 
       {/* ─── Footer Details: Hover Date & Level Legend ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-border-custom/40 text-[11px] font-mono text-muted-foreground-custom">
-        <div className="min-h-5 flex items-center">
-          {hoveredDay ? (
-            <span className="text-foreground-custom flex items-center gap-1.5 animate-fadeIn">
-              <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <strong className="font-semibold">{hoveredDay.count}</strong> contributions on {formatDate(hoveredDay.date)}
-            </span>
-          ) : (
-            <span className="text-muted-foreground-custom/80">
-              <span className="hidden sm:inline">Hover over squares to see daily contribution activity</span>
-              <span className="sm:hidden">Swipe matrix horizontally • Tap squares to inspect</span>
-            </span>
-          )}
+        <div ref={footerStatusRef} className="min-h-5 flex items-center">
+          <span className="text-muted-foreground-custom/80">
+            <span className="hidden sm:inline">Hover over squares to see daily contribution activity</span>
+            <span className="sm:hidden">Swipe matrix horizontally • Tap squares to inspect</span>
+          </span>
         </div>
 
         {/* Legend */}

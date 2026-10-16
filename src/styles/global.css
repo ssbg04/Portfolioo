@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Silkscreen:wght@400;700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 @import "tailwindcss";
 
@@ -9,7 +9,7 @@
     --font-heading: 'Inter', system-ui, sans-serif;
     --font-body:    'Inter', system-ui, sans-serif;
     --font-mono:    'JetBrains Mono', monospace;
-    --font-dot:     'DotGothic16', 'Silkscreen', 'JetBrains Mono', monospace;
+    --font-dot:     'DotGothic16', 'JetBrains Mono', monospace;
 
     /* Layout */
     --sidebar-width: 256px;
@@ -162,11 +162,23 @@
     background-color: var(--bg-color);
   }
 
-  /* Smooth, flicker-free Astro View Transitions */
+  /* Smooth, hardware-accelerated View Transitions (Astro navigation & theme cross-fade) */
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 0.15s;
+    animation-duration: 0.22s;
     animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  /* Zero-lag theme transition suppression (instant 60fps switch) */
+  html.disable-transitions,
+  html.disable-transitions *,
+  html.disable-transitions *::before,
+  html.disable-transitions *::after {
+    -webkit-transition: none !important;
+    -moz-transition: none !important;
+    -o-transition: none !important;
+    -ms-transition: none !important;
+    transition: none !important;
   }
 
   html, body {
@@ -349,6 +361,67 @@
 .font-dot-matrix {
   font-family: var(--font-dot), ui-monospace, monospace !important;
   letter-spacing: 0.05em;
+}
+
+/* ─── Dot-Matrix Sprite Cursor System ─── */
+@media (hover: hover) and (pointer: fine) {
+  *,
+  *::before,
+  *::after {
+    cursor: none !important;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="search"],
+  textarea {
+    cursor: text !important;
+  }
+
+  /* Cursor Container */
+  #dot-cursor {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99999;
+    pointer-events: none;
+    opacity: 0;
+    will-change: transform;
+    transform-origin: 0 0;
+    transition: opacity 0.15s ease;
+  }
+
+  #dot-cursor canvas {
+    position: absolute;
+    top: -2px;
+    left: -2px;
+    transition: opacity 0.12s ease;
+  }
+
+  #dot-cursor .hover {
+    opacity: 0;
+  }
+
+  #dot-cursor.is-hover .hover {
+    opacity: 1;
+  }
+
+  #dot-cursor.is-hover .idle {
+    opacity: 0;
+  }
+
+  #dot-cursor .inner {
+    transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transform-origin: 0 0;
+  }
+
+  #dot-cursor.is-hover .inner {
+    transform: scale(1.2);
+  }
+
+  #dot-cursor.is-down .inner {
+    transform: scale(0.85);
+  }
 }
 
 .section-tag {

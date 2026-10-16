@@ -124,7 +124,7 @@ export default function Skills({
               {displayedSkills.map((skill) => (
                 <div
                   key={skill.name}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-card-custom/60 border border-border-custom hover:border-primary-custom/40 hover:bg-card-custom text-foreground-custom transition-all group cursor-default shadow-xs"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-card-custom/60 border border-border-custom hover:border-primary-custom/40 hover:bg-card-custom text-foreground-custom transition-all group shadow-xs"
                   aria-label={skill.name}
                   role="listitem"
                 >

@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import haptic from '../lib/haptics';
+import { switchTheme } from '../lib/theme';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -120,8 +121,27 @@ export default function PortfolioAssistantFAB() {
   const [cooldown, setCooldown] = useState(0);
   const [spamNotice, setSpamNotice] = useState<string | null>(null);
   const [isBtnHidden, setIsBtnHidden] = useState(false);
+  const [isDark, setIsDark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const updateDark = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    updateDark();
+    window.addEventListener('theme-change', updateDark);
+    return () => window.removeEventListener('theme-change', updateDark);
+  }, []);
+
+  const toggleTheme = (explicitMode?: 'light' | 'dark') => {
+    haptic.tap();
+    const currentDark = document.documentElement.classList.contains('dark');
+    const nextTheme = explicitMode || (currentDark ? 'light' : 'dark');
+    switchTheme(nextTheme);
+    setIsDark(nextTheme === 'dark');
+    return nextTheme;
+  };
 
   // Hide on scroll down, show on scroll up in mobile view
   useEffect(() => {
@@ -281,7 +301,41 @@ export default function PortfolioAssistantFAB() {
       setTimeout(() => setSpamNotice(null), 3500);
       return;
     }
-    recentSubmits.current.push(now);
+    // Direct Assistant Action: Theme switching
+    const lower = query.toLowerCase();
+    if (
+      lower === 'dark' ||
+      lower === 'light' ||
+      lower.includes('dark mode') ||
+      lower.includes('light mode') ||
+      lower.includes('switch theme') ||
+      lower.includes('toggle theme') ||
+      lower.includes('change theme')
+    ) {
+      const targetMode: 'dark' | 'light' = lower.includes('dark')
+        ? 'dark'
+        : lower.includes('light')
+        ? 'light'
+        : isDark
+        ? 'light'
+        : 'dark';
+
+      toggleTheme(targetMode);
+      setInput('');
+      requestAnimationFrame(() => {
+        setMessages((prev) => [
+          ...prev,
+          { role: 'user', text: query },
+          {
+            role: 'assistant',
+            text: targetMode === 'dark'
+              ? "Switched to **Dark Mode** (AMOLED `#000000`). Enjoy deep pitch black."
+              : "Switched to **Light Mode**. Enjoy the clean minimal aesthetic."
+          }
+        ]);
+      });
+      return;
+    }
 
     setInput('');
     setMessages((prev) => [...prev, { role: 'user', text: query }]);
@@ -342,7 +396,7 @@ export default function PortfolioAssistantFAB() {
           }}
           aria-label={isOpen ? "Close Portfolio Assistant" : "Open Portfolio Assistant"}
           aria-expanded={isOpen}
-          className="relative group p-3 sm:px-4 sm:py-3 rounded-full bg-primary-custom text-white shadow-lg hover:bg-primary-custom/90 hover:shadow-xl active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-primary-custom/80 font-medium"
+          className="relative group p-3 sm:px-4 sm:py-3 rounded-full bg-primary-custom/95 backdrop-blur-md text-white shadow-lg hover:bg-primary-custom hover:shadow-xl active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-primary-custom/80 font-medium"
         >
           {/* Animated ping badge */}
           {!isOpen && (
@@ -366,15 +420,33 @@ export default function PortfolioAssistantFAB() {
         </button>
       </div>
 
-      {/* ─── Popup Assistant Modal / Drawer ─── */}
+      {/* ─── Ambient Backdrop Blur Overlay (Mobile Screen Focus) ─── */}
       {isOpen && (
         <div
-          className="fixed bottom-20 right-4 sm:right-7 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm h-[520px] rounded-xl bg-card-custom border border-border-custom shadow-2xl flex flex-col overflow-hidden animate-modal-scale"
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-40 sm:hidden transition-opacity"
+          onClick={() => {
+            haptic.tap();
+            setIsOpen(false);
+          }}
+          aria-hidden="true"
+        />
+      )}
+
+      {/* ─── Popup Assistant Modal / Drawer with Deep Glass Blur ─── */}
+      {isOpen && (
+        <div
+          className="fixed bottom-20 right-4 sm:right-7 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm h-[530px] rounded-2xl bg-card-custom/85 dark:bg-black/85 border border-border-custom/80 shadow-[0_20px_50px_rgba(0,0,0,0.45)] flex flex-col overflow-hidden animate-modal-scale"
+          style={{
+            backdropFilter: 'blur(20px) saturate(160%)',
+            WebkitBackdropFilter: 'blur(20px) saturate(160%)',
+            transform: 'translateZ(0)',
+            willChange: 'transform',
+          }}
         >
-          {/* Header */}
-          <div className="p-3.5 border-b border-border-custom bg-muted-custom/30 flex items-center justify-between">
+          {/* Header with Quick Theme Switcher */}
+          <div className="p-3.5 border-b border-border-custom/70 bg-muted-custom/20 backdrop-blur-md flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-primary-custom/10 text-primary-custom border border-primary-custom/20 flex items-center justify-center font-mono font-medium text-xs">
+              <div className="w-7 h-7 rounded-lg bg-primary-custom/15 text-primary-custom border border-primary-custom/30 flex items-center justify-center font-mono font-bold text-xs shadow-xs">
                 PA
               </div>
               <div>
@@ -387,22 +459,63 @@ export default function PortfolioAssistantFAB() {
               </div>
             </div>
 
-            <button
-              onClick={() => {
-                haptic.tap();
-                setIsOpen(false);
-              }}
-              aria-label="Close Assistant"
-              className="p-1.5 rounded-md bg-background-custom border border-border-custom text-muted-foreground-custom hover:text-foreground-custom transition-all cursor-pointer shadow-xs"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <div className="flex items-center gap-1.5">
+              {/* Theme Toggle Button in Assistant Header - Smooth rotation micro-animation */}
+              <button
+                type="button"
+                onClick={() => {
+                  toggleTheme();
+                }}
+                aria-label={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                title={isDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                className="p-1.5 rounded-md bg-background-custom/80 border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-primary-custom/50 active:scale-95 transition-all cursor-pointer shadow-xs flex items-center justify-center relative overflow-hidden group"
+              >
+                <div className="relative w-3.5 h-3.5 flex items-center justify-center">
+                  {/* Sun Icon (Rotates & scales in dark mode) */}
+                  <svg
+                    className={`w-3.5 h-3.5 text-amber-400 absolute transition-all duration-300 ease-out transform ${
+                      isDark ? 'rotate-0 scale-100 opacity-100' : '-rotate-90 scale-0 opacity-0'
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" />
+                  </svg>
+                  {/* Moon Icon (Rotates & scales in light mode) */}
+                  <svg
+                    className={`w-3.5 h-3.5 text-slate-700 dark:text-slate-300 absolute transition-all duration-300 ease-out transform ${
+                      isDark ? 'rotate-90 scale-0 opacity-0' : 'rotate-0 scale-100 opacity-100'
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" />
+                  </svg>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.tap();
+                  setIsOpen(false);
+                }}
+                aria-label="Close Assistant"
+                className="p-1.5 rounded-md bg-background-custom/80 border border-border-custom text-muted-foreground-custom hover:text-foreground-custom transition-all cursor-pointer shadow-xs flex items-center justify-center"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
 
-          {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 text-xs leading-relaxed bg-background-custom/30">
+          {/* Messages Area with Translucent Backdrop */}
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 text-xs leading-relaxed bg-transparent">
             {messages.map((msg, i) => {
               const isUser = msg.role === 'user';
               return (
@@ -411,10 +524,10 @@ export default function PortfolioAssistantFAB() {
                   className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
                 >
                   <div
-                    className={`p-3 rounded-xl max-w-[88%] text-xs ${
+                    className={`p-3 rounded-xl max-w-[88%] text-xs backdrop-blur-sm ${
                       isUser
                         ? 'bg-primary-custom text-white font-normal rounded-br-xs shadow-xs'
-                        : 'bg-card-custom text-foreground-custom border border-border-custom rounded-bl-xs shadow-xs'
+                        : 'bg-card-custom/90 dark:bg-card-custom/75 text-foreground-custom border border-border-custom/70 rounded-bl-xs shadow-xs'
                     }`}
                   >
                     {renderMessageContent(msg.text, isUser)}
@@ -424,7 +537,7 @@ export default function PortfolioAssistantFAB() {
             })}
 
             {loading && (
-              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-card-custom border border-border-custom shadow-xs w-fit text-xs text-foreground-custom">
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-card-custom/85 backdrop-blur-sm border border-border-custom/80 shadow-xs w-fit text-xs text-foreground-custom">
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-bounce" />
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-bounce delay-100" />
                 <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-bounce delay-200" />
@@ -434,8 +547,8 @@ export default function PortfolioAssistantFAB() {
             <div ref={messagesEndRef} />
           </div>
 
-          {/* Quick Suggestions Chips with Anti-Spam Cooldown */}
-          <div className="px-3 py-2 border-t border-border-custom bg-card-custom/50 flex flex-col gap-1.5">
+          {/* Quick Suggestions Chips with Theme Switcher Chip */}
+          <div className="px-3 py-2 border-t border-border-custom/60 bg-muted-custom/20 backdrop-blur-md flex flex-col gap-1.5">
             <div className="flex items-center justify-between px-0.5">
               <span className="text-[9px] font-mono font-medium text-muted-foreground-custom uppercase tracking-wider">
                 Quick Topics
@@ -453,12 +566,37 @@ export default function PortfolioAssistantFAB() {
             </div>
 
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
+              {/* Theme Toggle Quick Chip */}
+              <button
+                type="button"
+                disabled={loading || cooldown > 0}
+                onClick={() => {
+                  const newTheme = toggleTheme();
+                  requestAnimationFrame(() => {
+                    setMessages((prev) => [
+                      ...prev,
+                      {
+                        role: 'assistant',
+                        text: newTheme === 'dark'
+                          ? "Switched to **Dark Mode** (AMOLED `#000000`)."
+                          : "Switched to **Light Mode**."
+                      }
+                    ]);
+                  });
+                }}
+                className="shrink-0 text-[10px] font-mono font-medium px-2.5 py-1 rounded-md border border-primary-custom/40 bg-primary-custom/15 text-primary-custom hover:bg-primary-custom/25 shadow-xs active:scale-95 disabled:opacity-40 cursor-pointer transition-all flex items-center gap-1"
+                title="Toggle Theme"
+              >
+                <span>{isDark ? '☀️ Light Mode' : '🌙 Dark Mode'}</span>
+              </button>
+
               {['Skills', 'Projects', 'Experience', 'Education', 'Contact'].map((q) => (
                 <button
                   key={q}
+                  type="button"
                   disabled={loading || cooldown > 0}
                   onClick={() => handleQuickPrompt(q)}
-                  className="shrink-0 text-[10px] font-mono font-normal px-2.5 py-1 rounded-md border border-border-custom bg-card-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-primary-custom/40 shadow-xs active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
+                  className="shrink-0 text-[10px] font-mono font-normal px-2.5 py-1 rounded-md border border-border-custom/80 bg-card-custom/80 text-muted-foreground-custom hover:text-foreground-custom hover:border-primary-custom/40 shadow-xs active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
                 >
                   {q}
                 </button>
@@ -466,13 +604,13 @@ export default function PortfolioAssistantFAB() {
             </div>
           </div>
 
-          {/* Input Form with Anti-Spam & Copy-Paste Throttling */}
+          {/* Input Form with Translucent Glass */}
           <form
             onSubmit={(e) => {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 border-t border-border-custom flex flex-col gap-1.5 bg-card-custom"
+            className="p-3 border-t border-border-custom/60 flex flex-col gap-1.5 bg-muted-custom/25 backdrop-blur-md"
           >
             {spamNotice && (
               <div className="text-[10px] font-mono text-rose-500 px-1 truncate flex items-center gap-1.5 animate-pulse">
@@ -493,9 +631,9 @@ export default function PortfolioAssistantFAB() {
                 placeholder={
                   cooldown > 0
                     ? `Cooldown active (${cooldown}s)...`
-                    : "Type keyword (e.g. skills, projects)..."
+                    : "Type keyword (e.g. dark mode, skills)..."
                 }
-                className="flex-1 bg-background-custom border border-border-custom rounded-lg px-3 py-1.5 text-xs text-foreground-custom placeholder:text-muted-foreground-custom font-mono focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex-1 bg-background-custom/80 border border-border-custom rounded-lg px-3 py-1.5 text-xs text-foreground-custom placeholder:text-muted-foreground-custom font-mono focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               />
               <button
                 type="submit"

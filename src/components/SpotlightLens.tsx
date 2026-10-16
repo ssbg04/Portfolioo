@@ -73,93 +73,11 @@ export default function SpotlightLens() {
   useEffect(() => {
     if (!isDesktop) return;
 
-    // On-demand RAF loop (pauses when mouse is stationary to save 100% idle CPU)
-    const renderLoop = () => {
-      const dx = mousePos.current.x - ringPos.current.x;
-      const dy = mousePos.current.y - ringPos.current.y;
-      const dist = Math.abs(dx) + Math.abs(dy);
-
-      if (dist < 0.25) {
-        ringPos.current.x = mousePos.current.x;
-        ringPos.current.y = mousePos.current.y;
-        if (ringRef.current) {
-          const scale = isMouseDownRef.current ? 0.82 : isHoveredRef.current ? 1.65 : 1;
-          ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) translate(-50%, -50%) scale(${scale})`;
-          ringRef.current.style.opacity = isVisibleRef.current ? '1' : '0';
-        }
-        rafId.current = null;
-        return;
-      }
-
-      const ease = 0.28;
-      ringPos.current.x += dx * ease;
-      ringPos.current.y += dy * ease;
-
-      if (ringRef.current) {
-        const scale = isMouseDownRef.current ? 0.82 : isHoveredRef.current ? 1.65 : 1;
-        ringRef.current.style.transform = `translate3d(${ringPos.current.x.toFixed(2)}px, ${ringPos.current.y.toFixed(2)}px, 0) translate(-50%, -50%) scale(${scale})`;
-        ringRef.current.style.opacity = isVisibleRef.current ? '1' : '0';
-      }
-
-      rafId.current = requestAnimationFrame(renderLoop);
-    };
-
-    const scheduleRender = () => {
-      if (!rafId.current) {
-        rafId.current = requestAnimationFrame(renderLoop);
-      }
-    };
-
-    scheduleRender();
-
     const handlePointerMove = (e: PointerEvent) => {
-      mousePos.current.x = e.clientX;
-      mousePos.current.y = e.clientY;
-      isVisibleRef.current = true;
-
       // If magnifier active, update its position
       if (active) {
         setMagnifierPos({ clientX: e.clientX, clientY: e.clientY });
       }
-
-      // Fast check for interactive targets
-      const target = e.target as HTMLElement | null;
-      if (target) {
-        const isInteractive = Boolean(
-          target.closest('a, button, [role="button"], input, textarea, select, .bento-card, .cursor-pointer')
-        );
-        isHoveredRef.current = isInteractive;
-
-        if (ringRef.current) {
-          if (isInteractive) {
-            ringRef.current.style.borderColor = 'var(--primary-custom)';
-            ringRef.current.style.backgroundColor = 'rgba(56, 189, 248, 0.12)';
-          } else {
-            ringRef.current.style.borderColor = '';
-            ringRef.current.style.backgroundColor = '';
-          }
-        }
-      }
-
-      scheduleRender();
-    };
-
-    const handlePointerDown = () => {
-      isMouseDownRef.current = true;
-      scheduleRender();
-    };
-
-    const handlePointerUp = () => {
-      isMouseDownRef.current = false;
-      scheduleRender();
-    };
-
-    const handleMouseLeave = () => {
-      isVisibleRef.current = false;
-    };
-
-    const handleMouseEnter = () => {
-      isVisibleRef.current = true;
     };
 
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -178,7 +96,7 @@ export default function SpotlightLens() {
             height: document.documentElement.scrollHeight,
           });
           setScroll({ x: window.scrollX, y: window.scrollY });
-          setMagnifierPos({ clientX: mousePos.current.x, clientY: mousePos.current.y });
+          setMagnifierPos({ clientX: e.clientX || 100, clientY: e.clientY || 100 });
           setActive(true);
         }
       }
@@ -195,21 +113,12 @@ export default function SpotlightLens() {
     };
 
     window.addEventListener('pointermove', handlePointerMove, { passive: true });
-    window.addEventListener('pointerdown', handlePointerDown, { passive: true });
-    window.addEventListener('pointerup', handlePointerUp, { passive: true });
-    document.addEventListener('mouseleave', handleMouseLeave);
-    document.addEventListener('mouseenter', handleMouseEnter);
     window.addEventListener('keydown', handleKeyDown);
     window.addEventListener('keyup', handleKeyUp);
     window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
-      if (rafId.current) cancelAnimationFrame(rafId.current);
       window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerdown', handlePointerDown);
-      window.removeEventListener('pointerup', handlePointerUp);
-      document.removeEventListener('mouseleave', handleMouseLeave);
-      document.removeEventListener('mouseenter', handleMouseEnter);
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
       window.removeEventListener('scroll', handleScroll);
@@ -221,50 +130,30 @@ export default function SpotlightLens() {
   const pageX = magnifierPos.clientX + scroll.x;
   const pageY = magnifierPos.clientY + scroll.y;
 
-  if (!mounted || !isDesktop) return null;
+  if (!mounted || !isDesktop || !active) return null;
 
   return (
-    <>
-      {/* ─── Magnifier Mode (Hold 'R' / Toggle) ─── */}
-      {active && (
-        <div
-          className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-2 border-primary-500/80 shadow-2xl ring-4 ring-primary-500/20 bg-background-custom"
-          style={{
-            width: LENS_SIZE,
-            height: LENS_SIZE,
-            left: magnifierPos.clientX - LENS_SIZE / 2,
-            top: magnifierPos.clientY - LENS_SIZE / 2,
-          }}
-        >
-          <div
-            className="absolute top-0 left-0"
-            style={{
-              width: bodySize.width,
-              height: bodySize.height,
-              transformOrigin: '0 0',
-              transform: `translate(${LENS_SIZE / 2 - pageX * SCALE}px, ${LENS_SIZE / 2 - pageY * SCALE}px) scale(${SCALE})`,
-            }}
-            dangerouslySetInnerHTML={{ __html: cloneHtml }}
-          />
-          <div className="absolute inset-0 rounded-full border border-border-custom pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-primary-custom shadow-xs" />
-        </div>
-      )}
-
-      {/* ─── Redesigned Single Fluid Cursor Ring (No Center Dot) ─── */}
-      {!active && (
-        <div className="fixed inset-0 pointer-events-none z-[99998] overflow-hidden select-none" aria-hidden="true">
-          {/* Outer Spring Ring (32px, Lerp follow, smooth expand on hover) */}
-          <div
-            ref={ringRef}
-            className="fixed top-0 left-0 w-8 h-8 rounded-full border border-primary-custom/50 bg-primary-custom/10 pointer-events-none will-change-transform"
-            style={{
-              transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)',
-              opacity: 0,
-            }}
-          />
-        </div>
-      )}
-    </>
+    <div
+      className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-2 border-primary-500/80 shadow-2xl ring-4 ring-primary-500/20 bg-background-custom"
+      style={{
+        width: LENS_SIZE,
+        height: LENS_SIZE,
+        left: magnifierPos.clientX - LENS_SIZE / 2,
+        top: magnifierPos.clientY - LENS_SIZE / 2,
+      }}
+    >
+      <div
+        className="absolute top-0 left-0"
+        style={{
+          width: bodySize.width,
+          height: bodySize.height,
+          transformOrigin: '0 0',
+          transform: `translate(${LENS_SIZE / 2 - pageX * SCALE}px, ${LENS_SIZE / 2 - pageY * SCALE}px) scale(${SCALE})`,
+        }}
+        dangerouslySetInnerHTML={{ __html: cloneHtml }}
+      />
+      <div className="absolute inset-0 rounded-full border border-border-custom pointer-events-none" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-primary-custom shadow-xs" />
+    </div>
   );
 }
