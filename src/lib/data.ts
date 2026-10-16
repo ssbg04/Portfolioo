@@ -1,6 +1,14 @@
 // Portfolio Data Layer (supports Sanity CMS with fallback to high-quality Mock data)
 import { sanityClient, urlFor } from './sanity';
 
+function cleanBadgeUrl(url?: string): string {
+  if (!url) return '';
+  if (url.includes('images.credly.com/size/2048x2048/')) {
+    return url.replace('/size/2048x2048/', '/size/340x340/');
+  }
+  return url;
+}
+
 export interface Project {
   title: string;
   slug: string;
@@ -346,9 +354,9 @@ export async function getSiteSettings(): Promise<SiteSettings> {
       isAvailable: settings.isAvailable ?? mockSiteSettings.isAvailable,
       availabilityStatus: settings.availabilityStatus || mockSiteSettings.availabilityStatus,
       biography: biography.length > 0 ? biography : mockSiteSettings.biography,
-      heroImage: settings.heroImage ? urlFor(settings.heroImage) : undefined,
-      heroImageNight: settings.heroImageNight ? urlFor(settings.heroImageNight) : undefined,
-      logoImage: settings.logoImage ? urlFor(settings.logoImage) : mockSiteSettings.logoImage,
+      heroImage: settings.heroImage ? urlFor(settings.heroImage, { width: 640, quality: 80 }) : undefined,
+      heroImageNight: settings.heroImageNight ? urlFor(settings.heroImageNight, { width: 640, quality: 80 }) : undefined,
+      logoImage: settings.logoImage ? urlFor(settings.logoImage, { width: 128, quality: 85 }) : mockSiteSettings.logoImage,
       email: settings.email || mockSiteSettings.email,
       location: settings.location || mockSiteSettings.location,
       resumeFile: resumeResolved,
@@ -431,7 +439,7 @@ export async function getCertifications(featuredOnly = false): Promise<Certifica
       title: c.title || 'Certification',
       issuer: c.issuer || 'Credential Issuer',
       description: c.description || '',
-      badgeImage: c.badgeImage ? urlFor(c.badgeImage) : (c.badgeImageUrl || ''),
+      badgeImage: c.badgeImage ? urlFor(c.badgeImage, { width: 480, quality: 80 }) : cleanBadgeUrl(c.badgeImageUrl || ''),
       badgeUrl: c.badgeUrl || '#',
       category: c.category || 'General',
       skills: Array.isArray(c.skills) ? c.skills : [],
@@ -473,9 +481,9 @@ export async function getProjects(featuredOnly = false): Promise<Project[]> {
       description: p.description || p.summary || '',
       category: p.category || 'Software Project',
       status: p.status || 'LIVE PRODUCTION',
-      coverImage: p.coverImage ? urlFor(p.coverImage) : undefined,
+      coverImage: p.coverImage ? urlFor(p.coverImage, { width: 900, quality: 80 }) : undefined,
       gallery: Array.isArray(p.gallery)
-        ? p.gallery.map((img: any) => urlFor(img)).filter(Boolean)
+        ? p.gallery.map((img: any) => urlFor(img, { width: 1200, quality: 80 })).filter(Boolean)
         : [],
       technologies: Array.isArray(p.technologies) ? p.technologies : [],
       highlights: Array.isArray(p.highlights) ? p.highlights : [],
@@ -550,7 +558,7 @@ export async function getTestimonials(): Promise<Testimonial[]> {
       name: t.name,
       role: t.role,
       company: t.company,
-      avatar: t.avatar ? urlFor(t.avatar) : undefined,
+      avatar: t.avatar ? urlFor(t.avatar, { width: 128, quality: 80 }) : undefined,
       quote: t.quote,
       relationship: t.relationship,
       rating: typeof t.rating === 'number' ? Math.min(5, Math.max(1, t.rating)) : 5
@@ -569,7 +577,7 @@ export async function getGalleryItems(): Promise<GalleryItem[]> {
     return items.map((g: any) => ({
       id: g._id,
       title: g.title,
-      photo: g.photo ? urlFor(g.photo) : (g.photoUrl || ''),
+      photo: g.photo ? urlFor(g.photo, { width: 960, quality: 80 }) : (g.photoUrl || ''),
       description: g.description,
       category: g.category || 'General',
       order: g.order

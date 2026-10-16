@@ -104,9 +104,9 @@ export default function Projects({
                       <img
                         src={flagshipProject.coverImage}
                         alt={flagshipProject.title}
-                        loading="eager"
+                        loading="lazy"
                         decoding="async"
-                        fetchPriority="high"
+                        fetchPriority="auto"
                         className="w-full h-full object-cover group-hover/hero:scale-[1.02] transition-transform duration-500 ease-out"
                       />
                     ) : (

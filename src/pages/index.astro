@@ -36,6 +36,7 @@ const socialLinks = await getSocialLinks();
 	title={settings.seoTitle || `${settings.fullName} | ${settings.title}`} 
 	description={settings.seoDescription || settings.valueProposition}
 	image={settings.heroImage || settings.logoImage || '/logo.png'}
+	preloadImage={settings.heroImage}
 >
 	<!-- Navigation bar -->
 	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
@@ -54,24 +55,24 @@ const socialLinks = await getSocialLinks();
 			client:load 
 		/>
 		
-		<About settings={settings} experience={experience} education={education} client:load />
+		<About settings={settings} experience={experience} education={education} client:visible />
 
-		<Skills skills={skills} limit={12} showSeeAll={true} seeAllHref="/about#skills" client:load />
+		<Skills skills={skills} limit={12} showSeeAll={true} seeAllHref="/about#skills" client:visible />
 
-		<Projects initialProjects={featuredProjects} limit={5} client:load />
+		<Projects initialProjects={featuredProjects} limit={5} client:visible />
 		
-		<Certifications certifications={certifications} client:load />
+		<Certifications certifications={certifications} client:visible />
 		
-		<Testimonials testimonials={testimonials} client:load />
+		<Testimonials testimonials={testimonials} client:visible />
 		
 		<ContactForm 
 			socialLinks={socialLinks}
 			contactHeading={settings.contactHeading}
 			contactSubtitle={settings.contactSubtitle}
 			email={settings.email}
-			client:load 
+			client:visible 
 		/>
 	</main>
 
-	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />
+	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:visible />
 </Layout>

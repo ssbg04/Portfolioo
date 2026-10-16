@@ -450,9 +450,9 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                           <img
                             src={cert.badgeImage}
                             alt={cert.title}
-                            loading={idx === 0 ? 'eager' : 'lazy'}
+                            loading="lazy"
                             decoding="async"
-                            fetchPriority={idx === 0 ? 'high' : 'auto'}
+                            fetchPriority="auto"
                             referrerPolicy="no-referrer"
                             className="max-h-full max-w-full object-contain rounded-lg drop-shadow-md group-hover:scale-105 transition-transform duration-300"
                             onError={(e) => {
@@ -559,9 +559,9 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                           <img
                             src={badge.badgeImage}
                             alt={badge.title}
-                            loading={idx < 2 ? 'eager' : 'lazy'}
+                            loading="lazy"
                             decoding="async"
-                            fetchPriority={idx < 2 ? 'high' : 'auto'}
+                            fetchPriority="auto"
                             referrerPolicy="no-referrer"
                             className="relative z-10 w-14 h-14 sm:w-24 sm:h-24 object-contain drop-shadow-md group-hover:scale-110 transition-transform duration-300"
                             onError={(e) => {

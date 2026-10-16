@@ -182,7 +182,30 @@ export default function Hero({
             </div>
 
             <div className="w-full h-full rounded-xl overflow-hidden relative bg-muted-custom/30">
-              <picture>
+              {nightImg && nightImg !== dayImg ? (
+                <>
+                  <img
+                    src={dayImg}
+                    alt={fullName}
+                    width="320"
+                    height="320"
+                    loading="eager"
+                    fetchPriority="high"
+                    decoding="async"
+                    className="w-full h-full object-cover dark:hidden"
+                  />
+                  <img
+                    src={nightImg}
+                    alt={fullName}
+                    width="320"
+                    height="320"
+                    loading="lazy"
+                    fetchPriority="auto"
+                    decoding="async"
+                    className="w-full h-full object-cover hidden dark:block"
+                  />
+                </>
+              ) : (
                 <img
                   src={dayImg}
                   alt={fullName}
@@ -191,19 +214,9 @@ export default function Hero({
                   loading="eager"
                   fetchPriority="high"
                   decoding="async"
-                  className="w-full h-full object-cover dark:hidden"
+                  className="w-full h-full object-cover"
                 />
-                <img
-                  src={nightImg}
-                  alt={fullName}
-                  width="320"
-                  height="320"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="w-full h-full object-cover hidden dark:block"
-                />
-              </picture>
+              )}
             </div>
           </div>
         </div>
