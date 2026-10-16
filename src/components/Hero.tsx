@@ -1,111 +1,8 @@
-import React, { Suspense, lazy } from 'react';
-import { motion, useMotionValue, useTransform, useScroll } from 'framer-motion';
-import { useIsMobile } from '../lib/hooks';
+import React from 'react';
 import type { SocialLink } from '../lib/data';
 import ppDay from '../assets/pp-day.webp';
 import ppNight from '../assets/pp-night.webp';
 import SectionBackground from './SectionBackground';
-
-const TiltedCard = lazy(() => import('./reactbits/TiltedCard'));
-const GlareHover = lazy(() => import('./reactbits/GlareHover'));
-
-interface InteractiveButtonProps {
-  href: string;
-  onClick: (e: React.MouseEvent<HTMLAnchorElement>) => void;
-  className: string;
-  children: React.ReactNode;
-  variant: 'primary' | 'secondary';
-  isLowTier?: boolean;
-}
-
-function InteractiveButton({ href, onClick, className, children, variant, isLowTier }: InteractiveButtonProps) {
-  if (isLowTier) {
-    return (
-      <a
-        href={href}
-        onClick={onClick}
-        className={`relative ${className}`}
-      >
-        <span className="relative z-10 flex items-center justify-center gap-2">
-          {children}
-        </span>
-      </a>
-    );
-  }
-
-  const x = useMotionValue(0);
-  const y = useMotionValue(0);
-
-  // Magnetic / Tilt effect relative to button bounds
-  const rotateX = useTransform(y, [-40, 40], [8, -8]);
-  const rotateY = useTransform(x, [-100, 100], [-8, 8]);
-
-  // Radial glow coordinates inside the button
-  const glowX = useMotionValue(0);
-  const glowY = useMotionValue(0);
-  const glowOpacity = useMotionValue(0);
-
-  const handleMouseMove = (event: React.MouseEvent<HTMLAnchorElement>) => {
-    const rect = event.currentTarget.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    // Relative mouse position from center (-width/2 to width/2)
-    const relX = event.clientX - rect.left - width / 2;
-    const relY = event.clientY - rect.top - height / 2;
-
-    x.set(relX);
-    y.set(relY);
-
-    // Pixel coordinates inside the button (for radial gradient)
-    glowX.set(event.clientX - rect.left);
-    glowY.set(event.clientY - rect.top);
-    glowOpacity.set(1);
-  };
-
-  const handleMouseLeave = () => {
-    // Reset tilt and fade out the glow
-    x.set(0);
-    y.set(0);
-    glowOpacity.set(0);
-  };
-
-  return (
-    <motion.a
-      href={href}
-      onClick={onClick}
-      onMouseMove={handleMouseMove}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        transformStyle: 'preserve-3d',
-        perspective: '600px'
-      }}
-      whileHover={{ scale: 1.04 }}
-      whileTap={{ scale: 0.94, rotateX: 0, rotateY: 0 }}
-      transition={{ type: 'spring', stiffness: 350, damping: 25 }}
-      className={`relative overflow-hidden ${className}`}
-    >
-      {/* Dynamic Radial Glow Background */}
-      <motion.div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: useTransform(
-            [glowX, glowY, glowOpacity],
-            ([gx, gy, go]) => `radial-gradient(circle 80px at ${gx}px ${gy}px, rgba(255, 255, 255, ${variant === 'primary' ? 0.25 : 0.12}), transparent 80%)`
-          ),
-          opacity: glowOpacity
-        }}
-      />
-
-      {/* Button Content */}
-      <span className="relative z-10 flex items-center justify-center gap-2">
-        {children}
-      </span>
-    </motion.a>
-  );
-}
 
 interface HeroProps {
   fullName: string;
@@ -172,51 +69,12 @@ export default function Hero({
   availabilityStatus = 'Available for new projects',
   socialLinks = []
 }: HeroProps) {
-  const [mounted, setMounted] = React.useState(false);
-  const [isLowTier, setIsLowTier] = React.useState(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
-    }
-    return false;
-  });
-  const isMobile = useIsMobile();
-
-  React.useEffect(() => {
-    setMounted(true);
-    const checkTier = () => {
-      setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
-    };
-    checkTier();
-    window.addEventListener('tier-change', checkTier);
-    return () => window.removeEventListener('tier-change', checkTier);
-  }, []);
-
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
     const element = document.getElementById(targetId);
     if (element) {
       element.scrollIntoView({ behavior: 'smooth' });
       window.history.pushState(null, '', `#${targetId}`);
-    }
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: isMobile ? 0.05 : 0.12,
-        delayChildren: isMobile ? 0.05 : 0.1
-      }
-    }
-  };
-
-  const itemVariants = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: isMobile ? 0.35 : 0.55, ease: [0.16, 1, 0.3, 1] }
     }
   };
 
@@ -229,6 +87,9 @@ export default function Hero({
         { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 4 }
       ];
 
+  const dayImg = heroImage || (ppDay as any).src || ppDay;
+  const nightImg = heroImageNight || heroImage || (ppNight as any).src || ppNight;
+
   return (
     <section
       id="home"
@@ -237,55 +98,35 @@ export default function Hero({
       <SectionBackground variant="hero" />
       <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
         {/* Left Column: Text & Actions */}
-        <motion.div
-          className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1 will-change-transform-opacity"
-          variants={isLowTier ? undefined : containerVariants}
-          initial={isLowTier ? false : "hidden"}
-          animate={mounted || isLowTier ? "visible" : "hidden"}
-        >
+        <div className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
           {/* Status Badge */}
           {isAvailable !== false && (
-            <motion.div
-              variants={isLowTier ? undefined : itemVariants}
-              className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-card-custom text-xs font-bold text-foreground-custom border-2 border-border-custom mb-4 sm:mb-6 shadow-[3px_3px_0_0_var(--border-color)] uppercase tracking-wider"
-            >
-              <span className="flex h-2.5 w-2.5 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-card-custom text-xs font-dot font-medium text-muted-foreground-custom border border-border-custom mb-4 sm:mb-6 tracking-wide shadow-xs">
+              <span className="flex h-2 w-2 relative">
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               {availabilityStatus}
-            </motion.div>
+            </div>
           )}
 
           {/* Heading */}
-          <motion.h1
-            variants={isLowTier ? undefined : itemVariants}
-            className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-3 sm:mb-4 text-foreground-custom leading-tight"
-          >
-            Hi, I'm <span className="bg-[#facc15] text-black px-2.5 py-0.5 border-2 border-black shadow-[3px_3px_0_0_#000] inline-block -rotate-1 mx-1">{fullName}</span>
-          </motion.h1>
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-3 sm:mb-4 text-foreground-custom leading-tight">
+            Hi, I'm{' '}
+            <span className="text-primary-custom">{fullName}</span>
+          </h1>
 
           {/* Title */}
-          <motion.p
-            variants={isLowTier ? undefined : itemVariants}
-            className="text-lg sm:text-xl md:text-2xl font-bold text-foreground-custom mb-3 font-heading"
-          >
+          <p className="text-lg sm:text-xl md:text-2xl font-bold text-foreground-custom mb-3 font-heading">
             {title}
-          </motion.p>
+          </p>
 
           {/* Value Proposition */}
-          <motion.p
-            variants={isLowTier ? undefined : itemVariants}
-            className="text-sm sm:text-base md:text-lg text-foreground-custom/85 dark:text-foreground-custom/90 mb-6 sm:mb-8 max-w-xl leading-relaxed font-normal"
-          >
+          <p className="text-sm sm:text-base md:text-lg text-foreground-custom/85 dark:text-foreground-custom/90 mb-6 sm:mb-8 max-w-xl leading-relaxed font-normal">
             {valueProposition}
-          </motion.p>
+          </p>
 
           {/* Actions & Social Links */}
-          <motion.div
-            variants={isLowTier ? undefined : itemVariants}
-            className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 w-full justify-center md:justify-start"
-          >
+          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 w-full justify-center md:justify-start">
             {/* Social Icons */}
             <div className="flex items-center gap-4 sm:gap-6">
               <div className="flex items-center gap-2.5">
@@ -295,7 +136,7 @@ export default function Hero({
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="tap-target w-10 h-10 rounded-xl bg-card-custom border-2 border-border-custom text-foreground-custom hover:bg-[#facc15] hover:text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 flex items-center justify-center shadow-[3px_3px_0_0_var(--border-color)]"
+                    className="tap-target w-10 h-10 rounded-lg bg-card-custom border border-border-custom text-muted-foreground-custom hover:text-primary-custom hover:border-primary-custom/40 transition-colors duration-150 flex items-center justify-center shadow-xs"
                     aria-label={`Visit Cris on ${link.platform}`}
                     title={link.platform}
                   >
@@ -303,97 +144,68 @@ export default function Hero({
                   </a>
                 ))}
               </div>
-              <div className="hidden sm:block w-0.5 h-8 bg-border-custom" />
+              <div className="hidden sm:block w-px h-8 bg-border-custom" />
             </div>
 
             {/* CTA Buttons */}
             <div className="flex flex-row items-center gap-3 w-full sm:w-auto justify-center">
-              <InteractiveButton
+              <a
                 href="#projects"
                 onClick={(e) => handleSmoothScroll(e, 'projects')}
-                variant="primary"
-                isLowTier={isLowTier}
-                className="w-1/2 sm:w-auto px-6 py-3 rounded-xl bg-[#facc15] text-black font-extrabold text-xs uppercase tracking-wider border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-1.5 group"
+                className="w-1/2 sm:w-auto px-6 py-3 rounded-lg bg-foreground-custom text-background-custom font-semibold text-sm border border-foreground-custom hover:opacity-90 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs group"
               >
                 Projects
-                <svg className="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform duration-150" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
                 </svg>
-              </InteractiveButton>
-              <InteractiveButton
+              </a>
+              <a
                 href="#contact"
                 onClick={(e) => handleSmoothScroll(e, 'contact')}
-                variant="secondary"
-                isLowTier={isLowTier}
-                className="w-1/2 sm:w-auto px-6 py-3 rounded-xl bg-card-custom text-foreground-custom font-extrabold text-xs uppercase tracking-wider border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] hover:bg-[#00f0ff] hover:text-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[5px_5px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-1.5"
+                className="w-1/2 sm:w-auto px-6 py-3 rounded-lg bg-card-custom text-foreground-custom font-semibold text-sm border border-border-custom hover:bg-muted-custom/60 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs"
               >
                 Contact
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
                 </svg>
-              </InteractiveButton>
+              </a>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
 
-        {/* Right Column: Profile Image Frame with Pop Up Spring Animation */}
+        {/* Right Column: Profile Image Frame (Zero-lag, clean executive portrait) */}
         <div className="md:col-span-5 flex justify-center order-1 md:order-2">
-          <motion.div
-            initial={{ scale: 0, rotate: -6, opacity: 0 }}
-            animate={{ scale: 1, rotate: 0, opacity: 1 }}
-            transition={{
-              type: 'spring',
-              stiffness: 240,
-              damping: 15,
-              delay: 0.15
-            }}
-            whileHover={{ scale: 1.03, rotate: 1, transition: { duration: 0.2 } }}
-            className="relative w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center p-2 rounded-2xl border-3 border-border-custom bg-card-custom shadow-[8px_8px_0_0_var(--border-color)]"
-          >
-            {/* Corner Sticker Stamp with Slap Pop-In */}
-            <motion.div
-              initial={{ scale: 0, rotate: -30, y: -20 }}
-              animate={{ scale: 1, rotate: -2, y: 0 }}
-              transition={{
-                type: 'spring',
-                stiffness: 400,
-                damping: 12,
-                delay: 0.45
-              }}
-              whileHover={{ rotate: 3, scale: 1.1 }}
-              className="absolute -top-3 -right-2 z-20 px-2.5 py-0.5 rounded-md bg-[#facc15] text-black text-[10px] font-mono font-black uppercase border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] select-none cursor-default"
-            >
+          <div className="relative w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center p-2 rounded-2xl border border-border-custom bg-card-custom shadow-md">
+            {/* Version Stamp */}
+            <div className="absolute -top-3 -right-2 z-20 px-2.5 py-0.5 rounded-md bg-card-custom text-primary-custom text-[10px] font-dot font-semibold border border-border-custom select-none cursor-default shadow-xs">
               DEV // 01
-            </motion.div>
-
-            <div className="w-full h-full rounded-xl overflow-hidden relative">
-              <Suspense fallback={<div className="w-full h-full rounded-xl bg-card-custom animate-pulse border-2 border-border-custom" />}>
-                <TiltedCard
-                  imageSrc={heroImage || (ppDay as any).src || ppDay}
-                  darkImageSrc={heroImageNight || heroImage || (ppNight as any).src || ppNight}
-                  altText={fullName}
-                  captionText={availabilityStatus}
-                  containerHeight="100%"
-                  containerWidth="100%"
-                  imageHeight="100%"
-                  imageWidth="100%"
-                  rotateAmplitude={10}
-                  scaleOnHover={1.02}
-                  showMobileWarning={false}
-                  showTooltip={true}
-                  displayOverlayContent={true}
-                  overlayContent={
-                    <GlareHover
-                      className="rounded-xl"
-                      glareColor="#ffffff"
-                      glareOpacity={0.2}
-                      glareSize={200}
-                    />
-                  }
-                />
-              </Suspense>
             </div>
-          </motion.div>
+
+            <div className="w-full h-full rounded-xl overflow-hidden relative bg-muted-custom/30">
+              <picture>
+                <img
+                  src={dayImg}
+                  alt={fullName}
+                  width="320"
+                  height="320"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-full object-cover dark:hidden"
+                />
+                <img
+                  src={nightImg}
+                  alt={fullName}
+                  width="320"
+                  height="320"
+                  loading="eager"
+                  fetchPriority="high"
+                  decoding="async"
+                  className="w-full h-full object-cover hidden dark:block"
+                />
+              </picture>
+            </div>
+          </div>
         </div>
       </div>
     </section>

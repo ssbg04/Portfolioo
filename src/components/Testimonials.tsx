@@ -132,22 +132,22 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
             <div className="flex items-center gap-3">
               {/* Slider Controls (Shown only if more than 3) */}
               {isCarousel && (
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     onClick={handlePrev}
                     aria-label="Previous testimonial"
-                    className="w-10 h-10 rounded-xl border-2 border-border-custom bg-card-custom shadow-[2px_2px_0_0_var(--border-color)] hover:bg-[#facc15] hover:text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-foreground-custom flex items-center justify-center transition-all cursor-pointer"
+                    className="w-9 h-9 rounded-lg border border-border-custom bg-card-custom hover:border-primary-custom/40 text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
                     </svg>
                   </button>
                   <button
                     onClick={handleNext}
                     aria-label="Next testimonial"
-                    className="w-10 h-10 rounded-xl border-2 border-border-custom bg-card-custom shadow-[2px_2px_0_0_var(--border-color)] hover:bg-[#facc15] hover:text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-foreground-custom flex items-center justify-center transition-all cursor-pointer"
+                    className="w-9 h-9 rounded-lg border border-border-custom bg-card-custom hover:border-primary-custom/40 text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
                   >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
                     </svg>
                   </button>
@@ -162,10 +162,10 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {testimonials.map((test, index) => (
               <ScrollReveal key={index} variant="fade-up" delay={index * 80}>
-                <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)]">
+                <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group border border-border-custom shadow-xs hover:border-primary-custom/30 transition-all">
                   <div>
                     {/* Stars / Quote Header */}
-                    <div className="flex items-center justify-between pb-3 mb-4 border-b-2 border-border-custom">
+                    <div className="flex items-center justify-between pb-3 mb-4 border-b border-border-custom">
                       <div className="flex items-center gap-1 text-xs" aria-label={`${test.rating ?? 5} out of 5 stars`}>
                         {Array.from({ length: 5 }).map((_, s) => {
                           const isFilled = s < (test.rating ?? 5);
@@ -182,7 +182,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                       </div>
 
                       {test.relationship && (
-                        <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-black bg-[#facc15] px-2 py-0.5 rounded border border-black shadow-[1px_1px_0_0_#000]">
+                        <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-primary-custom bg-primary-custom/10 px-2 py-0.5 rounded-full border border-primary-custom/20">
                           {test.relationship}
                         </span>
                       )}
@@ -194,25 +194,25 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                   </div>
 
                   {/* Profile Foot */}
-                  <div className="pt-4 border-t-2 border-border-custom flex items-center gap-3">
+                  <div className="pt-4 border-t border-border-custom flex items-center gap-3">
                     {test.avatar ? (
                       <img
                         src={test.avatar}
                         alt={test.name}
                         loading="lazy"
                         decoding="async"
-                        className="w-10 h-10 rounded-xl object-cover border-2 border-border-custom shadow-[1.5px_1.5px_0_0_var(--border-color)]"
+                        className="w-10 h-10 rounded-full object-cover border border-border-custom"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-xl bg-[#facc15] text-black border-2 border-border-custom shadow-[1.5px_1.5px_0_0_var(--border-color)] flex items-center justify-center font-extrabold text-xs">
+                      <div className="w-10 h-10 rounded-full bg-primary-custom/10 text-primary-custom border border-primary-custom/20 flex items-center justify-center font-semibold text-xs">
                         {test.name ? test.name.charAt(0) : 'T'}
                       </div>
                     )}
                     <div className="min-w-0">
-                      <h4 className="font-bold text-xs text-foreground-custom truncate">
+                      <h4 className="font-semibold text-xs text-foreground-custom truncate">
                         {test.name}
                       </h4>
-                      <p className="text-[11px] font-mono font-semibold text-muted-foreground-custom truncate">
+                      <p className="text-[11px] font-mono text-muted-foreground-custom truncate">
                         {test.role} {test.company ? `• ${test.company}` : ''}
                       </p>
                     </div>
@@ -243,10 +243,10 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                     className="shrink-0 px-2.5 box-border"
                     style={{ width: `${100 / visibleCount}%` }}
                   >
-                    <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group border-2 border-border-custom shadow-[4px_4px_0_0_var(--border-color)]">
+                    <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group border border-border-custom shadow-xs hover:border-primary-custom/30 transition-all">
                       <div>
                         {/* Rating & Tag */}
-                        <div className="flex items-center justify-between pb-3 mb-4 border-b-2 border-border-custom">
+                        <div className="flex items-center justify-between pb-3 mb-4 border-b border-border-custom">
                           <div className="flex items-center gap-1 text-xs" aria-label={`${test.rating ?? 5} out of 5 stars`}>
                             {Array.from({ length: 5 }).map((_, s) => {
                               const isFilled = s < (test.rating ?? 5);
@@ -263,7 +263,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                           </div>
 
                           {test.relationship && (
-                            <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-black bg-[#facc15] px-2 py-0.5 rounded border border-black shadow-[1px_1px_0_0_#000]">
+                            <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-primary-custom bg-primary-custom/10 px-2 py-0.5 rounded-full border border-primary-custom/20">
                               {test.relationship}
                             </span>
                           )}
@@ -275,25 +275,25 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                       </div>
 
                       {/* Author Profile */}
-                      <div className="pt-4 border-t-2 border-border-custom flex items-center gap-3">
+                      <div className="pt-4 border-t border-border-custom flex items-center gap-3">
                         {test.avatar ? (
                           <img
                             src={test.avatar}
                             alt={test.name}
                             loading="lazy"
                             decoding="async"
-                            className="w-10 h-10 rounded-xl object-cover border-2 border-border-custom shadow-[1.5px_1.5px_0_0_var(--border-color)]"
+                            className="w-10 h-10 rounded-full object-cover border border-border-custom"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-xl bg-[#facc15] text-black border-2 border-border-custom shadow-[1.5px_1.5px_0_0_var(--border-color)] flex items-center justify-center font-extrabold text-xs">
+                          <div className="w-10 h-10 rounded-full bg-primary-custom/10 text-primary-custom border border-primary-custom/20 flex items-center justify-center font-semibold text-xs">
                             {test.name ? test.name.charAt(0) : 'T'}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <h4 className="font-bold text-xs text-foreground-custom truncate">
+                          <h4 className="font-semibold text-xs text-foreground-custom truncate">
                             {test.name}
                           </h4>
-                          <p className="text-[11px] font-mono font-semibold text-muted-foreground-custom truncate">
+                          <p className="text-[11px] font-mono text-muted-foreground-custom truncate">
                             {test.role} {test.company ? `• ${test.company}` : ''}
                           </p>
                         </div>
@@ -305,16 +305,16 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
             </div>
 
             {/* Pagination Dots */}
-            <div className="flex items-center justify-center gap-2 mt-8">
+            <div className="flex items-center justify-center gap-1.5 mt-8">
               {Array.from({ length: maxIndex + 1 }).map((_, dotIdx) => (
                 <button
                   key={dotIdx}
                   onClick={() => setCurrentIndex(dotIdx)}
                   aria-label={`Go to slide ${dotIdx + 1}`}
-                  className={`h-2.5 rounded-full transition-all cursor-pointer ${
+                  className={`h-1.5 rounded-full transition-all cursor-pointer ${
                     currentIndex === dotIdx
-                      ? 'w-7 bg-[#facc15] border border-black shadow-[1.5px_1.5px_0_0_#000]'
-                      : 'w-2.5 bg-card-custom border border-border-custom'
+                      ? 'w-6 bg-primary-custom'
+                      : 'w-1.5 bg-foreground-custom/20 hover:bg-foreground-custom/40'
                   }`}
                 />
               ))}

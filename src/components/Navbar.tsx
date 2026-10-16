@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import haptic from '../lib/haptics';
-
-const ControlsDropdown = lazy(() => import('./ControlsDropdown'));
+import ControlsDropdown from './ControlsDropdown';
 
 const navItems = [
   { label: 'Home',           href: '/' },
@@ -65,18 +64,19 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
           // Always show at top of page or negative iOS bounce
           if (currentY <= 20) {
-            setScrolled(false);
-            setIsNavHidden(false);
+            setScrolled((prev) => (prev ? false : prev));
+            setIsNavHidden((prev) => (prev ? false : prev));
             lastY = currentY;
             ticking = false;
             return;
           }
 
-          setScrolled(currentY > 8);
+          const isOver = currentY > 8;
+          setScrolled((prev) => (prev !== isOver ? isOver : prev));
 
           // If drawer is open, keep navbar visible and sync lastY
           if (drawerOpenRef.current) {
-            setIsNavHidden(false);
+            setIsNavHidden((prev) => (prev ? false : prev));
             lastY = currentY;
             ticking = false;
             return;
@@ -93,10 +93,10 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
           // Scrolling down: hide when moved down past header
           if (diff > 8 && currentY > 60) {
-            setIsNavHidden(true);
+            setIsNavHidden((prev) => (prev ? prev : true));
           } else if (diff < -8) {
             // Scrolling up: reveal navbar
-            setIsNavHidden(false);
+            setIsNavHidden((prev) => (!prev ? prev : false));
           }
 
           lastY = currentY;
@@ -162,22 +162,21 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
         className="hidden md:flex fixed top-0 left-0 bottom-0 z-40 w-[var(--sidebar-width)] h-full flex-col select-none overflow-hidden overscroll-contain"
         style={{
           background: 'var(--nav-bg)',
-          borderRight: 'var(--neo-border)',
-          boxShadow: '4px 0px 0px 0px var(--border-color)',
+          borderRight: '1px solid var(--border-color)',
         }}
         aria-label="Desktop sidebar navigation"
       >
         {/* ── Brand ── */}
-        <div className="shrink-0 px-5 pt-6 pb-4 flex flex-col border-b-2 border-border-custom">
+        <div className="shrink-0 px-5 pt-6 pb-4 flex flex-col border-b border-border-custom">
           <a
             href="/"
             onClick={() => setActivePath('/')}
             className="flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
           >
-            <span className="font-heading font-black text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors truncate leading-tight">
+            <span className="font-heading font-bold text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors truncate leading-tight">
               {fullName}
             </span>
-            <span className="text-[11px] font-mono font-bold uppercase tracking-widest text-primary-custom mt-0.5 truncate">
+            <span className="text-[11px] font-dot font-semibold uppercase tracking-widest text-muted-foreground-custom mt-0.5 truncate">
               DEV_PORTFOLIO.2026
             </span>
           </a>
@@ -196,13 +195,13 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                 href={item.href}
                 onClick={() => setActivePath(item.href)}
                 aria-current={active ? 'page' : undefined}
-                className={`flex items-center px-3.5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all duration-150 ${
+                className={`flex items-center px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
                   active
-                    ? 'bg-[#facc15] text-black border-2 border-border-custom shadow-[3px_3px_0px_0px_var(--border-color)] -translate-x-[1px] -translate-y-[1px]'
-                    : 'text-foreground-custom hover:bg-[#facc15]/25 border-2 border-transparent hover:border-border-custom hover:shadow-[2px_2px_0px_0px_var(--border-color)]'
+                    ? 'text-foreground-custom bg-elevated-custom font-semibold border-l-2 border-primary-custom pl-[14px]'
+                    : 'text-muted-foreground-custom hover:bg-elevated-custom hover:text-foreground-custom border-l-2 border-transparent pl-[14px]'
                 }`}
               >
-                <span className="truncate uppercase tracking-wider font-heading">{item.label}</span>
+                <span className="truncate font-heading">{item.label}</span>
               </a>
             );
           })}
@@ -210,19 +209,17 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
         {/* ── Bottom Controls & CTA ── */}
         <div
-          className="shrink-0 px-4 py-4 flex flex-col gap-3 mt-auto border-t-2 border-border-custom"
-        >
+          className="shrink-0 px-4 py-4 flex flex-col gap-3 mt-auto border-t border-border-custom"
+          >
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-muted-foreground-custom">Preferences</span>
-            <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
-              <ControlsDropdown />
-            </Suspense>
+            <span className="text-[11px] font-dot font-bold uppercase tracking-wider text-muted-foreground-custom">Preferences</span>
+            <ControlsDropdown />
           </div>
 
           <a
             href="/contact"
             onClick={() => setActivePath('/contact')}
-            className="flex items-center justify-center w-full px-4 py-2.5 rounded-xl text-xs font-black uppercase tracking-wider bg-[#facc15] text-black border-2 border-border-custom shadow-[3px_3px_0px_0px_var(--border-color)] hover:bg-[#fde047] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-visible:ring-2 focus-visible:ring-black focus-visible:outline-none"
+            className="flex items-center justify-center w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none"
           >
             Get in Touch
           </a>
@@ -237,8 +234,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
         style={{
           height: 'var(--nav-height)',
           transform: isNavHidden && !drawerOpen ? 'translateY(-100%)' : 'translateY(0)',
-          borderBottom: 'var(--neo-border)',
-          boxShadow: '0 3px 0px 0px var(--border-color)',
+          borderBottom: '1px solid var(--border-color)',
           transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
           willChange: 'transform',
           pointerEvents: 'auto',
@@ -257,10 +253,10 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
           {/* Neo-Brutalist Capsule Hamburger Toggle */}
           <button
-            className="tap-target relative flex items-center gap-2 px-3 py-1.5 rounded-full cursor-pointer shrink-0 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom select-none border-2 border-border-custom shadow-[2px_2px_0px_0px_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+            className="tap-target relative flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer shrink-0 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom select-none border border-border-custom active:opacity-75"
             style={{
-              background: drawerOpen ? '#facc15' : 'var(--card-bg)',
-              color: '#000000',
+              background: 'var(--card-bg)',
+              color: 'var(--fg-color)',
             }}
             onClick={() => { haptic.tap(); setDrawerOpen(prev => !prev); }}
             aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -268,7 +264,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
             aria-controls="mobile-nav-drawer"
           >
             <span
-              className="text-[11px] font-mono font-black tracking-wider uppercase"
+              className="text-[11px] font-dot font-black tracking-wider uppercase"
               style={{ color: 'var(--fg-color)' }}
             >
               {drawerOpen ? 'Close' : 'Menu'}
@@ -307,7 +303,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
             className="absolute inset-0"
             style={{
               background: 'var(--nav-drawer-bg)',
-              borderTop: 'var(--neo-border)',
+              borderTop: '1px solid var(--border-color)',
             }}
           />
 
@@ -324,10 +320,10 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                   href={item.href}
                   onClick={() => { setActivePath(item.href); setDrawerOpen(false); }}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative flex items-center justify-between px-4 py-3.5 rounded-xl text-base font-black transition-all duration-150 uppercase tracking-wider ${
+                  className={`relative flex items-center justify-between px-4 py-3.5 rounded-lg text-base font-semibold transition-all duration-150 ${
                     active
-                      ? 'bg-[#facc15] text-black border-2 border-border-custom shadow-[3px_3px_0px_0px_var(--border-color)] -translate-x-[1px] -translate-y-[1px]'
-                      : 'bg-white dark:bg-[#161826] text-foreground-custom border-2 border-border-custom shadow-[2px_2px_0px_0px_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none'
+                      ? 'bg-elevated-custom text-foreground-custom border-l-2 border-primary-custom pl-[14px]'
+                      : 'bg-card-custom text-muted-foreground-custom border border-border-custom hover:bg-elevated-custom hover:text-foreground-custom'
                   }`}
                   style={{ animationDelay: `${i * 30}ms` }}
                 >
@@ -340,19 +336,17 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
           {/* ── Bottom Footer ── */}
           <div
-            className="relative px-5 py-5 flex flex-col gap-3.5 shrink-0 pb-safe border-t-2 border-border-custom bg-card-custom"
+            className="relative px-5 py-5 flex flex-col gap-3.5 shrink-0 pb-safe border-t border-border-custom bg-card-custom"
           >
             <div className="flex items-center justify-between px-1">
               <span className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">Preferences</span>
-              <Suspense fallback={<div className="w-8 h-8 rounded-full bg-foreground-custom/10 animate-pulse" />}>
-                <ControlsDropdown />
-              </Suspense>
+              <ControlsDropdown />
             </div>
 
             <a
               href="/contact"
               onClick={() => { setActivePath('/contact'); setDrawerOpen(false); }}
-              className="tap-target relative flex items-center justify-center w-full px-4 py-3.5 rounded-xl text-sm font-black uppercase tracking-wider bg-[#facc15] text-black border-2 border-border-custom shadow-[4px_4px_0px_0px_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all focus-visible:ring-2 focus-visible:ring-black focus-visible:outline-none"
+              className="tap-target relative flex items-center justify-center w-full px-4 py-3.5 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none"
             >
               Get in Touch
             </a>

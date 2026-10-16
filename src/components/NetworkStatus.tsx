@@ -45,14 +45,14 @@ export default function NetworkStatus() {
     <div
       role="status"
       aria-live="polite"
-      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-xl border-2 sm:border-3 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] flex items-center gap-2.5 text-xs font-mono font-bold transition-all duration-300 pointer-events-none select-none bg-card-custom text-foreground-custom ${
+      className={`fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full border border-border-custom shadow-lg backdrop-blur-md flex items-center gap-2.5 text-xs font-mono font-medium transition-all duration-300 pointer-events-none select-none bg-card-custom/95 text-foreground-custom ${
         isOnline ? '' : 'text-amber-500'
       }`}
       style={{ animation: 'bentoReveal 0.25s cubic-bezier(0.16, 1, 0.3, 1) both' }}
     >
       <span
-        className={`w-2.5 h-2.5 rounded-full shrink-0 border border-border-custom ${
-          isOnline ? 'bg-emerald-400' : 'bg-amber-400 animate-pulse'
+        className={`w-2 h-2 rounded-full shrink-0 ${
+          isOnline ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-amber-500 animate-pulse'
         }`}
       />
       <span>

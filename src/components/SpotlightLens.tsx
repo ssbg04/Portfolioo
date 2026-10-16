@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 
 export default function SpotlightLens() {
   const [active, setActive] = useState(false);
@@ -74,34 +73,44 @@ export default function SpotlightLens() {
   useEffect(() => {
     if (!isDesktop) return;
 
-    // 120 FPS RAF Animation Loop (Hardware Accelerated via translate3d)
+    // On-demand RAF loop (pauses when mouse is stationary to save 100% idle CPU)
     const renderLoop = () => {
-      // Smooth spring follow with Linear Interpolation (Lerp)
-      const ease = 0.18;
-      ringPos.current.x += (mousePos.current.x - ringPos.current.x) * ease;
-      ringPos.current.y += (mousePos.current.y - ringPos.current.y) * ease;
+      const dx = mousePos.current.x - ringPos.current.x;
+      const dy = mousePos.current.y - ringPos.current.y;
+      const dist = Math.abs(dx) + Math.abs(dy);
 
-      const rx = Number(ringPos.current.x.toFixed(2));
-      const ry = Number(ringPos.current.y.toFixed(2));
-      const mx = Number(mousePos.current.x.toFixed(2));
-      const my = Number(mousePos.current.y.toFixed(2));
+      if (dist < 0.25) {
+        ringPos.current.x = mousePos.current.x;
+        ringPos.current.y = mousePos.current.y;
+        if (ringRef.current) {
+          const scale = isMouseDownRef.current ? 0.82 : isHoveredRef.current ? 1.65 : 1;
+          ringRef.current.style.transform = `translate3d(${ringPos.current.x}px, ${ringPos.current.y}px, 0) translate(-50%, -50%) scale(${scale})`;
+          ringRef.current.style.opacity = isVisibleRef.current ? '1' : '0';
+        }
+        rafId.current = null;
+        return;
+      }
+
+      const ease = 0.28;
+      ringPos.current.x += dx * ease;
+      ringPos.current.y += dy * ease;
 
       if (ringRef.current) {
-        let scale = 1;
-        if (isMouseDownRef.current) {
-          scale = 0.82;
-        } else if (isHoveredRef.current) {
-          scale = 1.65;
-        }
-
-        ringRef.current.style.transform = `translate3d(${rx}px, ${ry}px, 0) translate(-50%, -50%) scale(${scale})`;
+        const scale = isMouseDownRef.current ? 0.82 : isHoveredRef.current ? 1.65 : 1;
+        ringRef.current.style.transform = `translate3d(${ringPos.current.x.toFixed(2)}px, ${ringPos.current.y.toFixed(2)}px, 0) translate(-50%, -50%) scale(${scale})`;
         ringRef.current.style.opacity = isVisibleRef.current ? '1' : '0';
       }
 
       rafId.current = requestAnimationFrame(renderLoop);
     };
 
-    rafId.current = requestAnimationFrame(renderLoop);
+    const scheduleRender = () => {
+      if (!rafId.current) {
+        rafId.current = requestAnimationFrame(renderLoop);
+      }
+    };
+
+    scheduleRender();
 
     const handlePointerMove = (e: PointerEvent) => {
       mousePos.current.x = e.clientX;
@@ -125,22 +134,24 @@ export default function SpotlightLens() {
           if (isInteractive) {
             ringRef.current.style.borderColor = 'var(--primary-custom)';
             ringRef.current.style.backgroundColor = 'rgba(56, 189, 248, 0.12)';
-            ringRef.current.style.boxShadow = '0 0 20px rgba(56, 189, 248, 0.25)';
           } else {
             ringRef.current.style.borderColor = '';
             ringRef.current.style.backgroundColor = '';
-            ringRef.current.style.boxShadow = '';
           }
         }
       }
+
+      scheduleRender();
     };
 
     const handlePointerDown = () => {
       isMouseDownRef.current = true;
+      scheduleRender();
     };
 
     const handlePointerUp = () => {
       isMouseDownRef.current = false;
+      scheduleRender();
     };
 
     const handleMouseLeave = () => {
@@ -215,36 +226,30 @@ export default function SpotlightLens() {
   return (
     <>
       {/* ─── Magnifier Mode (Hold 'R' / Toggle) ─── */}
-      <AnimatePresence>
-        {active && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ duration: 0.12 }}
-            className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-3 border-border-custom shadow-[6px_6px_0_0_var(--border-color)] bg-background-custom"
+      {active && (
+        <div
+          className="pointer-events-none fixed z-[99999] rounded-full overflow-hidden border-2 border-primary-500/80 shadow-2xl ring-4 ring-primary-500/20 bg-background-custom"
+          style={{
+            width: LENS_SIZE,
+            height: LENS_SIZE,
+            left: magnifierPos.clientX - LENS_SIZE / 2,
+            top: magnifierPos.clientY - LENS_SIZE / 2,
+          }}
+        >
+          <div
+            className="absolute top-0 left-0"
             style={{
-              width: LENS_SIZE,
-              height: LENS_SIZE,
-              left: magnifierPos.clientX - LENS_SIZE / 2,
-              top: magnifierPos.clientY - LENS_SIZE / 2,
+              width: bodySize.width,
+              height: bodySize.height,
+              transformOrigin: '0 0',
+              transform: `translate(${LENS_SIZE / 2 - pageX * SCALE}px, ${LENS_SIZE / 2 - pageY * SCALE}px) scale(${SCALE})`,
             }}
-          >
-            <div
-              className="absolute top-0 left-0"
-              style={{
-                width: bodySize.width,
-                height: bodySize.height,
-                transformOrigin: '0 0',
-                transform: `translate(${LENS_SIZE / 2 - pageX * SCALE}px, ${LENS_SIZE / 2 - pageY * SCALE}px) scale(${SCALE})`,
-              }}
-              dangerouslySetInnerHTML={{ __html: cloneHtml }}
-            />
-            <div className="absolute inset-0 rounded-full border-2 border-black pointer-events-none" />
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-[#facc15] border-2 border-black shadow-[1px_1px_0_0_#000]" />
-          </motion.div>
-        )}
-      </AnimatePresence>
+            dangerouslySetInnerHTML={{ __html: cloneHtml }}
+          />
+          <div className="absolute inset-0 rounded-full border border-border-custom pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-primary-custom shadow-xs" />
+        </div>
+      )}
 
       {/* ─── Redesigned Single Fluid Cursor Ring (No Center Dot) ─── */}
       {!active && (
@@ -252,7 +257,7 @@ export default function SpotlightLens() {
           {/* Outer Spring Ring (32px, Lerp follow, smooth expand on hover) */}
           <div
             ref={ringRef}
-            className="fixed top-0 left-0 w-8 h-8 rounded-full border-2 border-border-custom bg-[#facc15]/20 pointer-events-none will-change-transform"
+            className="fixed top-0 left-0 w-8 h-8 rounded-full border border-primary-custom/50 bg-primary-custom/10 pointer-events-none will-change-transform"
             style={{
               transform: 'translate3d(-100px, -100px, 0) translate(-50%, -50%)',
               opacity: 0,

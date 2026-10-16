@@ -1,46 +1,16 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { useIsMobile } from '../lib/hooks';
+import React from 'react';
 
 interface ScrollRevealProps {
   children: React.ReactNode;
   className?: string;
-  variant?: 'fade-up' | 'fade-down' | 'fade-left' | 'fade-right' | 'scale-up';
+  variant?: string;
   delay?: number;
 }
 
-const variantsMap = {
-  'fade-up': { hidden: { opacity: 0, y: 32 }, visible: { opacity: 1, y: 0 } },
-  'fade-down': { hidden: { opacity: 0, y: -32 }, visible: { opacity: 1, y: 0 } },
-  'fade-left': { hidden: { opacity: 0, x: -35 }, visible: { opacity: 1, x: 0 } },
-  'fade-right': { hidden: { opacity: 0, x: 35 }, visible: { opacity: 1, x: 0 } },
-  'scale-up': { hidden: { opacity: 0, scale: 0.94 }, visible: { opacity: 1, scale: 1 } }
-};
-
-export default function ScrollReveal({ 
-  children, 
-  className = '', 
-  variant = 'fade-up',
-  delay = 0 
-}: ScrollRevealProps) {
-  const isMobile = useIsMobile();
-  const chosenVariant = variantsMap[variant] || variantsMap['fade-up'];
-
-  return (
-    <motion.div
-      data-scroll-reveal="true"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true, margin: "0px 0px -25% 0px", amount: 0.2 }}
-      variants={chosenVariant}
-      transition={{ 
-        duration: isMobile ? 0.35 : 0.55, 
-        delay: delay / 1000, 
-        ease: [0.16, 1, 0.3, 1] 
-      }}
-      className={`${className} will-change-transform-opacity`}
-    >
-      {children}
-    </motion.div>
-  );
+/**
+ * High-performance instant container that bypasses expensive
+ * scroll observers, GPU layer cloning, and layout recalculations.
+ */
+export default function ScrollReveal({ children, className = '' }: ScrollRevealProps) {
+  return <div className={className}>{children}</div>;
 }

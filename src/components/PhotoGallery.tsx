@@ -175,10 +175,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                 setZoomLevel(1);
                 setPanPosition({ x: 0, y: 0 });
               }}
-              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer border-2 border-border-custom active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
+              className={`px-3 py-1 rounded-md text-xs font-mono tracking-wide transition-all cursor-pointer border ${
                 selectedCategory === cat
-                  ? 'bg-[#facc15] text-black shadow-[3px_3px_0_0_var(--border-color)] font-black'
-                  : 'bg-card-custom text-foreground-custom shadow-[2px_2px_0_0_var(--border-color)] hover:bg-[#facc15] hover:text-black'
+                  ? 'bg-primary-custom text-white border-primary-custom font-medium shadow-xs'
+                  : 'bg-card-custom/80 text-muted-foreground-custom border-border-custom hover:text-foreground-custom hover:border-border-custom/80'
               }`}
             >
               {cat}
@@ -189,7 +189,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
 
       {/* ─── Responsive Photo Grid ─── */}
       {filteredItems.length === 0 ? (
-        <div className="py-20 text-center text-muted-foreground-custom text-sm font-mono border-2 border-dashed border-border-custom rounded-2xl bg-card-custom">
+        <div className="py-20 text-center text-muted-foreground-custom text-sm font-mono border border-dashed border-border-custom rounded-xl bg-card-custom/50">
           No photos found for this category.
         </div>
       ) : (
@@ -204,7 +204,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                 setPanPosition({ x: 0, y: 0 });
                 setModalViewMode('single');
               }}
-              className="group relative rounded-xl overflow-hidden cursor-pointer border-2 sm:border-3 border-border-custom bg-card-custom aspect-[4/3] shadow-[4px_4px_0_0_var(--border-color)] hover:shadow-[6px_6px_0_0_var(--border-color)] hover:-translate-y-0.5 active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+              className="group relative rounded-xl overflow-hidden cursor-pointer border border-border-custom bg-card-custom aspect-[4/3] shadow-xs hover:shadow-md hover:border-primary-custom/40 hover:-translate-y-0.5 active:scale-[0.99] transition-all"
               style={{
                 animation: 'galleryBottomEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both',
                 animationDelay: `${idx * 60}ms`
@@ -221,15 +221,15 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               />
 
               {/* Hover Overlay with Title + Description */}
-              <div className="absolute inset-0 bg-black/75 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-5 text-white">
+              <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-4 text-white">
                 <div className="flex justify-between items-start">
                   {item.category && (
-                    <span className="text-[10px] font-mono font-black uppercase tracking-wider px-2 py-0.5 rounded-lg bg-[#facc15] text-black border-2 border-black shadow-[2px_2px_0_0_#000]">
+                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary-custom/90 text-white border border-primary-custom/30 font-medium">
                       {item.category}
                     </span>
                   )}
-                  <span className="p-1.5 rounded-lg bg-white text-black border-2 border-black shadow-[2px_2px_0_0_#000] ml-auto">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <span className="p-1 rounded-md bg-white/20 backdrop-blur-xs text-white border border-white/20 ml-auto">
+                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                     </svg>
                   </span>
@@ -273,7 +273,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
           >
             {/* Left: Photo Counter */}
             <div className="flex items-center gap-2">
-              <span className="text-xs sm:text-sm font-mono font-black text-black px-3 py-1 rounded-xl bg-[#facc15] border-2 border-black shadow-[2px_2px_0_0_#000]">
+              <span className="text-xs font-mono font-medium text-foreground-custom px-2.5 py-1 rounded-md bg-card-custom/90 border border-border-custom shadow-xs">
                 {activeModalIndex + 1} / {filteredItems.length}
               </span>
             </div>
@@ -281,15 +281,15 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
             {/* Center: Zoom In / Zoom Out Controls & Web Grid Toggle */}
             <div className="flex items-center gap-1.5 sm:gap-2">
               {/* Zoom Toolbar */}
-              <div className="flex items-center bg-card-custom border-2 border-border-custom rounded-xl p-0.5 shadow-[2px_2px_0_0_var(--border-color)]">
+              <div className="flex items-center bg-card-custom/90 border border-border-custom rounded-lg p-0.5 shadow-xs">
                 <button
                   onClick={handleZoomOut}
                   disabled={zoomLevel <= 1}
                   aria-label="Zoom out"
                   title="Zoom Out (-)"
-                  className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-foreground-custom hover:bg-[#facc15] hover:text-black disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer text-xs flex items-center gap-1 font-bold"
+                  className="p-1.5 rounded-md text-foreground-custom hover:bg-foreground-custom/5 disabled:opacity-30 transition-all cursor-pointer text-xs flex items-center gap-1"
                 >
-                  <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
                   </svg>
                 </button>
@@ -297,7 +297,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                 <button
                   onClick={handleResetZoom}
                   title="Reset Zoom (0)"
-                  className="px-2 py-0.5 text-[11px] font-mono font-bold text-foreground-custom hover:text-[#facc15] transition-colors cursor-pointer"
+                  className="px-2 py-0.5 text-[11px] font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors cursor-pointer"
                 >
                   {Math.round(zoomLevel * 100)}%
                 </button>
@@ -307,9 +307,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                   disabled={zoomLevel >= 3}
                   aria-label="Zoom in"
                   title="Zoom In (+)"
-                  className="p-1.5 sm:px-2.5 sm:py-1 rounded-lg text-foreground-custom hover:bg-[#facc15] hover:text-black disabled:opacity-30 disabled:hover:bg-transparent transition-all cursor-pointer text-xs flex items-center gap-1 font-bold"
+                  className="p-1.5 rounded-md text-foreground-custom hover:bg-foreground-custom/5 disabled:opacity-30 transition-all cursor-pointer text-xs flex items-center gap-1"
                 >
-                  <svg className="w-3.5 h-3.5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
                   </svg>
                 </button>
@@ -323,10 +323,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                   setZoomLevel(1);
                   setPanPosition({ x: 0, y: 0 });
                 }}
-                className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] transition-all cursor-pointer active:translate-x-[1px] active:translate-y-[1px] active:shadow-none ${
+                className={`hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-mono border border-border-custom shadow-xs transition-all cursor-pointer ${
                   modalViewMode === 'grid'
-                    ? 'bg-[#facc15] text-black font-black'
-                    : 'bg-card-custom text-foreground-custom hover:bg-[#facc15] hover:text-black'
+                    ? 'bg-primary-custom text-white border-primary-custom font-medium'
+                    : 'bg-card-custom/90 text-muted-foreground-custom hover:text-foreground-custom hover:border-border-custom/80'
                 }`}
                 title={modalViewMode === 'grid' ? 'Switch to Single Photo View' : 'Switch to Image Grid in Modal'}
               >
@@ -346,9 +346,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                 setPanPosition({ x: 0, y: 0 });
               }}
               aria-label="Close modal"
-              className="p-2 sm:p-2.5 rounded-xl bg-card-custom hover:bg-rose-500 hover:text-white text-foreground-custom transition-all cursor-pointer border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+              className="p-2 rounded-lg bg-card-custom/90 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-500 text-muted-foreground-custom transition-all cursor-pointer border border-border-custom shadow-xs"
             >
-              <svg className="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
@@ -358,10 +358,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
           {modalViewMode === 'grid' ? (
             /* ── FULL IN-MODAL IMAGE GRID (For web & responsive modal browsing) ── */
             <div
-              className="w-full max-w-5xl flex-1 overflow-y-auto my-3 p-4 sm:p-6 rounded-2xl bg-card-custom border-3 border-border-custom shadow-[8px_8px_0_0_var(--border-color)] animate-modal-scale"
+              className="w-full max-w-5xl flex-1 overflow-y-auto my-3 p-4 sm:p-6 rounded-xl bg-card-custom border border-border-custom shadow-2xl animate-modal-scale"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
                 {filteredItems.map((item, idx) => (
                   <div
                     key={item.id || idx}
@@ -372,10 +372,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                       setZoomLevel(1);
                       setPanPosition({ x: 0, y: 0 });
                     }}
-                    className={`group relative rounded-xl overflow-hidden cursor-pointer border-2 transition-all aspect-[4/3] bg-card-custom ${
+                    className={`group relative rounded-lg overflow-hidden cursor-pointer border transition-all aspect-[4/3] bg-card-custom ${
                       idx === activeModalIndex
-                        ? 'border-black dark:border-white ring-3 ring-[#facc15] shadow-[4px_4px_0_0_#facc15] scale-[1.02]'
-                        : 'border-border-custom shadow-[3px_3px_0_0_var(--border-color)] hover:shadow-[5px_5px_0_0_var(--border-color)] hover:-translate-x-0.5 hover:-translate-y-0.5'
+                        ? 'border-primary-custom ring-2 ring-primary-custom/40 scale-[1.02] shadow-md'
+                        : 'border-border-custom shadow-xs hover:border-primary-custom/40'
                     }`}
                   >
                     <img
@@ -386,8 +386,8 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                       fetchPriority="low"
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
-                      <p className="text-xs font-bold font-heading text-white truncate">{item.title}</p>
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-2.5">
+                      <p className="text-xs font-medium font-heading text-white truncate">{item.title}</p>
                     </div>
                   </div>
                 ))}
@@ -403,9 +403,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               <button
                 onClick={handlePrev}
                 aria-label="Previous photo"
-                className="absolute left-1 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-xl bg-[#facc15] hover:bg-[#ffe066] text-black border-3 border-black shadow-[4px_4px_0_0_#000] transition-all cursor-pointer font-black active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                className="absolute left-1 sm:left-3 md:left-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-card-custom/90 hover:bg-card-custom text-foreground-custom border border-border-custom shadow-lg backdrop-blur-xs transition-all cursor-pointer active:scale-95"
               >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
                 </svg>
               </button>
@@ -414,9 +414,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               <button
                 onClick={handleNext}
                 aria-label="Next photo"
-                className="absolute right-1 sm:right-3 md:right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3.5 rounded-xl bg-[#facc15] hover:bg-[#ffe066] text-black border-3 border-black shadow-[4px_4px_0_0_#000] transition-all cursor-pointer font-black active:translate-x-[2px] active:translate-y-[2px] active:shadow-none"
+                className="absolute right-1 sm:right-3 md:right-4 top-1/2 -translate-y-1/2 z-30 p-2.5 sm:p-3 rounded-full bg-card-custom/90 hover:bg-card-custom text-foreground-custom border border-border-custom shadow-lg backdrop-blur-xs transition-all cursor-pointer active:scale-95"
               >
-                <svg className="w-5 h-5 sm:w-6 sm:h-6 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
                 </svg>
               </button>
@@ -431,7 +431,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
-                className={`relative rounded-2xl overflow-hidden border-3 border-border-custom bg-card-custom shadow-[8px_8px_0_0_var(--border-color)] flex items-center justify-center max-h-[58vh] sm:max-h-[64vh] md:max-h-[66vh] max-w-full touch-none select-none p-2 sm:p-3 ${
+                className={`relative rounded-xl overflow-hidden border border-border-custom bg-card-custom shadow-xl flex items-center justify-center max-h-[58vh] sm:max-h-[64vh] md:max-h-[66vh] max-w-full touch-none select-none p-2 sm:p-3 ${
                   zoomLevel > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-default'
                 }`}
               >
@@ -447,27 +447,27 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                     transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                     transformOrigin: 'center center'
                   }}
-                  className="max-h-[56vh] sm:max-h-[62vh] md:max-h-[64vh] w-auto max-w-full object-contain rounded-xl pointer-events-none select-none border border-border-custom"
+                  className="max-h-[56vh] sm:max-h-[62vh] md:max-h-[64vh] w-auto max-w-full object-contain rounded-lg pointer-events-none select-none border border-border-custom/50"
                 />
               </div>
 
               {/* Modal Caption Box */}
               {(activeItem.title || activeItem.description || activeItem.category) && (
-                <div className="mt-3 p-3.5 sm:p-4 rounded-2xl bg-card-custom border-3 border-border-custom shadow-[6px_6px_0_0_var(--border-color)] text-center max-w-2xl w-full shrink-0">
+                <div className="mt-3 p-3.5 sm:p-4 rounded-xl bg-card-custom/90 border border-border-custom shadow-md text-center max-w-2xl w-full shrink-0">
                   <div className="flex items-center justify-center gap-2 mb-1.5 flex-wrap">
                     {activeItem.category && (
-                      <span className="text-[10px] font-mono uppercase tracking-wider font-bold text-black px-2.5 py-0.5 rounded-lg bg-[#facc15] border-2 border-black shadow-[2px_2px_0_0_#000]">
+                      <span className="text-[10px] font-mono uppercase tracking-wider font-medium text-primary-custom px-2 py-0.5 rounded-md bg-primary-custom/10 border border-primary-custom/20">
                         {activeItem.category}
                       </span>
                     )}
                     {activeItem.title && (
-                      <h4 className="text-sm sm:text-base font-extrabold text-foreground-custom font-heading tracking-tight">
+                      <h4 className="text-sm sm:text-base font-semibold text-foreground-custom font-heading tracking-tight">
                         {activeItem.title}
                       </h4>
                     )}
                   </div>
                   {activeItem.description && (
-                    <p className="text-xs sm:text-sm text-muted-foreground-custom leading-relaxed font-medium max-h-28 sm:max-h-36 overflow-y-auto pr-1 select-text">
+                    <p className="text-xs sm:text-sm text-muted-foreground-custom leading-relaxed font-normal max-h-28 sm:max-h-36 overflow-y-auto pr-1 select-text">
                       {activeItem.description}
                     </p>
                   )}
@@ -479,7 +479,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
           {/* ── Bottom Web Image Grid / Thumbnail Selector Bar (Web/Desktop modal view) ── */}
           {modalViewMode === 'single' && (
             <div
-              className="hidden md:flex items-center justify-center gap-2.5 w-full max-w-4xl py-2 px-3 overflow-x-auto z-40 bg-card-custom border-3 border-border-custom rounded-2xl shadow-[4px_4px_0_0_var(--border-color)] shrink-0 mt-2"
+              className="hidden md:flex items-center justify-center gap-2 w-full max-w-4xl py-2 px-3 overflow-x-auto z-40 bg-card-custom/90 border border-border-custom rounded-xl shadow-md shrink-0 mt-2"
               onClick={(e) => e.stopPropagation()}
             >
               {filteredItems.map((item, idx) => (
@@ -491,10 +491,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                     setZoomLevel(1);
                     setPanPosition({ x: 0, y: 0 });
                   }}
-                  className={`relative w-14 h-10 lg:w-16 lg:h-11 rounded-lg overflow-hidden shrink-0 border-2 transition-all cursor-pointer ${
+                  className={`relative w-14 h-10 lg:w-16 lg:h-11 rounded-md overflow-hidden shrink-0 border transition-all cursor-pointer ${
                     idx === activeModalIndex
-                      ? 'border-black dark:border-white ring-2 ring-[#facc15] scale-105 opacity-100 shadow-[3px_3px_0_0_#000]'
-                      : 'border-border-custom opacity-60 hover:opacity-100 hover:border-black dark:hover:border-white shadow-[2px_2px_0_0_var(--border-color)] hover:scale-105'
+                      ? 'border-primary-custom ring-2 ring-primary-custom/40 scale-105 opacity-100 shadow-sm'
+                      : 'border-border-custom opacity-60 hover:opacity-100 shadow-xs hover:scale-105'
                   }`}
                   title={item.title || `Photo ${idx + 1}`}
                 >

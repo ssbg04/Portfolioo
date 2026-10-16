@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800;900&family=Space+Mono:ital,wght@0,400;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DotGothic16&family=Silkscreen:wght@400;700&family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 @import "tailwindcss";
 
@@ -6,113 +6,152 @@
 
 @layer base {
   :root {
-    --font-heading: 'Space Grotesk', system-ui, sans-serif;
-    --font-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-    --font-mono: 'Space Mono', monospace;
+    --font-heading: 'Inter', system-ui, sans-serif;
+    --font-body:    'Inter', system-ui, sans-serif;
+    --font-mono:    'JetBrains Mono', monospace;
+    --font-dot:     'DotGothic16', 'Silkscreen', 'JetBrains Mono', monospace;
 
     /* Layout */
     --sidebar-width: 256px;
     --nav-height: 60px;
 
-    /* ─── Neo-Brutalism Design Tokens (Light Palette) ─── */
-    --bg-color: #faf6f0;
-    --fg-color: #000000;
-    --primary-color: #2563eb;
-    --primary-fg-color: #ffffff;
-    --primary-neo: #facc15;
-    --secondary-color: #00f0ff;
-    --accent-pink: #ff2a85;
-    --accent-green: #22c55e;
-    --muted-color: rgba(0, 0, 0, 0.04);
-    --muted-fg-color: #4b5563;
-    --border-color: #000000;
-    --border-hover-color: #000000;
-    --nav-bg: #ffffff;
-    --nav-drawer-bg: #faf6f0;
-    --card-bg: #ffffff;
+    /* ─── Minimal Executive Design Tokens (Light Palette) ─── */
+    --bg-color:         #FAFAFA;
+    --bg-surface:       #FFFFFF;
+    --bg-elevated:      #F4F4F5;
 
-    /* Neo-Brutalist Hard Shadows & Outlines */
-    --neo-border: 2.5px solid #000000;
-    --neo-shadow: 5px 5px 0px 0px #000000;
-    --neo-shadow-hover: 8px 8px 0px 0px #000000;
-    --neo-shadow-active: 2px 2px 0px 0px #000000;
-    --neo-shadow-sm: 3px 3px 0px 0px #000000;
+    --fg-color:         #0A0A0A;
+    --muted-fg-color:   #525252;
+    --subtle-fg-color:  #A1A1AA;
 
-    --glass-bg: #ffffff;
-    --glass-border: #000000;
-    --glass-shadow: var(--neo-shadow);
-    --glass-shadow-hover: var(--neo-shadow-hover);
+    --border-color:      #E4E4E7;
+    --border-strong:     #D4D4D8;
+    --border-hover-color:#A1A1AA;
+
+    --primary-color:    #1d4ed8;
+    --primary-fg-color: #FFFFFF;
+
+    /* Legacy compat aliases — kept so existing component classes don't break */
+    --primary-neo:    #1d4ed8;
+    --secondary-color:#3b82f6;
+    --accent-pink:    #6366f1;
+    --accent-green:   #10b981;
+    --muted-color:    rgba(0, 0, 0, 0.04);
+
+    --nav-bg:          #FFFFFF;
+    --nav-drawer-bg:   #FAFAFA;
+    --card-bg:         #FFFFFF;
+
+    /* ─── Soft Shadow System (replaces neo hard offset) ─── */
+    --shadow-sm:       0 1px 2px rgba(0,0,0,0.06);
+    --shadow-md:       0 4px 12px rgba(0,0,0,0.08);
+    --shadow-lg:       0 12px 32px rgba(0,0,0,0.10);
+    --shadow-hover:    0 8px 24px rgba(0,0,0,0.12);
+
+    /* Legacy neo-shadow aliases → mapped to soft equivalents */
+    --neo-border:       1px solid var(--border-color);
+    --neo-shadow:       var(--shadow-sm);
+    --neo-shadow-hover: var(--shadow-hover);
+    --neo-shadow-active:var(--shadow-sm);
+    --neo-shadow-sm:    var(--shadow-sm);
+
+    /* ─── Glass System ─── */
+    --glass-bg:        rgba(255,255,255,0.80);
+    --glass-border:    var(--border-color);
+    --glass-blur:      12px;
+    --glass-saturate:  160%;
+    --glass-shadow:    var(--shadow-md);
+    --glass-shadow-hover: var(--shadow-hover);
     --glass-highlight: none;
 
-    --bento-gap: 1.25rem;
-    --bento-radius: 18px;
-    --primary: 217 91% 60%;
-    --background: 40 33% 96%;
-    --foreground: 0 0% 0%;
+    /* ─── Border Radius ─── */
+    --bento-gap:    1.25rem;
+    --bento-radius: 14px;
+
+    /* Tailwind theme compat */
+    --primary:    220 85% 57%;
+    --background: 0 0% 98%;
+    --foreground: 0 0% 4%;
   }
 
   .dark {
-    /* ─── Neo-Brutalism Dark Palette (High-Contrast Neon-Pop) ─── */
-    --bg-color: #0d0e15;
-    --fg-color: #ffffff;
-    --primary-color: #38bdf8;
-    --primary-fg-color: #000000;
-    --primary-neo: #facc15;
-    --secondary-color: #a855f7;
-    --accent-pink: #ff2a85;
-    --accent-green: #4ade80;
-    --muted-color: rgba(255, 255, 255, 0.06);
-    --muted-fg-color: #9ca3af;
-    --border-color: #ffffff;
-    --border-hover-color: #facc15;
-    --nav-bg: #141622;
-    --nav-drawer-bg: #0d0e15;
-    --card-bg: #161826;
+    /* ─── AMOLED Pure Black Dark Palette (#000000) ─── */
+    --bg-color:         #000000;
+    --bg-surface:       #08080a;
+    --bg-elevated:      #121216;
 
-    /* Neo-Brutalist Dark Hard Shadows & Outlines */
-    --neo-border: 2px solid #ffffff;
-    --neo-shadow: 5px 5px 0px 0px #facc15;
-    --neo-shadow-hover: 8px 8px 0px 0px #facc15;
-    --neo-shadow-active: 2px 2px 0px 0px #facc15;
-    --neo-shadow-sm: 3px 3px 0px 0px #facc15;
+    --fg-color:         #FAFAFA;
+    --muted-fg-color:   #A1A1AA;
+    --subtle-fg-color:  #52525B;
 
-    --glass-bg: #161826;
-    --glass-border: #ffffff;
-    --glass-shadow: var(--neo-shadow);
-    --glass-shadow-hover: var(--neo-shadow-hover);
+    --border-color:      #1c1c22;
+    --border-strong:     #2b2b34;
+    --border-hover-color:#3f3f4a;
+
+    --primary-color:    #3b82f6;
+    --primary-fg-color: #FFFFFF;
+
+    /* Legacy compat aliases */
+    --primary-neo:    #3b82f6;
+    --secondary-color:#6366f1;
+    --accent-pink:    #818cf8;
+    --accent-green:   #34d399;
+    --muted-color:    rgba(255, 255, 255, 0.03);
+
+    --nav-bg:          #000000;
+    --nav-drawer-bg:   #000000;
+    --card-bg:         #08080a;
+
+    /* ─── Soft Shadow System (dark) ─── */
+    --shadow-sm:       0 1px 2px rgba(0,0,0,0.70);
+    --shadow-md:       0 4px 12px rgba(0,0,0,0.80);
+    --shadow-lg:       0 12px 32px rgba(0,0,0,0.90);
+    --shadow-hover:    0 8px 24px rgba(0,0,0,0.85);
+
+    /* Legacy neo-shadow aliases */
+    --neo-border:       1px solid var(--border-color);
+    --neo-shadow:       var(--shadow-sm);
+    --neo-shadow-hover: var(--shadow-hover);
+    --neo-shadow-active:var(--shadow-sm);
+    --neo-shadow-sm:    var(--shadow-sm);
+
+    /* ─── Glass System (dark AMOLED) ─── */
+    --glass-bg:        rgba(0,0,0,0.88);
+    --glass-border:    var(--border-color);
+    --glass-blur:      12px;
+    --glass-saturate:  140%;
+    --glass-shadow:    var(--shadow-md);
+    --glass-shadow-hover: var(--shadow-hover);
     --glass-highlight: none;
 
-    --primary: 199 89% 60%;
-    --background: 235 24% 7%;
-    --foreground: 0 0% 100%;
+    /* Tailwind theme compat */
+    --primary:    221 83% 61%;
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
   }
 
-  /* ─── Device-Tiered Neo-Brutalism Sizing ─── */
+  /* ─── Device-Tiered Sizing ─── */
   @media (max-width: 767px) {
     :root {
-      --neo-shadow: 4px 4px 0px 0px #000000;
-      --neo-shadow-hover: 6px 6px 0px 0px #000000;
-      --neo-shadow-active: 1px 1px 0px 0px #000000;
-      --bento-radius: 14px;
+      --bento-radius: 10px;
+      --shadow-hover: 0 6px 18px rgba(0,0,0,0.10);
     }
     .dark {
-      --neo-shadow: 4px 4px 0px 0px #facc15;
-      --neo-shadow-hover: 6px 6px 0px 0px #facc15;
-      --neo-shadow-active: 1px 1px 0px 0px #facc15;
-      --bento-radius: 14px;
+      --bento-radius: 10px;
+      --shadow-hover: 0 6px 18px rgba(0,0,0,0.40);
     }
   }
 
   @media (min-width: 768px) and (max-width: 1023px) {
     :root {
-      --glass-blur: 20px;
-      --glass-saturate: 170%;
-      --glass-bg: rgba(255, 255, 255, 0.50);
+      --glass-blur: 16px;
+      --glass-saturate: 160%;
+      --glass-bg: rgba(255,255,255,0.75);
     }
     .dark {
-      --glass-blur: 20px;
-      --glass-saturate: 170%;
-      --glass-bg: rgba(10, 14, 26, 0.45);
+      --glass-blur: 16px;
+      --glass-saturate: 140%;
+      --glass-bg: rgba(26,26,26,0.80);
     }
   }
 
@@ -177,59 +216,58 @@
 
 @variant dark (&:where(.dark, .dark *));
 
-/* ─── Dark Mode Aurora Ambient Gradient ─── */
+/* ─── Minimal Executive Ambient — ultra-subtle, no aurora ─── */
 .dark .bg-gradient-mesh {
   background-image:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(59, 130, 246, 0.08) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(56, 189, 248, 0.05) 0%, transparent 55%),
-    radial-gradient(ellipse 40% 30% at 50% 100%, rgba(59, 130, 246, 0.04) 0%, transparent 50%);
+    radial-gradient(ellipse 70% 40% at 15% -5%, rgba(59,130,246,0.04) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 30% at 85% 5%,  rgba(99,102,241,0.03) 0%, transparent 50%);
   background-attachment: fixed;
 }
 .bg-gradient-mesh {
-  /* Light mode: very subtle warm gradient */
   background-image:
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(37, 99, 235, 0.04) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(2, 132, 199, 0.03) 0%, transparent 55%);
+    radial-gradient(ellipse 70% 40% at 15% -5%, rgba(29,78,216,0.03) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 30% at 85% 5%,  rgba(59,130,246,0.02) 0%, transparent 50%);
   background-attachment: fixed;
 }
 
-/* ─── Neo-Brutalism Core Cards (High Contrast, Bold Borders, Hard Drop Shadows) ─── */
+/* ─── Minimal Executive Cards ─── */
 .bento-card, .glass-card {
   background: var(--card-bg, #ffffff);
-  border: var(--neo-border);
+  border: 1px solid var(--border-color);
   border-radius: var(--bento-radius);
-  box-shadow: var(--neo-shadow);
+  box-shadow: var(--shadow-sm);
   position: relative;
-  transition: transform 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.15s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.15s ease;
+  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease;
   will-change: transform, box-shadow;
 }
 
-/* Mouse Hover States (Mechanical Lift) */
+/* Subtle lift on hover — no mechanical offset */
 @media (hover: hover) and (pointer: fine) {
   .bento-card:hover, .glass-card:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: var(--neo-shadow-hover);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-hover-color);
   }
 
   .dark .bento-card:hover, .dark .glass-card:hover {
-    transform: translate(-3px, -3px);
-    box-shadow: var(--neo-shadow-hover);
-    border-color: #facc15;
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-hover-color);
   }
 }
 
-/* Physical Mechanical Tap / Click Feedback */
+/* Press feedback */
 .bento-card:active, .glass-card:active {
-  transform: translate(2px, 2px);
-  box-shadow: var(--neo-shadow-active);
+  transform: translateY(0px);
+  box-shadow: var(--shadow-sm);
   transition: transform 0.08s ease, box-shadow 0.08s ease;
 }
 
-/* Neo-Brutalist Navigation Bar */
+/* ─── Minimal Executive Navigation Bar ─── */
 .glass-nav {
   background: var(--nav-bg);
-  border-bottom: var(--neo-border);
-  box-shadow: 0 4px 0px 0px var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
   isolation: isolate;
   transform: translate3d(0, 0, 0);
   -webkit-transform: translate3d(0, 0, 0);
@@ -241,13 +279,13 @@
     background: #ffffff !important;
   }
   .dark .bento-card, .dark .glass-card {
-    background: #0f1118 !important;
+    background: #08080a !important;
   }
   .glass-nav {
-    background: #fafafa !important;
+    background: #FAFAFA !important;
   }
   .dark .glass-nav {
-    background: #090a0f !important;
+    background: #000000 !important;
   }
 }
 
@@ -277,39 +315,53 @@
   filter: drop-shadow(0 0 8px var(--primary-glow));
 }
 
-/* ─── Neo-Brutalist Chips & Badges ─── */
+/* ─── Minimal Executive Chips & Badges ─── */
 .tech-tag {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   padding: 3px 10px;
-  border-radius: 8px;
-  background: var(--card-bg, #ffffff);
-  border: 1.5px solid var(--border-color);
-  box-shadow: 2px 2px 0px 0px var(--border-color);
-  color: var(--fg-color);
-  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  border-radius: 5px;
+  background: var(--bg-elevated, #F4F4F5);
+  border: 1px solid var(--border-color);
+  color: var(--muted-fg-color);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .tech-tag:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px 0px var(--border-color);
-  background: var(--primary-neo, #facc15);
-  color: #000000;
+  background: var(--bg-surface, #ffffff);
+  border-color: var(--border-strong);
+  color: var(--fg-color);
+}
+
+.dark .tech-tag {
+  background: var(--bg-elevated, #121216);
+  border-color: var(--border-color);
+}
+
+.dark .tech-tag:hover {
+  background: var(--bg-surface, #08080a);
+  border-color: var(--border-strong);
+}
+
+/* ─── Dot-Matrix Typography System ─── */
+.font-dot,
+.font-dot-matrix {
+  font-family: var(--font-dot), ui-monospace, monospace !important;
+  letter-spacing: 0.05em;
 }
 
 .section-tag {
-  font-family: var(--font-mono);
+  font-family: var(--font-dot), var(--font-mono), monospace;
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.14em;
+  font-weight: 600;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  padding: 4px 12px;
-  border-radius: 9999px;
-  border: 2px solid var(--border-color);
-  box-shadow: 2px 2px 0px 0px var(--border-color);
-  background: var(--primary-neo, #facc15);
-  color: #000000;
+  padding: 3px 10px;
+  border-radius: 5px;
+  border: 1px solid var(--primary-color);
+  background: transparent;
+  color: var(--primary-color);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -341,40 +393,18 @@ html[data-tier='low'] .nav-enter { animation: none; opacity: 1; transform: none;
   .bento-enter, .nav-enter { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
 
-/* ─── Scroll Reveal Variants ─── */
+/* ─── Scroll Reveal Variants (Immediate, zero delay, optimized) ─── */
 .reveal-fade-up,
 .reveal-fade-down,
 .reveal-fade-left,
 .reveal-fade-right,
-.reveal-scale-up {
-  opacity: 0;
-  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1), transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-  will-change: transform, opacity;
-}
-
-.reveal-fade-up    { transform: translateY(16px); }
-.reveal-fade-down  { transform: translateY(-16px); }
-.reveal-fade-left  { transform: translateX(16px); }
-.reveal-fade-right { transform: translateX(-16px); }
-.reveal-scale-up   { transform: scale(0.99); }
-
-.reveal-fade-up.active,
-.reveal-fade-down.active,
-.reveal-fade-left.active,
-.reveal-fade-right.active { opacity: 1; transform: translate(0, 0); }
-.reveal-scale-up.active   { opacity: 1; transform: scale(1); }
-
-html[data-tier='low'] .reveal-fade-up,
-html[data-tier='low'] .reveal-fade-down,
-html[data-tier='low'] .reveal-fade-left,
-html[data-tier='low'] .reveal-fade-right,
-html[data-tier='low'] .reveal-scale-up,
-html[data-tier='low'] .will-change-transform-opacity,
-html[data-tier='low'] [data-scroll-reveal] {
+.reveal-scale-up,
+.will-change-transform-opacity,
+.will-change-transform {
   opacity: 1 !important;
   transform: none !important;
   transition: none !important;
-  animation: none !important;
+  will-change: auto !important;
 }
 
 ::-webkit-scrollbar { width: 4px; height: 4px; }
@@ -450,14 +480,14 @@ html[data-tier='low']:not(.dark) {
 }
 
 html[data-tier='low'].dark {
-  --bg-color: #090a0f;
+  --bg-color: #000000;
   --fg-color: #f1f5f9;
-  --border-color: #374151;
-  --border-hover-color: #6b7280;
-  --muted-color: #1a1d26;
+  --border-color: #1a1a20;
+  --border-hover-color: #3f3f4a;
+  --muted-color: #0d0d10;
   --muted-fg-color: #94a3b8;
   --primary-color: #3b82f6;
-  --nav-bg: #090a0f;
+  --nav-bg: #000000;
 }
 
 html[data-tier='low'] body {
@@ -503,15 +533,15 @@ html[data-tier='low']:not(.dark) .browser-frame:hover {
 html[data-tier='low'].dark .bento-card,
 html[data-tier='low'].dark .glass-card,
 html[data-tier='low'].dark .browser-frame {
-  background-color: #141721 !important;
-  border: 1px solid #2d3342 !important;
+  background-color: #08080a !important;
+  border: 1px solid #1a1a20 !important;
 }
 
 html[data-tier='low'].dark .bento-card:hover,
 html[data-tier='low'].dark .glass-card:hover,
 html[data-tier='low'].dark .browser-frame:hover {
-  background-color: #1c202d !important;
-  border-color: #4b5563 !important;
+  background-color: #121216 !important;
+  border-color: #2b2b34 !important;
   transform: none !important;
 }
 
@@ -522,8 +552,8 @@ html[data-tier='low']:not(.dark) .glass-nav {
 }
 
 html[data-tier='low'].dark .glass-nav {
-  background-color: #0c0d12 !important;
-  border-bottom: 1px solid #2d3342 !important;
+  background-color: #000000 !important;
+  border-bottom: 1px solid #1a1a20 !important;
 }
 
 /* 5. Classic Standard Links & Interactive Elements */
@@ -645,36 +675,33 @@ html[data-tier='low'] .bg-gradient-mesh {
 .impact-pill {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 500;
   display: inline-flex;
   align-items: center;
   gap: 5px;
   padding: 3px 10px;
-  border-radius: 6px;
-  background: var(--card-bg, #ffffff);
-  border: 1.5px solid var(--border-color);
-  box-shadow: 2px 2px 0px 0px var(--border-color);
-  color: var(--fg-color);
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+  border-radius: 5px;
+  background: var(--bg-elevated, #F4F4F5);
+  border: 1px solid var(--border-color);
+  color: var(--muted-fg-color);
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .impact-pill:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px 0px var(--border-color);
-  background: var(--primary-neo, #facc15);
-  color: #000000;
+  background: var(--bg-surface, #ffffff);
+  border-color: var(--border-strong);
+  color: var(--fg-color);
 }
 
-/* ─── Neo-Brutalist Component Utilities ─── */
+/* ─── Minimal Executive Button & Input Utilities ─── */
 .neo-btn {
   font-family: var(--font-heading);
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  border: 2px solid var(--border-color);
-  box-shadow: 3px 3px 0px 0px var(--border-color);
-  border-radius: 12px;
-  transition: transform 0.1s ease, box-shadow 0.1s ease, background-color 0.15s ease;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--border-strong);
+  border-radius: 6px;
+  box-shadow: none;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
   cursor: pointer;
   display: inline-flex;
   align-items: center;
@@ -683,43 +710,48 @@ html[data-tier='low'] .bg-gradient-mesh {
 }
 
 .neo-btn:hover {
-  transform: translate(-1px, -1px);
-  box-shadow: 4px 4px 0px 0px var(--border-color);
+  box-shadow: var(--shadow-sm);
 }
 
 .neo-btn:active {
-  transform: translate(2px, 2px);
-  box-shadow: 0px 0px 0px 0px var(--border-color);
+  opacity: 0.85;
+  box-shadow: none;
 }
 
 .neo-btn-primary {
-  background-color: var(--primary-neo, #facc15);
-  color: #000000;
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+  border-color: var(--fg-color);
+}
+
+.neo-btn-primary:hover {
+  opacity: 0.88;
 }
 
 .neo-btn-secondary {
-  background-color: var(--card-bg, #ffffff);
+  background-color: transparent;
   color: var(--fg-color);
+  border-color: var(--border-strong);
 }
 
 .neo-btn-secondary:hover {
-  background-color: var(--secondary-color, #00f0ff);
-  color: #000000;
+  background-color: var(--bg-elevated);
+  border-color: var(--border-hover-color);
 }
 
 .neo-input {
-  border: 2px solid var(--border-color);
-  background-color: var(--card-bg, #ffffff);
+  border: 1px solid var(--border-strong);
+  background-color: var(--bg-surface, #ffffff);
   color: var(--fg-color);
-  border-radius: 10px;
-  box-shadow: 2px 2px 0px 0px var(--border-color);
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  border-radius: 6px;
+  box-shadow: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
 }
 
 .neo-input:focus {
   outline: none;
-  box-shadow: 3px 3px 0px 0px var(--border-color);
-  border-color: var(--primary-neo, #facc15);
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
 }
 
 /* ─── Modal Animations ─── */
@@ -758,114 +790,3 @@ html[data-tier='low'] .animate-drawer-slide {
 /* Touch-friendly minimum tap target */
 .tap-target { min-height: 44px; min-width: 44px; }
 
-/* ─── Static Abstract Animated Background Keyframes ─── */
-@keyframes abstractFloat1 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(30px, -25px) scale(1.08); }
-  66% { transform: translate(-20px, 20px) scale(0.95); }
-}
-
-@keyframes abstractFloat2 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(-35px, 20px) scale(0.94); }
-  66% { transform: translate(25px, -30px) scale(1.06); }
-}
-
-@keyframes abstractFloat3 {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(20px, 25px) scale(1.05); }
-}
-
-@keyframes abstractSpinSlow {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-
-@keyframes abstractSpinReverse {
-  from { transform: rotate(360deg); }
-  to { transform: rotate(0deg); }
-}
-
-@keyframes abstractPulseSoft {
-  0%, 100% { opacity: 0.35; transform: scale(1); }
-  50% { opacity: 0.75; transform: scale(1.04); }
-}
-
-@keyframes abstractWaveDrift {
-  0% { transform: translateX(0); }
-  50% { transform: translateX(-40px); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes abstractWaveDriftReverse {
-  0% { transform: translateX(0); }
-  50% { transform: translateX(40px); }
-  100% { transform: translateX(0); }
-}
-
-@keyframes abstractScanbeam {
-  0% { transform: translateY(-100%); opacity: 0; }
-  30% { opacity: 0.6; }
-  70% { opacity: 0.6; }
-  100% { transform: translateY(100%); opacity: 0; }
-}
-
-@keyframes abstractDashFlow {
-  to { stroke-dashoffset: -100; }
-}
-
-@keyframes abstractRadarSweep {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-@keyframes abstractRippleExpand {
-  0% { transform: scale(0.65); opacity: 0.8; }
-  50% { opacity: 0.4; }
-  100% { transform: scale(1.35); opacity: 0; }
-}
-
-.anim-abstract-float-1 { animation: abstractFloat1 18s ease-in-out infinite; will-change: transform; }
-.anim-abstract-float-2 { animation: abstractFloat2 22s ease-in-out infinite; will-change: transform; }
-.anim-abstract-float-3 { animation: abstractFloat3 15s ease-in-out infinite; will-change: transform; }
-.anim-abstract-spin-slow { animation: abstractSpinSlow 45s linear infinite; will-change: transform; }
-.anim-abstract-spin-reverse { animation: abstractSpinReverse 55s linear infinite; will-change: transform; }
-.anim-abstract-pulse { animation: abstractPulseSoft 8s ease-in-out infinite; will-change: opacity, transform; }
-.anim-abstract-wave { animation: abstractWaveDrift 20s ease-in-out infinite; will-change: transform; }
-.anim-abstract-wave-reverse { animation: abstractWaveDriftReverse 24s ease-in-out infinite; will-change: transform; }
-.anim-abstract-scanbeam { animation: abstractScanbeam 7s ease-in-out infinite; will-change: transform, opacity; }
-.anim-abstract-dash { stroke-dasharray: 6 12; animation: abstractDashFlow 12s linear infinite; }
-.anim-abstract-radar { animation: abstractRadarSweep 12s linear infinite; transform-origin: center; will-change: transform; }
-.anim-abstract-ripple { animation: abstractRippleExpand 5s cubic-bezier(0.2, 0.8, 0.4, 1) infinite; transform-origin: center; will-change: transform, opacity; }
-
-@media (prefers-reduced-motion: reduce) {
-  .anim-abstract-float-1,
-  .anim-abstract-float-2,
-  .anim-abstract-float-3,
-  .anim-abstract-spin-slow,
-  .anim-abstract-spin-reverse,
-  .anim-abstract-pulse,
-  .anim-abstract-wave,
-  .anim-abstract-wave-reverse,
-  .anim-abstract-scanbeam,
-  .anim-abstract-dash,
-  .anim-abstract-radar,
-  .anim-abstract-ripple {
-    animation: none !important;
-  }
-}
-
-html[data-tier='low'] .anim-abstract-float-1,
-html[data-tier='low'] .anim-abstract-float-2,
-html[data-tier='low'] .anim-abstract-float-3,
-html[data-tier='low'] .anim-abstract-spin-slow,
-html[data-tier='low'] .anim-abstract-spin-reverse,
-html[data-tier='low'] .anim-abstract-pulse,
-html[data-tier='low'] .anim-abstract-wave,
-html[data-tier='low'] .anim-abstract-wave-reverse,
-html[data-tier='low'] .anim-abstract-scanbeam,
-html[data-tier='low'] .anim-abstract-dash,
-html[data-tier='low'] .anim-abstract-radar,
-html[data-tier='low'] .anim-abstract-ripple {
-  animation: none !important;
-}

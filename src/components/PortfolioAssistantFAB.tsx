@@ -342,24 +342,24 @@ export default function PortfolioAssistantFAB() {
           }}
           aria-label={isOpen ? "Close Portfolio Assistant" : "Open Portfolio Assistant"}
           aria-expanded={isOpen}
-          className="relative group p-3 sm:p-3.5 rounded-xl bg-[#facc15] text-black shadow-[4px_4px_0_0_var(--border-color)] hover:shadow-[5px_5px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-all flex items-center gap-2 cursor-pointer border-2 sm:border-3 border-border-custom font-black"
+          className="relative group p-3 sm:px-4 sm:py-3 rounded-full bg-primary-custom text-white shadow-lg hover:bg-primary-custom/90 hover:shadow-xl active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-primary-custom/80 font-medium"
         >
           {/* Animated ping badge */}
           {!isOpen && (
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-400 rounded-full border-2 border-black animate-pulse" />
+            <span className="absolute -top-0.5 -right-0.5 w-3 h-3 bg-emerald-400 rounded-full border-2 border-background-custom animate-pulse" />
           )}
 
           {isOpen ? (
-            <svg className="w-5 h-5 stroke-[3]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           ) : (
             <>
-              <svg className="w-5 h-5 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H12m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a.75.75 0 0 1-1.154-.63 4.887 4.887 0 0 0 1.28-3.138A7.834 7.834 0 0 1 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z" />
               </svg>
-              <span className="hidden md:inline landscape:hidden lg:landscape:inline text-xs font-black font-heading pr-0.5 tracking-tight uppercase">
-                AI Assistant
+              <span className="hidden md:inline landscape:hidden lg:landscape:inline text-xs font-mono tracking-wide pr-0.5">
+                Assistant
               </span>
             </>
           )}
@@ -369,19 +369,19 @@ export default function PortfolioAssistantFAB() {
       {/* ─── Popup Assistant Modal / Drawer ─── */}
       {isOpen && (
         <div
-          className="fixed bottom-20 right-4 sm:right-7 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm h-[520px] rounded-2xl bg-card-custom border-3 border-border-custom shadow-[8px_8px_0_0_var(--border-color)] flex flex-col overflow-hidden animate-modal-scale"
+          className="fixed bottom-20 right-4 sm:right-7 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm h-[520px] rounded-xl bg-card-custom border border-border-custom shadow-2xl flex flex-col overflow-hidden animate-modal-scale"
         >
           {/* Header */}
-          <div className="p-4 border-b-2 border-border-custom bg-muted-custom flex items-center justify-between">
+          <div className="p-3.5 border-b border-border-custom bg-muted-custom/30 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-[#facc15] text-black border-2 border-black flex items-center justify-center font-black text-xs shadow-[2px_2px_0_0_#000]">
+              <div className="w-7 h-7 rounded-lg bg-primary-custom/10 text-primary-custom border border-primary-custom/20 flex items-center justify-center font-mono font-medium text-xs">
                 PA
               </div>
               <div>
-                <h3 className="text-xs font-black font-heading text-foreground-custom tracking-tight uppercase">
+                <h3 className="text-xs font-semibold font-heading text-foreground-custom tracking-tight">
                   Portfolio Assistant
                 </h3>
-                <p className="text-[10px] font-mono text-muted-foreground-custom font-medium">
+                <p className="text-[10px] font-mono text-muted-foreground-custom">
                   Fast Keyword Knowledge Search
                 </p>
               </div>
@@ -393,16 +393,16 @@ export default function PortfolioAssistantFAB() {
                 setIsOpen(false);
               }}
               aria-label="Close Assistant"
-              className="p-1.5 rounded-lg bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] text-foreground-custom hover:bg-rose-500 hover:text-white transition-all cursor-pointer active:translate-x-[1px] active:translate-y-[1px] active:shadow-none"
+              className="p-1.5 rounded-md bg-background-custom border border-border-custom text-muted-foreground-custom hover:text-foreground-custom transition-all cursor-pointer shadow-xs"
             >
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 text-xs leading-relaxed bg-background-custom/50">
+          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 text-xs leading-relaxed bg-background-custom/30">
             {messages.map((msg, i) => {
               const isUser = msg.role === 'user';
               return (
@@ -411,10 +411,10 @@ export default function PortfolioAssistantFAB() {
                   className={`flex flex-col ${isUser ? 'items-end' : 'items-start'}`}
                 >
                   <div
-                    className={`p-3 rounded-xl max-w-[88%] ${
+                    className={`p-3 rounded-xl max-w-[88%] text-xs ${
                       isUser
-                        ? 'bg-[#facc15] text-black font-medium border-2 border-black shadow-[2px_2px_0_0_#000] rounded-br-xs'
-                        : 'bg-card-custom text-foreground-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] rounded-bl-xs'
+                        ? 'bg-primary-custom text-white font-normal rounded-br-xs shadow-xs'
+                        : 'bg-card-custom text-foreground-custom border border-border-custom rounded-bl-xs shadow-xs'
                     }`}
                   >
                     {renderMessageContent(msg.text, isUser)}
@@ -424,29 +424,29 @@ export default function PortfolioAssistantFAB() {
             })}
 
             {loading && (
-              <div className="flex items-center gap-1.5 p-3 rounded-xl bg-card-custom border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] w-fit text-xs text-foreground-custom">
-                <span className="w-2 h-2 bg-[#facc15] border border-black animate-bounce" />
-                <span className="w-2 h-2 bg-[#facc15] border border-black animate-bounce delay-100" />
-                <span className="w-2 h-2 bg-[#facc15] border border-black animate-bounce delay-200" />
-                <span className="text-[10px] font-mono font-bold ml-1">Searching records...</span>
+              <div className="flex items-center gap-2 p-2.5 rounded-xl bg-card-custom border border-border-custom shadow-xs w-fit text-xs text-foreground-custom">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-bounce" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-bounce delay-100" />
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-custom animate-bounce delay-200" />
+                <span className="text-[10px] font-mono text-muted-foreground-custom ml-1">Searching records...</span>
               </div>
             )}
             <div ref={messagesEndRef} />
           </div>
 
           {/* Quick Suggestions Chips with Anti-Spam Cooldown */}
-          <div className="px-3 py-2 border-t-2 border-border-custom bg-muted-custom/40 flex flex-col gap-1.5">
+          <div className="px-3 py-2 border-t border-border-custom bg-card-custom/50 flex flex-col gap-1.5">
             <div className="flex items-center justify-between px-0.5">
-              <span className="text-[9px] font-mono font-bold text-muted-foreground-custom uppercase tracking-wider">
+              <span className="text-[9px] font-mono font-medium text-muted-foreground-custom uppercase tracking-wider">
                 Quick Topics
               </span>
               {cooldown > 0 ? (
-                <span className="text-[9px] font-mono font-bold text-amber-500 flex items-center gap-1">
+                <span className="text-[9px] font-mono text-amber-500 flex items-center gap-1 font-medium">
                   <span className="inline-block w-1.5 h-1.5 rounded-full bg-amber-500 animate-ping" />
                   Cooldown ({cooldown}s)
                 </span>
               ) : spamNotice ? (
-                <span className="text-[9px] font-mono text-rose-500 font-bold truncate max-w-[200px]">
+                <span className="text-[9px] font-mono text-rose-500 font-medium truncate max-w-[200px]">
                   {spamNotice}
                 </span>
               ) : null}
@@ -458,7 +458,7 @@ export default function PortfolioAssistantFAB() {
                   key={q}
                   disabled={loading || cooldown > 0}
                   onClick={() => handleQuickPrompt(q)}
-                  className="shrink-0 text-[10px] font-mono font-bold px-2.5 py-1 rounded-lg border-2 border-border-custom bg-card-custom text-foreground-custom hover:bg-[#facc15] hover:text-black shadow-[1px_1px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
+                  className="shrink-0 text-[10px] font-mono font-normal px-2.5 py-1 rounded-md border border-border-custom bg-card-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-primary-custom/40 shadow-xs active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer transition-all"
                 >
                   {q}
                 </button>
@@ -472,10 +472,10 @@ export default function PortfolioAssistantFAB() {
               e.preventDefault();
               handleSend();
             }}
-            className="p-3 border-t-2 border-border-custom flex flex-col gap-1.5 bg-card-custom"
+            className="p-3 border-t border-border-custom flex flex-col gap-1.5 bg-card-custom"
           >
             {spamNotice && (
-              <div className="text-[10px] font-mono font-bold text-rose-500 px-1 truncate flex items-center gap-1.5 animate-pulse">
+              <div className="text-[10px] font-mono text-rose-500 px-1 truncate flex items-center gap-1.5 animate-pulse">
                 <svg className="w-3.5 h-3.5 text-rose-500 shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126ZM12 15.75h.007v.008H12v-.008Z" />
                 </svg>
@@ -495,15 +495,15 @@ export default function PortfolioAssistantFAB() {
                     ? `Cooldown active (${cooldown}s)...`
                     : "Type keyword (e.g. skills, projects)..."
                 }
-                className="flex-1 bg-background-custom border-2 border-border-custom rounded-xl px-3 py-2 text-xs text-foreground-custom placeholder:text-muted-foreground-custom font-mono focus:outline-none focus:bg-[#facc15]/10 shadow-[2px_2px_0_0_var(--border-color)] disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex-1 bg-background-custom border border-border-custom rounded-lg px-3 py-1.5 text-xs text-foreground-custom placeholder:text-muted-foreground-custom font-mono focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom shadow-xs disabled:opacity-50 disabled:cursor-not-allowed transition-all"
               />
               <button
                 type="submit"
                 disabled={!input.trim() || loading || cooldown > 0}
                 aria-label="Send query"
-                className="p-2 rounded-xl bg-[#facc15] text-black border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] hover:shadow-[3px_3px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+                className="p-2 rounded-lg bg-primary-custom text-white border border-primary-custom hover:bg-primary-custom/90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs"
               >
-                <svg className="w-4 h-4 stroke-[2.5]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />
                 </svg>
               </button>

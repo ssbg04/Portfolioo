@@ -141,7 +141,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
 
         {/* 2. Album Cover Sleeve (In Front, Covering Left Half of Disc) */}
         <div
-          className="relative z-10 w-40 h-40 sm:w-44 sm:h-44 rounded-xl overflow-hidden bg-card-custom border-2 sm:border-3 border-border-custom shadow-[4px_4px_0_0_var(--border-color)] shrink-0 group/sleeve cursor-pointer"
+          className="relative z-10 w-40 h-40 sm:w-44 sm:h-44 rounded-xl overflow-hidden bg-card-custom border border-border-custom shadow-md shrink-0 group/sleeve cursor-pointer"
           onClick={togglePlay}
         >
           {/* Full Cover Art */}
@@ -153,7 +153,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
             decoding="async"
           />
 
-          {/* Top-left Neo Play/Pause Button */}
+          {/* Top-left Play/Pause Button */}
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -161,7 +161,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
             }}
             aria-label={isPlaying ? 'Pause' : 'Play'}
             title={isPlaying ? 'Pause vinyl rotation' : 'Spin vinyl'}
-            className="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-lg bg-black text-[#facc15] border-2 border-black shadow-[2px_2px_0_0_#fff] flex items-center justify-center transition-all cursor-pointer active:translate-x-[1px] active:translate-y-[1px] active:shadow-none font-bold"
+            className="absolute top-2.5 left-2.5 z-20 px-2.5 py-1 rounded-md bg-black/80 backdrop-blur-xs text-white border border-white/20 shadow-xs flex items-center justify-center transition-all cursor-pointer active:scale-95"
           >
             {isPlaying ? (
               <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
@@ -184,7 +184,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="pointer-events-auto text-sm sm:text-base font-black text-white leading-tight truncate hover:underline hover:text-[#facc15] transition-colors"
+              className="pointer-events-auto text-sm sm:text-base font-semibold text-white leading-tight truncate hover:underline hover:text-primary-custom transition-colors"
               title={track.title}
             >
               {track.title}
@@ -213,7 +213,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
             ) : (
               <span className="w-2 h-2 rounded-full bg-muted-foreground-custom border border-border-custom" />
             )}
-            <span className="text-[10px] font-mono font-black uppercase tracking-wider text-[#1DB954]">
+            <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#1DB954]">
               {isPlaying ? (isLivePlaying ? 'Now Playing' : 'Recently Played') : 'Paused'}
             </span>
           </div>
@@ -223,7 +223,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => haptic.tap()}
-            className="flex items-center gap-1.5 text-xs font-mono font-bold px-2.5 py-1 rounded-lg border-2 border-border-custom shadow-[2px_2px_0_0_var(--border-color)] bg-card-custom text-foreground-custom hover:bg-[#1DB954] hover:text-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-all"
+            className="flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-lg border border-border-custom shadow-xs bg-card-custom text-foreground-custom hover:border-[#1DB954]/50 hover:bg-[#1DB954]/10 hover:text-[#1DB954] active:translate-y-px transition-all"
           >
             <span>Open on Spotify</span>
             <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
@@ -233,7 +233,7 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full h-2 bg-muted-custom border-2 border-border-custom rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-muted-custom border border-border-custom rounded-full overflow-hidden">
           <div
             className="h-full bg-[#1DB954] transition-all duration-700"
             style={{ width: `${progress}%` }}

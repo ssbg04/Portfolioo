@@ -99,15 +99,15 @@ export default function Skills({
 
           {/* Simple Filter Pills */}
           {categories.length > 1 && !limit && (
-            <div className="flex flex-wrap items-center gap-2 mt-5">
+            <div className="flex flex-wrap items-center gap-1.5 mt-5">
               {filterOptions.map((opt) => (
                 <button
                   key={opt}
                   onClick={() => setActiveFilter(opt)}
-                  className={`px-3.5 py-1.5 rounded-xl text-xs font-mono uppercase tracking-wider font-extrabold border-2 border-border-custom transition-all cursor-pointer ${
+                  className={`px-3 py-1 rounded-md text-xs font-mono tracking-wide border transition-all cursor-pointer ${
                     activeFilter === opt
-                      ? 'bg-[#facc15] text-black shadow-[3px_3px_0_0_var(--border-color)]'
-                      : 'bg-card-custom text-foreground-custom shadow-[2px_2px_0_0_var(--border-color)] hover:bg-[#00f0ff] hover:text-black hover:translate-x-[-1px] hover:translate-y-[-1px] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none'
+                      ? 'bg-primary-custom text-white border-primary-custom shadow-xs font-medium'
+                      : 'bg-card-custom/80 text-muted-foreground-custom border-border-custom hover:text-foreground-custom hover:border-border-custom/80'
                   }`}
                 >
                   {opt}
@@ -120,21 +120,21 @@ export default function Skills({
         {/* Single Unified Tech Stack Section */}
         <ScrollReveal variant="fade-up" delay={100}>
           <div className="bento-card p-6 sm:p-8">
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-3.5">
               {displayedSkills.map((skill) => (
                 <div
                   key={skill.name}
-                  className="flex items-center gap-3 p-3 rounded-xl bg-card-custom border-2 border-border-custom shadow-[2.5px_2.5px_0_0_var(--border-color)] hover:bg-[#facc15]/10 hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3.5px_3.5px_0_0_var(--border-color)] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none text-foreground-custom transition-all group cursor-default"
+                  className="flex items-center gap-3 p-3 rounded-lg bg-card-custom/60 border border-border-custom hover:border-primary-custom/40 hover:bg-card-custom text-foreground-custom transition-all group cursor-default shadow-xs"
                   aria-label={skill.name}
                   role="listitem"
                 >
-                  <i className={`${getSkillFaClass(skill)} text-xl text-foreground-custom group-hover:text-primary-custom shrink-0 group-hover:scale-110 transition-transform`} />
+                  <i className={`${getSkillFaClass(skill)} text-lg text-muted-foreground-custom group-hover:text-primary-custom shrink-0 transition-colors`} />
                   <div className="min-w-0 flex-1">
-                    <span className="text-xs sm:text-sm font-bold truncate block text-foreground-custom group-hover:text-primary-custom transition-colors">
+                    <span className="text-xs sm:text-sm font-medium truncate block text-foreground-custom group-hover:text-primary-custom transition-colors">
                       {skill.name}
                     </span>
                     {skill.category && (
-                      <span className="text-[10px] text-muted-foreground-custom truncate block font-mono font-semibold">
+                      <span className="text-[10px] text-muted-foreground-custom truncate block font-mono">
                         {skill.category}
                       </span>
                     )}
@@ -145,13 +145,13 @@ export default function Skills({
 
             {/* See All Button when limited */}
             {(showSeeAll || limit) && skills.length > (limit || 0) && (
-              <div className="mt-8 pt-6 border-t-2 border-border-custom flex flex-col sm:flex-row items-center justify-between gap-4">
-                <span className="text-xs font-mono text-muted-foreground-custom font-bold">
+              <div className="mt-8 pt-6 border-t border-border-custom flex flex-col sm:flex-row items-center justify-between gap-4">
+                <span className="text-xs font-mono text-muted-foreground-custom">
                   Showing {displayedSkills.length} of {skills.length} technologies
                 </span>
                 <a
                   href={seeAllHref}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#facc15] text-black border-2 border-border-custom shadow-[3px_3px_0_0_var(--border-color)] hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[4px_4px_0_0_var(--border-color)] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none text-xs font-mono font-extrabold tracking-wider uppercase transition-all duration-150"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-custom text-white border border-primary-custom text-xs font-mono font-medium tracking-wide uppercase hover:bg-primary-custom/90 transition-all shadow-xs"
                 >
                   <span>See All Technologies ({skills.length})</span>
                   <i className="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-0.5 transition-transform" />

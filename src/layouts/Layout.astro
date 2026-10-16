@@ -72,7 +72,7 @@ const isRootPage = Astro.url.pathname === '/';
 					var metaThemeColor = targetDoc.querySelector('meta[name="theme-color"]');
 					if (theme === 'dark') {
 						targetDoc.documentElement.classList.add('dark');
-						if (metaThemeColor) metaThemeColor.setAttribute('content', '#0d0e15');
+						if (metaThemeColor) metaThemeColor.setAttribute('content', '#000000');
 					} else {
 						targetDoc.documentElement.classList.remove('dark');
 						if (metaThemeColor) metaThemeColor.setAttribute('content', '#faf6f0');

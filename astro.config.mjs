@@ -14,8 +14,7 @@ export default defineConfig({
   output: 'server',
   adapter: vercel(),
   redirects: {
-    '/projects/tis-record-management-system': '/projects/tis-rms',
-    '/projects/tis-rms/': '/projects/tis-rms'
+    '/projects/tis-record-management-system': '/projects/tis-rms'
   },
   integrations: [
     react(),
