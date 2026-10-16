@@ -73,6 +73,11 @@ const navigationElements = [
     name: 'Contact',
     description: 'Get in touch with Cris Charles Garcia for development inquiries, consulting, or project collaborations.',
     path: '/contact'
+  },
+  {
+    name: 'Links',
+    description: 'Official directory of social profiles, developer links, and direct contact options for Cris Charles Garcia.',
+    path: '/links'
   }
 ];
 
@@ -95,6 +100,45 @@ const breadcrumbSchema = pathSegments.length > 0 ? {
   ]
 } : null;
 
+const pageEntity = normalizedPath === '/contact'
+  ? {
+      "@type": "ContactPage",
+      "@id": `${canonicalURL}#contactpage`,
+      "url": canonicalURL,
+      "name": title,
+      "description": description,
+      "isPartOf": {
+        "@id": `${siteOrigin}/#website`
+      },
+      "mainEntity": {
+        "@id": `${siteOrigin}/#person`
+      }
+    }
+  : normalizedPath.startsWith('/projects/')
+    ? {
+        "@type": "SoftwareApplication",
+        "@id": `${canonicalURL}#software`,
+        "url": canonicalURL,
+        "name": title,
+        "description": description,
+        "author": {
+          "@id": `${siteOrigin}/#person`
+        },
+        "applicationCategory": "DeveloperApplication"
+      }
+    : {
+        "@type": "ProfilePage",
+        "@id": canonicalURL,
+        "url": canonicalURL,
+        "name": title,
+        "isPartOf": {
+          "@id": `${siteOrigin}/#website`
+        },
+        "mainEntity": {
+          "@id": `${siteOrigin}/#person`
+        }
+      };
+
 // JSON-LD Structured Data Schema (Person, WebSite, SiteNavigation, Breadcrumbs)
 const schemaGraph: any[] = [
   {
@@ -107,12 +151,7 @@ const schemaGraph: any[] = [
     "publisher": {
       "@id": `${siteOrigin}/#person`
     },
-    "inLanguage": "en-US",
-    "potentialAction": {
-      "@type": "SearchAction",
-      "target": `${siteOrigin}/?q={search_term_string}`,
-      "query-input": "required name=search_term_string"
-    }
+    "inLanguage": "en-US"
   },
   {
     "@type": "Person",
@@ -149,18 +188,7 @@ const schemaGraph: any[] = [
       "url": `${siteOrigin}${item.path}`
     }))
   },
-  {
-    "@type": "ProfilePage",
-    "@id": canonicalURL,
-    "url": canonicalURL,
-    "name": title,
-    "isPartOf": {
-      "@id": `${siteOrigin}/#website`
-    },
-    "mainEntity": {
-      "@id": `${siteOrigin}/#person`
-    }
-  }
+  pageEntity
 ];
 
 if (breadcrumbSchema) {

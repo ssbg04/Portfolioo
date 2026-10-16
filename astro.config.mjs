@@ -9,10 +9,14 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://crischarles.com/',
+  site: 'https://crischarles.com',
   trailingSlash: 'never',
   output: 'server',
   adapter: vercel(),
+  redirects: {
+    '/projects/tis-record-management-system': '/projects/tis-rms',
+    '/projects/tis-rms/': '/projects/tis-rms'
+  },
   integrations: [
     react(),
     sitemap({
@@ -20,7 +24,20 @@ export default defineConfig({
         !page.includes('/api/') &&
         !page.includes('/maintenance') &&
         !page.includes('/chat') &&
-        !page.includes('/_image')
+        !page.includes('/_image'),
+      serialize(item) {
+        if (item.url === 'https://crischarles.com' || item.url === 'https://crischarles.com/') {
+          item.priority = 1.0;
+          item.changefreq = 'weekly';
+        } else if (item.url.includes('/projects')) {
+          item.priority = 0.9;
+          item.changefreq = 'weekly';
+        } else {
+          item.priority = 0.8;
+          item.changefreq = 'monthly';
+        }
+        return item;
+      }
     })
   ],
 

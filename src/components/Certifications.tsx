@@ -8,11 +8,12 @@ interface Props {
   certifications?: Certification[];
   extraCerts?: Certification[];
   sectionTag?: string;
+  isPage?: boolean;
 }
 
 type FilterMode = 'all' | 'certificates' | 'badges';
 
-export default function Certifications({ certifications, extraCerts = [], sectionTag = 'Certifications' }: Props) {
+export default function Certifications({ certifications, extraCerts = [], sectionTag = 'Certifications', isPage = false }: Props) {
   const baseCerts = (certifications && certifications.length > 0) ? certifications : mockCertifications;
   const allCerts = [...baseCerts, ...extraCerts];
 
@@ -325,9 +326,15 @@ export default function Certifications({ certifications, extraCerts = [], sectio
         <ScrollReveal variant="fade-up" className="mb-4 sm:mb-8">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
-                Verified Credentials &amp; Certifications
-              </h2>
+              {isPage ? (
+                <h1 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
+                  Verified Credentials &amp; Certifications
+                </h1>
+              ) : (
+                <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
+                  Verified Credentials &amp; Certifications
+                </h2>
+              )}
             </div>
           </div>
         </ScrollReveal>

@@ -14,10 +14,5 @@ Allow: /
 User-agent: Bingbot
 Allow: /
 
-Host: crischarles.com
-
-# Crawl delay (optional - uncomment if needed)
-# Crawl-delay: 1
-
 # Reference to sitemap
 Sitemap: https://crischarles.com/sitemap-index.xml

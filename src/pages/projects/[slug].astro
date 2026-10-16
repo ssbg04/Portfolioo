@@ -40,6 +40,7 @@ const nextProject =
 	title={`${project.title} | ${settings.fullName}`} 
 	description={project.summary}
 	image={project.coverImage || settings.heroImage || settings.logoImage || '/logo.png'}
+	type="article"
 >
 	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath="/projects" client:load transition:persist="main-navbar" />
 

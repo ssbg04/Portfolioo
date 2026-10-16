@@ -158,6 +158,23 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
           </div>
 
         </div>
+
+        {/* Navigation Quick Links (Direct Internal Links for SEO Crawlers) */}
+        <div className="flex flex-wrap items-center justify-center gap-x-4 sm:gap-x-5 gap-y-2 pt-3.5 mt-3.5 border-t border-border-custom/50 text-[11px] sm:text-xs font-mono text-muted-foreground-custom">
+          <a href="/" className="hover:text-foreground-custom transition-colors">Home</a>
+          <span className="opacity-40">•</span>
+          <a href="/projects" className="hover:text-foreground-custom transition-colors">Projects</a>
+          <span className="opacity-40">•</span>
+          <a href="/about" className="hover:text-foreground-custom transition-colors">About</a>
+          <span className="opacity-40">•</span>
+          <a href="/certifications" className="hover:text-foreground-custom transition-colors">Certifications</a>
+          <span className="opacity-40">•</span>
+          <a href="/gallery" className="hover:text-foreground-custom transition-colors">Gallery</a>
+          <span className="opacity-40">•</span>
+          <a href="/contact" className="hover:text-foreground-custom transition-colors">Contact</a>
+          <span className="opacity-40">•</span>
+          <a href="/links" className="text-primary-custom hover:underline font-bold">Links Directory</a>
+        </div>
       </div>
 
       {/* Sound bar keyframes */}

@@ -12,6 +12,7 @@ interface AboutProps {
   education?: Education[];
   sectionTag?: string;
   githubUsername?: string;
+  isPage?: boolean;
 }
 
 export default function About({
@@ -19,7 +20,8 @@ export default function About({
   experience,
   education = [],
   sectionTag = 'Profile & Background',
-  githubUsername = 'ssbg04'
+  githubUsername = 'ssbg04',
+  isPage = false
 }: AboutProps) {
   const paragraphs = (settings.biography && settings.biography.length > 0)
     ? settings.biography
@@ -116,9 +118,15 @@ export default function About({
         <ScrollReveal variant="fade-up" className="mb-5 sm:mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
-                About &amp; Background
-              </h2>
+              {isPage ? (
+                <h1 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
+                  About &amp; Background
+                </h1>
+              ) : (
+                <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
+                  About &amp; Background
+                </h2>
+              )}
             </div>
           </div>
         </ScrollReveal>

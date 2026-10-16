@@ -180,7 +180,7 @@ export const mockCertifications: Certification[] = [];
 export const mockProjects: Project[] = [
   {
     title: "TIS Record Management System",
-    slug: "tis-record-management-system",
+    slug: "tis-rms",
     category: "System / Record Management",
     status: "LIVE PRODUCTION",
     summary: "Comprehensive institutional record and student management platform engineered for administrative operational efficiency.",
@@ -192,39 +192,39 @@ export const mockProjects: Project[] = [
     liveUrl: "https://github.com/ssbg04",
     featured: true,
     order: 1,
-    publishedAt: "2026"
+    publishedAt: "2026-04-26"
   },
   {
-    title: "LSPU CCS Lab Station Portal",
-    slug: "lspu-ccs-lab-station-portal",
-    category: "Web Application",
-    status: "IN DEVELOPMENT",
-    summary: "Centralized computer laboratory management platform with real-time workstation booking and hardware telemetry.",
-    description: "Built for university computer science laboratories to monitor system health, manage student seat assignments, and track peripheral inventories.",
+    title: "Isalin | Multi-Converter",
+    slug: "isalin",
+    category: "Web Application / Tool",
+    status: "LIVE PRODUCTION",
+    summary: "High-performance multi-converter utility web application for format, language, and file transformation.",
+    description: "Built to deliver instant, client-optimized conversion workflows with responsive design, keyboard shortcuts, and zero-latency transformations.",
     coverImage: "https://images.unsplash.com/photo-1517694712202-14dd9538aa97?auto=format&fit=crop&w=800&q=80",
-    technologies: ["React", "Node.js", "Express", "Tailwind CSS"],
-    highlights: ["Real-time Station Booking", "QR Attendance", "Live Hardware Inventory"],
+    technologies: ["React", "TypeScript", "Tailwind CSS"],
+    highlights: ["Instant Client Transformations", "Offline Support", "Responsive Bento UI"],
     repositoryUrl: "https://github.com/ssbg04",
     liveUrl: "https://github.com/ssbg04",
     featured: true,
     order: 2,
-    publishedAt: "2026"
+    publishedAt: "2026-10"
   },
   {
-    title: "Cisco Threat Telemetry Visualizer",
-    slug: "cisco-threat-telemetry-visualizer",
-    category: "Tools & Utilities",
-    status: "PROTOTYPE",
-    summary: "Network and host endpoint telemetry visualizer mapping anomalous behavior aligned with Cisco cybersecurity fundamentals.",
-    description: "An analytical dashboard parsing syslog entries and endpoint events to visualize attack patterns and test automated incident mitigation rules.",
-    coverImage: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=800&q=80",
-    technologies: ["JavaScript", "Python", "REST API", "Tailwind CSS"],
-    highlights: ["Syslog Telemetry Parsing", "Endpoint Hardening Audit", "Threat Severity Graphing"],
+    title: "ICIS Supply/Inventory Management System",
+    slug: "icis-inventory",
+    category: "Enterprise Inventory System",
+    status: "LIVE PRODUCTION",
+    summary: "Institutional supply and asset tracking system streamlining stock level audits, equipment logistics, and reporting.",
+    description: "Engineered to eliminate stock discrepancies, generate automated replenishment alerts, and maintain detailed ledger audits across departments.",
+    coverImage: "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80",
+    technologies: ["PHP", "MySQL", "JavaScript", "Tailwind CSS"],
+    highlights: ["Stock Level Telemetry", "Automated Reorder Alerts", "Multi-Warehouse Tracking"],
     repositoryUrl: "https://github.com/ssbg04",
     liveUrl: "https://github.com/ssbg04",
     featured: true,
     order: 3,
-    publishedAt: "2025"
+    publishedAt: "2026-05"
   }
 ];
 

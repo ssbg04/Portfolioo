@@ -158,9 +158,9 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
       {/* ─── Filter Bar ─── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-8 pb-3 sm:pb-4 border-b border-border-custom">
         <div>
-          <h2 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight">
             Photo Gallery
-          </h2>
+          </h1>
         </div>
 
         {/* Categories in top-right */}
