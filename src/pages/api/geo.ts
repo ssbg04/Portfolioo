@@ -52,14 +52,16 @@ export const GET: APIRoute = async ({ request, locals }) => {
                  request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                  '127.0.0.1';
 
-    // 2. Safely resolve persistent Cloudflare KV (without touching deprecated locals.runtime.env)
+    // 2. Safely resolve persistent Cloudflare KV
     let kv: any = null;
     try {
-      if ((locals as any)?.env) {
+      if ((locals as any)?.env?.GEO_KV || (locals as any)?.env?.GEO_ANALYTICS) {
         kv = (locals as any).env.GEO_KV || (locals as any).env.GEO_ANALYTICS;
+      } else if ((locals as any)?.runtime?.env?.GEO_KV || (locals as any)?.runtime?.env?.GEO_ANALYTICS) {
+        kv = (locals as any).runtime.env.GEO_KV || (locals as any).runtime.env.GEO_ANALYTICS;
       }
     } catch {
-      // ignore
+      // ignore - fall back to edge memory
     }
 
     let activeCounts: Record<string, number> = { ...visitorCounts };
