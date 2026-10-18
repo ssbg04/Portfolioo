@@ -336,15 +336,33 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                   href={item.href}
                   onClick={() => { setActivePath(item.href); setDrawerOpen(false); }}
                   aria-current={active ? 'page' : undefined}
-                  className={`relative flex items-center justify-between px-4 py-3.5 rounded-lg text-base font-semibold transition-all duration-150 ${
+                  className={`group relative flex items-center justify-between px-4 py-3.5 rounded-xl text-base transition-all duration-150 ${
                     active
-                      ? 'bg-elevated-custom text-foreground-custom border-l-2 border-primary-custom pl-[14px]'
-                      : 'bg-card-custom text-muted-foreground-custom border border-border-custom hover:bg-elevated-custom hover:text-foreground-custom'
+                      ? 'bg-elevated-custom text-foreground-custom font-semibold border border-primary-custom/40 shadow-xs'
+                      : 'bg-card-custom/60 text-muted-foreground-custom border border-border-custom hover:bg-elevated-custom hover:text-foreground-custom font-medium'
                   }`}
                   style={{ animationDelay: `${i * 30}ms` }}
                 >
-                  <span className="font-heading">{item.label}</span>
-                  <span className="text-xs font-mono font-bold">→</span>
+                  <div className="flex items-center gap-3">
+                    <span
+                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
+                        active
+                          ? 'bg-primary-custom shadow-[0_0_8px_var(--primary-color)] scale-100'
+                          : 'bg-muted-foreground-custom/30 group-hover:bg-muted-foreground-custom/60 scale-75'
+                      }`}
+                    />
+                    <span className="font-heading">{item.label}</span>
+                  </div>
+
+                  {active ? (
+                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-primary-custom/10 text-primary-custom border border-primary-custom/20">
+                      ACTIVE
+                    </span>
+                  ) : (
+                    <span className="text-xs font-mono text-muted-foreground-custom/60 group-hover:text-foreground-custom group-hover:translate-x-0.5 transition-all">
+                      →
+                    </span>
+                  )}
                 </a>
               );
             })}
