@@ -59,10 +59,10 @@ export const GET: APIRoute = async ({ request, locals }) => {
     let kv: any = null;
     try {
       if (typeof cfEnv !== 'undefined' && cfEnv) {
-        kv = (cfEnv as any).GEO_KV || (cfEnv as any).GEO_ANALYTICS;
+        kv = (cfEnv as any).GEO_KV || (cfEnv as any).GEO_ANALYTICS || (cfEnv as any).SESSION;
       }
       if (!kv && (locals as any)?.env) {
-        kv = (locals as any).env.GEO_KV || (locals as any).env.GEO_ANALYTICS;
+        kv = (locals as any).env.GEO_KV || (locals as any).env.GEO_ANALYTICS || (locals as any).env.SESSION;
       }
     } catch {
       // ignore - fall back to edge memory

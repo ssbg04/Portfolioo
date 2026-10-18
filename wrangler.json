@@ -1,0 +1,13 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "curved-cloud",
+  "compatibility_date": "2026-10-12",
+  "kv_namespaces": [
+    {
+      "binding": "GEO_KV"
+    },
+    {
+      "binding": "SESSION"
+    }
+  ]
+}

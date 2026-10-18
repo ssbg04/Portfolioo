@@ -66,10 +66,10 @@ export function resolveKV(locals?: any) {
   let kv: any = null;
   try {
     if (typeof cfEnv !== 'undefined' && cfEnv) {
-      kv = (cfEnv as any).GEO_KV || (cfEnv as any).GEO_ANALYTICS || (cfEnv as any).CHAT_KV;
+      kv = (cfEnv as any).GEO_KV || (cfEnv as any).GEO_ANALYTICS || (cfEnv as any).CHAT_KV || (cfEnv as any).SESSION;
     }
     if (!kv && (locals as any)?.env) {
-      kv = (locals as any).env.GEO_KV || (locals as any).env.GEO_ANALYTICS || (locals as any).env.CHAT_KV;
+      kv = (locals as any).env.GEO_KV || (locals as any).env.GEO_ANALYTICS || (locals as any).env.CHAT_KV || (locals as any).env.SESSION;
     }
   } catch {}
   return kv;

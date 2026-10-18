@@ -1,4 +1,4 @@
-const CACHE_NAME = 'portfolio-cache-v1';
+const CACHE_NAME = 'portfolio-cache-v2';
 
 // Core assets to precache immediately on install
 const PRECACHE_ASSETS = [
@@ -33,17 +33,29 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Fetch: Network-First for HTML navigation, Stale-While-Revalidate for static assets
+// Fetch handler
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Skip non-GET requests and browser extensions
+  // 1. Skip non-GET requests and non-http protocols
   if (request.method !== 'GET' || !url.protocol.startsWith('http')) {
     return;
   }
 
-  // 1. Navigation requests (HTML pages): Network-First with Cache Fallback
+  // 2. CRITICAL: Never intercept cross-origin requests (e.g. cloudflareinsights.com, cdn, analytics)
+  // This avoids ad-blocker network rejections crashing the Service Worker with TypeError
+  if (url.origin !== self.location.origin) {
+    return;
+  }
+
+  // 3. CRITICAL: Never intercept or cache API requests (/api/live-chat, /api/geo, etc.)
+  // Real-time server communication must always hit the edge network directly
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
+
+  // 4. Navigation requests (HTML pages): Network-First with Cache Fallback
   if (request.mode === 'navigate') {
     event.respondWith(
       fetch(request)
@@ -62,7 +74,6 @@ self.addEventListener('fetch', (event) => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          // Fallback to home page root if specific subpage isn't cached
           const rootCached = await caches.match('/');
           if (rootCached) {
             return rootCached;
@@ -76,24 +87,29 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // 2. Static Assets (CSS, JS, WebP, SVG, Fonts, PNG): Stale-While-Revalidate
+  // 5. Static Assets (CSS, JS, WebP, SVG, Fonts, PNG): Cache with Network Fallback & Background Update
   event.respondWith(
     caches.match(request).then((cachedResponse) => {
-      const fetchPromise = fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(request, responseClone);
-            });
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // Network failed, nothing extra to do if cached response is returned
-        });
+      if (cachedResponse) {
+        // Revalidate in background
+        fetch(request)
+          .then((networkResponse) => {
+            if (networkResponse && networkResponse.status === 200) {
+              const responseClone = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+            }
+          })
+          .catch(() => {});
+        return cachedResponse;
+      }
 
-      return cachedResponse || fetchPromise;
+      return fetch(request).then((networkResponse) => {
+        if (networkResponse && networkResponse.status === 200) {
+          const responseClone = networkResponse.clone();
+          caches.open(CACHE_NAME).then((cache) => cache.put(request, responseClone));
+        }
+        return networkResponse;
+      });
     })
   );
 });
