@@ -66,9 +66,15 @@ export const GET: APIRoute = async ({ request, locals }) => {
                  request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                  '127.0.0.1';
 
-    // 2. Resolve persistent Cloudflare KV or fallback to in-memory
-    const env = (locals as any)?.env || (locals as any)?.runtime?.env;
-    const kv = env?.GEO_KV || env?.GEO_ANALYTICS;
+    // 2. Safely resolve persistent Cloudflare KV (without touching deprecated locals.runtime.env)
+    let kv: any = null;
+    try {
+      if ((locals as any)?.env) {
+        kv = (locals as any).env.GEO_KV || (locals as any).env.GEO_ANALYTICS;
+      }
+    } catch {
+      // ignore
+    }
 
     let activeCounts: Record<string, number> = { ...visitorCounts };
 
@@ -86,10 +92,10 @@ export const GET: APIRoute = async ({ request, locals }) => {
       }
     }
 
-    // 3. Increment visitor count for the detected country (deduped per IP for 30 minutes)
+    // 3. Increment visitor count for the detected country (deduped per IP for 3 minutes)
     const now = Date.now();
     const lastSeen = recentIps.get(cfIp) || 0;
-    if (now - lastSeen > 30 * 60 * 1000) {
+    if (now - lastSeen > 3 * 60 * 1000) {
       recentIps.set(cfIp, now);
       // Clean old IPs if map grows large
       if (recentIps.size > 2000) {
