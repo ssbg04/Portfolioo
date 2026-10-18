@@ -12,7 +12,7 @@ export default function LiveChatBox() {
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [sessionId, setSessionId] = useState('');
-  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+  const messagesContainerRef = useRef<HTMLDivElement | null>(null);
 
   // Initialize or retrieve visitor session ID
   useEffect(() => {
@@ -71,7 +71,12 @@ export default function LiveChatBox() {
   }, [sessionId]);
 
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }
   }, [messages]);
 
   const handleSend = async (e: React.FormEvent) => {
@@ -145,7 +150,10 @@ export default function LiveChatBox() {
       </div>
 
       {/* ── Messages Feed ── */}
-      <div className="flex-1 overflow-y-auto my-3 pr-1 flex flex-col gap-3 text-xs">
+      <div
+        ref={messagesContainerRef}
+        className="flex-1 overflow-y-auto my-3 pr-1 flex flex-col gap-3 text-xs overscroll-contain"
+      >
         {messages.map((m) => {
           const isUser = m.sender === 'user';
           return (
@@ -168,7 +176,6 @@ export default function LiveChatBox() {
             </div>
           );
         })}
-        <div ref={messagesEndRef} />
       </div>
 
       {/* ── Chat Input Form ── */}

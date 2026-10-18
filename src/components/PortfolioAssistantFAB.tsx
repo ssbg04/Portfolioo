@@ -123,6 +123,7 @@ export default function PortfolioAssistantFAB() {
   const [isBtnHidden, setIsBtnHidden] = useState(false);
   const [isDark, setIsDark] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const messagesContainerRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -240,8 +241,11 @@ export default function PortfolioAssistantFAB() {
   }, [isOpen]);
 
   useEffect(() => {
-    if (isOpen) {
-      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    if (isOpen && messagesContainerRef.current) {
+      messagesContainerRef.current.scrollTo({
+        top: messagesContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
     }
   }, [messages, loading, isOpen]);
 
@@ -515,7 +519,10 @@ export default function PortfolioAssistantFAB() {
           </div>
 
           {/* Messages Area with Translucent Backdrop */}
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 text-xs leading-relaxed bg-transparent">
+          <div
+            ref={messagesContainerRef}
+            className="flex-1 overflow-y-auto p-4 flex flex-col gap-3 text-xs leading-relaxed bg-transparent overscroll-contain"
+          >
             {messages.map((msg, i) => {
               const isUser = msg.role === 'user';
               return (
