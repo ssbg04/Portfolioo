@@ -44,14 +44,28 @@ export default function LiveChatBox() {
         .then((res) => {
           if (res?.messages && res.messages.length > 0) {
             setMessages((prev) => {
+              const map = new Map<string, ChatMessage>();
+              // Keep welcome message
               const welcome = prev.find((m) => m.id === 'welcome');
-              const combined = welcome ? [welcome, ...res.messages] : res.messages;
-              return combined;
+              if (welcome) map.set(welcome.id, welcome);
+
+              // Add current messages (including optimistic ones)
+              for (const m of prev) {
+                map.set(m.id, m);
+              }
+
+              // Merge incoming server messages (replacing or adding)
+              for (const m of res.messages as ChatMessage[]) {
+                map.set(m.id, m);
+              }
+
+              // Sort by timestamp
+              return Array.from(map.values()).sort((a, b) => a.time - b.time);
             });
           }
         })
         .catch(() => {});
-    }, 4000);
+    }, 2500);
 
     return () => clearInterval(interval);
   }, [sessionId]);
