@@ -82,6 +82,8 @@ export default function VisitorWorldMap() {
   const [data, setData] = useState<GeoPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(null);
+  const [selectedCountry, setSelectedCountry] = useState<CountryData | null>(null);
+  const activeCountry = hoveredCountry || selectedCountry;
 
   const [mounted, setMounted] = useState(false);
 
@@ -95,6 +97,35 @@ export default function VisitorWorldMap() {
 
   const dragStartRef = useRef({ x: 0, y: 0 });
   const panStartRef = useRef({ x: 0, y: 0 });
+  const modalCanvasRef = useRef<HTMLDivElement>(null);
+  const zoomRef = useRef(zoom);
+  const panRef = useRef(pan);
+  const isDraggingRef = useRef(isDragging);
+
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+
+  useEffect(() => {
+    panRef.current = pan;
+  }, [pan]);
+
+  useEffect(() => {
+    isDraggingRef.current = isDragging;
+  }, [isDragging]);
+
+  const clampPan = (newPan: { x: number; y: number }, currentZoom: number) => {
+    if (currentZoom <= 1) return { x: 0, y: 0 };
+    const canvas = modalCanvasRef.current;
+    const w = canvas ? canvas.clientWidth : 800;
+    const h = canvas ? canvas.clientHeight : 450;
+    const maxPanX = (w * (currentZoom - 1)) / 1.5;
+    const maxPanY = (h * (currentZoom - 1)) / 1.5;
+    return {
+      x: Math.min(Math.max(newPan.x, -maxPanX), maxPanX),
+      y: Math.min(Math.max(newPan.y, -maxPanY), maxPanY),
+    };
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -200,9 +231,138 @@ export default function VisitorWorldMap() {
     setPan({ x: 0, y: 0 });
   };
 
-  // Drag & pan handlers when zoomed in
+  // Mobile Touch Gestures: Pinch-to-zoom & 1-finger pan on the modal canvas
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const canvas = modalCanvasRef.current;
+    if (!canvas) return;
+
+    let initialDist = 0;
+    let initialZoom = 1;
+    let initialPan = { x: 0, y: 0 };
+    let startMid = { x: 0, y: 0 };
+    let isPinching = false;
+    let isTouching = false;
+    let lastTapTime = 0;
+
+    const getDistance = (t1: Touch, t2: Touch) => {
+      return Math.hypot(t1.clientX - t2.clientX, t1.clientY - t2.clientY);
+    };
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('button') || target.closest('input')) {
+        return;
+      }
+
+      if (e.touches.length === 1) {
+        const now = Date.now();
+        // Double-tap to quick toggle 1x / 2.5x
+        if (now - lastTapTime < 300) {
+          e.preventDefault();
+          haptic.tap();
+          if (zoomRef.current > 1) {
+            setZoom(1);
+            setPan({ x: 0, y: 0 });
+          } else {
+            setZoom(2.5);
+          }
+          lastTapTime = 0;
+          return;
+        }
+        lastTapTime = now;
+
+        if (zoomRef.current > 1) {
+          e.preventDefault();
+          isTouching = true;
+          isPinching = false;
+          startMid = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          initialPan = { ...panRef.current };
+          setIsDragging(true);
+        }
+      } else if (e.touches.length >= 2) {
+        e.preventDefault();
+        isPinching = true;
+        isTouching = false;
+        initialDist = getDistance(e.touches[0], e.touches[1]);
+        initialZoom = zoomRef.current;
+        initialPan = { ...panRef.current };
+        startMid = {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        };
+        setIsDragging(true);
+      }
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (isPinching && e.touches.length >= 2) {
+        e.preventDefault();
+        const currentDist = getDistance(e.touches[0], e.touches[1]);
+        if (initialDist > 0) {
+          const factor = currentDist / initialDist;
+          const newZoom = Math.min(Math.max(Number((initialZoom * factor).toFixed(2)), 1), 4);
+          setZoom(newZoom);
+          if (newZoom === 1) {
+            setPan({ x: 0, y: 0 });
+          }
+        }
+
+        const currentMid = {
+          x: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+          y: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+        };
+        setPan(clampPan({
+          x: initialPan.x + (currentMid.x - startMid.x),
+          y: initialPan.y + (currentMid.y - startMid.y),
+        }, zoomRef.current));
+      } else if (isTouching && e.touches.length === 1 && zoomRef.current > 1) {
+        e.preventDefault();
+        const dx = e.touches[0].clientX - startMid.x;
+        const dy = e.touches[0].clientY - startMid.y;
+        setPan(clampPan({
+          x: initialPan.x + dx,
+          y: initialPan.y + dy,
+        }, zoomRef.current));
+      }
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      if (e.touches.length === 0) {
+        isTouching = false;
+        isPinching = false;
+        setIsDragging(false);
+      } else if (e.touches.length === 1) {
+        isPinching = false;
+        if (zoomRef.current > 1) {
+          isTouching = true;
+          startMid = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+          initialPan = { ...panRef.current };
+        } else {
+          isTouching = false;
+          setIsDragging(false);
+        }
+      }
+    };
+
+    canvas.addEventListener('touchstart', handleTouchStart, { passive: false });
+    canvas.addEventListener('touchmove', handleTouchMove, { passive: false });
+    canvas.addEventListener('touchend', handleTouchEnd, { passive: false });
+    canvas.addEventListener('touchcancel', handleTouchEnd, { passive: false });
+
+    return () => {
+      canvas.removeEventListener('touchstart', handleTouchStart);
+      canvas.removeEventListener('touchmove', handleTouchMove);
+      canvas.removeEventListener('touchend', handleTouchEnd);
+      canvas.removeEventListener('touchcancel', handleTouchEnd);
+    };
+  }, [isFullscreen]);
+
+  // Drag & pan handlers when zoomed in (Mouse / Desktop)
   const onMouseDown = (e: React.MouseEvent) => {
     if (zoom <= 1) return;
+    const target = e.target as HTMLElement;
+    if (target.closest('button') || target.closest('input')) return;
     e.preventDefault();
     setIsDragging(true);
     dragStartRef.current = { x: e.clientX, y: e.clientY };
@@ -214,34 +374,13 @@ export default function VisitorWorldMap() {
     e.preventDefault();
     const dx = e.clientX - dragStartRef.current.x;
     const dy = e.clientY - dragStartRef.current.y;
-    setPan({
+    setPan(clampPan({
       x: panStartRef.current.x + dx,
       y: panStartRef.current.y + dy,
-    });
+    }, zoom));
   };
 
   const onMouseUp = () => {
-    setIsDragging(false);
-  };
-
-  const onTouchStart = (e: React.TouchEvent) => {
-    if (zoom <= 1 || e.touches.length !== 1) return;
-    setIsDragging(true);
-    dragStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    panStartRef.current = { ...pan };
-  };
-
-  const onTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || zoom <= 1) return;
-    const dx = e.touches[0].clientX - dragStartRef.current.x;
-    const dy = e.touches[0].clientY - dragStartRef.current.y;
-    setPan({
-      x: panStartRef.current.x + dx,
-      y: panStartRef.current.y + dy,
-    });
-  };
-
-  const onTouchEnd = () => {
     setIsDragging(false);
   };
 
@@ -262,6 +401,8 @@ export default function VisitorWorldMap() {
     return data.stats.allCountries.map((country) => {
       const isClient = country.code === data.client.countryCode;
       const isHovered = hoveredCountry?.code === country.code;
+      const isSelected = selectedCountry?.code === country.code;
+      const isActive = isHovered || isSelected;
       const hasTraffic = country.count > 0;
       const matchesSearch =
         searchQuery.trim() !== '' &&
@@ -291,11 +432,18 @@ export default function VisitorWorldMap() {
             left: `${country.x}%`,
             top: `${country.y}%`,
           }}
-          onMouseEnter={() => setHoveredCountry(country)}
-          onMouseLeave={() => setHoveredCountry(null)}
+          onMouseEnter={() => {
+            if (isDraggingRef.current) return;
+            setHoveredCountry(country);
+          }}
+          onMouseLeave={() => {
+            if (isDraggingRef.current) return;
+            setHoveredCountry(null);
+          }}
           onClick={(e) => {
             e.stopPropagation();
             haptic.tap();
+            setSelectedCountry((prev) => (prev?.code === country.code ? null : country));
             setHoveredCountry(country);
           }}
           className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer p-2.5 group/dot touch-manipulation"
@@ -320,18 +468,24 @@ export default function VisitorWorldMap() {
                 ? 'w-4 h-4 bg-amber-400 ring-4 ring-amber-400/40 shadow-[0_0_16px_rgba(251,191,36,0.9)] animate-pulse'
                 : isClient
                 ? 'w-3.5 h-3.5 bg-primary-custom ring-4 ring-primary-custom/30 shadow-[0_0_12px_var(--primary-color)]'
-                : isHovered
-                ? 'w-3.5 h-3.5 bg-foreground-custom ring-2 ring-primary-custom shadow-md'
+                : isActive
+                ? 'w-3.5 h-3.5 bg-foreground-custom ring-2 ring-primary-custom shadow-md scale-125'
                 : hasTraffic
                 ? 'w-2.5 h-2.5 bg-primary-custom shadow-[0_0_8px_var(--primary-color)] hover:scale-150'
                 : 'w-1.5 h-1.5 bg-muted-foreground-custom/30 hover:bg-muted-foreground-custom/70'
             }`}
           />
 
-          {/* High-Contrast Readable Tooltip Card (Theme-Adaptive & Never Clipped) */}
-          {(isHovered || (isModal && matchesSearch)) && (
+          {/* High-Contrast Readable Tooltip Card (Theme-Adaptive & Counter-Scaled) */}
+          {(isActive || (isModal && matchesSearch)) && (
             <div
-              className={`absolute ${verticalPos} ${horizontalPos} w-56 p-3 rounded-xl border-2 border-primary-custom/40 shadow-2xl text-left pointer-events-none z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl bg-card-custom/95 text-foreground-custom`}
+              style={{
+                transform: isModal && zoom > 1 ? `scale(${1 / zoom})` : undefined,
+                transformOrigin: country.y < 45
+                  ? (country.x > 75 ? 'top right' : country.x < 25 ? 'top left' : 'top center')
+                  : (country.x > 75 ? 'bottom right' : country.x < 25 ? 'bottom left' : 'bottom center'),
+              }}
+              className={`absolute ${verticalPos} ${horizontalPos} hidden sm:block w-56 p-3 rounded-xl border-2 border-primary-custom/40 shadow-2xl text-left pointer-events-none z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl bg-card-custom/95 text-foreground-custom`}
             >
               <div className="flex items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-border-custom">
                 <span className="flex items-center gap-2 font-bold font-heading text-xs truncate">
@@ -485,26 +639,26 @@ export default function VisitorWorldMap() {
         {/* ── Active Inspector HUD Overlay (Top Right Corner) ── */}
         <div className="absolute top-3 right-3 hidden sm:flex items-center gap-2.5 px-3 py-2 rounded-xl bg-card-custom/95 backdrop-blur-md border border-border-custom shadow-md max-w-xs pointer-events-none transition-all z-30">
           <span className="text-xl shrink-0">
-            {hoveredCountry ? hoveredCountry.flag : data?.client?.flag || '🌐'}
+            {activeCountry ? activeCountry.flag : data?.client?.flag || '🌐'}
           </span>
           <div className="truncate text-left">
             <div className="flex items-center gap-1.5">
               <span className="text-xs font-bold font-heading text-foreground-custom truncate">
-                {hoveredCountry
-                  ? hoveredCountry.name
+                {activeCountry
+                  ? activeCountry.name
                   : data?.client
                   ? `${data.client.city ? data.client.city + ', ' : ''}${data.client.countryName}`
                   : 'Resolving Location...'}
               </span>
-              {(hoveredCountry?.isClient || (!hoveredCountry && data?.client)) && (
+              {(activeCountry?.isClient || (!activeCountry && data?.client)) && (
                 <span className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-primary-custom text-white font-bold">
                   YOU
                 </span>
               )}
             </div>
             <p className="text-[10px] font-mono text-muted-foreground-custom mt-0.5">
-              {hoveredCountry
-                ? `${hoveredCountry.count} recorded ${hoveredCountry.count === 1 ? 'session' : 'sessions'} (${hoveredCountry.percentage}% share)`
+              {activeCountry
+                ? `${activeCountry.count} recorded ${activeCountry.count === 1 ? 'session' : 'sessions'} (${activeCountry.percentage}% share)`
                 : data?.stats?.totalVisitors
                 ? `${data.stats.totalVisitors} real sessions • Hover dot for info`
                 : 'Real-time telemetry'}
@@ -718,6 +872,7 @@ export default function VisitorWorldMap() {
             onClick={(e) => e.stopPropagation()}
           >
             <div
+              ref={modalCanvasRef}
               className={`relative w-full h-full max-h-[78vh] sm:max-h-[82vh] rounded-2xl overflow-hidden border border-border-custom bg-card-custom/95 shadow-2xl flex items-center justify-center p-2 sm:p-4 select-none touch-none ${
                 zoom > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-default'
               }`}
@@ -725,10 +880,11 @@ export default function VisitorWorldMap() {
               onMouseMove={onMouseMove}
               onMouseUp={onMouseUp}
               onMouseLeave={onMouseUp}
-              onTouchStart={onTouchStart}
-              onTouchMove={onTouchMove}
-              onTouchEnd={onTouchEnd}
               onWheel={handleWheel}
+              onClick={() => {
+                setSelectedCountry(null);
+                setHoveredCountry(null);
+              }}
             >
               {/* Scalable & Draggable Canvas Frame */}
               <div
@@ -782,35 +938,74 @@ export default function VisitorWorldMap() {
                 </div>
               </div>
 
-              {/* Live Hover Telemetry Inspector HUD (Top Left Corner inside card) */}
+              {/* Live Hover Telemetry Inspector HUD (Top Left Corner inside card - Desktop & Tablet) */}
               <div className="absolute top-3 left-3 z-30 hidden sm:flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-card-custom/95 backdrop-blur-xl border border-border-custom shadow-xl max-w-sm pointer-events-none">
                 <span className="text-2xl shrink-0">
-                  {hoveredCountry ? hoveredCountry.flag : data?.client?.flag || '🌐'}
+                  {activeCountry ? activeCountry.flag : data?.client?.flag || '🌐'}
                 </span>
                 <div className="truncate text-left">
                   <div className="flex items-center gap-2">
                     <span className="text-xs font-bold font-heading text-foreground-custom truncate">
-                      {hoveredCountry
-                        ? hoveredCountry.name
+                      {activeCountry
+                        ? activeCountry.name
                         : data?.client
                         ? `${data.client.city ? data.client.city + ', ' : ''}${data.client.countryName}`
                         : 'Resolving Location...'}
                     </span>
-                    {(hoveredCountry?.isClient || (!hoveredCountry && data?.client)) && (
+                    {(activeCountry?.isClient || (!activeCountry && data?.client)) && (
                       <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-primary-custom text-white font-bold">
                         YOU
                       </span>
                     )}
                   </div>
                   <p className="text-[10px] font-mono text-muted-foreground-custom mt-0.5 truncate">
-                    {hoveredCountry
-                      ? `${hoveredCountry.count} ${hoveredCountry.count === 1 ? 'session' : 'sessions'} • ${hoveredCountry.percentage}% total traffic`
+                    {activeCountry
+                      ? `${activeCountry.count} ${activeCountry.count === 1 ? 'session' : 'sessions'} • ${activeCountry.percentage}% total traffic`
                       : data?.stats?.totalVisitors
                       ? `${data.stats.totalVisitors} real sessions • Hover dot for country telemetry`
                       : 'Real-time Edge telemetry'}
                   </p>
                 </div>
               </div>
+
+              {/* Mobile Responsive Pinpoint Info Card (Always Readable at Any Zoom Level) */}
+              {activeCountry && (
+                <div
+                  className="absolute bottom-2.5 inset-x-2 sm:hidden z-30 flex items-center justify-between gap-2.5 p-3 rounded-xl bg-card-custom/95 backdrop-blur-xl border border-primary-custom/40 shadow-2xl pointer-events-auto animate-in slide-in-from-bottom duration-150"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <span className="text-2xl shrink-0">{activeCountry.flag}</span>
+                    <div className="min-w-0">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-bold font-heading text-foreground-custom truncate">
+                          {activeCountry.name}
+                        </span>
+                        {activeCountry.isClient && (
+                          <span className="text-[9px] font-mono px-1.5 py-0.2 rounded-full bg-primary-custom text-white font-bold tracking-wider shrink-0">
+                            YOU
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-[10px] font-mono text-muted-foreground-custom truncate mt-0.5">
+                        {activeCountry.count} {activeCountry.count === 1 ? 'session' : 'sessions'} • {activeCountry.percentage}% total traffic
+                      </p>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      haptic.tap();
+                      setHoveredCountry(null);
+                      setSelectedCountry(null);
+                    }}
+                    className="p-1.5 rounded-lg bg-card-custom hover:bg-elevated-custom text-muted-foreground-custom hover:text-foreground-custom text-xs cursor-pointer border border-border-custom shrink-0"
+                    aria-label="Dismiss pinpoint info"
+                  >
+                    ✕
+                  </button>
+                </div>
+              )}
 
               {/* Collapsible Leaderboard Side Drawer (Theme Adaptive) */}
               {isLeaderboardOpen && (
