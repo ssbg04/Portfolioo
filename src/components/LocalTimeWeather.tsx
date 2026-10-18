@@ -141,9 +141,31 @@ export default function LocalTimeWeather({
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch Open-Meteo current weather for coordinates
+  // Fetch Open-Meteo current weather for coordinates with caching and idle deferral
   useEffect(() => {
     let isMounted = true;
+    const CACHE_KEY = `weather_${latitude}_${longitude}`;
+    const CACHE_TTL = 15 * 60 * 1000; // 15 mins
+
+    // Try reading from cache first
+    try {
+      const cached = sessionStorage.getItem(CACHE_KEY);
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (Date.now() - parsed.timestamp < CACHE_TTL) {
+          setWeather({
+            temp: parsed.temp,
+            code: parsed.code,
+            isDay: parsed.isDay,
+            loading: false,
+            error: false,
+          });
+          return;
+        }
+      }
+    } catch {
+      // Ignore sessionStorage errors
+    }
 
     async function fetchWeather() {
       try {
@@ -153,13 +175,22 @@ export default function LocalTimeWeather({
         const data = await res.json();
 
         if (isMounted && data?.current) {
-          setWeather({
+          const freshWeather = {
             temp: Math.round(data.current.temperature_2m),
             code: data.current.weather_code,
             isDay: Boolean(data.current.is_day),
             loading: false,
             error: false,
-          });
+          };
+          setWeather(freshWeather);
+          try {
+            sessionStorage.setItem(
+              CACHE_KEY,
+              JSON.stringify({ ...freshWeather, timestamp: Date.now() })
+            );
+          } catch {
+            // Ignore
+          }
         }
       } catch (err) {
         if (isMounted) {
@@ -168,12 +199,20 @@ export default function LocalTimeWeather({
       }
     }
 
-    fetchWeather();
-    // Refresh weather every 15 minutes
-    const weatherInterval = setInterval(fetchWeather, 15 * 60 * 1000);
+    // Defer network request so it doesn't contend with the critical render path
+    const idleId = (typeof window !== 'undefined' && 'requestIdleCallback' in window)
+      ? (window as any).requestIdleCallback(fetchWeather, { timeout: 2000 })
+      : setTimeout(fetchWeather, 400);
+
+    const weatherInterval = setInterval(fetchWeather, CACHE_TTL);
     return () => {
       isMounted = false;
       clearInterval(weatherInterval);
+      if (typeof window !== 'undefined' && 'cancelIdleCallback' in window && typeof idleId === 'number') {
+        (window as any).cancelIdleCallback(idleId);
+      } else {
+        clearTimeout(idleId);
+      }
     };
   }, [latitude, longitude]);
 

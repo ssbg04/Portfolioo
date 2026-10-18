@@ -112,13 +112,13 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
               </div>
 
               {/* Sound wave bars */}
+              {/* Sound wave bars (GPU-composited transforms) */}
               <div className="flex items-end gap-0.5 h-3.5 shrink-0">
-                {[1, 0.5, 0.8, 0.3, 0.9].map((h, i) => (
+                {[0, 1, 2, 3, 4].map((i) => (
                   <span
                     key={i}
-                    className="w-0.5 rounded-full bg-[#1DB954]"
+                    className="w-0.5 h-3.5 rounded-full bg-[#1DB954] origin-bottom will-change-transform"
                     style={{
-                      height: `${h * 14}px`,
                       animation: `soundBar${i} 0.8s ease-in-out infinite alternate`,
                       animationDelay: `${i * 0.12}s`,
                     }}
@@ -169,13 +169,13 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
         </div>
       </div>
 
-      {/* Sound bar keyframes */}
+      {/* Sound bar keyframes (GPU Composited scaleY) */}
       <style>{`
-        @keyframes soundBar0 { from { height: 4px } to { height: 14px } }
-        @keyframes soundBar1 { from { height: 8px } to { height: 6px } }
-        @keyframes soundBar2 { from { height: 6px } to { height: 12px } }
-        @keyframes soundBar3 { from { height: 10px } to { height: 4px } }
-        @keyframes soundBar4 { from { height: 4px } to { height: 14px } }
+        @keyframes soundBar0 { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
+        @keyframes soundBar1 { from { transform: scaleY(0.6); } to { transform: scaleY(0.4); } }
+        @keyframes soundBar2 { from { transform: scaleY(0.4); } to { transform: scaleY(0.85); } }
+        @keyframes soundBar3 { from { transform: scaleY(0.75); } to { transform: scaleY(0.3); } }
+        @keyframes soundBar4 { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
       `}</style>
 
       {/* ─── Spotify Modal — rendered via portal to escape footer stacking context ─── */}

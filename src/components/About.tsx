@@ -229,7 +229,7 @@ export default function About({
                     {settings.availabilityStatus && (
                       <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
                         <span className="font-mono text-muted-foreground-custom font-semibold">Status</span>
-                        <span className="text-emerald-600 dark:text-emerald-400 font-bold truncate max-w-[170px]">
+                        <span className="text-emerald-700 dark:text-emerald-400 font-bold truncate max-w-[170px]">
                           {settings.availabilityStatus}
                         </span>
                       </div>

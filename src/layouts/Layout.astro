@@ -35,20 +35,22 @@ const isRootPage = Astro.url.pathname === '/';
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 		<!-- Preload Critical LCP Image -->
 		{preloadImage && (
 			<link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
 		)}
 
-		<!-- Google Fonts Preconnect & Optimized Asynchronous Stylesheet -->
+		<!-- Resource Preconnects (Fonts & Sanity CDN) -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+		<link rel="preconnect" href="https://cdn.sanity.io" />
+		<link rel="dns-prefetch" href="https://cdn.sanity.io" />
 
-		<!-- FontAwesome 6 Icons (Deferred / Non-render blocking) -->
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" integrity="sha512-Evv84Mr4kqVGRNSgIGL/F/aIDqQb7xQ2vcrdIwxfjThSH8CSR7PBEakCr51Ck+w+/U6swU2Im1vVX0SVk9ABhg==" crossorigin="anonymous" referrerpolicy="no-referrer" media="print" onload="this.media='all'" />
-		<noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" /></noscript>
+		<!-- Google Fonts Optimized Asynchronous Loading (Non-render-blocking) -->
+		<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
+		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" /></noscript>
 		<link rel="icon" type="image/png" href="/logo.png" />
 		<link rel="apple-touch-icon" href="/logo.png" />
 		<!-- PWA & Mobile Web App Manifest -->
@@ -126,30 +128,6 @@ const isRootPage = Astro.url.pathname === '/';
 			})();
 		</script>
 
-		<!-- Orientation Stamp Script (Prevents nav layout shift) -->
-		<script is:inline>
-			(function() {
-				function setOrientation(doc) {
-					var targetDoc = doc || document;
-					const isPortrait = window.matchMedia('(orientation: portrait)').matches;
-					const isNarrowLandscape = !isPortrait && window.innerWidth < 1024;
-					targetDoc.documentElement.dataset.orientation = isPortrait
-						? 'portrait'
-						: isNarrowLandscape
-							? 'landscape-compact'
-							: 'landscape';
-				}
-				setOrientation(document);
-				window.addEventListener('resize', function() { setOrientation(document); }, { passive: true });
-				window.addEventListener('orientationchange', function() { setOrientation(document); }, { passive: true });
-				document.addEventListener('astro:before-swap', function(e) {
-					if (e.newDocument) setOrientation(e.newDocument);
-				});
-				document.addEventListener('astro:after-swap', function() {
-					setOrientation(document);
-				});
-			})();
-		</script>
 		<!-- Performance Tier, Ultra-Fast Design & Lite Mode Detection (Persists across all page transitions) -->
 		<script is:inline>
 			(function() {
@@ -229,8 +207,8 @@ const isRootPage = Astro.url.pathname === '/';
 		</div>
 		<BackToTop client:idle transition:persist="back-to-top" />
 		<PortfolioAssistantFAB client:idle transition:persist="portfolio-assistant" />
-		<SpotlightLens client:idle transition:persist="spotlight-lens" />
-		<DotMatrixCursor client:idle transition:persist="dm-cursor" />
+		<SpotlightLens client:media="(hover: hover) and (pointer: fine)" transition:persist="spotlight-lens" />
+		<DotMatrixCursor client:media="(hover: hover) and (pointer: fine)" transition:persist="dm-cursor" />
 		<NetworkStatus client:idle transition:persist="network-status" />
         <Analytics />
 	</body>

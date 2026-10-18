@@ -152,7 +152,8 @@ export default function Hero({
               <a
                 href="#projects"
                 onClick={(e) => handleSmoothScroll(e, 'projects')}
-                className="w-1/2 sm:w-auto px-6 py-3 rounded-lg bg-foreground-custom text-background-custom font-semibold text-sm border border-foreground-custom hover:opacity-90 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs group"
+                aria-label="Jump to projects section"
+                className="w-1/2 sm:w-auto px-5 py-2.5 rounded-lg bg-foreground-custom text-background-custom font-semibold text-sm border border-foreground-custom hover:opacity-90 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs group"
               >
                 Projects
                 <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform duration-150" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -162,7 +163,8 @@ export default function Hero({
               <a
                 href="#contact"
                 onClick={(e) => handleSmoothScroll(e, 'contact')}
-                className="w-1/2 sm:w-auto px-6 py-3 rounded-lg bg-card-custom text-foreground-custom font-semibold text-sm border border-border-custom hover:bg-muted-custom/60 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                aria-label="Jump to contact section"
+                className="w-1/2 sm:w-auto px-5 py-2.5 rounded-lg bg-card-custom text-foreground-custom font-semibold text-sm border border-border-custom hover:bg-muted-custom/60 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs"
               >
                 Contact
                 <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
