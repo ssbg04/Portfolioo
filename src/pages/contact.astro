@@ -2,6 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import Navbar from '../components/Navbar';
 import ContactForm from '../components/ContactForm';
+import VisitorWorldMap from '../components/VisitorWorldMap';
+import LiveChatBox from '../components/LiveChatBox';
 import Footer from '../components/Footer';
 import { getSiteSettings, getSocialLinks } from '../lib/data';
 
@@ -44,6 +46,21 @@ const socialLinks = await getSocialLinks();
 						<span>{settings.availabilityStatus || 'Open to Opportunities'}</span>
 					</span>
 				)}
+			</div>
+		</div>
+
+		{/* ── Real-Time Presence & Live Operations Grid ── */}
+		<div class="container mx-auto px-4 sm:px-6 max-w-6xl mb-12">
+			<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+				{/* Global Visitor Radar Map (7 cols on desktop) */}
+				<div class="lg:col-span-7 flex">
+					<VisitorWorldMap client:load />
+				</div>
+
+				{/* Real-time Live Chat Box (5 cols on desktop) */}
+				<div class="lg:col-span-5 flex">
+					<LiveChatBox client:load />
+				</div>
 			</div>
 		</div>
 

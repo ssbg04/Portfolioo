@@ -1,0 +1,102 @@
+import type { APIRoute } from 'astro';
+
+export const prerender = false;
+
+// Simple in-memory message queue keyed by user session for real-time live chat polling
+// In Cloudflare Workers, state persists across fast requests on the same edge location
+interface ChatMessage {
+  id: string;
+  sender: 'user' | 'cris';
+  text: string;
+  time: number;
+}
+
+const sessions = new Map<string, ChatMessage[]>();
+
+export const POST: APIRoute = async ({ request }) => {
+  try {
+    const { sessionId, message, userName } = await request.json();
+
+    if (!sessionId || !message || typeof message !== 'string') {
+      return new Response(JSON.stringify({ error: 'Missing required fields' }), { status: 400 });
+    }
+
+    // Resolve client country & city via Cloudflare edge headers
+    const cfCountry = request.headers.get('cf-ipcountry') || 'PH';
+    const cfCity = request.headers.get('cf-ipcity') || '';
+    const locationStr = [cfCity, cfCountry].filter(Boolean).join(', ') || 'Unknown Origin';
+
+    // Store visitor message in session history
+    const userMsg: ChatMessage = {
+      id: 'msg_' + Math.random().toString(36).substring(2, 9),
+      sender: 'user',
+      text: message.trim(),
+      time: Date.now(),
+    };
+
+    const history = sessions.get(sessionId) || [];
+    history.push(userMsg);
+    // Keep last 30 messages per session
+    if (history.length > 30) history.shift();
+    sessions.set(sessionId, history);
+
+    // Dispatch to Telegram Bot if configured
+    const botToken = typeof process !== 'undefined' ? (process.env.TELEGRAM_BOT_TOKEN || import.meta.env?.TELEGRAM_BOT_TOKEN) : import.meta.env?.TELEGRAM_BOT_TOKEN;
+    const chatId = typeof process !== 'undefined' ? (process.env.TELEGRAM_CHAT_ID || import.meta.env?.TELEGRAM_CHAT_ID) : import.meta.env?.TELEGRAM_CHAT_ID;
+
+    if (botToken && chatId) {
+      const telegramText = 
+        `💬 *New Portfolio Live Message*\n\n` +
+        `👤 *From:* ${userName || 'Visitor'} (\`#${sessionId.slice(0, 8)}\`)\n` +
+        `📍 *Origin:* ${locationStr}\n\n` +
+        `📝 *Message:*\n"${message.trim()}"\n\n` +
+        `_To reply to this visitor, swipe right and reply to this message!_`;
+
+      try {
+        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: telegramText,
+            parse_mode: 'Markdown',
+          }),
+        });
+      } catch (tgError) {
+        console.error('Telegram dispatch error:', tgError);
+      }
+    }
+
+    return new Response(
+      JSON.stringify({
+        success: true,
+        message: userMsg,
+        telegramConfigured: Boolean(botToken && chatId),
+      }),
+      { status: 200, headers: { 'Content-Type': 'application/json' } }
+    );
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+  }
+};
+
+export const GET: APIRoute = async ({ request }) => {
+  const url = new URL(request.url);
+  const sessionId = url.searchParams.get('sessionId');
+
+  if (!sessionId) {
+    return new Response(JSON.stringify({ messages: [] }), { status: 400 });
+  }
+
+  const history = sessions.get(sessionId) || [];
+  return new Response(
+    JSON.stringify({ messages: history }),
+    {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/json',
+        'Cache-Control': 'no-store, max-age=0',
+      },
+    }
+  );
+};
