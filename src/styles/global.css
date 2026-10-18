@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource/dotgothic16/latin.css";
 
 @layer base {
   :root {

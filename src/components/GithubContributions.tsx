@@ -83,13 +83,13 @@ export default function GithubContributions({ username = 'ssbg04', className = '
 
     // Defer network request to prevent blocking FCP / LCP
     if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
-      const id = (window as any).requestIdleCallback(fetchContributions, { timeout: 1500 });
+      const id = (window as any).requestIdleCallback(fetchContributions, { timeout: 5000 });
       return () => {
         isMounted = false;
         (window as any).cancelIdleCallback(id);
       };
     } else {
-      const timer = setTimeout(fetchContributions, 200);
+      const timer = setTimeout(fetchContributions, 3500);
       return () => {
         isMounted = false;
         clearTimeout(timer);

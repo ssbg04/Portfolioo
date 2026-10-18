@@ -2,14 +2,11 @@
 export const prerender = true;
 import '../styles/global.css';
 import { ClientRouter } from 'astro:transitions';
-import BackToTop from '../components/BackToTop';
-import Background from '../components/Background';
 import SpotlightLens from '../components/SpotlightLens';
 import PortfolioAssistantFAB from '../components/PortfolioAssistantFAB';
 import DotMatrixCursor from '../components/DotMatrixCursor';
 import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
-import NetworkStatus from '../components/NetworkStatus';
 
 
 interface Props {
@@ -41,16 +38,9 @@ const isRootPage = Astro.url.pathname === '/';
 			<link rel="preload" as="image" href={preloadImage} fetchpriority="high" />
 		)}
 
-		<!-- Resource Preconnects (Fonts & Sanity CDN) -->
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<!-- Resource Preconnect (Sanity CDN) -->
 		<link rel="preconnect" href="https://cdn.sanity.io" />
 		<link rel="dns-prefetch" href="https://cdn.sanity.io" />
-
-		<!-- Google Fonts Optimized Asynchronous Loading (Non-render-blocking) -->
-		<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" />
-		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" media="print" onload="this.media='all'" />
-		<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DotGothic16&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" /></noscript>
 		<link rel="icon" type="image/png" href="/logo.png" />
 		<link rel="apple-touch-icon" href="/logo.png" />
 		<!-- PWA & Mobile Web App Manifest -->
@@ -201,15 +191,101 @@ const isRootPage = Astro.url.pathname === '/';
 		</script>
 	</head>
 	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
-		<Background client:idle transition:persist="main-bg" />
+		<!-- Universal Graph Paper Matrix Background (Zero-JS static render) -->
+		<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
+			<div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.035)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:28px_28px]"></div>
+			<div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background-custom/40 pointer-events-none"></div>
+		</div>
+
 		<div id="magnify-content" data-vaul-drawer-wrapper class="w-full max-w-full min-h-screen flex flex-col pt-0 md:pl-[var(--sidebar-width)] overflow-x-clip">
 			<slot />
 		</div>
-		<BackToTop client:idle transition:persist="back-to-top" />
+
+		<!-- Back to Top Button (Zero-React Vanilla) -->
+		<div id="back-to-top-container" class="fixed bottom-6 left-5 sm:left-7 md:left-72 z-30 pointer-events-none opacity-0 transition-opacity duration-200">
+			<button
+				id="back-to-top-btn"
+				class="pointer-events-auto p-2.5 rounded-full bg-card-custom/95 hover:bg-card-custom text-foreground-custom border border-border-custom shadow-md hover:border-primary-custom/40 active:scale-95 transition-all duration-150 cursor-pointer group"
+				aria-label="Back to top"
+			>
+				<svg class="w-4 h-4 text-foreground-custom stroke-[2] group-hover:-translate-y-0.5 transition-transform duration-150" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M4.5 15.75l7.5-7.5 7.5 7.5" />
+				</svg>
+			</button>
+		</div>
+
+		<!-- Offline / Online Toast Banner (Zero-React Vanilla) -->
+		<div
+			id="network-status-toast"
+			role="status"
+			aria-live="polite"
+			class="hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 rounded-full border border-border-custom shadow-lg backdrop-blur-md items-center gap-2.5 text-xs font-mono font-medium select-none bg-card-custom/95 text-foreground-custom pointer-events-none"
+		>
+			<span id="network-status-dot" class="w-2 h-2 rounded-full shrink-0 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"></span>
+			<span id="network-status-text">ONLINE • Live Updates Synced</span>
+		</div>
+
 		<PortfolioAssistantFAB client:idle transition:persist="portfolio-assistant" />
 		<SpotlightLens client:media="(hover: hover) and (pointer: fine)" transition:persist="spotlight-lens" />
 		<DotMatrixCursor client:media="(hover: hover) and (pointer: fine)" transition:persist="dm-cursor" />
-		<NetworkStatus client:idle transition:persist="network-status" />
-        <Analytics />
+		<Analytics />
+
+		<!-- Vanilla Scripts for BackToTop and NetworkStatus -->
+		<script is:inline>
+			(function() {
+				// 1. Back to Top
+				var btnContainer = document.getElementById('back-to-top-container');
+				var btn = document.getElementById('back-to-top-btn');
+				if (btnContainer && btn) {
+					var ticking = false;
+					function onScroll() {
+						if (!ticking) {
+							window.requestAnimationFrame(function() {
+								if (window.scrollY > 400) {
+									btnContainer.classList.remove('opacity-0', 'pointer-events-none');
+								} else {
+									btnContainer.classList.add('opacity-0', 'pointer-events-none');
+								}
+								ticking = false;
+							});
+							ticking = true;
+						}
+					}
+					window.addEventListener('scroll', onScroll, { passive: true });
+					btn.addEventListener('click', function() {
+						window.scrollTo({ top: 0, behavior: 'smooth' });
+					});
+				}
+
+				// 2. Network Status
+				var toast = document.getElementById('network-status-toast');
+				var dot = document.getElementById('network-status-dot');
+				var text = document.getElementById('network-status-text');
+				if (toast && dot && text) {
+					var hideTimer;
+					function showStatus(isOnline) {
+						clearTimeout(hideTimer);
+						toast.classList.remove('hidden');
+						toast.classList.add('flex');
+						if (isOnline) {
+							dot.className = 'w-2 h-2 rounded-full shrink-0 bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]';
+							text.textContent = 'ONLINE • Live Updates Synced';
+							text.classList.remove('text-amber-500');
+							hideTimer = setTimeout(function() {
+								toast.classList.add('hidden');
+								toast.classList.remove('flex');
+							}, 3500);
+						} else {
+							dot.className = 'w-2 h-2 rounded-full shrink-0 bg-amber-500 animate-pulse';
+							text.textContent = 'OFFLINE • Cached Portfolio Mode';
+							text.classList.add('text-amber-500');
+						}
+					}
+					window.addEventListener('online', function() { showStatus(true); });
+					window.addEventListener('offline', function() { showStatus(false); });
+					if (!navigator.onLine) showStatus(false);
+				}
+			})();
+		</script>
 	</body>
 </html>

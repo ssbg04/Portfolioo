@@ -201,8 +201,8 @@ export default function LocalTimeWeather({
 
     // Defer network request so it doesn't contend with the critical render path
     const idleId = (typeof window !== 'undefined' && 'requestIdleCallback' in window)
-      ? (window as any).requestIdleCallback(fetchWeather, { timeout: 2000 })
-      : setTimeout(fetchWeather, 400);
+      ? (window as any).requestIdleCallback(fetchWeather, { timeout: 5000 })
+      : setTimeout(fetchWeather, 3500);
 
     const weatherInterval = setInterval(fetchWeather, CACHE_TTL);
     return () => {
