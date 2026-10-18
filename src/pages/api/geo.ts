@@ -66,7 +66,27 @@ export const GET: APIRoute = async ({ request, locals }) => {
                  request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                  '127.0.0.1';
 
-    // 2. Increment visitor count for the detected country (deduped per IP for 30 minutes)
+    // 2. Resolve persistent Cloudflare KV or fallback to in-memory
+    const env = (locals as any)?.env || (locals as any)?.runtime?.env;
+    const kv = env?.GEO_KV || env?.GEO_ANALYTICS;
+
+    let activeCounts: Record<string, number> = { ...visitorCounts };
+
+    if (kv) {
+      try {
+        const stored = await kv.get('geo_visitor_counts');
+        if (stored) {
+          activeCounts = JSON.parse(stored);
+        } else {
+          // Seed KV with initial counts on first run
+          await kv.put('geo_visitor_counts', JSON.stringify(activeCounts));
+        }
+      } catch (kvErr) {
+        console.error('KV read error:', kvErr);
+      }
+    }
+
+    // 3. Increment visitor count for the detected country (deduped per IP for 30 minutes)
     const now = Date.now();
     const lastSeen = recentIps.get(cfIp) || 0;
     if (now - lastSeen > 30 * 60 * 1000) {
@@ -77,14 +97,23 @@ export const GET: APIRoute = async ({ request, locals }) => {
           if (now - time > 60 * 60 * 1000) recentIps.delete(ip);
         }
       }
-      visitorCounts[cfCountry] = (visitorCounts[cfCountry] || 0) + 1;
+      activeCounts[cfCountry] = (activeCounts[cfCountry] || 0) + 1;
+      visitorCounts[cfCountry] = activeCounts[cfCountry];
+
+      if (kv) {
+        try {
+          await kv.put('geo_visitor_counts', JSON.stringify(activeCounts));
+        } catch (kvWriteErr) {
+          console.error('KV write error:', kvWriteErr);
+        }
+      }
     }
 
-    // 3. Format countries array for the world map
-    const totalVisitors = Object.values(visitorCounts).reduce((acc, curr) => acc + curr, 0);
+    // 4. Format countries array for the world map
+    const totalVisitors = Object.values(activeCounts).reduce((acc, curr) => acc + curr, 0);
 
     const countries = Object.entries(COUNTRY_COORDS).map(([code, meta]) => {
-      const count = visitorCounts[code] || (code === cfCountry ? 1 : 0);
+      const count = activeCounts[code] || (code === cfCountry ? 1 : 0);
       return {
         code,
         name: meta.name,
@@ -111,7 +140,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
         client: clientInfo,
         stats: {
           totalVisitors,
-          totalCountries: Object.keys(visitorCounts).length,
+          totalCountries: Object.keys(activeCounts).length,
           topCountries: countries.slice(0, 8),
           allCountries: countries,
         },
