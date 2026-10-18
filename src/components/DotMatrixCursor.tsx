@@ -111,11 +111,18 @@ export default function DotMatrixCursor() {
       queued = false;
     };
 
+    const TEXT_INPUT_SELECTOR = 'input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="file"]), textarea, [contenteditable="true"]';
+
     const onPointerMove = (e: PointerEvent) => {
       if (e.pointerType !== 'mouse') return;
       x = e.clientX;
       y = e.clientY;
-      el.style.opacity = '1';
+      const target = e.target as HTMLElement | null;
+      if (target?.closest?.(TEXT_INPUT_SELECTOR)) {
+        el.style.opacity = '0';
+      } else {
+        el.style.opacity = '1';
+      }
       if (!queued) {
         queued = true;
         requestAnimationFrame(paint);
@@ -124,7 +131,15 @@ export default function DotMatrixCursor() {
 
     const onMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement | null;
-      el.classList.toggle('is-hover', Boolean(target?.closest?.(CFG.hoverSelector)));
+      const isTextInput = Boolean(target?.closest?.(TEXT_INPUT_SELECTOR));
+      
+      // If hovering on an input or textarea, hide custom dot cursor so native I-beam caret is cleanly visible
+      if (isTextInput) {
+        el.style.opacity = '0';
+      } else {
+        el.style.opacity = '1';
+        el.classList.toggle('is-hover', Boolean(target?.closest?.(CFG.hoverSelector)));
+      }
     };
 
     const onMouseDown = () => el.classList.add('is-down');
