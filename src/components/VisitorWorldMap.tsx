@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import haptic from '../lib/haptics';
 
 interface CountryData {
@@ -82,6 +83,8 @@ export default function VisitorWorldMap() {
   const [loading, setLoading] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(null);
 
+  const [mounted, setMounted] = useState(false);
+
   // Fullscreen War-Room Lightbox State
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [zoom, setZoom] = useState(1);
@@ -92,6 +95,10 @@ export default function VisitorWorldMap() {
 
   const dragStartRef = useRef({ x: 0, y: 0 });
   const panStartRef = useRef({ x: 0, y: 0 });
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Pre-calculate the SVG coordinates for the landmass dot matrix
   const landDots = useMemo(() => {
@@ -567,12 +574,14 @@ export default function VisitorWorldMap() {
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════════════
-          CINEMA FULLSCREEN WAR-ROOM MODAL (Theme-Adaptive & Immersive Full Viewport)
+          CINEMA FULLSCREEN WAR-ROOM LIGHTBOX MODAL (Matching Photo Gallery Preview)
          ══════════════════════════════════════════════════════════════════════════════ */}
-      {isFullscreen && (
+      {mounted && isFullscreen && typeof document !== 'undefined' && createPortal(
         <div
-          className="fixed inset-0 z-[100] w-screen h-screen flex flex-col overflow-hidden select-none animate-modal-fade bg-background-custom/95 dark:bg-black/95 backdrop-blur-2xl text-foreground-custom"
+          className="fixed inset-0 z-[100] flex flex-col items-center justify-between p-3 sm:p-5 md:p-6 bg-black/80 backdrop-blur-md select-none animate-modal-fade text-foreground-custom"
+          style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
           onClick={() => {
+            haptic.tap();
             setIsFullscreen(false);
             setZoom(1);
             setPan({ x: 0, y: 0 });
@@ -581,29 +590,29 @@ export default function VisitorWorldMap() {
           role="dialog"
           aria-modal="true"
         >
-          {/* ── Top Controls Bar ── */}
+          {/* ── Top Bar Controls: Telemetry info, Search, Zoom Toolbar, Leaderboard, Close ── */}
           <div
-            className="w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border-custom bg-card-custom/80 backdrop-blur-md shrink-0 z-30"
+            className="w-full max-w-6xl flex items-center justify-between gap-2 sm:gap-3 z-50 py-1.5 px-3 bg-card-custom/95 border border-border-custom rounded-xl shadow-xl backdrop-blur-md shrink-0"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Left: Title + Telemetry stats */}
-            <div className="flex items-center gap-3">
-              <span className="relative flex h-3 w-3 shrink-0">
+            {/* Left: Telemetry status badge */}
+            <div className="flex items-center gap-2 sm:gap-2.5 min-w-0">
+              <span className="relative flex h-2.5 w-2.5 shrink-0">
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
+                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500" />
               </span>
-              <div>
-                <h3 className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider text-foreground-custom flex items-center gap-2">
-                  <span>GLOBAL TELEMETRY RADAR // FULL SCREEN</span>
-                </h3>
-                <p className="text-[10px] font-mono text-muted-foreground-custom">
-                  {data?.stats?.totalVisitors || 0} real sessions recorded across {data?.stats?.totalCountries || 0} sovereign territories
-                </p>
+              <div className="truncate">
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom truncate block">
+                  GLOBAL RADAR
+                </span>
+                <span className="text-[10px] font-mono text-muted-foreground-custom hidden sm:inline">
+                  {data?.stats?.totalVisitors || 0} sessions • {data?.stats?.totalCountries || 0} countries
+                </span>
               </div>
             </div>
 
             {/* Center: Search country input */}
-            <div className="relative w-full md:w-80">
+            <div className="relative hidden md:block w-64 lg:w-72">
               <svg className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground-custom pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
@@ -611,14 +620,14 @@ export default function VisitorWorldMap() {
                 type="text"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Find country (e.g. Philippines, USA, Japan)..."
-                className="w-full bg-elevated-custom border border-border-custom rounded-lg pl-8 pr-8 py-1.5 text-xs text-foreground-custom placeholder:text-muted-foreground-custom font-mono focus:outline-none focus:border-primary-custom shadow-xs"
+                placeholder="Find country (e.g. Philippines, USA)..."
+                className="w-full bg-elevated-custom border border-border-custom rounded-lg pl-8 pr-7 py-1 text-xs text-foreground-custom placeholder:text-muted-foreground-custom font-mono focus:outline-none focus:border-primary-custom shadow-xs"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground-custom hover:text-foreground-custom text-xs cursor-pointer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground-custom hover:text-foreground-custom text-xs cursor-pointer"
                 >
                   ✕
                 </button>
@@ -626,15 +635,16 @@ export default function VisitorWorldMap() {
             </div>
 
             {/* Right: Zoom Toolbar, Leaderboard Drawer Toggle, Close */}
-            <div className="flex items-center gap-2 self-end md:self-auto">
+            <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
               {/* Zoom Toolbar */}
-              <div className="flex items-center bg-elevated-custom border border-border-custom rounded-lg p-0.5">
+              <div className="flex items-center bg-card-custom border border-border-custom rounded-lg p-0.5 shadow-xs">
                 <button
                   type="button"
                   onClick={handleZoomOut}
                   disabled={zoom <= 1}
-                  className="p-1.5 rounded text-foreground-custom hover:bg-card-custom disabled:opacity-30 cursor-pointer transition-all"
+                  className="p-1.5 rounded-md text-foreground-custom hover:bg-foreground-custom/5 disabled:opacity-30 cursor-pointer transition-all text-xs flex items-center"
                   title="Zoom Out (-)"
+                  aria-label="Zoom out"
                 >
                   <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M19.5 12h-15" />
@@ -643,7 +653,7 @@ export default function VisitorWorldMap() {
                 <button
                   type="button"
                   onClick={handleResetZoom}
-                  className="px-2 py-0.5 text-[11px] font-mono text-muted-foreground-custom hover:text-foreground-custom cursor-pointer"
+                  className="px-2 py-0.5 text-[11px] font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors cursor-pointer"
                   title="Reset Zoom (0)"
                 >
                   {Math.round(zoom * 100)}%
@@ -652,8 +662,9 @@ export default function VisitorWorldMap() {
                   type="button"
                   onClick={handleZoomIn}
                   disabled={zoom >= 4}
-                  className="p-1.5 rounded text-foreground-custom hover:bg-card-custom disabled:opacity-30 cursor-pointer transition-all"
+                  className="p-1.5 rounded-md text-foreground-custom hover:bg-foreground-custom/5 disabled:opacity-30 cursor-pointer transition-all text-xs flex items-center"
                   title="Zoom In (+)"
+                  aria-label="Zoom in"
                 >
                   <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -668,13 +679,17 @@ export default function VisitorWorldMap() {
                   haptic.tap();
                   setIsLeaderboardOpen(!isLeaderboardOpen);
                 }}
-                className={`px-3 py-1.5 rounded-lg text-xs font-mono border transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-mono border shadow-xs transition-all cursor-pointer ${
                   isLeaderboardOpen
                     ? 'bg-primary-custom text-white border-primary-custom font-medium'
-                    : 'bg-card-custom text-foreground-custom border-border-custom hover:bg-elevated-custom'
+                    : 'bg-card-custom text-muted-foreground-custom hover:text-foreground-custom border-border-custom hover:border-border-custom/80'
                 }`}
+                title="Toggle Country Leaderboard"
               >
-                <span>📊 Leaderboard</span>
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+                </svg>
+                <span className="hidden sm:inline">Leaderboard</span>
               </button>
 
               {/* Close Button */}
@@ -687,7 +702,7 @@ export default function VisitorWorldMap() {
                   setPan({ x: 0, y: 0 });
                   setSearchQuery('');
                 }}
-                className="p-1.5 rounded-lg bg-card-custom hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 border border-border-custom text-muted-foreground-custom transition-all cursor-pointer"
+                className="p-1.5 sm:p-2 rounded-lg bg-card-custom hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-500 text-muted-foreground-custom transition-all cursor-pointer border border-border-custom shadow-xs"
                 aria-label="Close fullscreen radar"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -697,169 +712,192 @@ export default function VisitorWorldMap() {
             </div>
           </div>
 
-          {/* ── Main Full-Modal Viewport Container (Fills Entire Screen) ── */}
+          {/* ── Main Full-Modal Viewport Container (Centered Card Frame that takes the screen) ── */}
           <div
-            className="relative flex-1 w-full h-full min-h-0 overflow-hidden flex items-center justify-center p-2 sm:p-4 md:p-6"
+            className="relative w-full max-w-6xl flex-1 flex flex-col items-center justify-center my-auto min-h-0"
             onClick={(e) => e.stopPropagation()}
-            onMouseDown={onMouseDown}
-            onMouseMove={onMouseMove}
-            onMouseUp={onMouseUp}
-            onMouseLeave={onMouseUp}
-            onTouchStart={onTouchStart}
-            onTouchMove={onTouchMove}
-            onTouchEnd={onTouchEnd}
-            onWheel={handleWheel}
           >
-            {/* Draggable & Scalable Map Frame */}
             <div
-              className="relative w-full h-full flex items-center justify-center select-none"
-              style={{
-                transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom})`,
-                transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
-                cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
-              }}
+              className={`relative w-full h-full max-h-[78vh] sm:max-h-[82vh] rounded-2xl overflow-hidden border border-border-custom bg-card-custom/95 shadow-2xl flex items-center justify-center p-2 sm:p-4 select-none touch-none ${
+                zoom > 1 ? (isDragging ? 'cursor-grabbing' : 'cursor-grab') : 'cursor-default'
+              }`}
+              onMouseDown={onMouseDown}
+              onMouseMove={onMouseMove}
+              onMouseUp={onMouseUp}
+              onMouseLeave={onMouseUp}
+              onTouchStart={onTouchStart}
+              onTouchMove={onTouchMove}
+              onTouchEnd={onTouchEnd}
+              onWheel={handleWheel}
             >
-              {/* Inner 2:1 Aspect Ratio Canvas Frame that expands cleanly */}
-              <div className="relative w-full aspect-[2/1] max-w-full max-h-full flex items-center justify-center">
-                {/* Dot-Matrix World SVG */}
-                <svg
-                  viewBox="0 0 1000 500"
-                  className="w-full h-full text-foreground-custom pointer-events-none"
-                  preserveAspectRatio="none"
-                >
-                  <defs>
-                    <pattern
-                      id="fullscreen-ocean-matrix"
-                      x="0"
-                      y="0"
-                      width="12.5"
-                      height="12.5"
-                      patternUnits="userSpaceOnUse"
-                    >
-                      <circle cx="6.25" cy="6.25" r="1" className="fill-current opacity-[0.06] dark:opacity-[0.10]" />
-                    </pattern>
-                  </defs>
-
-                  <rect width="1000" height="500" fill="url(#fullscreen-ocean-matrix)" />
-
-                  <g className="fill-current opacity-[0.25] dark:opacity-[0.35]">
-                    {landDots.map((dot) => (
-                      <circle key={dot.key} cx={dot.cx} cy={dot.cy} r="2.6" />
-                    ))}
-                  </g>
-                </svg>
-
-                {/* Radar sweep line */}
-                <div className="absolute inset-y-0 w-48 bg-gradient-to-r from-transparent via-primary-custom/15 to-transparent pointer-events-none animate-[pulse_4s_ease-in-out_infinite]" />
-
-                {/* Render country blips */}
-                {renderCountryBlips(true)}
-              </div>
-            </div>
-
-            {/* Live Hover Telemetry Inspector HUD in Fullscreen Modal */}
-            <div className="absolute top-4 left-4 z-20 hidden sm:flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-card-custom/95 backdrop-blur-xl border border-border-custom shadow-xl max-w-sm pointer-events-none">
-              <span className="text-2xl shrink-0">
-                {hoveredCountry ? hoveredCountry.flag : data?.client?.flag || '🌐'}
-              </span>
-              <div className="truncate text-left">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold font-heading text-foreground-custom truncate">
-                    {hoveredCountry
-                      ? hoveredCountry.name
-                      : data?.client
-                      ? `${data.client.city ? data.client.city + ', ' : ''}${data.client.countryName}`
-                      : 'Resolving Location...'}
-                  </span>
-                  {(hoveredCountry?.isClient || (!hoveredCountry && data?.client)) && (
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-primary-custom text-white font-bold">
-                      YOU
-                    </span>
-                  )}
-                </div>
-                <p className="text-[10px] font-mono text-muted-foreground-custom mt-0.5">
-                  {hoveredCountry
-                    ? `${hoveredCountry.count} recorded ${hoveredCountry.count === 1 ? 'session' : 'sessions'} • ${hoveredCountry.percentage}% total traffic`
-                    : data?.stats?.totalVisitors
-                    ? `${data.stats.totalVisitors} real sessions • Hover dot for country telemetry`
-                    : 'Real-time Edge telemetry'}
-                </p>
-              </div>
-            </div>
-
-            {/* Hint overlay */}
-            <div className="absolute bottom-3 left-4 text-[11px] font-mono text-muted-foreground-custom bg-card-custom/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-border-custom pointer-events-none shadow-xs z-20">
-              <span>Scroll / Pinch to zoom • Drag to pan • Press [ESC] to exit</span>
-            </div>
-
-            {/* Collapsible Leaderboard Side Drawer (Theme Adaptive) */}
-            {isLeaderboardOpen && (
+              {/* Scalable & Draggable Canvas Frame */}
               <div
-                className="absolute top-0 right-0 bottom-0 w-80 max-w-full bg-card-custom/95 dark:bg-black/95 backdrop-blur-2xl border-l border-border-custom p-4 flex flex-col z-40 animate-in slide-in-from-right duration-200"
-                onClick={(e) => e.stopPropagation()}
+                className="relative w-full h-full flex items-center justify-center select-none"
+                style={{
+                  transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom})`,
+                  transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+                }}
               >
-                <div className="flex items-center justify-between pb-3 border-b border-border-custom mb-3">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">
-                      Country Leaderboard
-                    </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-elevated-custom text-muted-foreground-custom border border-border-custom">
-                      {data?.stats?.allCountries?.filter((c) => c.count > 0).length || 0} active
-                    </span>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setIsLeaderboardOpen(false)}
-                    className="text-muted-foreground-custom hover:text-foreground-custom text-xs cursor-pointer p-1 rounded hover:bg-elevated-custom"
+                {/* Strict 2:1 Aspect Ratio Canvas Frame that expands cleanly */}
+                <div
+                  className="relative w-full aspect-[2/1] flex items-center justify-center"
+                  style={{
+                    width: 'min(100%, calc((100vh - 180px) * 2))',
+                    maxHeight: '100%',
+                  }}
+                >
+                  {/* Dot-Matrix World SVG */}
+                  <svg
+                    viewBox="0 0 1000 500"
+                    className="w-full h-full text-foreground-custom pointer-events-none"
+                    preserveAspectRatio="none"
                   >
-                    ✕
-                  </button>
-                </div>
-
-                <div className="flex-1 overflow-y-auto flex flex-col gap-1.5 pr-1 no-scrollbar">
-                  {data?.stats?.allCountries
-                    ?.slice()
-                    .filter((c) => c.count > 0 || c.isClient)
-                    .sort((a, b) => b.count - a.count)
-                    .map((country, rank) => (
-                      <div
-                        key={country.code}
-                        onClick={() => {
-                          haptic.tap();
-                          setHoveredCountry(country);
-                          setSearchQuery(country.name);
-                        }}
-                        className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between text-xs ${
-                          hoveredCountry?.code === country.code
-                            ? 'border-primary-custom bg-primary-custom/15 text-foreground-custom'
-                            : 'border-border-custom bg-card-custom/50 hover:bg-elevated-custom text-foreground-custom'
-                        }`}
+                    <defs>
+                      <pattern
+                        id="fullscreen-ocean-matrix"
+                        x="0"
+                        y="0"
+                        width="12.5"
+                        height="12.5"
+                        patternUnits="userSpaceOnUse"
                       >
-                        <div className="flex items-center gap-2 truncate">
-                          <span className="text-[10px] font-mono text-muted-foreground-custom w-4">
-                            #{rank + 1}
-                          </span>
-                          <span className="text-base">{country.flag}</span>
-                          <span className="font-medium truncate">{country.name}</span>
-                          {country.isClient && (
-                            <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-primary-custom text-white font-bold">
-                              YOU
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-2 shrink-0 font-mono">
-                          <span className="font-bold text-foreground-custom">{country.count}</span>
-                          <span className="text-[10px] text-muted-foreground-custom">
-                            ({country.percentage}%)
-                          </span>
-                        </div>
-                      </div>
-                    ))}
+                        <circle cx="6.25" cy="6.25" r="1" className="fill-current opacity-[0.06] dark:opacity-[0.10]" />
+                      </pattern>
+                    </defs>
+
+                    <rect width="1000" height="500" fill="url(#fullscreen-ocean-matrix)" />
+
+                    <g className="fill-current opacity-[0.25] dark:opacity-[0.35]">
+                      {landDots.map((dot) => (
+                        <circle key={dot.key} cx={dot.cx} cy={dot.cy} r="2.6" />
+                      ))}
+                    </g>
+                  </svg>
+
+                  {/* Radar sweep line */}
+                  <div className="absolute inset-y-0 w-48 bg-gradient-to-r from-transparent via-primary-custom/15 to-transparent pointer-events-none animate-[pulse_4s_ease-in-out_infinite]" />
+
+                  {/* Render country blips */}
+                  {renderCountryBlips(true)}
                 </div>
               </div>
-            )}
+
+              {/* Live Hover Telemetry Inspector HUD (Top Left Corner inside card) */}
+              <div className="absolute top-3 left-3 z-30 hidden sm:flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-card-custom/95 backdrop-blur-xl border border-border-custom shadow-xl max-w-sm pointer-events-none">
+                <span className="text-2xl shrink-0">
+                  {hoveredCountry ? hoveredCountry.flag : data?.client?.flag || '🌐'}
+                </span>
+                <div className="truncate text-left">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-bold font-heading text-foreground-custom truncate">
+                      {hoveredCountry
+                        ? hoveredCountry.name
+                        : data?.client
+                        ? `${data.client.city ? data.client.city + ', ' : ''}${data.client.countryName}`
+                        : 'Resolving Location...'}
+                    </span>
+                    {(hoveredCountry?.isClient || (!hoveredCountry && data?.client)) && (
+                      <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-primary-custom text-white font-bold">
+                        YOU
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-[10px] font-mono text-muted-foreground-custom mt-0.5 truncate">
+                    {hoveredCountry
+                      ? `${hoveredCountry.count} ${hoveredCountry.count === 1 ? 'session' : 'sessions'} • ${hoveredCountry.percentage}% total traffic`
+                      : data?.stats?.totalVisitors
+                      ? `${data.stats.totalVisitors} real sessions • Hover dot for country telemetry`
+                      : 'Real-time Edge telemetry'}
+                  </p>
+                </div>
+              </div>
+
+              {/* Collapsible Leaderboard Side Drawer (Theme Adaptive) */}
+              {isLeaderboardOpen && (
+                <div
+                  className="absolute top-0 right-0 bottom-0 w-80 max-w-full bg-card-custom/95 backdrop-blur-2xl border-l border-border-custom p-4 flex flex-col z-40 animate-in slide-in-from-right duration-200"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <div className="flex items-center justify-between pb-3 border-b border-border-custom mb-3">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">
+                        Country Leaderboard
+                      </span>
+                      <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-elevated-custom text-muted-foreground-custom border border-border-custom">
+                        {data?.stats?.allCountries?.filter((c) => c.count > 0).length || 0} active
+                      </span>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setIsLeaderboardOpen(false)}
+                      className="text-muted-foreground-custom hover:text-foreground-custom text-xs cursor-pointer p-1 rounded hover:bg-elevated-custom"
+                    >
+                      ✕
+                    </button>
+                  </div>
+
+                  <div className="flex-1 overflow-y-auto flex flex-col gap-1.5 pr-1 no-scrollbar">
+                    {data?.stats?.allCountries
+                      ?.slice()
+                      .filter((c) => c.count > 0 || c.isClient)
+                      .sort((a, b) => b.count - a.count)
+                      .map((country, rank) => (
+                        <div
+                          key={country.code}
+                          onClick={() => {
+                            haptic.tap();
+                            setHoveredCountry(country);
+                            setSearchQuery(country.name);
+                          }}
+                          className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between text-xs ${
+                            hoveredCountry?.code === country.code
+                              ? 'border-primary-custom bg-primary-custom/15 text-foreground-custom'
+                              : 'border-border-custom bg-card-custom/50 hover:bg-elevated-custom text-foreground-custom'
+                          }`}
+                        >
+                          <div className="flex items-center gap-2 truncate">
+                            <span className="text-[10px] font-mono text-muted-foreground-custom w-4">
+                              #{rank + 1}
+                            </span>
+                            <span className="text-base">{country.flag}</span>
+                            <span className="font-medium truncate">{country.name}</span>
+                            {country.isClient && (
+                              <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-primary-custom text-white font-bold">
+                                YOU
+                              </span>
+                            )}
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0 font-mono">
+                            <span className="font-bold text-foreground-custom">{country.count}</span>
+                            <span className="text-[10px] text-muted-foreground-custom">
+                              ({country.percentage}%)
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
+
+          {/* ── Floating Bottom Hint Bar ── */}
+          <div
+            className="w-full max-w-6xl flex items-center justify-between gap-3 z-50 py-1 px-2 text-[11px] font-mono text-muted-foreground-custom shrink-0"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <span className="hidden sm:inline">
+              Scroll / Pinch to zoom • Drag to pan • Click country for telemetry
+            </span>
+            <span className="sm:hidden">
+              Pinch to zoom • Drag to pan
+            </span>
+            <span className="ml-auto">
+              Press <kbd className="px-1.5 py-0.5 rounded bg-card-custom border border-border-custom text-[10px] font-mono">ESC</kbd> to exit
+            </span>
+          </div>
+        </div>,
+        document.body
       )}
     </div>
   );
