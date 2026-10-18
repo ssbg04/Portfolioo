@@ -195,13 +195,27 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                 href={item.href}
                 onClick={() => setActivePath(item.href)}
                 aria-current={active ? 'page' : undefined}
-                className={`flex items-center px-3.5 py-2.5 rounded-lg text-sm font-medium transition-all duration-150 ${
+                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm transition-all duration-150 ${
                   active
-                    ? 'text-foreground-custom bg-elevated-custom font-semibold border-l-2 border-primary-custom pl-[14px]'
-                    : 'text-muted-foreground-custom hover:bg-elevated-custom hover:text-foreground-custom border-l-2 border-transparent pl-[14px]'
+                    ? 'text-foreground-custom bg-elevated-custom font-semibold border border-border-custom shadow-xs'
+                    : 'text-muted-foreground-custom hover:bg-elevated-custom/70 hover:text-foreground-custom border border-transparent font-medium'
                 }`}
               >
-                <span className="truncate font-heading">{item.label}</span>
+                <div className="flex items-center gap-2.5 truncate">
+                  <span
+                    className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
+                      active
+                        ? 'bg-primary-custom shadow-[0_0_8px_var(--primary-color)] scale-100'
+                        : 'bg-muted-foreground-custom/30 group-hover:bg-muted-foreground-custom/60 scale-75'
+                    }`}
+                  />
+                  <span className="truncate font-heading">{item.label}</span>
+                </div>
+                {active && (
+                  <span className="text-[10px] font-mono text-primary-custom opacity-80">
+                    ACTIVE
+                  </span>
+                )}
               </a>
             );
           })}
@@ -217,11 +231,13 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
           </div>
 
           <a
-            href="/contact"
-            onClick={() => setActivePath('/contact')}
-            className="flex items-center justify-center w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none"
+            href="/CV-Cris-Charles-Garcia.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none shadow-xs"
           >
-            Get in Touch
+            <span>Resume / CV</span>
+            <span className="text-xs font-mono">↗</span>
           </a>
         </div>
       </aside>
