@@ -36,6 +36,9 @@ export const COUNTRY_COORDS: Record<string, { name: string; flag: string; x: num
 // Starts completely clean with 0 mock data - all counts are 100% real edge sessions
 const visitorCounts: Record<string, number> = {};
 
+// @ts-ignore
+import { env as cfEnv } from 'cloudflare:workers';
+
 // Rate limiter / dedup per IP to avoid spamming the counter (3 min cooldown per IP)
 const recentIps = new Map<string, number>();
 
@@ -52,13 +55,14 @@ export const GET: APIRoute = async ({ request, locals }) => {
                  request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 
                  '127.0.0.1';
 
-    // 2. Safely resolve persistent Cloudflare KV
+    // 2. Resolve persistent Cloudflare KV using modern cloudflare:workers env
     let kv: any = null;
     try {
-      if ((locals as any)?.env?.GEO_KV || (locals as any)?.env?.GEO_ANALYTICS) {
+      if (typeof cfEnv !== 'undefined' && cfEnv) {
+        kv = (cfEnv as any).GEO_KV || (cfEnv as any).GEO_ANALYTICS;
+      }
+      if (!kv && (locals as any)?.env) {
         kv = (locals as any).env.GEO_KV || (locals as any).env.GEO_ANALYTICS;
-      } else if ((locals as any)?.runtime?.env?.GEO_KV || (locals as any)?.runtime?.env?.GEO_ANALYTICS) {
-        kv = (locals as any).runtime.env.GEO_KV || (locals as any).runtime.env.GEO_ANALYTICS;
       }
     } catch {
       // ignore - fall back to edge memory
@@ -66,6 +70,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
 
     let activeCounts: Record<string, number> = { ...visitorCounts };
 
+    let kvStoredFound = false;
     if (kv) {
       try {
         const stored = await kv.get('geo_visitor_counts');
@@ -77,6 +82,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
             await kv.put('geo_visitor_counts', JSON.stringify({}));
           } else {
             activeCounts = parsed;
+            kvStoredFound = true;
           }
         }
       } catch (kvErr) {
@@ -87,7 +93,9 @@ export const GET: APIRoute = async ({ request, locals }) => {
     // 3. Increment visitor count for the detected country (deduped per IP for 3 minutes)
     const now = Date.now();
     const lastSeen = recentIps.get(cfIp) || 0;
-    if (now - lastSeen > 3 * 60 * 1000) {
+    const shouldIncrement = !kvStoredFound || (now - lastSeen > 3 * 60 * 1000);
+
+    if (shouldIncrement) {
       recentIps.set(cfIp, now);
       // Clean old IPs if map grows large
       if (recentIps.size > 2000) {
@@ -110,6 +118,11 @@ export const GET: APIRoute = async ({ request, locals }) => {
       if (!activeCounts[cfCountry]) {
         activeCounts[cfCountry] = 1;
         visitorCounts[cfCountry] = 1;
+        if (kv) {
+          try {
+            await kv.put('geo_visitor_counts', JSON.stringify(activeCounts));
+          } catch {}
+        }
       }
     }
 
@@ -153,6 +166,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
           totalCountries: activeVisitedCountries.length > 0 ? activeVisitedCountries.length : 1,
           topCountries,
           allCountries: countries,
+          storage: kv ? 'cloudflare_kv' : 'edge_memory',
         },
       }),
       {
