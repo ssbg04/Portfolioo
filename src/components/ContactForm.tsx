@@ -53,7 +53,7 @@ export default function ContactForm({
   contactSubtitle = "Whether you have a question, a project idea, or just want to say hi, my inbox is always open. I'll try my best to get back to you!",
   email = "crischarlesgarcia345@gmail.com"
 }: ContactFormProps) {
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [formData, setFormData] = useState({ name: '', email: '', message: '', _hp_website: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [deviceId, setDeviceId] = useState('');
@@ -87,7 +87,7 @@ export default function ContactForm({
       const valid = timestamps.filter(t => typeof t === 'number' && now - t < 24 * 60 * 60 * 1000);
       localStorage.setItem('portfolio_contact_log', JSON.stringify(valid));
       setDailySentCount(valid.length);
-      setIsDailyLimitReached(valid.length >= 2);
+      setIsDailyLimitReached(valid.length >= 5);
     } catch {
       setDailySentCount(0);
       setIsDailyLimitReached(false);
@@ -122,7 +122,7 @@ export default function ContactForm({
 
     if (isDailyLimitReached) {
       setStatus('error');
-      setErrorMessage('Daily limit reached (2/2 emails). To prevent spam and abuse, please try again tomorrow.');
+      setErrorMessage('Failed: Limit reached');
       return;
     }
 
@@ -160,13 +160,15 @@ export default function ContactForm({
         }
 
         setStatus('success');
-        setFormData({ name: '', email: '', message: '' });
+        setFormData({ name: '', email: '', message: '', _hp_website: '' });
       } else {
         if (response.status === 429 || data.limitReached) {
           setIsDailyLimitReached(true);
+          setErrorMessage(data.message || 'Failed: Limit reached');
+        } else {
+          setErrorMessage(data.message || 'Something went wrong. Please try again.');
         }
         setStatus('error');
-        setErrorMessage(data.message || 'Something went wrong. Please try again.');
       }
     } catch (err) {
       setStatus('error');
@@ -233,15 +235,15 @@ export default function ContactForm({
                         Thanks for reaching out! I've received your note and will get back to you promptly.
                       </p>
                       {isDailyLimitReached ? (
-                        <div className="p-3 rounded-lg bg-foreground-custom/[0.03] border border-border-custom text-xs text-muted-foreground-custom text-center max-w-xs font-mono">
-                          Daily message quota reached (2/2). For urgent matters, feel free to use direct email or LinkedIn.
+                        <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs text-rose-600 dark:text-rose-400 text-center max-w-xs font-mono">
+                          Failed: Limit reached
                         </div>
                       ) : (
                         <button
                           onClick={() => setStatus('idle')}
                           className="px-5 py-2.5 rounded-lg bg-primary-custom text-white text-xs font-mono font-medium uppercase tracking-wider hover:bg-primary-custom/90 transition-all cursor-pointer shadow-sm"
                         >
-                          Send Another ({2 - dailySentCount} remaining)
+                          Send Another ({5 - dailySentCount} remaining)
                         </button>
                       )}
                   </div>
@@ -250,9 +252,23 @@ export default function ContactForm({
                     onSubmit={handleSubmit} 
                     className="flex flex-col gap-5"
                   >
-                      {status === 'error' && (
+                      {/* Invisible honeypot field for bot trapping */}
+                      <div className="opacity-0 absolute -z-50 pointer-events-none w-0 h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+                        <label htmlFor="_hp_website">Leave this field blank</label>
+                        <input
+                          type="text"
+                          name="_hp_website"
+                          id="_hp_website"
+                          tabIndex={-1}
+                          autoComplete="off"
+                          value={formData._hp_website}
+                          onChange={handleChange}
+                        />
+                      </div>
+
+                      {(status === 'error' || isDailyLimitReached) && (
                         <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs sm:text-sm font-medium">
-                          {errorMessage}
+                          {errorMessage || 'Failed: Limit reached'}
                         </div>
                       )}
 
@@ -314,21 +330,6 @@ export default function ContactForm({
                         </div>
                       </div>
 
-                      {/* Security & Rate Limiting Notice */}
-                      <div className="flex items-start gap-2.5 p-3 rounded-lg bg-foreground-custom/[0.02] border border-border-custom text-xs text-muted-foreground-custom leading-relaxed">
-                        <svg className="w-4 h-4 text-primary-custom shrink-0 mt-0.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
-                        </svg>
-                        <div className="flex-1 font-mono text-[11px]">
-                          <span className="font-semibold text-foreground-custom">Security Notice:</span> Submissions limited to <strong className="text-foreground-custom font-semibold">2 messages/day</strong>.
-                          {dailySentCount > 0 && (
-                            <span className="block mt-0.5 text-primary-custom font-medium">
-                              Usage: {dailySentCount}/2 sent today.
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
                       {/* Submit Button */}
                       <button
                         type="submit"
@@ -339,7 +340,7 @@ export default function ContactForm({
                           {status === 'sending'
                             ? 'Sending...'
                             : isDailyLimitReached
-                            ? 'Daily Limit Reached (2/2)'
+                            ? 'Failed: Limit reached'
                             : 'Send Message'}
                           {status !== 'sending' && !isDailyLimitReached && (
                             <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">

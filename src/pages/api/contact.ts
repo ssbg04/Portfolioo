@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import nodemailer from 'nodemailer';
+import { Resend } from 'resend';
 export const prerender = false;
 
 // In-memory sliding window rate limiter: 2 emails per 24 hours per IP, Email, and Device ID
@@ -9,20 +9,30 @@ interface RateRecord {
 
 const rateLimitStore = new Map<string, RateRecord>();
 const RATE_LIMIT_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 hours
-const MAX_EMAILS_PER_DAY = 2;
+const MAX_EMAILS_PER_DAY = 5;
+const BURST_WINDOW_MS = 10 * 60 * 1000; // 10 minutes
+const MAX_BURST_EMAILS = 3;
 
-function checkRateLimit(key: string, now: number): { allowed: boolean; remainingMs: number } {
+function checkRateLimit(key: string, now: number): { allowed: boolean; remainingMs: number; isBurst?: boolean } {
   const record = rateLimitStore.get(key);
   if (!record) return { allowed: true, remainingMs: 0 };
 
-  // Keep only timestamps within the last 24 hours
   const activeTimestamps = record.timestamps.filter((ts) => now - ts < RATE_LIMIT_WINDOW_MS);
   record.timestamps = activeTimestamps;
 
+  // Check burst limit (max 3 emails per 10 mins)
+  const recentBurst = activeTimestamps.filter((ts) => now - ts < BURST_WINDOW_MS);
+  if (recentBurst.length >= MAX_BURST_EMAILS) {
+    const oldestBurst = Math.min(...recentBurst);
+    const remainingMs = Math.max(0, oldestBurst + BURST_WINDOW_MS - now);
+    return { allowed: false, remainingMs, isBurst: true };
+  }
+
+  // Check daily limit (max 5 emails per 24 hours)
   if (activeTimestamps.length >= MAX_EMAILS_PER_DAY) {
     const oldest = Math.min(...activeTimestamps);
     const remainingMs = Math.max(0, oldest + RATE_LIMIT_WINDOW_MS - now);
-    return { allowed: false, remainingMs };
+    return { allowed: false, remainingMs, isBurst: false };
   }
 
   return { allowed: true, remainingMs: 0 };
@@ -49,7 +59,15 @@ function cleanupExpiredRecords(now: number) {
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { name, email, message, deviceId } = body;
+    const { name, email, message, deviceId, _hp_website } = body;
+
+    // Honeypot spam bot trap
+    if (_hp_website && String(_hp_website).trim().length > 0) {
+      return new Response(
+        JSON.stringify({ message: 'Message sent successfully!' }),
+        { status: 200, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Server-side validation
     if (!name || !email || !message) {
@@ -85,10 +103,14 @@ export const POST: APIRoute = async ({ request }) => {
     // 1. Check IP rate limit
     const ipCheck = checkRateLimit(`ip:${clientIp}`, now);
     if (!ipCheck.allowed) {
-      const hoursLeft = Math.ceil(ipCheck.remainingMs / (1000 * 60 * 60));
+      const waitTime = ipCheck.isBurst
+        ? `${Math.ceil(ipCheck.remainingMs / (1000 * 60))} minute(s)`
+        : `~${Math.ceil(ipCheck.remainingMs / (1000 * 60 * 60))} hour(s)`;
       return new Response(
         JSON.stringify({
-          message: `Daily limit reached for this network/IP (max 2 emails/day). To prevent spam, please try again in ~${hoursLeft} hour(s).`,
+          message: ipCheck.isBurst
+            ? `Please wait ${waitTime} before sending another message.`
+            : `Daily limit reached (max 5 emails/day). Please try again in ${waitTime}.`,
           limitReached: true
         }),
         { status: 429, headers: { 'Content-Type': 'application/json' } }
@@ -98,10 +120,14 @@ export const POST: APIRoute = async ({ request }) => {
     // 2. Check Email rate limit
     const emailCheck = checkRateLimit(`email:${normalizedEmail}`, now);
     if (!emailCheck.allowed) {
-      const hoursLeft = Math.ceil(emailCheck.remainingMs / (1000 * 60 * 60));
+      const waitTime = emailCheck.isBurst
+        ? `${Math.ceil(emailCheck.remainingMs / (1000 * 60))} minute(s)`
+        : `~${Math.ceil(emailCheck.remainingMs / (1000 * 60 * 60))} hour(s)`;
       return new Response(
         JSON.stringify({
-          message: `Daily limit reached for this email address (max 2 emails/day). To prevent abuse, please try again in ~${hoursLeft} hour(s).`,
+          message: emailCheck.isBurst
+            ? `Please wait ${waitTime} before sending another message.`
+            : `Daily limit reached for this email (max 5 emails/day). Please try again in ${waitTime}.`,
           limitReached: true
         }),
         { status: 429, headers: { 'Content-Type': 'application/json' } }
@@ -112,10 +138,14 @@ export const POST: APIRoute = async ({ request }) => {
     if (cleanDeviceId) {
       const deviceCheck = checkRateLimit(`device:${cleanDeviceId}`, now);
       if (!deviceCheck.allowed) {
-        const hoursLeft = Math.ceil(deviceCheck.remainingMs / (1000 * 60 * 60));
+        const waitTime = deviceCheck.isBurst
+          ? `${Math.ceil(deviceCheck.remainingMs / (1000 * 60))} minute(s)`
+          : `~${Math.ceil(deviceCheck.remainingMs / (1000 * 60 * 60))} hour(s)`;
         return new Response(
           JSON.stringify({
-            message: `Daily limit reached for this device (max 2 emails/day). To prevent automated spam, please try again in ~${hoursLeft} hour(s).`,
+            message: deviceCheck.isBurst
+              ? `Please wait ${waitTime} before sending another message.`
+              : `Daily limit reached for this device (max 5 emails/day). Please try again in ${waitTime}.`,
             limitReached: true
           }),
           { status: 429, headers: { 'Content-Type': 'application/json' } }
@@ -124,40 +154,27 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     // Credentials from environment variables
-    const zohoUser = import.meta.env.ZOHO_USER || (typeof process !== 'undefined' ? process.env.ZOHO_USER : undefined);
-    const zohoPass = import.meta.env.ZOHO_PASS || (typeof process !== 'undefined' ? process.env.ZOHO_PASS : undefined);
-    const zohoHost = import.meta.env.ZOHO_SMTP_HOST || (typeof process !== 'undefined' ? process.env.ZOHO_SMTP_HOST : undefined) || 'smtp.zoho.com';
-    const zohoPort = Number(import.meta.env.ZOHO_SMTP_PORT || (typeof process !== 'undefined' ? process.env.ZOHO_SMTP_PORT : undefined)) || 465;
-    const rawPrimaryEmail = import.meta.env.PRIMARY_EMAIL || (typeof process !== 'undefined' ? process.env.PRIMARY_EMAIL : undefined) || 'gcrischarles@gmail.com';
+    const resendApiKey = import.meta.env.RESEND_API_KEY || (typeof process !== 'undefined' ? process.env.RESEND_API_KEY : undefined);
+    const resendFrom = import.meta.env.RESEND_FROM || (typeof process !== 'undefined' ? process.env.RESEND_FROM : undefined) || 'Portfolio Contact <onboarding@resend.dev>';
+    const rawPrimaryEmail = import.meta.env.PRIMARY_EMAIL || (typeof process !== 'undefined' ? process.env.PRIMARY_EMAIL : undefined) || 'crischarlesgarcia345@gmail.com';
     const recipients = rawPrimaryEmail
       .split(',')
       .map((e: string) => e.trim())
       .filter((e: string) => Boolean(e) && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e));
 
-    const finalRecipients = recipients.length > 0 ? recipients : ['gcrischarles@gmail.com'];
+    const finalRecipients = recipients.length > 0 ? recipients : ['crischarlesgarcia345@gmail.com'];
 
     console.log(`[Contact Form] Submission received from ${name} (${email}) [IP: ${clientIp}]`);
 
-    if (!zohoUser || !zohoPass) {
-      console.warn('[Contact Form] ZOHO_USER or ZOHO_PASS is missing in .env');
+    if (!resendApiKey) {
+      console.warn('[Contact Form] RESEND_API_KEY is missing in .env');
       return new Response(
         JSON.stringify({
-          message: 'Server email credentials (ZOHO_USER / ZOHO_PASS) are not configured in .env'
+          message: 'Server email credentials (RESEND_API_KEY) are not configured in .env'
         }),
         { status: 500, headers: { 'Content-Type': 'application/json' } }
       );
     }
-
-    // Configure Nodemailer transporter for Zoho SMTP
-    const transporter = nodemailer.createTransport({
-      host: zohoHost,
-      port: zohoPort,
-      secure: zohoPort === 465, // true for port 465, false for 587
-      auth: {
-        user: zohoUser,
-        pass: zohoPass,
-      },
-    });
 
     // Format date and sanitize inputs for email presentation
     const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -178,9 +195,11 @@ export const POST: APIRoute = async ({ request }) => {
     const safeEmail = escapeHtml(email);
     const safeMessage = escapeHtml(message);
 
-    // Send the contact email to all primary email recipients
-    await transporter.sendMail({
-      from: `"Portfolio Message" <${zohoUser}>`,
+    // Send the contact email via Resend HTTP API
+    const resend = new Resend(resendApiKey);
+
+    const { data: resendData, error: resendError } = await resend.emails.send({
+      from: resendFrom,
       to: finalRecipients,
       replyTo: `"${name}" <${email}>`,
       subject: `Portfolio Inquiry: ${name}`,
@@ -196,91 +215,74 @@ export const POST: APIRoute = async ({ request }) => {
     body {
       margin: 0;
       padding: 0;
-      background-color: #f8fafc;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      color: #0f172a;
+      background-color: #fafafa;
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
+      color: #0a0a0a;
       -webkit-font-smoothing: antialiased;
     }
     table {
-      border-collapse: collapse;
+      border-collapse: separate;
+      border-spacing: 0;
     }
-    .wrapper {
+    .email-wrapper {
       width: 100% !important;
-      padding: 28px 20px !important;
+      padding: 32px 16px !important;
+      background-color: #fafafa;
       box-sizing: border-box;
     }
-    .container {
+    .email-container {
       width: 100% !important;
-      max-width: 880px !important;
+      max-width: 680px !important;
       background-color: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
+      border: 1px solid #e4e4e7;
+      border-radius: 14px;
       overflow: hidden;
       margin: 0 auto;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
-    .grid-cell {
-      padding: 14px 18px;
-      vertical-align: top;
-      background-color: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-    }
-    @media only screen and (max-width: 680px) {
-      .wrapper {
-        padding: 12px 8px !important;
+    @media only screen and (max-width: 600px) {
+      .email-wrapper {
+        padding: 16px 8px !important;
       }
-      .header-pad {
-        padding: 16px 18px !important;
+      .content-padding {
+        padding: 20px 18px !important;
       }
-      .body-pad {
-        padding: 16px !important;
-      }
-      .grid-row {
-        display: block !important;
-        width: 100% !important;
-      }
-      .grid-cell {
+      .meta-grid-col {
         display: block !important;
         width: 100% !important;
         box-sizing: border-box !important;
-        margin-bottom: 8px !important;
+        margin-bottom: 10px !important;
       }
-      .grid-spacer {
+      .meta-grid-spacer {
         display: none !important;
       }
-      .header-action {
+      .cta-btn {
         display: block !important;
-        margin-top: 10px !important;
-        text-align: left !important;
-      }
-      .footer-cell {
-        padding: 14px 16px !important;
+        width: 100% !important;
+        text-align: center !important;
+        box-sizing: border-box !important;
       }
     }
   </style>
 </head>
-<body style="margin: 0; padding: 0; background-color: #f8fafc; color: #0f172a;">
-  <div class="wrapper" style="width: 100%; padding: 28px 20px; background-color: #f8fafc; box-sizing: border-box;">
-    <div class="container" style="max-width: 880px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
+<body style="margin: 0; padding: 0; background-color: #fafafa; color: #0a0a0a; font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', Roboto, sans-serif;">
+  <div class="email-wrapper" style="width: 100%; padding: 36px 16px; background-color: #fafafa; box-sizing: border-box;">
+    <div class="email-container" style="max-width: 680px; margin: 0 auto; background-color: #ffffff; border: 1px solid #e4e4e7; border-radius: 14px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);">
       
-      <!-- Top Bar -->
-      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="border-bottom: 1px solid #e2e8f0;">
+      <!-- Top Technical Status Bar -->
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="background-color: #fafafa; border-bottom: 1px solid #e4e4e7;">
         <tr>
-          <td class="header-pad" style="padding: 20px 28px; background-color: #ffffff;">
+          <td style="padding: 14px 28px; font-family: 'JetBrains Mono', ui-monospace, Menlo, Consolas, monospace; font-size: 11px; color: #71717a;">
             <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td align="left" style="vertical-align: middle;">
-                  <div style="font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; color: #2563eb; margin-bottom: 2px;">
-                    Portfolio Contact
-                  </div>
-                  <div style="font-size: 18px; font-weight: 700; color: #0f172a;">
-                    Message from ${safeName}
-                  </div>
+                  <span style="display: inline-block; width: 7px; height: 7px; border-radius: 50%; background-color: #10b981; margin-right: 6px; vertical-align: middle;"></span>
+                  <span style="letter-spacing: 0.05em; font-weight: 600; color: #0a0a0a;">PORTFOLIO</span>
+                  <span style="color: #a1a1aa; margin: 0 4px;">//</span>
+                  <span style="color: #71717a;">INQUIRY RECEIVED</span>
                 </td>
-                <td class="header-action" align="right" style="vertical-align: middle;">
-                  <a href="mailto:${safeEmail}?subject=Re:%20Portfolio%20Inquiry" style="display: inline-block; padding: 7px 14px; background-color: #0f172a; color: #ffffff; font-size: 12px; font-weight: 600; text-decoration: none; border-radius: 6px;">
-                    Reply to Sender
-                  </a>
+                <td align="right" style="vertical-align: middle; color: #a1a1aa; font-size: 10px;">
+                  DEV // 01
                 </td>
               </tr>
             </table>
@@ -288,52 +290,98 @@ export const POST: APIRoute = async ({ request }) => {
         </tr>
       </table>
 
-      <!-- Main Body Area -->
-      <div class="body-pad" style="padding: 28px;">
-        
-        <!-- Metadata 3-Column Grid -->
-        <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 24px; border-collapse: separate; border-spacing: 0;">
-          <tr class="grid-row">
-            <td class="grid-cell" style="width: 32%; padding: 14px 18px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; vertical-align: top;">
-              <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 4px;">From</div>
-              <div style="font-size: 15px; font-weight: 600; color: #0f172a; word-break: break-word;">${safeName}</div>
-            </td>
-            <td class="grid-spacer" style="width: 2%;"></td>
-            <td class="grid-cell" style="width: 38%; padding: 14px 18px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; vertical-align: top;">
-              <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 4px;">Email</div>
-              <div style="font-size: 14px; font-weight: 500; word-break: break-all;">
-                <a href="mailto:${safeEmail}" style="color: #2563eb; text-decoration: none;">${safeEmail}</a>
-              </div>
-            </td>
-            <td class="grid-spacer" style="width: 2%;"></td>
-            <td class="grid-cell" style="width: 26%; padding: 14px 18px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; vertical-align: top;">
-              <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 4px;">Date</div>
-              <div style="font-size: 13px; color: #475569; line-height: 1.4;">${formattedDate}</div>
-            </td>
-          </tr>
-        </table>
-
-        <!-- Message Block (Occupying all spaces) -->
-        <div style="margin-bottom: 8px;">
-          <div style="font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: #64748b; margin-bottom: 8px;">
-            Message
-          </div>
-          <div style="width: 100%; box-sizing: border-box; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px; padding: 22px 24px; font-size: 15px; line-height: 1.7; color: #0f172a; white-space: pre-wrap; word-break: break-word;">${safeMessage}</div>
-        </div>
-
-      </div>
-
-      <!-- Footer Bar -->
-      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="border-top: 1px solid #e2e8f0; background-color: #f8fafc;">
+      <!-- Header Title Banner -->
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
         <tr>
-          <td class="footer-cell" style="padding: 16px 28px; font-size: 12px; color: #64748b;">
+          <td class="content-padding" style="padding: 28px 28px 20px 28px; background-color: #ffffff;">
+            <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: #1d4ed8; margin-bottom: 6px;">
+              Direct Transmission
+            </div>
+            <h1 style="margin: 0; font-size: 22px; font-weight: 700; color: #0a0a0a; letter-spacing: -0.02em; line-height: 1.25;">
+              Message from ${safeName}
+            </h1>
+          </td>
+        </tr>
+      </table>
+
+      <!-- Main Body: Bento Metadata Cards -->
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+        <tr>
+          <td class="content-padding" style="padding: 0 28px 28px 28px;">
+            
+            <!-- Metadata Bento Grid -->
+            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+              <tr>
+                <td class="meta-grid-col" style="width: 48%; vertical-align: top; background-color: #fafafa; border: 1px solid #e4e4e7; border-radius: 10px; padding: 14px 18px;">
+                  <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #71717a; margin-bottom: 4px;">
+                    Sender Name
+                  </div>
+                  <div style="font-size: 14px; font-weight: 600; color: #0a0a0a; word-break: break-word;">
+                    ${safeName}
+                  </div>
+                </td>
+                <td class="meta-grid-spacer" style="width: 4%;"></td>
+                <td class="meta-grid-col" style="width: 48%; vertical-align: top; background-color: #fafafa; border: 1px solid #e4e4e7; border-radius: 10px; padding: 14px 18px;">
+                  <div style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #71717a; margin-bottom: 4px;">
+                    Email Address
+                  </div>
+                  <div style="font-size: 13px; font-weight: 500; word-break: break-all;">
+                    <a href="mailto:${safeEmail}" style="color: #1d4ed8; text-decoration: none; font-weight: 600;">
+                      ${safeEmail}
+                    </a>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td colspan="3" style="height: 10px;"></td>
+              </tr>
+              <tr>
+                <td colspan="3" style="background-color: #fafafa; border: 1px solid #e4e4e7; border-radius: 10px; padding: 12px 18px;">
+                  <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+                    <tr>
+                      <td style="font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; color: #71717a;">
+                        <span style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">TIMESTAMP:</span> ${formattedDate} (PHT)
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+
+            <!-- Message Bento Container -->
+            <div style="background-color: #ffffff; border: 1px solid #e4e4e7; border-radius: 10px; overflow: hidden; margin-bottom: 24px;">
+              <div style="background-color: #fafafa; border-bottom: 1px solid #e4e4e7; padding: 10px 18px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: #71717a;">
+                Inquiry Content
+              </div>
+              <div style="padding: 22px 20px; font-size: 15px; line-height: 1.7; color: #18181b; white-space: pre-wrap; word-break: break-word;">${safeMessage}</div>
+            </div>
+
+            <!-- Quick Action CTA Button -->
+            <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
+              <tr>
+                <td align="left">
+                  <a href="mailto:${safeEmail}?subject=Re:%20Portfolio%20Inquiry" class="cta-btn" style="display: inline-block; padding: 12px 24px; background-color: #1d4ed8; color: #ffffff; font-size: 13px; font-weight: 600; font-family: 'JetBrains Mono', ui-monospace, monospace; text-transform: uppercase; letter-spacing: 0.04em; text-decoration: none; border-radius: 8px; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);">
+                    Reply to ${safeName} &rarr;
+                  </a>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+      </table>
+
+      <!-- Bottom Security & Delivery Footer -->
+      <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0" style="border-top: 1px solid #e4e4e7; background-color: #fafafa;">
+        <tr>
+          <td style="padding: 16px 28px; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 11px; color: #71717a;">
             <table role="presentation" width="100%" border="0" cellspacing="0" cellpadding="0">
               <tr>
                 <td align="left" style="vertical-align: middle;">
-                  Delivered to <span style="font-weight: 500; color: #0f172a;">${finalRecipients.map(escapeHtml).join(', ')}</span>
+                  Delivered to <strong style="color: #0a0a0a; font-weight: 600;">${finalRecipients.map(escapeHtml).join(', ')}</strong>
                 </td>
-                <td align="right" style="vertical-align: middle; color: #94a3b8; font-size: 11px;">
-                  crischarles.top
+                <td align="right" style="vertical-align: middle; color: #a1a1aa; font-size: 10px;">
+                  crischarles.com
                 </td>
               </tr>
             </table>
@@ -347,6 +395,16 @@ export const POST: APIRoute = async ({ request }) => {
 </html>
       `,
     });
+
+    if (resendError) {
+      console.error('[Contact Form] Resend API Error:', resendError);
+      return new Response(
+        JSON.stringify({
+          message: resendError.message || 'Failed to dispatch email via Resend API.'
+        }),
+        { status: 502, headers: { 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Record successful submission for rate limiting across IP, Email, and Device
     recordSubmission(`ip:${clientIp}`, now);
@@ -363,10 +421,10 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error: any) {
-    console.error('[Contact Form] Zoho SMTP / Nodemailer Error:', error);
+    console.error('[Contact Form] Resend Error:', error);
     return new Response(
       JSON.stringify({
-        message: error?.message || 'Failed to dispatch email via Zoho SMTP.'
+        message: error?.message || 'Failed to dispatch email via Resend API.'
       }),
       { status: 502, headers: { 'Content-Type': 'application/json' } }
     );

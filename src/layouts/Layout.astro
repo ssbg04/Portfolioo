@@ -5,7 +5,6 @@ import { ClientRouter } from 'astro:transitions';
 import SpotlightLens from '../components/SpotlightLens';
 import PortfolioAssistantFAB from '../components/PortfolioAssistantFAB';
 import DotMatrixCursor from '../components/DotMatrixCursor';
-import Analytics from '@vercel/analytics/astro';
 import SEO from '../components/SEO.astro';
 
 
@@ -228,7 +227,6 @@ const isRootPage = Astro.url.pathname === '/';
 		<PortfolioAssistantFAB client:idle transition:persist="portfolio-assistant" />
 		<SpotlightLens client:media="(hover: hover) and (pointer: fine)" transition:persist="spotlight-lens" />
 		<DotMatrixCursor client:media="(hover: hover) and (pointer: fine)" transition:persist="dm-cursor" />
-		<Analytics />
 
 		<!-- Vanilla Scripts for BackToTop and NetworkStatus -->
 		<script is:inline>
