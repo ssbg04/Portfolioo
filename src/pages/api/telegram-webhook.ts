@@ -20,28 +20,28 @@ export const POST: APIRoute = async ({ request }) => {
     const replyToMessage = message.reply_to_message;
     const replyText = message.text.trim();
 
-    // Find the session ID from the replied message
-    // When visitor sends message, we tagged it with (#user_xxxxxxxx)
+    // Find the session ID from the replied message or the reply text itself
     let targetSessionId = '';
 
-    if (replyToMessage?.text) {
-      const match = replyToMessage.text.match(/#([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) {
-        targetSessionId = match[1];
-      }
-    }
+    const textToScan = [
+      replyToMessage?.text,
+      replyToMessage?.caption,
+      message.text
+    ].filter(Boolean).join('\n');
 
-    // If you replied without swiping or session wasn't found, check caption or fallback
-    if (!targetSessionId && replyToMessage?.caption) {
-      const match = replyToMessage.caption.match(/#([a-zA-Z0-9_-]+)/);
-      if (match && match[1]) targetSessionId = match[1];
+    // Matches "#user_xxxx" or "Session: #xxxx"
+    const match = textToScan.match(/#([a-zA-Z0-9_-]+)/);
+    if (match && match[1]) {
+      targetSessionId = match[1];
     }
 
     if (targetSessionId) {
       addCrisReply(targetSessionId, replyText);
+      console.log(`[Telegram Webhook] Matched reply to session: ${targetSessionId} -> "${replyText}"`);
       return new Response(JSON.stringify({ ok: true, matchedSession: targetSessionId }), { status: 200 });
     }
 
+    console.warn('[Telegram Webhook] Could not match reply to any session. textToScan:', textToScan);
     return new Response(JSON.stringify({ ok: true, note: 'No session ID found in reply' }), { status: 200 });
   } catch (err: any) {
     console.error('Telegram webhook error:', err);

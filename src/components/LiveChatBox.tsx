@@ -83,8 +83,9 @@ export default function LiveChatBox() {
     setIsSending(true);
 
     // Optimistic user bubble
+    const optId = 'opt_' + Date.now();
     const tempMsg: ChatMessage = {
-      id: 'opt_' + Date.now(),
+      id: optId,
       sender: 'user',
       text: userText,
       time: Date.now(),
@@ -92,7 +93,7 @@ export default function LiveChatBox() {
     setMessages((prev) => [...prev, tempMsg]);
 
     try {
-      await fetch('/api/live-chat', {
+      const res = await fetch('/api/live-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -100,6 +101,13 @@ export default function LiveChatBox() {
           message: userText,
         }),
       });
+      const data = await res.json();
+      if (data?.message) {
+        // Swap optimistic message with official server message
+        setMessages((prev) =>
+          prev.map((m) => (m.id === optId ? data.message : m))
+        );
+      }
     } catch (err) {
       console.error('Failed to send live chat message:', err);
     } finally {

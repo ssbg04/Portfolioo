@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 
 interface CountryData {
   code: string;
@@ -28,10 +28,81 @@ interface GeoPayload {
   };
 }
 
+/**
+ * 80x40 Equirectangular World Map Dot-Matrix Bitmask
+ * '#' = Landmass dot | '.' = Ocean
+ * Matches 2:1 aspect ratio (1000x500 SVG viewBox)
+ */
+const WORLD_DOT_MATRIX: string[] = [
+  "................................................................................",
+  "..........................##########............................................",
+  ".................#####...############......................#####................",
+  "........#####...######...############.........####.......##############.........",
+  ".....#################....##########........#######...####################......",
+  "....###################....########........#########.#######################....",
+  "....###################......####.........###################################...",
+  "......#################...................####################################..",
+  "........###############..................######################################.",
+  ".........##############.................#####.################################..",
+  ".........#############..................####..###############################...",
+  "..........###########...................#####..##############################...",
+  "..........##########....................######.############################.....",
+  "...........########.......#.............##################################......",
+  "............#######.....####.............################################.......",
+  ".............###..##......###...........#########..#####################........",
+  "................####....................#########....###################........",
+  ".................###...................###########....#####...#########.........",
+  "..................###..................############....###.....#######..........",
+  "...................###................#############....##.......#####...........",
+  "....................#######...........#############.............#####.#.........",
+  "....................#########.........#############..............####.##........",
+  "....................##########.........###########................######........",
+  "....................###########.........#########..................#######......",
+  "....................############.........########.................####.###......",
+  ".....................###########..........#######...............................",
+  "......................#########...........######......................#####.....",
+  "......................########............######....................#########...",
+  ".......................######.............#####....................##########...",
+  ".......................#####...............####....................##########...",
+  ".......................####................###.....................#########....",
+  ".......................###..................#.......................#######.....",
+  ".......................##................................................#..##..",
+  ".......................##...................................................#...",
+  ".......................#........................................................",
+  "................................................................................",
+  "................................................................................",
+  "................................................................................",
+  "................................................................................",
+  "................................................................................",
+];
+
 export default function VisitorWorldMap() {
   const [data, setData] = useState<GeoPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [hoveredCountry, setHoveredCountry] = useState<CountryData | null>(null);
+
+  // Pre-calculate the SVG coordinates for the landmass dot matrix
+  const landDots = useMemo(() => {
+    const dots: { cx: number; cy: number; key: string }[] = [];
+    const rows = WORLD_DOT_MATRIX.length; // 40
+    const cols = WORLD_DOT_MATRIX[0].length; // 80
+    const cellW = 1000 / cols; // 12.5
+    const cellH = 500 / rows; // 12.5
+
+    for (let r = 0; r < rows; r++) {
+      const rowStr = WORLD_DOT_MATRIX[r];
+      for (let c = 0; c < cols; c++) {
+        if (rowStr[c] === '#') {
+          dots.push({
+            cx: c * cellW + cellW / 2,
+            cy: r * cellH + cellH / 2,
+            key: `${r}-${c}`,
+          });
+        }
+      }
+    }
+    return dots;
+  }, []);
 
   useEffect(() => {
     let mounted = true;
@@ -82,42 +153,55 @@ export default function VisitorWorldMap() {
             <span>
               Connected from{' '}
               <strong className="text-primary-custom font-semibold">
-                {data.client.city ? `${data.client.city}, ` : ''}{data.client.countryName}
+                {data.client.city ? `${data.client.city}, ` : ''}
+                {data.client.countryName}
               </strong>
             </span>
           </div>
         )}
       </div>
 
-      {/* ── Interactive Map Canvas Container ── */}
+      {/* ── Interactive Dot-Matrix Map Container ── */}
       <div className="relative w-full aspect-[16/8.5] min-h-[220px] sm:min-h-[300px] rounded-xl overflow-hidden bg-background-custom/60 border border-border-custom flex items-center justify-center group/map select-none">
-        {/* Subtle grid pattern backdrop */}
-        <div 
-          className="absolute inset-0 opacity-20 pointer-events-none"
-          style={{
-            backgroundImage: 'radial-gradient(circle at 1px 1px, var(--fg-color) 1px, transparent 0)',
-            backgroundSize: '24px 24px',
-          }}
-        />
-
-        {/* Simplified Continents Silhouette Overlay (SVG equirectangular projection) */}
+        {/* Dot-Matrix World SVG */}
         <svg
           viewBox="0 0 1000 500"
-          className="absolute inset-0 w-full h-full opacity-[0.14] dark:opacity-[0.20] text-foreground-custom fill-current pointer-events-none"
+          className="absolute inset-0 w-full h-full text-foreground-custom pointer-events-none"
           preserveAspectRatio="none"
         >
-          {/* North America */}
-          <path d="M 80,120 Q 150,90 280,80 Q 320,130 260,180 Q 220,240 200,280 Q 170,250 140,210 Q 90,160 80,120 Z" />
-          {/* South America */}
-          <path d="M 280,290 Q 380,310 370,390 Q 340,460 300,470 Q 270,410 270,330 Z" />
-          {/* Europe */}
-          <path d="M 450,110 Q 560,90 560,170 Q 500,210 460,180 Q 430,150 450,110 Z" />
-          {/* Africa */}
-          <path d="M 460,200 Q 580,200 590,300 Q 550,420 500,430 Q 440,330 450,250 Z" />
-          {/* Asia */}
-          <path d="M 570,90 Q 820,70 870,200 Q 820,280 710,260 Q 640,230 580,150 Z" />
-          {/* Australia */}
-          <path d="M 790,340 Q 910,340 900,420 Q 830,450 790,400 Z" />
+          <defs>
+            {/* Subtle background ocean matrix */}
+            <pattern
+              id="ocean-dot-matrix"
+              x="0"
+              y="0"
+              width="12.5"
+              height="12.5"
+              patternUnits="userSpaceOnUse"
+            >
+              <circle
+                cx="6.25"
+                cy="6.25"
+                r="1"
+                className="fill-current opacity-[0.06] dark:opacity-[0.08]"
+              />
+            </pattern>
+          </defs>
+
+          {/* Render Ocean Sub-Grid */}
+          <rect width="1000" height="500" fill="url(#ocean-dot-matrix)" />
+
+          {/* Render Continental Landmass Dot Matrix */}
+          <g className="fill-current opacity-[0.22] dark:opacity-[0.32]">
+            {landDots.map((dot) => (
+              <circle
+                key={dot.key}
+                cx={dot.cx}
+                cy={dot.cy}
+                r="2.6"
+              />
+            ))}
+          </g>
         </svg>
 
         {/* Radar Scanning Line Animation */}
@@ -154,8 +238,8 @@ export default function VisitorWorldMap() {
                     : isHovered
                     ? 'w-3 h-3 bg-foreground-custom ring-2 ring-primary-custom'
                     : hasTraffic
-                    ? 'w-2 h-2 bg-primary-custom/80 hover:scale-150'
-                    : 'w-1.5 h-1.5 bg-muted-foreground-custom/30'
+                    ? 'w-2 h-2 bg-primary-custom/90 shadow-[0_0_6px_var(--primary-color)] hover:scale-150'
+                    : 'w-1.5 h-1.5 bg-muted-foreground-custom/40'
                 }`}
               />
 
@@ -176,7 +260,9 @@ export default function VisitorWorldMap() {
 
                   <div className="flex items-center justify-between text-[11px] font-mono text-muted-foreground-custom">
                     <span>Recorded Visitors:</span>
-                    <strong className="text-foreground-custom font-semibold">{country.count}</strong>
+                    <strong className="text-foreground-custom font-semibold">
+                      {country.count}
+                    </strong>
                   </div>
 
                   {/* Share of Traffic Bar */}
