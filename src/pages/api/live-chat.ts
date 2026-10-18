@@ -40,7 +40,7 @@ export function addCrisReply(sessionId: string, text: string) {
   return crisMsg;
 }
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const { sessionId, message, userName } = await request.json();
 
@@ -66,9 +66,17 @@ export const POST: APIRoute = async ({ request }) => {
     if (history.length > 30) history.shift();
     sessions.set(sessionId, history);
 
-    // Dispatch to Telegram Bot if configured
-    const botToken = typeof process !== 'undefined' ? (process.env.TELEGRAM_BOT_TOKEN || import.meta.env?.TELEGRAM_BOT_TOKEN) : import.meta.env?.TELEGRAM_BOT_TOKEN;
-    const chatId = typeof process !== 'undefined' ? (process.env.TELEGRAM_CHAT_ID || import.meta.env?.TELEGRAM_CHAT_ID) : import.meta.env?.TELEGRAM_CHAT_ID;
+    // Dispatch to Telegram Bot (support Cloudflare Pages runtime bindings, process.env, and import.meta.env)
+    const runtimeEnv = (locals as any)?.runtime?.env || {};
+    const botToken = runtimeEnv.TELEGRAM_BOT_TOKEN || 
+                     (typeof process !== 'undefined' ? process.env?.TELEGRAM_BOT_TOKEN : undefined) || 
+                     (import.meta.env as any)?.TELEGRAM_BOT_TOKEN;
+    const chatId = runtimeEnv.TELEGRAM_CHAT_ID || 
+                   (typeof process !== 'undefined' ? process.env?.TELEGRAM_CHAT_ID : undefined) || 
+                   (import.meta.env as any)?.TELEGRAM_CHAT_ID;
+
+    let tgSuccess = false;
+    let tgErrorDetails = null;
 
     if (botToken && chatId) {
       const telegramText = 
@@ -80,18 +88,28 @@ export const POST: APIRoute = async ({ request }) => {
         `_👉 To reply to this visitor, swipe right and reply to this message!_`;
 
       try {
-        await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
+        const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            chat_id: chatId,
+            chat_id: String(chatId).trim(),
             text: telegramText,
             parse_mode: 'Markdown',
           }),
         });
-      } catch (tgError) {
+
+        const tgData: any = await tgRes.json();
+        tgSuccess = tgData?.ok === true;
+        if (!tgSuccess) {
+          tgErrorDetails = tgData;
+          console.error('[Telegram Error]', tgData);
+        }
+      } catch (tgError: any) {
+        tgErrorDetails = tgError?.message;
         console.error('Telegram dispatch error:', tgError);
       }
+    } else {
+      console.warn('[Telegram] Credentials missing in environment: botToken=' + Boolean(botToken) + ' chatId=' + Boolean(chatId));
     }
 
     return new Response(
@@ -99,6 +117,8 @@ export const POST: APIRoute = async ({ request }) => {
         success: true,
         message: userMsg,
         telegramConfigured: Boolean(botToken && chatId),
+        telegramDispatched: tgSuccess,
+        details: tgErrorDetails,
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
