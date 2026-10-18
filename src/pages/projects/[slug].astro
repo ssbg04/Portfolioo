@@ -159,6 +159,80 @@ const nextProject =
 						</div>
 					</section>
 
+					{/* Section: System Architecture Diagram (Flagship Case Study for TIS Record Management System) */}
+					{project.slug === 'tis-rms' && (
+						<section class="space-y-4">
+							<div class="flex items-center justify-between">
+								<h2 class="text-xl sm:text-2xl font-bold font-heading text-foreground-custom flex items-center gap-2">
+									<span class="w-2 h-2 rounded-full bg-primary-custom" />
+									System Architecture &amp; Data Pipeline
+								</h2>
+								<span class="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary-custom/10 text-primary-custom border border-primary-custom/20">
+									SEC_01 // ARCHITECTURE
+								</span>
+							</div>
+
+							<div class="bento-card p-4 sm:p-6 rounded-2xl border border-border-custom bg-card-custom/80 shadow-sm overflow-hidden">
+								<div class="w-full overflow-x-auto pb-2">
+									<svg viewBox="0 0 840 220" class="w-full min-w-[700px] h-auto text-foreground-custom" fill="none">
+										{/* Connection Lines with Animated Pulses */}
+										<path d="M 160 110 L 250 110" stroke="currentColor" stroke-opacity="0.3" stroke-width="2" stroke-dasharray="4 4" />
+										<path d="M 390 110 L 480 110" stroke="currentColor" stroke-opacity="0.3" stroke-width="2" stroke-dasharray="4 4" />
+										<path d="M 620 110 L 710 110" stroke="currentColor" stroke-opacity="0.3" stroke-width="2" stroke-dasharray="4 4" />
+
+										{/* Node 1: Client Layer */}
+										<g transform="translate(20, 50)">
+											<rect width="140" height="120" rx="14" class="fill-card-custom stroke-border-custom hover:stroke-primary-custom transition-all" stroke-width="1.5" />
+											<rect x="12" y="14" width="28" height="28" rx="6" class="fill-primary-custom/15 text-primary-custom" />
+											<text x="26" y="32" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="currentColor">01</text>
+											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Client Apps</text>
+											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Flutter Mobile</text>
+											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">C# WPF Desktop</text>
+											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Role-Based UI</text>
+										</g>
+
+										{/* Node 2: Local Cache & Offline Sync */}
+										<g transform="translate(250, 50)">
+											<rect width="140" height="120" rx="14" class="fill-card-custom stroke-border-custom hover:stroke-primary-custom transition-all" stroke-width="1.5" />
+											<rect x="12" y="14" width="28" height="28" rx="6" class="fill-emerald-500/15 text-emerald-500" />
+											<text x="26" y="32" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="currentColor">02</text>
+											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Local Storage</text>
+											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">SQLite Engine</text>
+											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Offline-First Cache</text>
+											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Instant Read/Write</text>
+										</g>
+
+										{/* Node 3: OCR & Document Processing Pipeline */}
+										<g transform="translate(480, 50)">
+											<rect width="140" height="120" rx="14" class="fill-card-custom stroke-border-custom hover:stroke-primary-custom transition-all" stroke-width="1.5" />
+											<rect x="12" y="14" width="28" height="28" rx="6" class="fill-primary-custom/15 text-primary-custom" />
+											<text x="26" y="32" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="currentColor">03</text>
+											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Backend &amp; OCR</text>
+											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Node.js Express</text>
+											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Tesseract OCR</text>
+											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Ghostscript PDF</text>
+										</g>
+
+										{/* Node 4: Secure Edge & Central Database */}
+										<g transform="translate(710, 50)">
+											<rect width="120" height="120" rx="14" class="fill-card-custom stroke-border-custom hover:stroke-primary-custom transition-all" stroke-width="1.5" />
+											<rect x="12" y="14" width="28" height="28" rx="6" class="fill-amber-500/15 text-amber-500" />
+											<text x="26" y="32" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="currentColor">04</text>
+											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Edge &amp; Sync</text>
+											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Cloudflare Tunnel</text>
+											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Encrypted Tunnels</text>
+											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">MySQL Cluster</text>
+										</g>
+									</svg>
+								</div>
+								<p class="text-xs font-mono text-muted-foreground-custom mt-3 pt-3 border-t border-border-custom/50 flex items-center justify-between">
+									<span>Pipeline: Client Capture → Local Offline SQLite → Automated OCR Indexing → Encrypted Cloudflare Sync</span>
+									<span class="text-primary-custom font-semibold">100% AIR-GAPPED READY</span>
+								</p>
+							</div>
+						</section>
+					)}
+
 					{/* Section: Key Highlights & Features */}
 					{project.highlights && project.highlights.length > 0 && (
 						<section>

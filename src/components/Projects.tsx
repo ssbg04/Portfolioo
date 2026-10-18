@@ -174,10 +174,10 @@ export default function Projects({
                     {/* Technologies Tag Group */}
                     <div className="mb-6">
                       <span className="text-[11px] font-mono text-muted-foreground-custom block mb-2 font-bold uppercase tracking-wider">
-                        Technologies
+                        Core Architecture Stack
                       </span>
-                      <div className="flex flex-wrap gap-1.5">
-                        {flagshipProject.technologies.map((tech) => (
+                      <div className="flex flex-wrap items-center gap-1.5">
+                        {flagshipProject.technologies.slice(0, 4).map((tech) => (
                           <button
                             key={tech}
                             onClick={() => setFilter(tech)}
@@ -187,6 +187,11 @@ export default function Projects({
                             {tech}
                           </button>
                         ))}
+                        {flagshipProject.technologies.length > 4 && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-foreground-custom/5 text-muted-foreground-custom border border-border-custom">
+                            +{flagshipProject.technologies.length - 4} more
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -327,8 +332,8 @@ export default function Projects({
 
                     <div>
                       {/* Tech Chips */}
-                      <div className="flex flex-wrap gap-1.5 mb-5 pt-2">
-                        {project.technologies.map((tech) => (
+                      <div className="flex flex-wrap items-center gap-1.5 mb-5 pt-2">
+                        {project.technologies.slice(0, 4).map((tech) => (
                           <button
                             key={tech}
                             onClick={() => setFilter(tech)}
@@ -338,6 +343,11 @@ export default function Projects({
                             {tech}
                           </button>
                         ))}
+                        {project.technologies.length > 4 && (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-foreground-custom/5 text-muted-foreground-custom border border-border-custom">
+                            +{project.technologies.length - 4} more
+                          </span>
+                        )}
                       </div>
 
                       {/* Action Links with basic words */}

@@ -54,11 +54,11 @@ const socialLinks = await getSocialLinks();
 			socialLinks={socialLinks}
 		/>
 		
-		<About settings={settings} experience={experience} education={education} client:visible />
+		<About settings={settings} experience={experience} education={education} isCompact={true} client:visible />
 
 		<Skills skills={skills} limit={12} showSeeAll={true} seeAllHref="/about#skills" client:visible />
 
-		<Projects initialProjects={featuredProjects} limit={5} client:visible />
+		<Projects initialProjects={featuredProjects} limit={3} client:visible />
 		
 		<Certifications certifications={certifications} client:visible />
 		

@@ -13,6 +13,7 @@ interface AboutProps {
   sectionTag?: string;
   githubUsername?: string;
   isPage?: boolean;
+  isCompact?: boolean;
 }
 
 export default function About({
@@ -21,7 +22,8 @@ export default function About({
   education = [],
   sectionTag = 'Profile & Background',
   githubUsername = 'ssbg04',
-  isPage = false
+  isPage = false,
+  isCompact = false
 }: AboutProps) {
   const paragraphs = (settings.biography && settings.biography.length > 0)
     ? settings.biography
@@ -287,7 +289,7 @@ export default function About({
           </div>
 
           {/* Bento Cell 3: Experience (dynamically spans depending on presence of Education) */}
-          {hasExperience && (
+          {!isCompact && hasExperience && (
             <div className={hasEducation ? "lg:col-span-6" : "lg:col-span-12"}>
               <ScrollReveal variant="fade-up" delay={100} className="h-full">
                 <div className="bento-card p-6 sm:p-8 flex flex-col justify-between h-full">
@@ -351,7 +353,7 @@ export default function About({
           )}
 
           {/* Bento Cell 4: Education (dynamically spans depending on presence of Experience) */}
-          {hasEducation && (
+          {!isCompact && hasEducation && (
             <div className={hasExperience ? "lg:col-span-6" : "lg:col-span-12"}>
               <ScrollReveal variant="fade-up" delay={140} className="h-full">
                 <div className="bento-card p-6 sm:p-8 flex flex-col justify-between h-full">
@@ -420,6 +422,19 @@ export default function About({
               <GithubContributions username={githubUsername} />
             </ScrollReveal>
           </div>
+
+          {/* Compact Dashboard Action to Explore Full Timeline */}
+          {isCompact && (
+            <div className="lg:col-span-12 flex justify-center pt-2">
+              <a
+                href="/about"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-card-custom border border-border-custom hover:border-primary-custom/40 text-xs font-mono font-medium text-foreground-custom hover:text-primary-custom transition-all shadow-xs group"
+              >
+                <span>View Full Career Timeline &amp; Academic Credentials</span>
+                <span className="group-hover:translate-x-1 transition-transform">→</span>
+              </a>
+            </div>
+          )}
 
         </div>
 
