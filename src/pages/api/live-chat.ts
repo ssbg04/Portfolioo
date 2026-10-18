@@ -11,7 +11,34 @@ interface ChatMessage {
   time: number;
 }
 
+// Global in-memory session store across endpoints in the same runtime instance
 const sessions = new Map<string, ChatMessage[]>();
+
+export function addCrisReply(sessionId: string, text: string) {
+  const crisMsg: ChatMessage = {
+    id: 'cris_' + Date.now(),
+    sender: 'cris',
+    text,
+    time: Date.now(),
+  };
+
+  // Find matching session (direct or prefix match)
+  let key = sessionId;
+  if (!sessions.has(sessionId)) {
+    for (const k of sessions.keys()) {
+      if (k.startsWith(sessionId) || sessionId.startsWith(k)) {
+        key = k;
+        break;
+      }
+    }
+  }
+
+  const history = sessions.get(key) || [];
+  history.push(crisMsg);
+  if (history.length > 30) history.shift();
+  sessions.set(key, history);
+  return crisMsg;
+}
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -36,7 +63,6 @@ export const POST: APIRoute = async ({ request }) => {
 
     const history = sessions.get(sessionId) || [];
     history.push(userMsg);
-    // Keep last 30 messages per session
     if (history.length > 30) history.shift();
     sessions.set(sessionId, history);
 
@@ -47,10 +73,11 @@ export const POST: APIRoute = async ({ request }) => {
     if (botToken && chatId) {
       const telegramText = 
         `💬 *New Portfolio Live Message*\n\n` +
-        `👤 *From:* ${userName || 'Visitor'} (\`#${sessionId.slice(0, 8)}\`)\n` +
+        `👤 *From:* ${userName || 'Visitor'}\n` +
+        `🔑 *Session:* #${sessionId}\n` +
         `📍 *Origin:* ${locationStr}\n\n` +
         `📝 *Message:*\n"${message.trim()}"\n\n` +
-        `_To reply to this visitor, swipe right and reply to this message!_`;
+        `_👉 To reply to this visitor, swipe right and reply to this message!_`;
 
       try {
         await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
