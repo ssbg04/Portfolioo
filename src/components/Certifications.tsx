@@ -62,13 +62,14 @@ export default function Certifications({ certifications, extraCerts = [], sectio
     const originalViewportContent = viewportMeta?.getAttribute('content') || 'width=device-width, initial-scale=1.0';
 
     if (selectedCert || isZoomOpen) {
+      document.documentElement.style.overflow = 'hidden';
       document.body.style.overflow = 'hidden';
+      document.documentElement.style.overscrollBehavior = 'none';
+      document.body.style.overscrollBehavior = 'none';
+
       if (isZoomOpen) {
-        document.documentElement.style.overflow = 'hidden';
         document.documentElement.style.touchAction = 'none';
-        document.documentElement.style.overscrollBehavior = 'none';
         document.body.style.touchAction = 'none';
-        document.body.style.overscrollBehavior = 'none';
         if (viewportMeta) {
           viewportMeta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no');
         }
@@ -615,14 +616,14 @@ export default function Certifications({ certifications, extraCerts = [], sectio
       {/* ─── Detail Modal (Responsive 2-Column Desktop, Scrollable Mobile) ─── */}
       {selectedCert && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md animate-modal-fade select-none"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md animate-modal-fade select-none overscroll-contain"
           style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
           onClick={() => setSelectedCert(null)}
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-card-custom border border-border-custom rounded-2xl shadow-xl flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto animate-modal-scale"
+            className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-card-custom border border-border-custom rounded-2xl shadow-xl flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto overscroll-contain touch-pan-y animate-modal-scale"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Top Navigation Bar: Clean separation so close button never overlaps image preview */}
