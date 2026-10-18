@@ -66,26 +66,47 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (history.length > 30) history.shift();
     sessions.set(sessionId, history);
 
-    // Dispatch to Telegram Bot (support Cloudflare Pages runtime bindings, process.env, and import.meta.env)
-    const runtimeEnv = (locals as any)?.runtime?.env || {};
-    const botToken = runtimeEnv.TELEGRAM_BOT_TOKEN || 
-                     (typeof process !== 'undefined' ? process.env?.TELEGRAM_BOT_TOKEN : undefined) || 
-                     (import.meta.env as any)?.TELEGRAM_BOT_TOKEN;
-    const chatId = runtimeEnv.TELEGRAM_CHAT_ID || 
-                   (typeof process !== 'undefined' ? process.env?.TELEGRAM_CHAT_ID : undefined) || 
-                   (import.meta.env as any)?.TELEGRAM_CHAT_ID;
+    // Safely resolve bot credentials across Astro / Cloudflare Workers
+    let botToken: string | undefined = undefined;
+    let chatId: string | undefined = undefined;
+
+    try {
+      if (typeof process !== 'undefined' && process.env) {
+        botToken = process.env.TELEGRAM_BOT_TOKEN;
+        chatId = process.env.TELEGRAM_CHAT_ID;
+      }
+    } catch {}
+
+    if (!botToken && typeof import.meta !== 'undefined' && import.meta.env) {
+      botToken = (import.meta.env as any).TELEGRAM_BOT_TOKEN;
+      chatId = (import.meta.env as any).TELEGRAM_CHAT_ID;
+    }
+
+    // Try cloudflare worker env if available
+    if (!botToken && (locals as any)?.env) {
+      botToken = (locals as any).env.TELEGRAM_BOT_TOKEN;
+      chatId = (locals as any).env.TELEGRAM_CHAT_ID;
+    }
 
     let tgSuccess = false;
     let tgErrorDetails = null;
 
     if (botToken && chatId) {
-      const telegramText = 
-        `💬 *New Portfolio Live Message*\n\n` +
-        `👤 *From:* ${userName || 'Visitor'}\n` +
-        `🔑 *Session:* #${sessionId}\n` +
-        `📍 *Origin:* ${locationStr}\n\n` +
-        `📝 *Message:*\n"${message.trim()}"\n\n` +
-        `_👉 To reply to this visitor, swipe right and reply to this message!_`;
+      const safeSession = String(sessionId).replace(/[&<>"']/g, '');
+      const safeUser = String(userName || 'Visitor').replace(/[&<>"']/g, '');
+      const safeLoc = String(locationStr).replace(/[&<>"']/g, '');
+      const safeMsg = String(message.trim())
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;');
+
+      const telegramHtml = 
+        `💬 <b>New Portfolio Live Message</b>\n\n` +
+        `👤 <b>From:</b> ${safeUser}\n` +
+        `🔑 <b>Session:</b> #${safeSession}\n` +
+        `📍 <b>Origin:</b> ${safeLoc}\n\n` +
+        `📝 <b>Message:</b>\n<i>"${safeMsg}"</i>\n\n` +
+        `👉 <i>To reply, swipe right and reply to this message!</i>`;
 
       try {
         const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -93,8 +114,8 @@ export const POST: APIRoute = async ({ request, locals }) => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             chat_id: String(chatId).trim(),
-            text: telegramText,
-            parse_mode: 'Markdown',
+            text: telegramHtml,
+            parse_mode: 'HTML',
           }),
         });
 
