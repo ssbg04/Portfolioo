@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "curved-cloud",
+  "name": "portfolioo",
   "compatibility_date": "2026-10-12",
   "kv_namespaces": [
     {
