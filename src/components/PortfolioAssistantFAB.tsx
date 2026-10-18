@@ -380,7 +380,7 @@ export default function PortfolioAssistantFAB() {
     <>
       {/* ─── Floating Action Button (FAB) ─── */}
       <div
-        className="fixed bottom-4 sm:bottom-6 right-4 sm:right-7 z-40"
+        className="fixed bottom-[calc(1rem+env(safe-area-inset-bottom,0px))] sm:bottom-6 right-4 sm:right-7 z-40"
         style={{
           transform: isBtnHidden && !isOpen ? 'translateY(calc(100% + 2rem))' : 'translateY(0)',
           opacity: isBtnHidden && !isOpen ? 0 : 1,
@@ -435,7 +435,7 @@ export default function PortfolioAssistantFAB() {
       {/* ─── Popup Assistant Modal / Drawer with Deep Glass Blur ─── */}
       {isOpen && (
         <div
-          className="fixed bottom-20 right-4 sm:right-7 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm h-[530px] rounded-2xl bg-card-custom/85 dark:bg-black/85 border border-border-custom/80 shadow-[0_20px_50px_rgba(0,0,0,0.45)] flex flex-col overflow-hidden animate-modal-scale"
+          className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom,0px))] sm:bottom-20 right-4 sm:right-7 z-50 w-[calc(100vw-2rem)] sm:w-96 max-w-sm h-[min(530px,calc(100dvh-5.5rem))] max-h-[calc(100dvh-5rem)] rounded-2xl bg-card-custom/85 dark:bg-black/85 border border-border-custom/80 shadow-[0_20px_50px_rgba(0,0,0,0.45)] flex flex-col overflow-hidden animate-modal-scale"
           style={{
             backdropFilter: 'blur(20px) saturate(160%)',
             WebkitBackdropFilter: 'blur(20px) saturate(160%)',

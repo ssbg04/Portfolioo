@@ -240,13 +240,23 @@ export default function LocalTimeWeather({
       <div className="flex justify-between items-center py-1 border-b border-border-custom/50">
         <span className="font-mono text-muted-foreground-custom">Weather</span>
         <div className="flex items-center gap-1.5 font-mono text-foreground-custom">
-          {getWeatherIcon(weather.code, weather.isDay)}
-          <span className="font-semibold text-xs">
-            {weather.temp !== null ? `${weather.temp}°C` : weather.loading ? '...' : '--'}
-          </span>
-          <span className="text-[10px] text-muted-foreground-custom">
-            ({getWeatherDescription(weather.code)})
-          </span>
+          {weather.loading ? (
+            <div className="flex items-center gap-1.5 animate-pulse" aria-label="Loading live weather telemetry">
+              <span className="w-3.5 h-3.5 rounded-full bg-foreground-custom/15 shrink-0" />
+              <span className="h-3 w-8 bg-foreground-custom/15 rounded" />
+              <span className="h-2.5 w-12 bg-foreground-custom/10 rounded" />
+            </div>
+          ) : (
+            <>
+              {getWeatherIcon(weather.code, weather.isDay)}
+              <span className="font-semibold text-xs">
+                {weather.temp !== null ? `${weather.temp}°C` : '--'}
+              </span>
+              <span className="text-[10px] text-muted-foreground-custom">
+                ({getWeatherDescription(weather.code)})
+              </span>
+            </>
+          )}
         </div>
       </div>
     </>

@@ -432,12 +432,9 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       {/* Top Bar: Code & Official Certificate Pill */}
                       <div className="w-full flex items-center justify-between pb-3 border-b border-border-custom text-xs mb-3">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-mono text-muted-foreground-custom font-medium">
-                            #{cert.code}
-                          </span>
                           <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
-                            <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
-                            <span>Certificate</span>
+                            <span className="w-1.5 h-1.5 rounded-full bg-primary-custom/70" />
+                            <span>CERT // {cert.code}</span>
                           </span>
                         </div>
                         <span className="text-xs font-mono font-bold text-foreground-custom">
@@ -542,12 +539,12 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                     <div className="w-full flex flex-col items-center">
                       {/* Top Bar: Code & Skill Badge Pill */}
                       <div className="w-full flex items-center justify-between pb-1.5 sm:pb-2.5 border-b border-border-custom text-xs mb-2 sm:mb-3">
-                        <span className="text-[9px] sm:text-[10px] font-mono text-muted-foreground-custom font-medium truncate max-w-[60px] sm:max-w-none">
-                          #{badge.code}
-                        </span>
                         <span className="text-[9px] sm:text-[10px] font-mono font-medium px-1.5 sm:px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1 sm:gap-1.5">
-                          <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-muted-foreground-custom/60" />
-                          <span>Badge</span>
+                          <span className="w-1 sm:w-1.5 h-1 sm:h-1.5 rounded-full bg-emerald-500/70" />
+                          <span>BADGE // {badge.code}</span>
+                        </span>
+                        <span className="text-[9px] sm:text-[10px] font-mono text-muted-foreground-custom font-medium truncate max-w-[80px] sm:max-w-none text-right">
+                          {badge.issuer}
                         </span>
                       </div>
 
@@ -633,8 +630,8 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                 <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground-custom">
                   {isDocumentCertificate(selectedCert) ? 'Certificate Preview' : 'Digital Badge'}
                 </span>
-                <span className="text-[10px] font-mono text-muted-foreground-custom px-2 py-0.5 rounded-md bg-foreground-custom/5 border border-border-custom">
-                  #{selectedCert.code}
+                <span className="text-[10px] font-mono text-muted-foreground-custom px-2 py-0.5 rounded-md bg-foreground-custom/5 border border-border-custom font-medium">
+                  CRD // {selectedCert.code}
                 </span>
               </div>
 
@@ -708,11 +705,11 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                 <div className="flex flex-col gap-2 text-left">
                   <div className="flex flex-wrap items-center gap-2">
                     <span className="text-[10px] font-mono uppercase tracking-wider px-2.5 py-0.5 rounded-full font-medium flex items-center gap-1.5 bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom">
-                      <span className="w-1.5 h-1.5 rounded-full bg-muted-foreground-custom/60" />
+                      <span className="w-1.5 h-1.5 rounded-full bg-primary-custom/70" />
                       {isDocumentCertificate(selectedCert) ? 'Certificate' : 'Badge'}
                     </span>
-                    <span className="text-[10px] font-mono text-muted-foreground-custom px-2.5 py-0.5 rounded-full bg-foreground-custom/5 border border-border-custom">
-                      Code: #{selectedCert.code}
+                    <span className="text-[10px] font-mono text-muted-foreground-custom px-2.5 py-0.5 rounded-full bg-foreground-custom/5 border border-border-custom font-medium">
+                      CRD // {selectedCert.code}
                     </span>
                   </div>
 

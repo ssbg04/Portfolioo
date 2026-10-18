@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import type { GalleryItem } from '../lib/data';
 import haptic from '../lib/haptics';
 
@@ -6,8 +6,26 @@ interface PhotoGalleryProps {
   items: GalleryItem[];
 }
 
+export interface AlbumGroup {
+  name: string;
+  category?: string;
+  items: GalleryItem[];
+}
+
+export function getAlbumName(title: string): string {
+  if (!title) return 'Portfolio Showcase';
+  return title
+    .replace(/\s*\(\d+\)$/i, '')
+    .replace(/\s*[-–—]\s*(part|vol|no|photo|slide)?\s*\d+$/i, '')
+    .replace(/\s*#\d+$/i, '')
+    .replace(/\s+\d+$/i, '')
+    .trim();
+}
+
 export default function PhotoGallery({ items }: PhotoGalleryProps) {
   const [selectedCategory, setSelectedCategory] = useState<string>('All');
+  const [viewMode, setViewMode] = useState<'albums' | 'all'>('albums');
+  const [scopedAlbum, setScopedAlbum] = useState<AlbumGroup | null>(null);
   const [activeModalIndex, setActiveModalIndex] = useState<number | null>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(1);
   const [panPosition, setPanPosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -20,30 +38,53 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
   // Extract unique categories
   const categories = ['All', ...Array.from(new Set(items.map((i) => i.category).filter(Boolean) as string[]))];
 
-  // Filter items
-  const filteredItems = selectedCategory === 'All'
-    ? items
-    : items.filter((item) => item.category === selectedCategory);
+  // Filter items by category
+  const filteredItems = useMemo(() => {
+    return selectedCategory === 'All'
+      ? items
+      : items.filter((item) => item.category === selectedCategory);
+  }, [items, selectedCategory]);
 
-  const activeItem = activeModalIndex !== null && activeModalIndex < filteredItems.length
-    ? filteredItems[activeModalIndex]
+  // Group filtered items into album decks
+  const albumGroups = useMemo<AlbumGroup[]>(() => {
+    const groups: { [key: string]: AlbumGroup } = {};
+    filteredItems.forEach((item) => {
+      const albumName = getAlbumName(item.title || 'Untitled');
+      const key = `${item.category || 'General'}__${albumName}`;
+      if (!groups[key]) {
+        groups[key] = {
+          name: albumName,
+          category: item.category,
+          items: [],
+        };
+      }
+      groups[key].items.push(item);
+    });
+    return Object.values(groups);
+  }, [filteredItems]);
+
+  // Items active inside the modal (either scoped to an opened album deck or all filtered items)
+  const currentModalItems = scopedAlbum ? scopedAlbum.items : filteredItems;
+
+  const activeItem = activeModalIndex !== null && activeModalIndex < currentModalItems.length
+    ? currentModalItems[activeModalIndex]
     : null;
 
   // Next and Previous navigation
   const handleNext = () => {
-    if (filteredItems.length === 0 || activeModalIndex === null) return;
+    if (currentModalItems.length === 0 || activeModalIndex === null) return;
     haptic.tap();
     setZoomLevel(1);
     setPanPosition({ x: 0, y: 0 });
-    setActiveModalIndex((prev) => (prev !== null ? (prev + 1) % filteredItems.length : 0));
+    setActiveModalIndex((prev) => (prev !== null ? (prev + 1) % currentModalItems.length : 0));
   };
 
   const handlePrev = () => {
-    if (filteredItems.length === 0 || activeModalIndex === null) return;
+    if (currentModalItems.length === 0 || activeModalIndex === null) return;
     haptic.tap();
     setZoomLevel(1);
     setPanPosition({ x: 0, y: 0 });
-    setActiveModalIndex((prev) => (prev !== null ? (prev - 1 + filteredItems.length) % filteredItems.length : filteredItems.length - 1));
+    setActiveModalIndex((prev) => (prev !== null ? (prev - 1 + currentModalItems.length) % currentModalItems.length : currentModalItems.length - 1));
   };
 
   // Zoom controls
@@ -63,6 +104,14 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
 
   const handleResetZoom = () => {
     haptic.tick();
+    setZoomLevel(1);
+    setPanPosition({ x: 0, y: 0 });
+  };
+
+  const closeModal = () => {
+    haptic.tap();
+    setActiveModalIndex(null);
+    setScopedAlbum(null);
     setZoomLevel(1);
     setPanPosition({ x: 0, y: 0 });
   };
@@ -99,7 +148,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
   };
 
   const onTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging || zoomLevel <= 1 || e.touches.length !== 1) return;
+    if (!isDragging || zoomLevel <= 1) return;
     const dx = e.touches[0].clientX - dragStartRef.current.x;
     const dy = e.touches[0].clientY - dragStartRef.current.y;
     setPanPosition({
@@ -117,9 +166,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (activeModalIndex === null) return;
       if (e.key === 'Escape') {
-        setActiveModalIndex(null);
-        setZoomLevel(1);
-        setPanPosition({ x: 0, y: 0 });
+        closeModal();
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
         handleNext();
@@ -139,7 +186,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [activeModalIndex, filteredItems.length]);
+  }, [activeModalIndex, currentModalItems.length]);
 
   // Lock body scroll when modal is open
   useEffect(() => {
@@ -155,23 +202,70 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
 
   return (
     <div className="w-full">
-      {/* ─── Filter Bar ─── */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-8 pb-3 sm:pb-4 border-b border-border-custom">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight">
-            Photo Gallery
-          </h1>
+      {/* ─── Header & Filter Bar ─── */}
+      <div className="flex flex-col gap-4 mb-6 sm:mb-8 pb-4 border-b border-border-custom">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight">
+              Photo Gallery
+            </h1>
+            <p className="text-xs font-mono text-muted-foreground-custom mt-1">
+              Visual records, project milestones, and tech symposium archives
+            </p>
+          </div>
+
+          {/* View Mode Toggle: Albums Deck vs All Photos */}
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-card-custom/80 border border-border-custom shadow-xs text-xs font-mono self-start sm:self-auto">
+            <button
+              type="button"
+              onClick={() => {
+                haptic.tap();
+                setViewMode('albums');
+              }}
+              className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'albums'
+                  ? 'bg-primary-custom text-white font-medium shadow-xs'
+                  : 'text-muted-foreground-custom hover:text-foreground-custom'
+              }`}
+              title="Group related series photos into album stacks"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6A2.25 2.25 0 008.25 10.5v6" />
+              </svg>
+              <span>Albums ({albumGroups.length})</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                haptic.tap();
+                setViewMode('all');
+              }}
+              className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
+                viewMode === 'all'
+                  ? 'bg-primary-custom text-white font-medium shadow-xs'
+                  : 'text-muted-foreground-custom hover:text-foreground-custom'
+              }`}
+              title="View all photos individually"
+            >
+              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
+              </svg>
+              <span>All ({filteredItems.length})</span>
+            </button>
+          </div>
         </div>
 
-        {/* Categories in top-right */}
-        <div className="flex flex-wrap items-center gap-2 sm:self-end">
+        {/* Categories Chips */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
           {categories.map((cat) => (
             <button
               key={cat}
+              type="button"
               onClick={() => {
                 haptic.tick();
                 setSelectedCategory(cat);
                 setActiveModalIndex(null);
+                setScopedAlbum(null);
                 setZoomLevel(1);
                 setPanPosition({ x: 0, y: 0 });
               }}
@@ -187,70 +281,179 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
         </div>
       </div>
 
-      {/* ─── Responsive Photo Grid ─── */}
-      {filteredItems.length === 0 ? (
-        <div className="py-20 text-center text-muted-foreground-custom text-sm font-mono border border-dashed border-border-custom rounded-xl bg-card-custom/50">
-          No photos found for this category.
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {filteredItems.map((item, idx) => (
-            <div
-              key={item.id || idx}
-              onClick={() => {
-                haptic.openModal();
-                setActiveModalIndex(idx);
-                setZoomLevel(1);
-                setPanPosition({ x: 0, y: 0 });
-                setModalViewMode('single');
-              }}
-              className="group relative rounded-xl overflow-hidden cursor-pointer border border-border-custom bg-card-custom aspect-[4/3] shadow-xs hover:shadow-md hover:border-primary-custom/40 hover:-translate-y-0.5 active:scale-[0.99] transition-all"
-              style={{
-                animation: 'galleryBottomEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both',
-                animationDelay: `${idx * 60}ms`
-              }}
-            >
-              {/* Image */}
-              <img
-                src={item.photo}
-                alt={item.title || 'Portfolio Gallery Photo'}
-                loading={idx < 3 ? 'eager' : 'lazy'}
-                decoding="async"
-                fetchPriority={idx < 3 ? 'high' : 'auto'}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-              />
+      {/* ─── Content Grid: Albums Deck View or Flat Photos View ─── */}
+      {viewMode === 'albums' ? (
+        albumGroups.length === 0 ? (
+          <div className="py-20 text-center text-muted-foreground-custom text-sm font-mono border border-dashed border-border-custom rounded-xl bg-card-custom/50">
+            No albums found for this category.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-7">
+            {albumGroups.map((album, idx) => {
+              const coverItem = album.items[0];
+              const isStack = album.items.length > 1;
 
-              {/* Hover Overlay with Title + Description */}
-              <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-4 text-white">
-                <div className="flex justify-between items-start">
-                  {item.category && (
-                    <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary-custom/90 text-white border border-primary-custom/30 font-medium">
-                      {item.category}
-                    </span>
+              return (
+                <div
+                  key={album.name + idx}
+                  onClick={() => {
+                    haptic.openModal();
+                    setScopedAlbum(album);
+                    setActiveModalIndex(0);
+                    setZoomLevel(1);
+                    setPanPosition({ x: 0, y: 0 });
+                    setModalViewMode('single');
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      setScopedAlbum(album);
+                      setActiveModalIndex(0);
+                    }
+                  }}
+                  className={`group relative rounded-xl cursor-pointer aspect-[4/3] transition-all select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom ${
+                    isStack ? 'pr-2 pb-2' : ''
+                  }`}
+                  style={{
+                    animation: 'galleryBottomEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both',
+                    animationDelay: `${idx * 50}ms`
+                  }}
+                >
+                  {/* Physical Album Deck Underlay Shadows for Multi-Photo series */}
+                  {isStack && (
+                    <>
+                      <div className="absolute inset-0 bg-card-custom/50 rounded-xl border border-border-custom translate-x-1.5 translate-y-1.5 -z-10 group-hover:translate-x-2.5 group-hover:translate-y-2.5 transition-transform duration-300" />
+                      <div className="absolute inset-0 bg-card-custom/30 rounded-xl border border-border-custom/60 translate-x-3 translate-y-3 -z-20 group-hover:translate-x-4 group-hover:translate-y-4 transition-transform duration-300" />
+                    </>
                   )}
-                  <span className="p-1 rounded-md bg-white/20 backdrop-blur-xs text-white border border-white/20 ml-auto">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                    </svg>
-                  </span>
+
+                  {/* Front Photo Card Container */}
+                  <div className="relative w-full h-full rounded-xl overflow-hidden border border-border-custom bg-card-custom shadow-xs hover:shadow-md hover:border-primary-custom/50 group-hover:-translate-y-0.5 active:scale-[0.99] transition-all">
+                    <img
+                      src={coverItem.photo}
+                      alt={album.name}
+                      loading={idx < 3 ? 'eager' : 'lazy'}
+                      decoding="async"
+                      fetchPriority={idx < 3 ? 'high' : 'auto'}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                    />
+
+                    {/* Stack Pill Badge on Top Right */}
+                    {isStack && (
+                      <div className="absolute top-3 right-3 z-10 pointer-events-none">
+                        <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-black/80 backdrop-blur-md text-white border border-white/20 flex items-center gap-1.5 font-medium shadow-md">
+                          <svg className="w-3 h-3 text-primary-custom shrink-0" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6A2.25 2.25 0 008.25 10.5v6" />
+                          </svg>
+                          <span>{album.items.length} PHOTOS</span>
+                        </span>
+                      </div>
+                    )}
+
+                    {/* Hover Overlay with Album Metadata */}
+                    <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-4 text-white">
+                      <div className="flex justify-between items-start">
+                        {album.category && (
+                          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary-custom/90 text-white border border-primary-custom/30 font-medium">
+                            {album.category}
+                          </span>
+                        )}
+                        <span className="p-1 rounded-md bg-white/20 backdrop-blur-xs text-white border border-white/20 ml-auto">
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                          </svg>
+                        </span>
+                      </div>
+
+                      <div>
+                        <h3 className="text-sm sm:text-base font-black font-heading text-white line-clamp-1 leading-snug">
+                          {album.name}
+                        </h3>
+                        <p className="text-xs text-zinc-300 line-clamp-2 mt-1 font-normal leading-relaxed">
+                          {coverItem.description || `Event album containing ${album.items.length} archived captures.`}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+              );
+            })}
+          </div>
+        )
+      ) : (
+        /* Flat Grid View: All individual photos */
+        filteredItems.length === 0 ? (
+          <div className="py-20 text-center text-muted-foreground-custom text-sm font-mono border border-dashed border-border-custom rounded-xl bg-card-custom/50">
+            No photos found for this category.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredItems.map((item, idx) => (
+              <div
+                key={item.id || idx}
+                onClick={() => {
+                  haptic.openModal();
+                  setScopedAlbum(null);
+                  setActiveModalIndex(idx);
+                  setZoomLevel(1);
+                  setPanPosition({ x: 0, y: 0 });
+                  setModalViewMode('single');
+                }}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    setScopedAlbum(null);
+                    setActiveModalIndex(idx);
+                  }
+                }}
+                className="group relative rounded-xl overflow-hidden cursor-pointer border border-border-custom bg-card-custom aspect-[4/3] shadow-xs hover:shadow-md hover:border-primary-custom/40 hover:-translate-y-0.5 active:scale-[0.99] transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
+                style={{
+                  animation: 'galleryBottomEnter 0.5s cubic-bezier(0.16, 1, 0.3, 1) both',
+                  animationDelay: `${idx * 40}ms`
+                }}
+              >
+                <img
+                  src={item.photo}
+                  alt={item.title || 'Portfolio Gallery Photo'}
+                  loading={idx < 3 ? 'eager' : 'lazy'}
+                  decoding="async"
+                  fetchPriority={idx < 3 ? 'high' : 'auto'}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                />
 
-                <div>
-                  {item.title && (
-                    <h3 className="text-sm sm:text-base font-black font-heading text-white line-clamp-1 leading-snug">
-                      {item.title}
-                    </h3>
-                  )}
-                  {item.description && (
-                    <p className="text-xs text-zinc-300 line-clamp-2 mt-1 font-normal leading-relaxed">
-                      {item.description}
-                    </p>
-                  )}
+                <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-between p-4 text-white">
+                  <div className="flex justify-between items-start">
+                    {item.category && (
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-md bg-primary-custom/90 text-white border border-primary-custom/30 font-medium">
+                        {item.category}
+                      </span>
+                    )}
+                    <span className="p-1 rounded-md bg-white/20 backdrop-blur-xs text-white border border-white/20 ml-auto">
+                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                      </svg>
+                    </span>
+                  </div>
+
+                  <div>
+                    {item.title && (
+                      <h3 className="text-sm sm:text-base font-black font-heading text-white line-clamp-1 leading-snug">
+                        {item.title}
+                      </h3>
+                    )}
+                    {item.description && (
+                      <p className="text-xs text-zinc-300 line-clamp-2 mt-1 font-normal leading-relaxed">
+                        {item.description}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )
       )}
 
       {/* ─── Enhanced Fullscreen Lightbox Modal Viewer ─── */}
@@ -258,11 +461,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
         <div
           className="fixed inset-0 z-50 flex flex-col items-center justify-between p-3 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md select-none"
           style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)' }}
-          onClick={() => {
-            setActiveModalIndex(null);
-            setZoomLevel(1);
-            setPanPosition({ x: 0, y: 0 });
-          }}
+          onClick={closeModal}
           role="dialog"
           aria-modal="true"
         >
@@ -271,11 +470,16 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
             className="w-full max-w-5xl flex items-center justify-between gap-3 z-50 py-1 px-2"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Left: Photo Counter */}
+            {/* Left: Photo Counter + Album Title if scoped */}
             <div className="flex items-center gap-2">
               <span className="text-xs font-mono font-medium text-foreground-custom px-2.5 py-1 rounded-md bg-card-custom/90 border border-border-custom shadow-xs">
-                {activeModalIndex + 1} / {filteredItems.length}
+                {activeModalIndex + 1} / {currentModalItems.length}
               </span>
+              {scopedAlbum && scopedAlbum.items.length > 1 && (
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-primary-custom/15 text-primary-custom border border-primary-custom/30 font-medium hidden sm:inline">
+                  ALBUM // {scopedAlbum.name}
+                </span>
+              )}
             </div>
 
             {/* Center: Zoom In / Zoom Out Controls & Web Grid Toggle */}
@@ -339,12 +543,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
 
             {/* Right: Close Button */}
             <button
-              onClick={() => {
-                haptic.tap();
-                setActiveModalIndex(null);
-                setZoomLevel(1);
-                setPanPosition({ x: 0, y: 0 });
-              }}
+              onClick={closeModal}
               aria-label="Close modal"
               className="p-2 rounded-lg bg-card-custom/90 hover:bg-rose-500/10 hover:border-rose-500/30 hover:text-rose-500 text-muted-foreground-custom transition-all cursor-pointer border border-border-custom shadow-xs"
             >
@@ -362,7 +561,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
-                {filteredItems.map((item, idx) => (
+                {currentModalItems.map((item, idx) => (
                   <div
                     key={item.id || idx}
                     onClick={() => {
@@ -482,9 +681,10 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               className="hidden md:flex items-center justify-center gap-2 w-full max-w-4xl py-2 px-3 overflow-x-auto z-40 bg-card-custom/90 border border-border-custom rounded-xl shadow-md shrink-0 mt-2"
               onClick={(e) => e.stopPropagation()}
             >
-              {filteredItems.map((item, idx) => (
+              {currentModalItems.map((item, idx) => (
                 <button
                   key={item.id || idx}
+                  type="button"
                   onClick={() => {
                     haptic.tap();
                     setActiveModalIndex(idx);
