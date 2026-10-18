@@ -65,7 +65,7 @@ export default function LiveChatBox() {
           }
         })
         .catch(() => {});
-    }, 2500);
+    }, 1800);
 
     return () => clearInterval(interval);
   }, [sessionId]);

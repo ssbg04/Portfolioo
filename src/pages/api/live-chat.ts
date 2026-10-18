@@ -15,7 +15,9 @@ export interface ChatMessage {
 // Global in-memory fallback cache across warm edge runtime instances
 const inMemorySessions = new Map<string, ChatMessage[]>();
 let inMemoryLastSession: string = '';
-let webhookRegistered = false;
+let lastTelegramCheck = 0;
+let lastOffset = 0;
+let webhookDisabled = false;
 
 /**
  * Safely resolves Telegram bot credentials across all runtime environments
@@ -122,45 +124,101 @@ export async function saveChatHistory(sessionId: string, history: ChatMessage[],
  */
 export async function addCrisReply(sessionId: string, text: string, kv?: any) {
   const crisMsg: ChatMessage = {
-    id: 'cris_' + Date.now(),
+    id: 'cris_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
     sender: 'cris',
     text,
     time: Date.now(),
   };
 
   const history = await getChatHistory(sessionId, kv);
-  history.push(crisMsg);
-  if (history.length > 50) history.shift();
-
-  await saveChatHistory(sessionId, history, kv);
+  // Avoid duplicate replies if processed multiple times
+  const exists = history.some(m => m.sender === 'cris' && m.text === text && Date.now() - m.time < 30000);
+  if (!exists) {
+    history.push(crisMsg);
+    if (history.length > 50) history.shift();
+    await saveChatHistory(sessionId, history, kv);
+  }
   return crisMsg;
 }
 
 /**
- * Auto-registers Telegram webhook so replies on phone immediately trigger the webhook
+ * Instant Telegram Sync (1-2s latency):
+ * Directly checks Telegram for new replies from Cris whenever a visitor is actively chatting
  */
-async function autoRegisterTelegramWebhook(botToken: string, requestUrl: string) {
-  if (webhookRegistered || !botToken) return;
+async function syncTelegramReplies(botToken: string, activeSessionId: string, kv?: any) {
+  // Throttle to at most once per 1.2s to be kind to Telegram rate limits while remaining near-instant
+  const now = Date.now();
+  if (now - lastTelegramCheck < 1200) return;
+  lastTelegramCheck = now;
+
   try {
-    const origin = new URL(requestUrl).origin;
-    const targetWebhook = `${origin}/api/telegram-webhook`;
-
-    const infoRes = await fetch(`https://api.telegram.org/bot${botToken}/getWebhookInfo`);
-    const infoData = await infoRes.json();
-
-    if (infoData?.result?.url !== targetWebhook) {
-      await fetch(`https://api.telegram.org/bot${botToken}/setWebhook`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          url: targetWebhook,
-          allowed_updates: ['message', 'edited_message'],
-        }),
-      });
+    // 1. Ensure webhook is removed so Telegram buffers replies for fast getUpdates
+    if (!webhookDisabled) {
+      try {
+        await fetch(`https://api.telegram.org/bot${botToken}/deleteWebhook`, { method: 'POST' });
+        webhookDisabled = true;
+      } catch {}
     }
-    webhookRegistered = true;
+
+    // 2. Resolve last processed update ID
+    let offset = lastOffset;
+    if (!offset && kv) {
+      try {
+        const storedOffset = await kv.get('tg_last_offset');
+        if (storedOffset) offset = parseInt(storedOffset, 10);
+      } catch {}
+    }
+
+    // 3. Fast non-blocking poll of Telegram's update queue
+    const res = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates?offset=${offset || 0}&limit=10&timeout=0`);
+    const data: any = await res.json();
+
+    if (data?.ok && Array.isArray(data.result) && data.result.length > 0) {
+      let maxUpdateId = offset || 0;
+
+      for (const update of data.result) {
+        if (update.update_id >= maxUpdateId) {
+          maxUpdateId = update.update_id + 1;
+        }
+
+        const msg = update.message || update.edited_message;
+        if (!msg || !msg.text) continue;
+
+        const replyText = msg.text.trim();
+        let targetSessionId = '';
+
+        // Match if Cris swiped to reply to a visitor message
+        if (msg.reply_to_message) {
+          const scan = [msg.reply_to_message.text, msg.reply_to_message.caption].filter(Boolean).join('\n');
+          const m = scan.match(/#(user_[a-zA-Z0-9_-]+)/) || scan.match(/#([a-zA-Z0-9_-]+)/);
+          if (m && m[1]) targetSessionId = m[1];
+        }
+
+        // Match if Cris typed #user_xxxx in the message
+        if (!targetSessionId) {
+          const m = replyText.match(/#(user_[a-zA-Z0-9_-]+)/);
+          if (m && m[1]) targetSessionId = m[1];
+        }
+
+        // Fallback: route directly to the active visitor currently polling
+        if (!targetSessionId) {
+          targetSessionId = activeSessionId;
+        }
+
+        if (targetSessionId) {
+          await addCrisReply(targetSessionId, replyText, kv);
+        }
+      }
+
+      lastOffset = maxUpdateId;
+      if (kv && maxUpdateId > (offset || 0)) {
+        try {
+          await kv.put('tg_last_offset', String(maxUpdateId), { expirationTtl: 86400 * 3 });
+        } catch {}
+      }
+    }
   } catch (err) {
-    console.error('Auto webhook setup error:', err);
+    console.error('syncTelegramReplies error:', err);
   }
 }
 
@@ -193,9 +251,10 @@ export const POST: APIRoute = async ({ request, locals }) => {
     if (history.length > 50) history.shift();
     await saveChatHistory(sessionId, history, kv);
 
-    // Ensure Telegram webhook is active in the background
-    if (botToken) {
-      autoRegisterTelegramWebhook(botToken, request.url).catch(() => {});
+    // Ensure webhook is removed for fast getUpdates
+    if (botToken && !webhookDisabled) {
+      fetch(`https://api.telegram.org/bot${botToken}/deleteWebhook`, { method: 'POST' }).catch(() => {});
+      webhookDisabled = true;
     }
 
     let tgSuccess = false;
@@ -216,7 +275,7 @@ export const POST: APIRoute = async ({ request, locals }) => {
         `🔑 <b>Session:</b> <code>#${safeSession}</code>\n` +
         `📍 <b>Origin:</b> ${safeLoc}\n\n` +
         `📝 <b>Message:</b>\n<i>"${safeMsg}"</i>\n\n` +
-        `👉 <b>Reply directly to this message</b> to send your reply to the visitor's live chat!`;
+        `👉 <b>Reply directly</b> to this message to send your reply to the visitor instantly!`;
 
       try {
         const tgRes = await fetch(`https://api.telegram.org/bot${botToken}/sendMessage`, {
@@ -268,6 +327,13 @@ export const GET: APIRoute = async ({ request, locals }) => {
   }
 
   const kv = resolveKV(locals);
+  const { botToken } = resolveCredentials(locals);
+
+  // Instantly fetch any new replies from Cris directly from Telegram (bypasses 60s KV delay)
+  if (botToken) {
+    await syncTelegramReplies(botToken, sessionId, kv);
+  }
+
   const history = await getChatHistory(sessionId, kv);
 
   return new Response(
