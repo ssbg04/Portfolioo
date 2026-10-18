@@ -49,19 +49,25 @@ const socialLinks = await getSocialLinks();
 			</div>
 		</div>
 
-		{/* ── Real-Time Presence & Live Operations Grid ── */}
-		<div class="container mx-auto px-4 sm:px-6 max-w-6xl mb-12">
-			<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-				{/* Global Visitor Radar Map (7 cols on desktop) */}
-				<div class="lg:col-span-7 flex">
-					<VisitorWorldMap client:load />
-				</div>
+		{/* ── Real-Time Presence: Full-Width Global Visitor Radar ── */}
+		<div class="container mx-auto px-4 sm:px-6 max-w-6xl mb-10 sm:mb-14">
+			<VisitorWorldMap client:load />
+		</div>
 
-				{/* Real-time Live Chat Box (5 cols on desktop) */}
-				<div class="lg:col-span-5 flex">
-					<LiveChatBox client:load />
+		{/* ── Direct Interaction: Live Telegram Desk ── */}
+		<div class="container mx-auto px-4 sm:px-6 max-w-4xl mb-12 sm:mb-16">
+			<div class="flex items-center justify-between mb-3 px-1">
+				<div class="flex items-center gap-2">
+					<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+					<span class="text-xs font-mono uppercase tracking-wider text-muted-foreground-custom font-semibold">
+						DIRECT LIVE DESK // INSTANT MOBILE PUSH
+					</span>
 				</div>
+				<span class="text-[11px] font-mono text-muted-foreground-custom hidden sm:inline">
+					Instant notifications to phone • Replies within minutes
+				</span>
 			</div>
+			<LiveChatBox client:load />
 		</div>
 
 		<ContactForm 
