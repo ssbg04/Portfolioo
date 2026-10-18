@@ -33,24 +33,10 @@ export const COUNTRY_COORDS: Record<string, { name: string; flag: string; x: num
 };
 
 // In-memory country visitor counters across edge runtime instances
-// Base seed counts represent historical developer traffic so the map is lively
-const visitorCounts: Record<string, number> = {
-  PH: 148,
-  US: 96,
-  SG: 42,
-  GB: 35,
-  DE: 29,
-  JP: 24,
-  AU: 19,
-  CA: 18,
-  IN: 15,
-  NL: 12,
-  AE: 9,
-  VN: 8,
-  KR: 7,
-};
+// Starts completely clean with 0 mock data - all counts are 100% real edge sessions
+const visitorCounts: Record<string, number> = {};
 
-// Rate limiter / dedup per IP per hour to avoid spamming the counter
+// Rate limiter / dedup per IP to avoid spamming the counter (3 min cooldown per IP)
 const recentIps = new Map<string, number>();
 
 export const GET: APIRoute = async ({ request, locals }) => {
@@ -82,10 +68,14 @@ export const GET: APIRoute = async ({ request, locals }) => {
       try {
         const stored = await kv.get('geo_visitor_counts');
         if (stored) {
-          activeCounts = JSON.parse(stored);
-        } else {
-          // Seed KV with initial counts on first run
-          await kv.put('geo_visitor_counts', JSON.stringify(activeCounts));
+          const parsed = JSON.parse(stored);
+          // Purge legacy mock data (PH 148, US 96) so the world map only reflects genuine real-time traffic
+          if (parsed && (parsed.PH === 148 || parsed.US === 96)) {
+            activeCounts = {};
+            await kv.put('geo_visitor_counts', JSON.stringify({}));
+          } else {
+            activeCounts = parsed;
+          }
         }
       } catch (kvErr) {
         console.error('KV read error:', kvErr);
@@ -113,13 +103,19 @@ export const GET: APIRoute = async ({ request, locals }) => {
           console.error('KV write error:', kvWriteErr);
         }
       }
+    } else {
+      // Ensure the active visitor's country has at least 1 count registered
+      if (!activeCounts[cfCountry]) {
+        activeCounts[cfCountry] = 1;
+        visitorCounts[cfCountry] = 1;
+      }
     }
 
     // 4. Format countries array for the world map
     const totalVisitors = Object.values(activeCounts).reduce((acc, curr) => acc + curr, 0);
 
     const countries = Object.entries(COUNTRY_COORDS).map(([code, meta]) => {
-      const count = activeCounts[code] || (code === cfCountry ? 1 : 0);
+      const count = activeCounts[code] || 0;
       return {
         code,
         name: meta.name,
@@ -141,13 +137,19 @@ export const GET: APIRoute = async ({ request, locals }) => {
       coords: COUNTRY_COORDS[cfCountry] ? { x: COUNTRY_COORDS[cfCountry].x, y: COUNTRY_COORDS[cfCountry].y } : { x: 81.5, y: 55.2 },
     };
 
+    // Filter to countries with real recorded traffic
+    const activeVisitedCountries = countries.filter((c) => c.count > 0);
+    const topCountries = activeVisitedCountries.length > 0
+      ? activeVisitedCountries.slice(0, 8)
+      : countries.filter((c) => c.isClient);
+
     return new Response(
       JSON.stringify({
         client: clientInfo,
         stats: {
-          totalVisitors,
-          totalCountries: Object.keys(activeCounts).length,
-          topCountries: countries.slice(0, 8),
+          totalVisitors: totalVisitors > 0 ? totalVisitors : 1,
+          totalCountries: activeVisitedCountries.length > 0 ? activeVisitedCountries.length : 1,
+          topCountries,
           allCountries: countries,
         },
       }),

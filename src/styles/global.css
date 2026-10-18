@@ -219,6 +219,7 @@ html.dark {
   --color-background-custom: var(--bg-color);
   --color-foreground-custom: var(--fg-color);
   --color-card-custom: var(--glass-bg);
+  --color-elevated-custom: var(--bg-elevated);
   --color-primary-custom: var(--primary-color);
   --color-primary-foreground: var(--primary-fg-color);
   --color-secondary-custom: var(--secondary-color);

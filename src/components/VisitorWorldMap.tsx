@@ -248,7 +248,7 @@ export default function VisitorWorldMap() {
     });
   };
 
-  // Helper to render map blips
+  // Helper to render map blips with smart positioning and high-contrast readability
   const renderCountryBlips = (isModal = false) => {
     if (!data?.stats?.allCountries) return null;
 
@@ -260,6 +260,22 @@ export default function VisitorWorldMap() {
         searchQuery.trim() !== '' &&
         (country.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           country.code.toLowerCase().includes(searchQuery.toLowerCase()));
+
+      // Smart vertical placement:
+      // If dot is in top 45% (northern hemisphere), place tooltip BELOW the dot to avoid container clipping
+      // If dot is in bottom 55% (southern hemisphere), place tooltip ABOVE the dot
+      const verticalPos = country.y < 45 ? 'top-full mt-2.5' : 'bottom-full mb-2.5';
+
+      // Smart horizontal alignment:
+      // If dot is near right edge (x > 75%), anchor to right
+      // If dot is near left edge (x < 25%), anchor to left
+      // Otherwise center
+      const horizontalPos =
+        country.x > 75
+          ? 'right-0'
+          : country.x < 25
+          ? 'left-0'
+          : 'left-1/2 -translate-x-1/2';
 
       return (
         <div
@@ -275,13 +291,17 @@ export default function VisitorWorldMap() {
             haptic.tap();
             setHoveredCountry(country);
           }}
-          className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer p-2 group/dot touch-manipulation"
+          className="absolute -translate-x-1/2 -translate-y-1/2 z-20 cursor-pointer p-2.5 group/dot touch-manipulation"
         >
-          {/* Pulsing ring for client or top countries or matching search */}
-          {(isClient || country.count > 25 || matchesSearch) && (
+          {/* Pulsing beacon for client or active traffic or search match */}
+          {(isClient || country.count > 0 || matchesSearch) && (
             <span
               className={`absolute inset-0 rounded-full animate-ping opacity-75 ${
-                matchesSearch ? 'bg-amber-400 ring-4 ring-amber-400/50' : 'bg-primary-custom'
+                matchesSearch
+                  ? 'bg-amber-400 ring-4 ring-amber-400/50'
+                  : isClient
+                  ? 'bg-primary-custom'
+                  : 'bg-primary-custom/60'
               }`}
             />
           )}
@@ -294,45 +314,52 @@ export default function VisitorWorldMap() {
                 : isClient
                 ? 'w-3.5 h-3.5 bg-primary-custom ring-4 ring-primary-custom/30 shadow-[0_0_12px_var(--primary-color)]'
                 : isHovered
-                ? 'w-3 h-3 bg-foreground-custom ring-2 ring-primary-custom'
+                ? 'w-3.5 h-3.5 bg-foreground-custom ring-2 ring-primary-custom shadow-md'
                 : hasTraffic
-                ? 'w-2.5 h-2.5 bg-primary-custom/90 shadow-[0_0_6px_var(--primary-color)] hover:scale-150'
-                : 'w-1.5 h-1.5 bg-muted-foreground-custom/40'
+                ? 'w-2.5 h-2.5 bg-primary-custom shadow-[0_0_8px_var(--primary-color)] hover:scale-150'
+                : 'w-1.5 h-1.5 bg-muted-foreground-custom/30 hover:bg-muted-foreground-custom/70'
             }`}
           />
 
-          {/* Hover / Highlight Tooltip Card */}
+          {/* High-Contrast Readable Tooltip Card (Theme-Adaptive & Never Clipped) */}
           {(isHovered || (isModal && matchesSearch)) && (
             <div
-              className={`absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2.5 rounded-xl border shadow-xl text-left pointer-events-none z-30 animate-in fade-in zoom-in-95 duration-150 ${
-                isModal
-                  ? 'bg-zinc-900/95 backdrop-blur-md border-zinc-700 text-white'
-                  : 'bg-card-custom/95 backdrop-blur-md border-border-custom text-foreground-custom'
-              }`}
+              className={`absolute ${verticalPos} ${horizontalPos} w-56 p-3 rounded-xl border-2 border-primary-custom/40 shadow-2xl text-left pointer-events-none z-50 animate-in fade-in zoom-in-95 duration-150 backdrop-blur-xl bg-card-custom/95 text-foreground-custom`}
             >
-              <div className="flex items-center justify-between gap-1 mb-1.5">
-                <span className="flex items-center gap-1.5 font-bold font-heading text-xs">
-                  <span className="text-sm">{country.flag}</span>
+              <div className="flex items-center justify-between gap-1.5 mb-2 pb-1.5 border-b border-border-custom">
+                <span className="flex items-center gap-2 font-bold font-heading text-xs truncate">
+                  <span className="text-base shrink-0">{country.flag}</span>
                   <span className="truncate">{country.name}</span>
                 </span>
                 {isClient && (
-                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-primary-custom text-white font-medium">
+                  <span className="shrink-0 text-[9px] font-mono px-2 py-0.5 rounded-full bg-primary-custom text-white font-bold tracking-wider shadow-xs">
                     YOU
                   </span>
                 )}
               </div>
 
-              <div className="flex items-center justify-between text-[11px] font-mono opacity-80">
-                <span>Recorded Visitors:</span>
-                <strong className="font-semibold">{country.count}</strong>
-              </div>
+              <div className="space-y-1.5 font-mono text-[11px]">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground-custom">Recorded Sessions:</span>
+                  <strong className="font-bold text-foreground-custom text-xs">
+                    {country.count} {country.count === 1 ? 'session' : 'sessions'}
+                  </strong>
+                </div>
 
-              {/* Share of Traffic Bar */}
-              <div className="w-full h-1.5 rounded-full bg-white/10 mt-1.5 overflow-hidden">
-                <div
-                  className="h-full bg-primary-custom rounded-full transition-all duration-300"
-                  style={{ width: `${Math.max(country.percentage, 5)}%` }}
-                />
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground-custom">Traffic Share:</span>
+                  <span className="font-semibold text-primary-custom">
+                    {country.percentage}%
+                  </span>
+                </div>
+
+                {/* Progress bar */}
+                <div className="w-full h-1.5 rounded-full bg-foreground-custom/10 overflow-hidden mt-1">
+                  <div
+                    className="h-full bg-primary-custom rounded-full transition-all duration-300"
+                    style={{ width: `${Math.max(country.percentage, country.count > 0 ? 8 : 0)}%` }}
+                  />
+                </div>
               </div>
             </div>
           )}
@@ -354,11 +381,11 @@ export default function VisitorWorldMap() {
             <h3 className="text-sm sm:text-base font-bold font-heading text-foreground-custom flex items-center gap-2">
               <span>Global Visitor Radar</span>
               <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-foreground-custom/5 text-muted-foreground-custom border border-border-custom font-normal">
-                LIVE TELEMETRY
+                REAL-TIME TELEMETRY
               </span>
             </h3>
             <p className="text-xs text-muted-foreground-custom mt-0.5 font-mono">
-              Real-time traffic origins detected via Cloudflare Edge
+              Live traffic origins detected via Cloudflare Edge
             </p>
           </div>
         </div>
@@ -393,7 +420,7 @@ export default function VisitorWorldMap() {
             <svg className="w-3.5 h-3.5 text-primary-custom" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
             </svg>
-            <span className="hidden sm:inline">Expand Radar</span>
+            <span className="hidden sm:inline">Expand Fullscreen</span>
             <span className="sm:hidden">Expand</span>
           </button>
         </div>
@@ -448,17 +475,48 @@ export default function VisitorWorldMap() {
         {/* ── Interactive Country Blips ── */}
         {renderCountryBlips(false)}
 
+        {/* ── Active Inspector HUD Overlay (Top Right Corner) ── */}
+        <div className="absolute top-3 right-3 hidden sm:flex items-center gap-2.5 px-3 py-2 rounded-xl bg-card-custom/95 backdrop-blur-md border border-border-custom shadow-md max-w-xs pointer-events-none transition-all z-30">
+          <span className="text-xl shrink-0">
+            {hoveredCountry ? hoveredCountry.flag : data?.client?.flag || '🌐'}
+          </span>
+          <div className="truncate text-left">
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold font-heading text-foreground-custom truncate">
+                {hoveredCountry
+                  ? hoveredCountry.name
+                  : data?.client
+                  ? `${data.client.city ? data.client.city + ', ' : ''}${data.client.countryName}`
+                  : 'Resolving Location...'}
+              </span>
+              {(hoveredCountry?.isClient || (!hoveredCountry && data?.client)) && (
+                <span className="text-[8px] font-mono px-1.5 py-0.2 rounded bg-primary-custom text-white font-bold">
+                  YOU
+                </span>
+              )}
+            </div>
+            <p className="text-[10px] font-mono text-muted-foreground-custom mt-0.5">
+              {hoveredCountry
+                ? `${hoveredCountry.count} recorded ${hoveredCountry.count === 1 ? 'session' : 'sessions'} (${hoveredCountry.percentage}% share)`
+                : data?.stats?.totalVisitors
+                ? `${data.stats.totalVisitors} real sessions • Hover dot for info`
+                : 'Real-time telemetry'}
+            </p>
+          </div>
+        </div>
+
         {/* Legend / Overlay Note with Expand Callout */}
-        <div className="absolute bottom-2.5 left-3 flex flex-wrap items-center gap-3 text-[10px] font-mono text-muted-foreground-custom bg-card-custom/85 backdrop-blur-xs px-2.5 py-1 rounded-md border border-border-custom shadow-xs">
+        <div className="absolute bottom-2.5 left-3 flex flex-wrap items-center gap-3 text-[10px] font-mono text-muted-foreground-custom bg-card-custom/90 backdrop-blur-xs px-2.5 py-1 rounded-md border border-border-custom shadow-xs z-30">
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-primary-custom shadow-[0_0_6px_var(--primary-color)]" />
-            <span>Active / Recorded</span>
+            <span>Active Origin</span>
           </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-full bg-primary-custom animate-ping" />
             <span>Your Location</span>
           </span>
           <button
+            type="button"
             onClick={() => {
               haptic.tap();
               setIsFullscreen(true);
@@ -472,42 +530,48 @@ export default function VisitorWorldMap() {
 
       {/* ── Top Country Stats Row ── */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
-        {data?.stats?.topCountries?.slice(0, 4).map((c) => (
-          <div
-            key={c.code}
-            onMouseEnter={() => setHoveredCountry(c)}
-            onMouseLeave={() => setHoveredCountry(null)}
-            onClick={() => setHoveredCountry(c)}
-            className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
-              hoveredCountry?.code === c.code
-                ? 'border-primary-custom bg-elevated-custom'
-                : 'border-border-custom bg-card-custom/50 hover:border-primary-custom/30'
-            }`}
-          >
-            <div className="flex items-center gap-2 truncate">
-              <span className="text-base shrink-0">{c.flag}</span>
-              <div className="truncate">
-                <p className="text-xs font-semibold text-foreground-custom truncate leading-none">
-                  {c.name}
-                </p>
-                <p className="text-[10px] font-mono text-muted-foreground-custom mt-1">
-                  {c.percentage}% of traffic
-                </p>
+        {data?.stats?.topCountries && data.stats.topCountries.length > 0 ? (
+          data.stats.topCountries.slice(0, 4).map((c) => (
+            <div
+              key={c.code}
+              onMouseEnter={() => setHoveredCountry(c)}
+              onMouseLeave={() => setHoveredCountry(null)}
+              onClick={() => setHoveredCountry(c)}
+              className={`p-3 rounded-xl border transition-all cursor-pointer flex items-center justify-between ${
+                hoveredCountry?.code === c.code
+                  ? 'border-primary-custom bg-elevated-custom'
+                  : 'border-border-custom bg-card-custom/50 hover:border-primary-custom/30'
+              }`}
+            >
+              <div className="flex items-center gap-2 truncate">
+                <span className="text-base shrink-0">{c.flag}</span>
+                <div className="truncate">
+                  <p className="text-xs font-semibold text-foreground-custom truncate leading-none">
+                    {c.name}
+                  </p>
+                  <p className="text-[10px] font-mono text-muted-foreground-custom mt-1">
+                    {c.percentage}% of traffic
+                  </p>
+                </div>
               </div>
+              <span className="text-xs font-mono font-bold text-foreground-custom pl-2 shrink-0">
+                {c.count}
+              </span>
             </div>
-            <span className="text-xs font-mono font-bold text-foreground-custom pl-2 shrink-0">
-              {c.count}
-            </span>
+          ))
+        ) : (
+          <div className="col-span-2 sm:col-span-4 p-3 rounded-xl border border-dashed border-border-custom text-center text-xs font-mono text-muted-foreground-custom">
+            Real visitor data is actively accumulating via Cloudflare Edge...
           </div>
-        ))}
+        )}
       </div>
 
       {/* ══════════════════════════════════════════════════════════════════════════════
-          CINEMA FULLSCREEN WAR-ROOM MODAL (Interactive Zoom, Pan, Search & Leaderboard)
+          CINEMA FULLSCREEN WAR-ROOM MODAL (Theme-Adaptive & Immersive Full Viewport)
          ══════════════════════════════════════════════════════════════════════════════ */}
       {isFullscreen && (
         <div
-          className="fixed inset-0 z-[100] bg-black/92 backdrop-blur-xl flex flex-col overflow-hidden select-none animate-modal-fade text-white p-3 sm:p-5"
+          className="fixed inset-0 z-[100] w-screen h-screen flex flex-col overflow-hidden select-none animate-modal-fade bg-background-custom/95 dark:bg-black/95 backdrop-blur-2xl text-foreground-custom"
           onClick={() => {
             setIsFullscreen(false);
             setZoom(1);
@@ -519,7 +583,7 @@ export default function VisitorWorldMap() {
         >
           {/* ── Top Controls Bar ── */}
           <div
-            className="w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 pb-3 border-b border-white/10 shrink-0"
+            className="w-full flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 px-4 sm:px-6 py-3 border-b border-border-custom bg-card-custom/80 backdrop-blur-md shrink-0 z-30"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Left: Title + Telemetry stats */}
@@ -529,18 +593,18 @@ export default function VisitorWorldMap() {
                 <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500" />
               </span>
               <div>
-                <h3 className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider text-white flex items-center gap-2">
-                  <span>GLOBAL TELEMETRY RADAR // WAR-ROOM</span>
+                <h3 className="text-xs sm:text-sm font-bold font-mono uppercase tracking-wider text-foreground-custom flex items-center gap-2">
+                  <span>GLOBAL TELEMETRY RADAR // FULL SCREEN</span>
                 </h3>
-                <p className="text-[10px] font-mono text-zinc-400">
-                  {data?.stats?.totalVisitors || 0} total sessions recorded across {data?.stats?.totalCountries || 0} sovereign territories
+                <p className="text-[10px] font-mono text-muted-foreground-custom">
+                  {data?.stats?.totalVisitors || 0} real sessions recorded across {data?.stats?.totalCountries || 0} sovereign territories
                 </p>
               </div>
             </div>
 
             {/* Center: Search country input */}
             <div className="relative w-full md:w-80">
-              <svg className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+              <svg className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground-custom pointer-events-none" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
               </svg>
               <input
@@ -548,13 +612,13 @@ export default function VisitorWorldMap() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Find country (e.g. Philippines, USA, Japan)..."
-                className="w-full bg-white/10 border border-white/20 rounded-lg pl-8 pr-8 py-1.5 text-xs text-white placeholder:text-zinc-400 font-mono focus:outline-none focus:border-primary-custom shadow-xs"
+                className="w-full bg-elevated-custom border border-border-custom rounded-lg pl-8 pr-8 py-1.5 text-xs text-foreground-custom placeholder:text-muted-foreground-custom font-mono focus:outline-none focus:border-primary-custom shadow-xs"
               />
               {searchQuery && (
                 <button
                   type="button"
                   onClick={() => setSearchQuery('')}
-                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white text-xs cursor-pointer"
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground-custom hover:text-foreground-custom text-xs cursor-pointer"
                 >
                   ✕
                 </button>
@@ -564,12 +628,12 @@ export default function VisitorWorldMap() {
             {/* Right: Zoom Toolbar, Leaderboard Drawer Toggle, Close */}
             <div className="flex items-center gap-2 self-end md:self-auto">
               {/* Zoom Toolbar */}
-              <div className="flex items-center bg-white/10 border border-white/20 rounded-lg p-0.5">
+              <div className="flex items-center bg-elevated-custom border border-border-custom rounded-lg p-0.5">
                 <button
                   type="button"
                   onClick={handleZoomOut}
                   disabled={zoom <= 1}
-                  className="p-1.5 rounded text-white hover:bg-white/10 disabled:opacity-30 cursor-pointer transition-all"
+                  className="p-1.5 rounded text-foreground-custom hover:bg-card-custom disabled:opacity-30 cursor-pointer transition-all"
                   title="Zoom Out (-)"
                 >
                   <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -579,7 +643,7 @@ export default function VisitorWorldMap() {
                 <button
                   type="button"
                   onClick={handleResetZoom}
-                  className="px-2 py-0.5 text-[11px] font-mono text-zinc-300 hover:text-white cursor-pointer"
+                  className="px-2 py-0.5 text-[11px] font-mono text-muted-foreground-custom hover:text-foreground-custom cursor-pointer"
                   title="Reset Zoom (0)"
                 >
                   {Math.round(zoom * 100)}%
@@ -588,7 +652,7 @@ export default function VisitorWorldMap() {
                   type="button"
                   onClick={handleZoomIn}
                   disabled={zoom >= 4}
-                  className="p-1.5 rounded text-white hover:bg-white/10 disabled:opacity-30 cursor-pointer transition-all"
+                  className="p-1.5 rounded text-foreground-custom hover:bg-card-custom disabled:opacity-30 cursor-pointer transition-all"
                   title="Zoom In (+)"
                 >
                   <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -607,7 +671,7 @@ export default function VisitorWorldMap() {
                 className={`px-3 py-1.5 rounded-lg text-xs font-mono border transition-all cursor-pointer flex items-center gap-1.5 ${
                   isLeaderboardOpen
                     ? 'bg-primary-custom text-white border-primary-custom font-medium'
-                    : 'bg-white/10 text-zinc-300 border-white/20 hover:text-white'
+                    : 'bg-card-custom text-foreground-custom border-border-custom hover:bg-elevated-custom'
                 }`}
               >
                 <span>📊 Leaderboard</span>
@@ -623,7 +687,7 @@ export default function VisitorWorldMap() {
                   setPan({ x: 0, y: 0 });
                   setSearchQuery('');
                 }}
-                className="p-1.5 rounded-lg bg-white/10 hover:bg-rose-500/20 hover:text-rose-400 border border-white/20 text-zinc-300 transition-all cursor-pointer"
+                className="p-1.5 rounded-lg bg-card-custom hover:bg-rose-500/10 hover:text-rose-500 hover:border-rose-500/30 border border-border-custom text-muted-foreground-custom transition-all cursor-pointer"
                 aria-label="Close fullscreen radar"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
@@ -633,9 +697,9 @@ export default function VisitorWorldMap() {
             </div>
           </div>
 
-          {/* ── Main Viewport Container ── */}
+          {/* ── Main Full-Modal Viewport Container (Fills Entire Screen) ── */}
           <div
-            className="relative flex-1 min-h-0 flex items-center justify-center overflow-hidden my-2"
+            className="relative flex-1 w-full h-full min-h-0 overflow-hidden flex items-center justify-center p-2 sm:p-4 md:p-6"
             onClick={(e) => e.stopPropagation()}
             onMouseDown={onMouseDown}
             onMouseMove={onMouseMove}
@@ -648,72 +712,105 @@ export default function VisitorWorldMap() {
           >
             {/* Draggable & Scalable Map Frame */}
             <div
-              className="relative w-full max-w-6xl aspect-[16/8] max-h-[80vh] flex items-center justify-center select-none"
+              className="relative w-full h-full flex items-center justify-center select-none"
               style={{
                 transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom})`,
                 transition: isDragging ? 'none' : 'transform 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
                 cursor: zoom > 1 ? (isDragging ? 'grabbing' : 'grab') : 'default',
               }}
             >
-              {/* Dot-Matrix World SVG */}
-              <svg
-                viewBox="0 0 1000 500"
-                className="w-full h-full text-white pointer-events-none"
-                preserveAspectRatio="none"
-              >
-                <defs>
-                  <pattern
-                    id="fullscreen-ocean-matrix"
-                    x="0"
-                    y="0"
-                    width="12.5"
-                    height="12.5"
-                    patternUnits="userSpaceOnUse"
-                  >
-                    <circle cx="6.25" cy="6.25" r="1" className="fill-current opacity-10" />
-                  </pattern>
-                </defs>
+              {/* Inner 2:1 Aspect Ratio Canvas Frame that expands cleanly */}
+              <div className="relative w-full aspect-[2/1] max-w-full max-h-full flex items-center justify-center">
+                {/* Dot-Matrix World SVG */}
+                <svg
+                  viewBox="0 0 1000 500"
+                  className="w-full h-full text-foreground-custom pointer-events-none"
+                  preserveAspectRatio="none"
+                >
+                  <defs>
+                    <pattern
+                      id="fullscreen-ocean-matrix"
+                      x="0"
+                      y="0"
+                      width="12.5"
+                      height="12.5"
+                      patternUnits="userSpaceOnUse"
+                    >
+                      <circle cx="6.25" cy="6.25" r="1" className="fill-current opacity-[0.06] dark:opacity-[0.10]" />
+                    </pattern>
+                  </defs>
 
-                <rect width="1000" height="500" fill="url(#fullscreen-ocean-matrix)" />
+                  <rect width="1000" height="500" fill="url(#fullscreen-ocean-matrix)" />
 
-                <g className="fill-current opacity-40">
-                  {landDots.map((dot) => (
-                    <circle key={dot.key} cx={dot.cx} cy={dot.cy} r="2.6" />
-                  ))}
-                </g>
-              </svg>
+                  <g className="fill-current opacity-[0.25] dark:opacity-[0.35]">
+                    {landDots.map((dot) => (
+                      <circle key={dot.key} cx={dot.cx} cy={dot.cy} r="2.6" />
+                    ))}
+                  </g>
+                </svg>
 
-              {/* Radar sweep line */}
-              <div className="absolute inset-y-0 w-48 bg-gradient-to-r from-transparent via-primary-custom/20 to-transparent pointer-events-none animate-[pulse_4s_ease-in-out_infinite]" />
+                {/* Radar sweep line */}
+                <div className="absolute inset-y-0 w-48 bg-gradient-to-r from-transparent via-primary-custom/15 to-transparent pointer-events-none animate-[pulse_4s_ease-in-out_infinite]" />
 
-              {/* Render country blips */}
-              {renderCountryBlips(true)}
+                {/* Render country blips */}
+                {renderCountryBlips(true)}
+              </div>
+            </div>
+
+            {/* Live Hover Telemetry Inspector HUD in Fullscreen Modal */}
+            <div className="absolute top-4 left-4 z-20 hidden sm:flex items-center gap-3 px-3.5 py-2.5 rounded-xl bg-card-custom/95 backdrop-blur-xl border border-border-custom shadow-xl max-w-sm pointer-events-none">
+              <span className="text-2xl shrink-0">
+                {hoveredCountry ? hoveredCountry.flag : data?.client?.flag || '🌐'}
+              </span>
+              <div className="truncate text-left">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs font-bold font-heading text-foreground-custom truncate">
+                    {hoveredCountry
+                      ? hoveredCountry.name
+                      : data?.client
+                      ? `${data.client.city ? data.client.city + ', ' : ''}${data.client.countryName}`
+                      : 'Resolving Location...'}
+                  </span>
+                  {(hoveredCountry?.isClient || (!hoveredCountry && data?.client)) && (
+                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-primary-custom text-white font-bold">
+                      YOU
+                    </span>
+                  )}
+                </div>
+                <p className="text-[10px] font-mono text-muted-foreground-custom mt-0.5">
+                  {hoveredCountry
+                    ? `${hoveredCountry.count} recorded ${hoveredCountry.count === 1 ? 'session' : 'sessions'} • ${hoveredCountry.percentage}% total traffic`
+                    : data?.stats?.totalVisitors
+                    ? `${data.stats.totalVisitors} real sessions • Hover dot for country telemetry`
+                    : 'Real-time Edge telemetry'}
+                </p>
+              </div>
             </div>
 
             {/* Hint overlay */}
-            <div className="absolute bottom-3 left-4 text-[11px] font-mono text-zinc-400 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 pointer-events-none">
+            <div className="absolute bottom-3 left-4 text-[11px] font-mono text-muted-foreground-custom bg-card-custom/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-border-custom pointer-events-none shadow-xs z-20">
               <span>Scroll / Pinch to zoom • Drag to pan • Press [ESC] to exit</span>
             </div>
 
-            {/* Collapsible Leaderboard Side Drawer */}
+            {/* Collapsible Leaderboard Side Drawer (Theme Adaptive) */}
             {isLeaderboardOpen && (
               <div
-                className="absolute top-0 right-0 bottom-0 w-80 max-w-full bg-zinc-900/95 backdrop-blur-xl border-l border-white/15 p-4 flex flex-col z-40 animate-in slide-in-from-right duration-200"
+                className="absolute top-0 right-0 bottom-0 w-80 max-w-full bg-card-custom/95 dark:bg-black/95 backdrop-blur-2xl border-l border-border-custom p-4 flex flex-col z-40 animate-in slide-in-from-right duration-200"
                 onClick={(e) => e.stopPropagation()}
               >
-                <div className="flex items-center justify-between pb-3 border-b border-white/10 mb-3">
+                <div className="flex items-center justify-between pb-3 border-b border-border-custom mb-3">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                    <span className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">
                       Country Leaderboard
                     </span>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-white/10 text-zinc-300">
-                      {data?.stats?.allCountries?.length || 0}
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-elevated-custom text-muted-foreground-custom border border-border-custom">
+                      {data?.stats?.allCountries?.filter((c) => c.count > 0).length || 0} active
                     </span>
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsLeaderboardOpen(false)}
-                    className="text-zinc-400 hover:text-white text-xs cursor-pointer"
+                    className="text-muted-foreground-custom hover:text-foreground-custom text-xs cursor-pointer p-1 rounded hover:bg-elevated-custom"
                   >
                     ✕
                   </button>
@@ -722,6 +819,7 @@ export default function VisitorWorldMap() {
                 <div className="flex-1 overflow-y-auto flex flex-col gap-1.5 pr-1 no-scrollbar">
                   {data?.stats?.allCountries
                     ?.slice()
+                    .filter((c) => c.count > 0 || c.isClient)
                     .sort((a, b) => b.count - a.count)
                     .map((country, rank) => (
                       <div
@@ -731,22 +829,27 @@ export default function VisitorWorldMap() {
                           setHoveredCountry(country);
                           setSearchQuery(country.name);
                         }}
-                        className={`p-2 rounded-lg border transition-all cursor-pointer flex items-center justify-between text-xs ${
+                        className={`p-2.5 rounded-lg border transition-all cursor-pointer flex items-center justify-between text-xs ${
                           hoveredCountry?.code === country.code
-                            ? 'border-primary-custom bg-primary-custom/20 text-white'
-                            : 'border-white/10 bg-white/5 hover:border-white/30 text-zinc-300'
+                            ? 'border-primary-custom bg-primary-custom/15 text-foreground-custom'
+                            : 'border-border-custom bg-card-custom/50 hover:bg-elevated-custom text-foreground-custom'
                         }`}
                       >
                         <div className="flex items-center gap-2 truncate">
-                          <span className="text-[10px] font-mono text-zinc-500 w-4">
+                          <span className="text-[10px] font-mono text-muted-foreground-custom w-4">
                             #{rank + 1}
                           </span>
                           <span className="text-base">{country.flag}</span>
                           <span className="font-medium truncate">{country.name}</span>
+                          {country.isClient && (
+                            <span className="text-[8px] font-mono px-1 py-0.2 rounded bg-primary-custom text-white font-bold">
+                              YOU
+                            </span>
+                          )}
                         </div>
                         <div className="flex items-center gap-2 shrink-0 font-mono">
-                          <span className="font-bold text-white">{country.count}</span>
-                          <span className="text-[10px] text-zinc-500">
+                          <span className="font-bold text-foreground-custom">{country.count}</span>
+                          <span className="text-[10px] text-muted-foreground-custom">
                             ({country.percentage}%)
                           </span>
                         </div>
