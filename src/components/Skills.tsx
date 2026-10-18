@@ -90,7 +90,7 @@ export default function Skills({
                   role="listitem"
                 >
                   <span className="text-muted-foreground-custom group-hover:text-primary-custom shrink-0 transition-colors">
-                    <TechIcon name={skill.name} className="w-5 h-5" />
+                    <TechIcon name={skill.name} icon={skill.icon} className="w-5 h-5" />
                   </span>
                   <div className="min-w-0 flex-1">
                     <span className="text-xs sm:text-sm font-medium truncate block text-foreground-custom group-hover:text-primary-custom transition-colors">

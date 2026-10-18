@@ -1,44 +1,58 @@
 import React from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faReact,
+  faNodeJs,
+  faPhp,
+  faPython,
+  faJs,
+  faHtml5,
+  faCss3Alt,
+  faTailwindCss,
+  faDocker,
+  faGithub,
+  faGitAlt,
+  faLinux,
+  faJava,
+  faVuejs,
+  faAngular,
+  faBootstrap,
+  faSass,
+  faAws,
+  faLaravel,
+  faRust,
+  faGolang,
+  faFigma,
+  faWordpress
+} from '@fortawesome/free-brands-svg-icons';
+import {
+  faDatabase,
+  faShieldHalved,
+  faTerminal,
+  faRobot,
+  faMobileScreenButton,
+  faCode,
+  faCloud,
+  faServer,
+  faNetworkWired
+} from '@fortawesome/free-solid-svg-icons';
 
 interface TechIconProps {
   name: string;
+  icon?: string;
   className?: string;
 }
 
-export default function TechIcon({ name, className = 'w-5 h-5' }: TechIconProps) {
-  const n = name.toLowerCase().trim();
+export default function TechIcon({ name, icon, className = 'w-5 h-5' }: TechIconProps) {
+  // Combine both name and Sanity icon string (e.g. "React" + "fa-brands fa-react")
+  const n = `${name} ${icon || ''}`.toLowerCase().trim();
 
-  // React / React Native
-  if (n.includes('react')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <circle cx="12" cy="12" r="2" />
-        <ellipse cx="12" cy="12" rx="10" ry="4.2" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(60 12 12)" fill="none" stroke="currentColor" strokeWidth="1.5" />
-        <ellipse cx="12" cy="12" rx="10" ry="4.2" transform="rotate(120 12 12)" fill="none" stroke="currentColor" strokeWidth="1.5" />
-      </svg>
-    );
+  // 1. Tailwind CSS (Official FontAwesome v7 brand icon)
+  if (n.includes('tailwind')) {
+    return <FontAwesomeIcon icon={faTailwindCss} className={className} />;
   }
 
-  // Node.js
-  if (n.includes('node')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2l9 5.2v10.4L12 23l-9-5.4V7.2L12 2zm0 2.3L4.8 8.5v7l7.2 4.2 7.2-4.2v-7L12 4.3zM12 7a5 5 0 015 5c0 2.2-1.4 4-3.5 4.7l-.5-1.5c1.4-.5 2.2-1.7 2.2-3.2 0-1.8-1.4-3.2-3.2-3.2S8.8 10.2 8.8 12c0 1.5.8 2.7 2.2 3.2l-.5 1.5C8.4 16 7 14.2 7 12a5 5 0 015-5z" />
-      </svg>
-    );
-  }
-
-  // PHP
-  if (n.includes('php')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 3C5.9 3 1 7 1 12s4.9 9 11 9 11-4 11-9-4.9-9-11-9zm-6 12.5l.8-4.5h2.2c1.2 0 1.9.5 1.7 1.6-.2 1.3-1.2 2.9-2.6 2.9H6zm1.2-2.3h1c.6 0 1-.5 1.1-1.1.1-.4 0-.7-.5-.7h-.8l-.8 1.8zm5.8 2.3l.8-4.5h1.2l-.2 1.2h.1c.4-.8 1.1-1.3 1.9-1.3.9 0 1.3.5 1.1 1.5l-.6 3.1h-1.3l.5-2.8c.1-.5 0-.8-.5-.8-.5 0-1 .5-1.2 1.3l-.4 2.3H13zm5.5 0l.8-4.5h2.2c1.2 0 1.9.5 1.7 1.6-.2 1.3-1.2 2.9-2.6 2.9h-2.1zm1.2-2.3h1c.6 0 1-.5 1.1-1.1.1-.4 0-.7-.5-.7h-.8l-.8 1.8z" />
-      </svg>
-    );
-  }
-
-  // JavaScript / TypeScript
+  // 2. TypeScript (Specific check before JavaScript)
   if (n.includes('typescript') || n === 'ts') {
     return (
       <svg className={className} viewBox="0 0 24 24" fill="currentColor">
@@ -47,61 +61,197 @@ export default function TechIcon({ name, className = 'w-5 h-5' }: TechIconProps)
     );
   }
 
-  if (n.includes('js') || n.includes('javascript')) {
+  // 3. React Native (Specific check before React)
+  if (n.includes('react native')) {
     return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M2 3h20v18H2V3zm10.5 12.8c0 1.2-.8 1.9-2.2 1.9-.8 0-1.5-.2-2-.6l.5-1.6c.4.3.9.5 1.5.5.6 0 .9-.3.9-.7v-4.5h1.3v4.5zm5.5-.3c-.3-.2-.8-.4-1.4-.4-.7 0-1.1.3-1.1.7 0 .4.4.6 1.2.9 1.3.5 2 1.1 2 2.2 0 1.4-1.1 2.3-2.8 2.3-.9 0-1.7-.2-2.3-.6l.5-1.5c.5.3 1.1.5 1.8.5.8 0 1.2-.3 1.2-.7 0-.4-.4-.6-1.3-.9-1.2-.5-1.9-1.1-1.9-2.1 0-1.4 1.1-2.2 2.6-2.2.8 0 1.5.2 2 .5l-.5 1.6z" />
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+        <rect x="5" y="2" width="14" height="20" rx="3" />
+        <ellipse cx="12" cy="12" rx="4.5" ry="2" />
+        <ellipse cx="12" cy="12" rx="4.5" ry="2" transform="rotate(60 12 12)" />
+        <ellipse cx="12" cy="12" rx="4.5" ry="2" transform="rotate(120 12 12)" />
+        <circle cx="12" cy="12" r="1" fill="currentColor" />
       </svg>
     );
   }
 
-  // HTML / HTML5
-  if (n.includes('html')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 2l1.6 18.2L12 23l7.4-2.8L21 2H3zm15.1 5.3H8.3l.3 3.3h9.2l-.7 7.5-4.8 1.4-4.8-1.4-.3-3.8h2.3l.1 1.8 2.7.7 2.7-.7.3-3H6l-.7-7.5h13.1l-.3 1.7z" />
-      </svg>
-    );
+  // 4. React (FontAwesome brand icon)
+  if (n.includes('react')) {
+    return <FontAwesomeIcon icon={faReact} className={className} />;
   }
 
-  // CSS / CSS3
-  if (n.includes('css')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M3 2l1.6 18.2L12 23l7.4-2.8L21 2H3zm14.8 6.5h-9l.2 2.2h8.6l-.7 7.5-4.9 1.4-4.9-1.4-.3-3.8h2.3l.1 1.8 2.8.7 2.8-.7.3-3.2H8.3l-.7-6.8h10.4l-.2 2.2z" />
-      </svg>
-    );
+  // 5. Node.js (FontAwesome brand icon)
+  if (n.includes('node')) {
+    return <FontAwesomeIcon icon={faNodeJs} className={className} />;
   }
 
-  // Tailwind CSS
-  if (n.includes('tailwind')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 6c-2.4 0-4 1.2-4.8 3.6 1-1.2 2.2-1.6 3.6-1.2.8.2 1.4.8 2 1.5C13.8 11 15 12.2 17.5 12.2c2.4 0 4-1.2 4.8-3.6-1 1.2-2.2 1.6-3.6 1.2-.8-.2-1.4-.8-2-1.5C15.7 7.2 14.5 6 12 6zM6.5 12c-2.4 0-4 1.2-4.8 3.6 1-1.2 2.2-1.6 3.6-1.2.8.2 1.4.8 2 1.5 1 1.1 2.2 2.3 4.7 2.3 2.4 0 4-1.2 4.8-3.6-1 1.2-2.2 1.6-3.6 1.2-.8-.2-1.4-.8-2-1.5-1-1.1-2.2-2.3-4.7-2.3z" />
-      </svg>
-    );
+  // 6. PHP & Laravel (FontAwesome brand icons)
+  if (n.includes('laravel')) {
+    return <FontAwesomeIcon icon={faLaravel} className={className} />;
+  }
+  if (n.includes('php')) {
+    return <FontAwesomeIcon icon={faPhp} className={className} />;
   }
 
-  // Python
+  // 7. Python (FontAwesome brand icon)
   if (n.includes('python')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M11.9 2c-3.1 0-5.2.3-5.2 2.3v2h5.3v.7H4.3c-2 0-3.3 1.3-3.3 3.3 0 2.2 1.4 3.3 3.3 3.3h1.3v-1.7c0-1.8 1.5-3.3 3.3-3.3h5.3c1.5 0 2.7-1.2 2.7-2.7V4.3C16.9 2.3 15 2 11.9 2zm-1.7 1.7a.8.8 0 110 1.6.8.8 0 010-1.6zM12.1 22c3.1 0 5.2-.3 5.2-2.3v-2H12v-.7h7.7c2 0 3.3-1.3 3.3-3.3 0-2.2-1.4-3.3-3.3-3.3h-1.3v1.7c0 1.8-1.5 3.3-3.3 3.3H9.8c-1.5 0-2.7 1.2-2.7 2.7v1.7c0 2 1.9 2.3 5 2.3zm1.7-1.7a.8.8 0 110-1.6.8.8 0 010 1.6z" />
-      </svg>
-    );
+    return <FontAwesomeIcon icon={faPython} className={className} />;
   }
 
-  // Flutter / Mobile
+  // 8. Docker (FontAwesome brand icon)
+  if (n.includes('docker')) {
+    return <FontAwesomeIcon icon={faDocker} className={className} />;
+  }
+
+  // 9. Git / GitHub (FontAwesome brand icons)
+  if (n.includes('github')) {
+    return <FontAwesomeIcon icon={faGithub} className={className} />;
+  }
+  if (n.includes('git')) {
+    return <FontAwesomeIcon icon={faGitAlt} className={className} />;
+  }
+
+  // 10. Linux (FontAwesome brand icon)
+  if (n.includes('linux')) {
+    return <FontAwesomeIcon icon={faLinux} className={className} />;
+  }
+
+  // 11. Java (FontAwesome brand icon)
+  if (n.includes('java')) {
+    return <FontAwesomeIcon icon={faJava} className={className} />;
+  }
+
+  // 12. Rust & Go (FontAwesome brand icons)
+  if (n.includes('rust')) {
+    return <FontAwesomeIcon icon={faRust} className={className} />;
+  }
+  if (n.includes('golang') || n.includes('go')) {
+    return <FontAwesomeIcon icon={faGolang} className={className} />;
+  }
+
+  // 13. Figma & WordPress (FontAwesome brand icons)
+  if (n.includes('figma')) {
+    return <FontAwesomeIcon icon={faFigma} className={className} />;
+  }
+  if (n.includes('wordpress')) {
+    return <FontAwesomeIcon icon={faWordpress} className={className} />;
+  }
+
+  // 14. Vue & Angular (FontAwesome brand icons)
+  if (n.includes('vue')) {
+    return <FontAwesomeIcon icon={faVuejs} className={className} />;
+  }
+  if (n.includes('angular')) {
+    return <FontAwesomeIcon icon={faAngular} className={className} />;
+  }
+
+  // 15. Bootstrap & Sass (FontAwesome brand icons)
+  if (n.includes('bootstrap')) {
+    return <FontAwesomeIcon icon={faBootstrap} className={className} />;
+  }
+  if (n.includes('sass') || n.includes('scss')) {
+    return <FontAwesomeIcon icon={faSass} className={className} />;
+  }
+
+  // 16. AWS (FontAwesome brand icon)
+  if (n.includes('aws')) {
+    return <FontAwesomeIcon icon={faAws} className={className} />;
+  }
+
+  // 17. HTML / HTML5 (FontAwesome brand icon)
+  if (n.includes('html')) {
+    return <FontAwesomeIcon icon={faHtml5} className={className} />;
+  }
+
+  // 18. CSS / CSS3 (FontAwesome brand icon)
+  if (n.includes('css')) {
+    return <FontAwesomeIcon icon={faCss3Alt} className={className} />;
+  }
+
+  // 19. JavaScript (FontAwesome brand icon)
+  if (n.includes('js') || n.includes('javascript')) {
+    return <FontAwesomeIcon icon={faJs} className={className} />;
+  }
+
+  // 20. Flutter / Mobile (FontAwesome solid icon)
   if (n.includes('flutter') || n.includes('mobile')) {
+    return <FontAwesomeIcon icon={faMobileScreenButton} className={className} />;
+  }
+
+  // 21. Database / MySQL / SQL (FontAwesome solid icon)
+  if (n.includes('mysql') || n.includes('sql') || n.includes('database') || n.includes('mongo')) {
+    return <FontAwesomeIcon icon={faDatabase} className={className} />;
+  }
+
+  // 22. Security / Cyber / Shield (FontAwesome solid icon)
+  if (n.includes('secur') || n.includes('cyber') || n.includes('shield')) {
+    return <FontAwesomeIcon icon={faShieldHalved} className={className} />;
+  }
+
+  // 23. Terminal / CLI / Bash (FontAwesome solid icon)
+  if (n.includes('terminal') || n.includes('bash') || n.includes('cli')) {
+    return <FontAwesomeIcon icon={faTerminal} className={className} />;
+  }
+
+  // 24. AI / ML / Bot (FontAwesome solid icon)
+  if (n.includes('ai') || n.includes('ml') || n.includes('bot')) {
+    return <FontAwesomeIcon icon={faRobot} className={className} />;
+  }
+
+  // 25. Server & Networking (FontAwesome solid icons)
+  if (n.includes('server')) {
+    return <FontAwesomeIcon icon={faServer} className={className} />;
+  }
+  if (n.includes('network') || n.includes('telemetry') || n.includes('cisco')) {
+    return <FontAwesomeIcon icon={faNetworkWired} className={className} />;
+  }
+
+  // 26. Vercel (Official brand vector)
+  if (n.includes('vercel')) {
     return (
       <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M13.5 2L4 11.5l2.9 2.9L19.3 2H13.5zm0 9.7L8.7 16.5l4.8 4.8h5.8l-7.7-7.7 2.9-2.9 2.9 2.9L19.3 11.7h-5.8z" />
+        <path d="M24 22.525H0l12-21.05 12 21.05z" />
       </svg>
     );
   }
 
-  // Database / MySQL / Postgres / Mongo / SQLite
-  if (n.includes('database') || n.includes('sql') || n.includes('mysql') || n.includes('postgres') || n.includes('sqlite') || n.includes('mongo')) {
+  // 27. Netlify (Official brand vector)
+  if (n.includes('netlify')) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M6.49 19.09l.36.21 4.14 2.4 1.01.58.5-.29 4.14-2.4.36-.21v-.42V8.94v-.42l-.36-.21-4.14-2.4-.5-.29-1.01.58-4.14 2.4-.36.21v.42v10.15v.42zm5.51-11.97l3.65 2.11v7.54l-3.65 2.11-3.65-2.11V9.23l3.65-2.11z" />
+      </svg>
+    );
+  }
+
+  // 28. Render (Official brand vector)
+  if (n.includes('render')) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.98 9.53a8.03 8.03 0 00-6.1-5.46 8.08 8.08 0 00-7.39 2.53 8.04 8.04 0 00-2.47 5.74V20h4.43v-7.66c0-2.94 2.38-5.33 5.33-5.33 2.94 0 5.33 2.39 5.33 5.33V20h4.43v-7.66a8 8 0 00-3.56-2.81z" />
+      </svg>
+    );
+  }
+
+  // 29. Google Cloud / GCP (Official brand vector)
+  if (n.includes('google cloud') || n.includes('gcp') || n.includes('google cloud console')) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM19 18H6c-2.21 0-4-1.79-4-4 0-2.05 1.53-3.76 3.56-3.97l1.07-.11.5-.95C8.08 7.14 9.94 6 12 6c2.62 0 4.88 1.86 5.39 4.43l.3 1.5 1.53.11c1.56.1 2.78 1.41 2.78 2.96 0 1.65-1.35 3-3 3z" />
+      </svg>
+    );
+  }
+
+  // 30. PostgreSQL / Postgres (Official brand vector)
+  if (n.includes('postgres') || n.includes('postgresql')) {
+    return (
+      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 16.93c-3.96-.46-7-3.83-7-7.93 0-4.41 3.59-8 8-8 1.84 0 3.53.63 4.88 1.68l-1.45 1.45A5.96 5.96 0 0014 5.5c-3.31 0-6 2.69-6 6 0 2.97 2.16 5.43 5 5.91v1.52z" />
+      </svg>
+    );
+  }
+
+  // 31. SQLite (Official brand vector)
+  if (n.includes('sqlite')) {
     return (
       <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
         <ellipse cx="12" cy="5" rx="9" ry="3" />
@@ -111,97 +261,11 @@ export default function TechIcon({ name, className = 'w-5 h-5' }: TechIconProps)
     );
   }
 
-  // Git / GitHub
-  if (n.includes('git') || n.includes('github')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-      </svg>
-    );
+  // 32. Generic Cloud (FontAwesome solid icon)
+  if (n.includes('cloud')) {
+    return <FontAwesomeIcon icon={faCloud} className={className} />;
   }
 
-  // Docker
-  if (n.includes('docker')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M13 8h2v2h-2zm-3 0h2v2h-2zm-3 0h2v2H7zm6-3h2v2h-2zm-3 0h2v2h-2zm9 7c-.1-.7-.6-1.3-1.2-1.6l-.7-.4-.3.7c-.2.5-.2 1.1 0 1.6.4.1.8.2 1.2.3.4.1.8-.1 1-.6zm2.7.5c-.3-.2-.7-.4-1.1-.4-.2.4-.5.8-.9 1.1 1.2.3 2 .3 2-.7zm-1.7 2.2c-.3-.2-.7-.3-1.1-.3-.6.6-1.4.9-2.2.9H2.8c-.5 0-.9-.4-.9-.9 0-.4.3-.8.7-.9.5-.1 1.1-.2 1.6-.2 1.1 0 2.2.3 3.2.8.6-.5 1.4-.8 2.2-.8h4.5c.3 0 .6.1.9.2.4-.3.9-.5 1.4-.5 1.3 0 2.5.6 3.2 1.7.3 0 .6.1.9.2.6-.5 1.4-.8 2.2-.8.5 0 1 .1 1.5.3-.2-.5-.5-1-.9-1.3z" />
-      </svg>
-    );
-  }
-
-  // Security / Cyber / Shield
-  if (n.includes('secur') || n.includes('cyber') || n.includes('shield')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-      </svg>
-    );
-  }
-
-  // Linux
-  if (n.includes('linux')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2a4 4 0 00-4 4v3a4 4 0 00.3 1.5C7.2 11.2 6 13 6 15c0 1.5.8 2.8 2 3.5V20a2 2 0 002 2h4a2 2 0 002-2v-1.5c1.2-.7 2-2 2-3.5 0-2-1.2-3.8-2.3-4.5.2-.5.3-1 .3-1.5V6a4 4 0 00-4-4zm-1.5 5a.8.8 0 110 1.5.8.8 0 010-1.5zm3 0a.8.8 0 110 1.5.8.8 0 010-1.5z" />
-      </svg>
-    );
-  }
-
-  // Java
-  if (n.includes('java')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M8.8 17.5s-1.4.2-.6.8c1 .7 2.7.7 4.3.4 1.4-.2 3.5-.8 3.5-.8s.6.5-.4.7c-2.3.5-5.3.6-7.3-.2-.7-.3-.2-.8.5-.9zm.4-2.1s-1.8.3-.9 1c1.2.9 3.2.7 5.2.4 1.7-.2 3.9-.9 3.9-.9s.4.5-.4.7c-2.6.7-6.2.7-8.5-.3-.9-.4-.3-.8.7-.9zm3.5-5.2c.7.8.6 1.5-.2 2.3-1.2 1.2-1.8 1.8-3.4 2.8-.7.4-1.5.8-2 .9 0 0 1.1-.6 1.8-1 1.5-.9 2.4-1.6 3.1-2.6.6-.9.4-1.7-.3-2.4-.7-.7-.8-1.5-.1-2.4.1-.1.2.2.1.4-.3.7-.1 1.3 1 2zm6.2 9.5c.2.2-.2.4-.4.5-1.5.6-3.7.8-6.1.8-2.8 0-5.4-.5-6.8-1.4-.4-.3.1-.6.5-.5 2 .4 4.5.6 6.7.5 2.1 0 4.5-.3 6.1-.9z" />
-      </svg>
-    );
-  }
-
-  // Vue
-  if (n.includes('vue')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-        <path d="M2 3h3.5L12 14.5 18.5 3H22L12 21 2 3zm4.5 0h3L12 7.5 14.5 3h3L12 12 6.5 3z" />
-      </svg>
-    );
-  }
-
-  // AWS / Cloud / Google Cloud / Render / Vercel / Netlify
-  if (n.includes('cloud') || n.includes('aws') || n.includes('render') || n.includes('vercel') || n.includes('netlify')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z" />
-      </svg>
-    );
-  }
-
-  // Terminal / CLI / Bash
-  if (n.includes('terminal') || n.includes('bash') || n.includes('cli')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <polyline points="4 17 10 11 4 5" />
-        <line x1="12" y1="19" x2="20" y2="19" />
-      </svg>
-    );
-  }
-
-  // AI / ML / Bot / Robot
-  if (n.includes('ai') || n.includes('ml') || n.includes('bot')) {
-    return (
-      <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-        <rect x="3" y="11" width="18" height="10" rx="2" />
-        <circle cx="12" cy="5" r="2" />
-        <path d="M12 7v4" />
-        <line x1="8" y1="16" x2="8.01" y2="16" />
-        <line x1="16" y1="16" x2="16.01" y2="16" />
-      </svg>
-    );
-  }
-
-  // Default: Code / Bracket Icon
-  return (
-    <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="16 18 22 12 16 6" />
-      <polyline points="8 6 2 12 8 18" />
-    </svg>
-  );
+  // Default: Code (FontAwesome solid icon)
+  return <FontAwesomeIcon icon={faCode} className={className} />;
 }
