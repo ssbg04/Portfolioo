@@ -625,22 +625,35 @@ export default function Certifications({ certifications, extraCerts = [], sectio
             className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-card-custom border border-border-custom rounded-2xl shadow-xl flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto animate-modal-scale"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Close 'X' Button in Top Right */}
-            <button
-              onClick={() => {
-                haptic.tap();
-                setSelectedCert(null);
-              }}
-              className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-lg bg-card-custom hover:bg-muted-custom text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom shadow-xs active:translate-y-px z-20"
-              aria-label="Close modal"
-            >
-              ✕
-            </button>
+            {/* Modal Top Navigation Bar: Clean separation so close button never overlaps image preview */}
+            <div className="flex items-center justify-between pb-3 border-b border-border-custom shrink-0">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-primary-custom" />
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-muted-foreground-custom">
+                  {isDocumentCertificate(selectedCert) ? 'Certificate Preview' : 'Digital Badge'}
+                </span>
+                <span className="text-[10px] font-mono text-muted-foreground-custom px-2 py-0.5 rounded-md bg-foreground-custom/5 border border-border-custom">
+                  #{selectedCert.code}
+                </span>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  haptic.tap();
+                  setSelectedCert(null);
+                }}
+                className="w-8 h-8 rounded-lg bg-card-custom hover:bg-elevated-custom text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-colors cursor-pointer border border-border-custom shadow-xs active:scale-95"
+                aria-label="Close modal"
+              >
+                ✕
+              </button>
+            </div>
 
             {/* Responsive Grid Container: 2-Column on Web/Desktop, Stacked Scrollable on Mobile */}
             <div className="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-start pt-1">
               
-              {/* Left Column: Certificate / Badge Image Viewport (shrink-0 ensures it NEVER squishes) */}
+              {/* Left Column: Certificate / Badge Image Viewport */}
               <div className="w-full md:col-span-6 lg:col-span-6 flex flex-col items-center shrink-0">
                 <div
                   onClick={() => {
