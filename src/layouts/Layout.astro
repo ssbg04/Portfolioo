@@ -285,6 +285,24 @@ const isRootPage = Astro.url.pathname === '/';
 					window.addEventListener('offline', function() { showStatus(false); });
 					if (!navigator.onLine) showStatus(false);
 				}
+
+				// 3. Global Visitor Geolocation Telemetry (Option A)
+				try {
+					if (!sessionStorage.getItem('geo_logged')) {
+						var pingGeo = function() {
+							fetch('/api/geo', { priority: 'low' })
+								.then(function() {
+									sessionStorage.setItem('geo_logged', '1');
+								})
+								.catch(function() {});
+						};
+						if ('requestIdleCallback' in window) {
+							requestIdleCallback(pingGeo, { timeout: 3000 });
+						} else {
+							setTimeout(pingGeo, 1500);
+						}
+					}
+				} catch (e) {}
 			})();
 		</script>
 	</body>
