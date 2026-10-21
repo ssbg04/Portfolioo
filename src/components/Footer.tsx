@@ -165,7 +165,7 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
           <span className="opacity-40">•</span>
           <a href="/contact" className="hover:text-foreground-custom transition-colors">Contact</a>
           <span className="opacity-40">•</span>
-          <a href="/links" className="text-primary-custom hover:underline font-medium">Links Directory</a>
+          <a href="https://links.crischarles.com" className="text-primary-custom hover:underline font-medium">Links Directory</a>
         </div>
       </div>
 
