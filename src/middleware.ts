@@ -30,13 +30,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     (hostname.startsWith('links.') && (hostname.includes('localhost') || hostname.includes('127.0.0.1')));
 
   if (isLinksSubdomain) {
-    // Root on subdomain renders the /links page seamlessly
+    // Root on subdomain renders the /links page seamlessly via internal rewrite
     if (pathname === '/') {
       return context.rewrite('/links');
     }
-    // Redundant /links path redirects to /
+    // Direct /links access or internal rewrite to /links: render the page
     if (pathname === '/links' || pathname === '/links/') {
-      return context.redirect('/', 301);
+      return next();
     }
     // Any other path on links subdomain redirects to main portfolio
     return context.redirect(`https://crischarles.com${pathname}`, 302);
@@ -45,7 +45,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   // Main domain: redirect /links to dedicated links.crischarles.com subdomain (in production)
   if (pathname === '/links' || pathname === '/links/') {
     if (hostname === 'crischarles.com' || hostname === 'www.crischarles.com') {
-      return context.redirect('https://links.crischarles.com', 301);
+      return context.redirect('https://links.crischarles.com', 302);
     }
   }
 
