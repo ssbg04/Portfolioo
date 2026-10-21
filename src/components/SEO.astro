@@ -30,20 +30,24 @@ const imagePath = image.startsWith('http')
 
 const socialImageURL = new URL(imagePath, siteOrigin).href;
 
+const isGalleryPage = Astro.url.pathname.startsWith('/gallery');
+
 const isIndexablePage =
+  !isGalleryPage &&
   !Astro.url.pathname.startsWith('/api/') &&
   !Astro.url.pathname.startsWith('/maintenance') &&
   !Astro.url.pathname.startsWith('/_astro') &&
   !Astro.url.pathname.startsWith('/_image');
 
-const robotsValue = isIndexablePage
-  ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
-  : 'noindex, nofollow';
+const robotsValue = isGalleryPage
+  ? 'noindex, noimageindex, nofollow'
+  : isIndexablePage
+    ? 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'
+    : 'noindex, nofollow';
 
 const socialProfiles = [
   'https://github.com/ssbg04',
-  'https://www.facebook.com/kristyarls345/',
-  'https://www.tiktok.com/@sisibigi',
+  'https://www.linkedin.com/in/cris-charles-garcia/',
   'https://crischarles.com',
 ];
 
@@ -63,11 +67,6 @@ const navigationElements = [
     name: 'Certifications',
     description: 'Verified credentials and certifications earned by Cris Charles Garcia from Cisco and other industry-recognized programs.',
     path: '/certifications'
-  },
-  {
-    name: 'Gallery',
-    description: 'Visual showcase and photo archive of project milestones, developer activities, and academic experiences.',
-    path: '/gallery'
   },
   {
     name: 'Contact',

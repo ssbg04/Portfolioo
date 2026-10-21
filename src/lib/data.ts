@@ -549,12 +549,14 @@ export async function getSocialLinks(): Promise<SocialLink[]> {
       else if (iconKey.includes('linkedin')) iconKey = 'linkedin';
       else if (iconKey.includes('mail') || iconKey.includes('email')) iconKey = 'mail';
 
+      const isSocialMedia = ['facebook', 'tiktok'].includes(platformName.toLowerCase());
+
       return {
         platform: platformName,
         url: l.url || '#',
         icon: iconKey,
         order: typeof l.order === 'number' ? l.order : idx + 1,
-        showInHero: l.showInHero ?? true,
+        showInHero: isSocialMedia ? false : (l.showInHero ?? true),
         showInFooter: l.showInFooter ?? true,
         showInLinksPage: l.showInLinksPage ?? true
       };

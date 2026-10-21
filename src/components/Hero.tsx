@@ -80,13 +80,14 @@ export default function Hero({
     }
   };
 
-  const linksToRender = socialLinks.length > 0
+  const linksToRender = (socialLinks.length > 0
     ? socialLinks.filter(l => l.showInHero !== false)
     : [
         { platform: "GitHub", url: "https://github.com/ssbg04", icon: "github", order: 1 },
         { platform: "LinkedIn", url: "https://www.linkedin.com/in/cris-charles-garcia/", icon: "linkedin", order: 2 },
         { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 3 }
-      ];
+      ]
+  ).filter(l => !['facebook', 'tiktok'].includes(l.platform.toLowerCase()));
 
   const dayImg = heroImage || (ppDay as any).src || ppDay;
   const nightImg = heroImageNight || heroImage || (ppNight as any).src || ppNight;
