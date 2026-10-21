@@ -13,6 +13,7 @@ interface HeroProps {
   isAvailable?: boolean;
   availabilityStatus?: string;
   socialLinks?: SocialLink[];
+  resumeFile?: string;
 }
 
 const getPlatformIcon = (platform: string) => {
@@ -67,7 +68,8 @@ export default function Hero({
   heroImageNight,
   isAvailable = true,
   availabilityStatus = 'Available for new projects',
-  socialLinks = []
+  socialLinks = [],
+  resumeFile = '/CV-Cris-Charles-Garcia.pdf'
 }: HeroProps) {
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
     e.preventDefault();
@@ -82,9 +84,8 @@ export default function Hero({
     ? socialLinks.filter(l => l.showInHero !== false)
     : [
         { platform: "GitHub", url: "https://github.com/ssbg04", icon: "github", order: 1 },
-        { platform: "Facebook", url: "https://www.facebook.com/kristyarls345/", icon: "facebook", order: 2 },
-        { platform: "TikTok", url: "https://www.tiktok.com/@sisibigi", icon: "tiktok", order: 3 },
-        { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 4 }
+        { platform: "LinkedIn", url: "https://www.linkedin.com/in/cris-charles-garcia/", icon: "linkedin", order: 2 },
+        { platform: "Email", url: "mailto:crischarlesgarcia345@gmail.com", icon: "mail", order: 3 }
       ];
 
   const dayImg = heroImage || (ppDay as any).src || ppDay;
@@ -148,12 +149,12 @@ export default function Hero({
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-row items-center gap-3 w-full sm:w-auto justify-center">
+            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto justify-center">
               <a
                 href="#projects"
                 onClick={(e) => handleSmoothScroll(e, 'projects')}
                 aria-label="Jump to projects section"
-                className="w-1/2 sm:w-auto px-5 py-2.5 rounded-lg bg-foreground-custom text-background-custom font-semibold text-sm border border-foreground-custom hover:opacity-90 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs group"
+                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 rounded-lg bg-foreground-custom text-background-custom font-semibold text-sm border border-foreground-custom hover:opacity-90 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs group whitespace-nowrap"
               >
                 Projects
                 <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform duration-150" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
@@ -161,10 +162,23 @@ export default function Hero({
                 </svg>
               </a>
               <a
+                href={resumeFile}
+                target="_blank"
+                rel="noopener noreferrer"
+                download="CV-Cris-Charles-Garcia.pdf"
+                aria-label="Download CV"
+                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 rounded-lg bg-card-custom text-primary-custom font-semibold text-sm border border-primary-custom/30 hover:border-primary-custom hover:bg-primary-custom/5 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs whitespace-nowrap"
+              >
+                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                </svg>
+                Download CV
+              </a>
+              <a
                 href="#contact"
                 onClick={(e) => handleSmoothScroll(e, 'contact')}
                 aria-label="Jump to contact section"
-                className="w-1/2 sm:w-auto px-5 py-2.5 rounded-lg bg-card-custom text-foreground-custom font-semibold text-sm border border-border-custom hover:bg-muted-custom/60 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                className="w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-lg bg-card-custom text-foreground-custom font-semibold text-sm border border-border-custom hover:bg-muted-custom/60 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs whitespace-nowrap"
               >
                 Contact
                 <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">

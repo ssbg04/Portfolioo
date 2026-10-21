@@ -60,6 +60,8 @@ export default function Skills({
               {filterOptions.map((opt) => (
                 <button
                   key={opt}
+                  type="button"
+                  aria-pressed={activeFilter === opt}
                   onClick={() => setActiveFilter(opt)}
                   className={`px-3 py-1 rounded-md text-xs font-mono tracking-wide border transition-all cursor-pointer ${
                     activeFilter === opt

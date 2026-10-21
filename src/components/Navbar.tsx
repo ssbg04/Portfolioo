@@ -377,13 +377,24 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
               <ControlsDropdown />
             </div>
 
-            <a
-              href="/contact"
-              onClick={() => { setActivePath('/contact'); setDrawerOpen(false); }}
-              className="tap-target relative flex items-center justify-center w-full px-4 py-3.5 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none"
-            >
-              Get in Touch
-            </a>
+            <div className="grid grid-cols-2 gap-2">
+              <a
+                href="/CV-Cris-Charles-Garcia.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="tap-target relative flex items-center justify-center gap-1.5 px-3 py-3 rounded-lg text-sm font-semibold bg-elevated-custom text-foreground-custom border border-border-custom hover:border-primary-custom/40 active:opacity-70 transition-all"
+              >
+                <span>Resume / CV</span>
+                <span className="text-xs font-mono">↗</span>
+              </a>
+              <a
+                href="/contact"
+                onClick={() => { setActivePath('/contact'); setDrawerOpen(false); }}
+                className="tap-target relative flex items-center justify-center px-3 py-3 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none text-center"
+              >
+                Get in Touch
+              </a>
+            </div>
           </div>
         </div>
       )}

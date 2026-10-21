@@ -52,18 +52,27 @@ const socialLinks = await getSocialLinks();
 			isAvailable={settings.isAvailable}
 			availabilityStatus={settings.availabilityStatus}
 			socialLinks={socialLinks}
+			resumeFile={settings.resumeFile}
 		/>
-		
-		<About settings={settings} experience={experience} education={education} isCompact={true} client:visible />
 
-		<Skills skills={skills} limit={12} showSeeAll={true} seeAllHref="/about#skills" client:visible />
-
+		<!-- 02. Flagship & Selected Projects -->
 		<Projects initialProjects={featuredProjects} limit={3} client:visible />
+
+		<!-- 03. Evidence-Backed Technical Skills -->
+		<Skills skills={skills} client:visible />
+
+		<!-- 04. Experience & Education -->
+		<About settings={settings} experience={experience} education={education} isCompact={false} client:visible />
 		
+		<!-- 05. Verified Certifications -->
 		<Certifications certifications={certifications} client:visible />
 		
-		<Testimonials testimonials={testimonials} client:visible />
+		<!-- 06. Client & Peer Testimonials (only when published) -->
+		{testimonials && testimonials.length > 0 && (
+			<Testimonials testimonials={testimonials} client:visible />
+		)}
 		
+		<!-- 07. Contact & Outreach -->
 		<ContactForm 
 			socialLinks={socialLinks}
 			contactHeading={settings.contactHeading}

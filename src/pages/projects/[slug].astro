@@ -161,6 +161,7 @@ const nextProject =
 
 					{/* Section: System Architecture Diagram (Flagship Case Study for TIS Record Management System) */}
 					{project.slug === 'tis-rms' && (
+						<>
 						<section class="space-y-4">
 							<div class="flex items-center justify-between">
 								<h2 class="text-xl sm:text-2xl font-bold font-heading text-foreground-custom flex items-center gap-2">
@@ -186,12 +187,12 @@ const nextProject =
 											<rect x="12" y="14" width="28" height="28" rx="6" class="fill-primary-custom/15 text-primary-custom" />
 											<text x="26" y="32" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="currentColor">01</text>
 											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Client Apps</text>
-											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Flutter Mobile</text>
-											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">C# WPF Desktop</text>
-											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Role-Based UI</text>
+											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Flutter Windows</text>
+											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Flutter Android</text>
+											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Riverpod &amp; Dio</text>
 										</g>
 
-										{/* Node 2: Local Cache & Offline Sync */}
+										{/* Node 2: Local Cache & Offline Engine */}
 										<g transform="translate(250, 50)">
 											<rect width="140" height="120" rx="14" class="fill-card-custom stroke-border-custom hover:stroke-primary-custom transition-all" stroke-width="1.5" />
 											<rect x="12" y="14" width="28" height="28" rx="6" class="fill-emerald-500/15 text-emerald-500" />
@@ -209,28 +210,79 @@ const nextProject =
 											<text x="26" y="32" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="currentColor">03</text>
 											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Backend &amp; OCR</text>
 											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Node.js Express</text>
-											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Tesseract OCR</text>
-											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Ghostscript PDF</text>
+											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Windows Service</text>
+											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Tesseract OCR</text>
 										</g>
 
-										{/* Node 4: Secure Edge & Central Database */}
+										{/* Node 4: Form Engine & LAN Architecture */}
 										<g transform="translate(710, 50)">
 											<rect width="120" height="120" rx="14" class="fill-card-custom stroke-border-custom hover:stroke-primary-custom transition-all" stroke-width="1.5" />
 											<rect x="12" y="14" width="28" height="28" rx="6" class="fill-amber-500/15 text-amber-500" />
 											<text x="26" y="32" text-anchor="middle" font-family="monospace" font-size="12" font-weight="bold" fill="currentColor">04</text>
-											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Edge &amp; Sync</text>
-											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Cloudflare Tunnel</text>
-											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Encrypted Tunnels</text>
-											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">MySQL Cluster</text>
+											<text x="14" y="66" font-family="sans-serif" font-size="13" font-weight="bold" fill="currentColor">Form Engine</text>
+											<text x="14" y="84" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">DepEd SF10</text>
+											<text x="14" y="98" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Ghostscript PDF</text>
+											<text x="14" y="112" font-family="monospace" font-size="10" fill="currentColor" opacity="0.6">Air-Gapped LAN</text>
 										</g>
 									</svg>
 								</div>
 								<p class="text-xs font-mono text-muted-foreground-custom mt-3 pt-3 border-t border-border-custom/50 flex items-center justify-between">
-									<span>Pipeline: Client Capture → Local Offline SQLite → Automated OCR Indexing → Encrypted Cloudflare Sync</span>
-									<span class="text-primary-custom font-semibold">100% AIR-GAPPED READY</span>
+									<span>Pipeline: Flutter Multi-Platform Client → Node.js Windows Service → Tesseract OCR Engine → Local SQLite Database</span>
+									<span class="text-primary-custom font-semibold">100% AIR-GAPPED &amp; LAN READY</span>
 								</p>
 							</div>
 						</section>
+
+						{/* Engineering Deep-Dive (Flagship Details) */}
+						<section class="space-y-4">
+							<h2 class="text-xl sm:text-2xl font-bold font-heading text-foreground-custom flex items-center gap-2">
+								<span class="w-2 h-2 rounded-full bg-primary-custom" />
+								Engineering Challenges &amp; Technical Solutions
+							</h2>
+
+							<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+								<div class="p-5 rounded-2xl border border-border-custom bg-card-custom/60 space-y-2">
+									<h3 class="text-sm font-bold font-heading text-foreground-custom flex items-center gap-2">
+										<span class="text-primary-custom font-mono">01.</span>
+										Offline LAN Reliability
+									</h3>
+									<p class="text-xs text-muted-foreground-custom leading-relaxed">
+										Campus internet fluctuations caused web apps to fail. Architected a local client-server network with a persistent Node.js Windows background service and local SQLite database, guaranteeing zero downtime during registration peaks.
+									</p>
+								</div>
+
+								<div class="p-5 rounded-2xl border border-border-custom bg-card-custom/60 space-y-2">
+									<h3 class="text-sm font-bold font-heading text-foreground-custom flex items-center gap-2">
+										<span class="text-primary-custom font-mono">02.</span>
+										Automated OCR Extraction
+									</h3>
+									<p class="text-xs text-muted-foreground-custom leading-relaxed">
+										Bundled Tesseract OCR and Ghostscript to ingest paper transcripts and extract Learner Reference Numbers (LRN) and historical grades into structured database records, eliminating hours of manual data entry.
+									</p>
+								</div>
+
+								<div class="p-5 rounded-2xl border border-border-custom bg-card-custom/60 space-y-2">
+									<h3 class="text-sm font-bold font-heading text-foreground-custom flex items-center gap-2">
+										<span class="text-primary-custom font-mono">03.</span>
+										Internal Scanner Tooling
+									</h3>
+									<p class="text-xs text-muted-foreground-custom leading-relaxed">
+										Wrote an automated Python preprocessing script (<span class="font-mono text-primary-custom">iskandpotobgrmbr</span>) using image processing to detect boundaries and crop flatbed scanner white margins prior to OCR indexing.
+									</p>
+								</div>
+
+								<div class="p-5 rounded-2xl border border-border-custom bg-card-custom/60 space-y-2">
+									<h3 class="text-sm font-bold font-heading text-foreground-custom flex items-center gap-2">
+										<span class="text-primary-custom font-mono">04.</span>
+										Inno Setup Installer Packaging
+									</h3>
+									<p class="text-xs text-muted-foreground-custom leading-relaxed">
+										Compiled the Flutter desktop client and its environment dependencies into a one-click Windows executable installer via Inno Setup and custom release PowerShell scripts (<span class="font-mono text-primary-custom">build_release.ps1</span>).
+									</p>
+								</div>
+							</div>
+						</section>
+						</>
 					)}
 
 					{/* Section: Key Highlights & Features */}
