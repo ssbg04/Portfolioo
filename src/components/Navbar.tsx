@@ -7,8 +7,8 @@ const navItems = [
   { label: 'projects',       href: '/projects' },
   { label: 'about',          href: '/about' },
   { label: 'certifications', href: '/certifications' },
-  { label: 'gallery',        href: '/gallery' },
   { label: 'contact',        href: '/contact' },
+  { label: 'gallery',        href: '/gallery' },
 ];
 
 interface NavbarProps {
