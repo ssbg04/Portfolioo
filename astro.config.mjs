@@ -24,6 +24,7 @@ export default defineConfig({
         !page.includes('/maintenance') &&
         !page.includes('/chat') &&
         !page.includes('/gallery') &&
+        !page.includes('/links') &&
         !page.includes('/_image'),
       serialize(item) {
         if (item.url === 'https://crischarles.com' || item.url === 'https://crischarles.com/') {

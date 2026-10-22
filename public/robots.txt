@@ -14,20 +14,5 @@ User-agent: Googlebot-Image
 Disallow: /gallery
 Disallow: /gallery/
 
-# Allow specific crawlers
-User-agent: Googlebot
-Allow: /
-Disallow: /api/
-Disallow: /.vercel/
-Disallow: /.astro/
-Disallow: /maintenance
-Disallow: /gallery
-Disallow: /gallery/
-
-User-agent: Bingbot
-Allow: /
-Disallow: /gallery
-Disallow: /gallery/
-
 # Reference to sitemap
 Sitemap: https://crischarles.com/sitemap-index.xml
