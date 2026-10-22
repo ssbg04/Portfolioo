@@ -203,19 +203,20 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
   return (
     <div className="w-full">
       {/* ─── Header & Filter Bar ─── */}
-      <div className="flex flex-col gap-4 mb-6 sm:mb-8 pb-4 border-b border-border-custom">
+      <div className="flex flex-col gap-4 mb-8 pb-5 border-b border-border-custom">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold font-heading text-foreground-custom tracking-tight">
-              Photo Gallery
-            </h1>
+            <div className="section-marker">
+              <span className="section-marker-num">07 —</span>
+              <h1 className="section-marker-title text-xl sm:text-2xl font-mono lowercase font-bold">gallery</h1>
+            </div>
             <p className="text-xs font-mono text-muted-foreground-custom mt-1">
-              Visual records, project milestones, and tech symposium archives
+              visual records // project milestones // symposium archive
             </p>
           </div>
 
           {/* View Mode Toggle: Albums Deck vs All Photos */}
-          <div className="flex items-center gap-1 p-1 rounded-lg bg-card-custom/80 border border-border-custom shadow-xs text-xs font-mono self-start sm:self-auto">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-card-custom border border-border-custom text-xs font-mono self-start sm:self-auto">
             <button
               type="button"
               onClick={() => {
@@ -224,15 +225,12 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               }}
               className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
                 viewMode === 'albums'
-                  ? 'bg-primary-custom text-white font-medium shadow-xs'
+                  ? 'bg-foreground-custom text-background-custom font-semibold'
                   : 'text-muted-foreground-custom hover:text-foreground-custom'
               }`}
               title="Group related series photos into album stacks"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 8.25V6a2.25 2.25 0 00-2.25-2.25H6A2.25 2.25 0 003.75 6v8.25A2.25 2.25 0 006 16.5h2.25m8.25-8.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-7.5A2.25 2.25 0 018.25 18v-1.5m8.25-8.25h-6A2.25 2.25 0 008.25 10.5v6" />
-              </svg>
-              <span>Albums ({albumGroups.length})</span>
+              <span>albums ({albumGroups.length})</span>
             </button>
             <button
               type="button"
@@ -242,15 +240,12 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
               }}
               className={`px-3 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1.5 ${
                 viewMode === 'all'
-                  ? 'bg-primary-custom text-white font-medium shadow-xs'
+                  ? 'bg-foreground-custom text-background-custom font-semibold'
                   : 'text-muted-foreground-custom hover:text-foreground-custom'
               }`}
               title="View all photos individually"
             >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z" />
-              </svg>
-              <span>All ({filteredItems.length})</span>
+              <span>all ({filteredItems.length})</span>
             </button>
           </div>
         </div>
@@ -269,13 +264,13 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
                 setZoomLevel(1);
                 setPanPosition({ x: 0, y: 0 });
               }}
-              className={`px-3 py-1 rounded-md text-xs font-mono tracking-wide transition-all cursor-pointer border ${
+              className={`px-2.5 py-1 rounded-md text-[11px] font-mono tracking-wide transition-all cursor-pointer border ${
                 selectedCategory === cat
-                  ? 'bg-primary-custom text-white border-primary-custom font-medium shadow-xs'
-                  : 'bg-card-custom/80 text-muted-foreground-custom border-border-custom hover:text-foreground-custom hover:border-border-custom/80'
+                  ? 'bg-foreground-custom text-background-custom border-foreground-custom font-semibold'
+                  : 'bg-card-custom text-muted-foreground-custom border-border-custom hover:text-foreground-custom hover:border-foreground-custom'
               }`}
             >
-              {cat}
+              {cat.toLowerCase()}
             </button>
           ))}
         </div>

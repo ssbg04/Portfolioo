@@ -20,9 +20,9 @@ const socialLinks = await getSocialLinks();
 >
 	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
-	<main class="flex-1 pb-16 pt-4 sm:pt-8">
-		<AboutDetails settings={settings} experience={experience} education={education} isPage={true} client:load />
-		<SkillsList skills={skills} client:visible />
+	<main class="flex-1 pb-16 pt-4 sm:pt-6">
+		<AboutDetails settings={settings} experience={experience} education={education} sectionTag="01 — biography" isPage={true} client:load />
+		<SkillsList skills={skills} sectionTag="02 — capabilities" client:visible />
 	</main>
 
 	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />

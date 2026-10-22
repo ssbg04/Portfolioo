@@ -65,11 +65,8 @@ const isRootPage = Astro.url.pathname === '/';
 					var storedTheme = localStorage.getItem('theme');
 					if (storedTheme === 'light') return 'light';
 					if (storedTheme === 'dark') return 'dark';
-					if (storedTheme === 'system') {
-						return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-					}
-					// Default: light mode signature theme
-					return 'light';
+					// Default: system mode
+					return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 				}
 
 				function applyTheme(doc) {
@@ -78,10 +75,10 @@ const isRootPage = Astro.url.pathname === '/';
 					var metaThemeColor = targetDoc.querySelector('meta[name="theme-color"]');
 					if (theme === 'dark') {
 						targetDoc.documentElement.classList.add('dark');
-						if (metaThemeColor) metaThemeColor.setAttribute('content', '#000000');
+						if (metaThemeColor) metaThemeColor.setAttribute('content', '#0c0c0f');
 					} else {
 						targetDoc.documentElement.classList.remove('dark');
-						if (metaThemeColor) metaThemeColor.setAttribute('content', '#faf6f0');
+						if (metaThemeColor) metaThemeColor.setAttribute('content', '#ffffff');
 					}
 				}
 
@@ -98,12 +95,12 @@ const isRootPage = Astro.url.pathname === '/';
 					applyTheme(document);
 				});
 
-				// Automatically adapt if user explicitly selected system
+				// Automatically adapt if user is on system mode (no stored preference OR 'system')
 				try {
 					var darkQuery = window.matchMedia('(prefers-color-scheme: dark)');
 					var listener = function(e) {
 						var stored = localStorage.getItem('theme');
-						if (stored === 'system') {
+						if (!stored || stored === 'system') {
 							applyTheme(document);
 							window.dispatchEvent(new CustomEvent('theme-change', { detail: { theme: e.matches ? 'dark' : 'light' } }));
 						}
@@ -129,7 +126,6 @@ const isRootPage = Astro.url.pathname === '/';
 					if (manualLite === 'true') {
 						tier = 'low';
 					} else {
-						// Lite mode default is disabled (Off) unless explicitly enabled by user
 						var cores = navigator.hardwareConcurrency || 4;
 						if (cores >= 8 && window.devicePixelRatio >= 2) {
 							tier = 'high';
@@ -161,14 +157,12 @@ const isRootPage = Astro.url.pathname === '/';
 
 				initPreferences(document);
 
-				// Crucial for Astro ClientRouter: Apply to e.newDocument BEFORE swap to prevent attribute loss
 				document.addEventListener('astro:before-swap', function(e) {
 					if (e.newDocument) {
 						initPreferences(e.newDocument);
 					}
 				});
 
-				// Ensure Ultra-Fast Design & Zoom persist across ALL pages during client router transitions
 				document.addEventListener('astro:after-swap', function() {
 					var tier = initPreferences(document);
 					window.dispatchEvent(new CustomEvent('tier-change', { detail: { tier: tier } }));
@@ -191,14 +185,13 @@ const isRootPage = Astro.url.pathname === '/';
 			}
 		</script>
 	</head>
-	<body class="bg-background-custom text-foreground-custom bg-gradient-mesh min-h-screen flex flex-col selection:bg-primary-custom/30">
-		<!-- Universal Graph Paper Matrix Background (Zero-JS static render) -->
-		<div class="fixed inset-0 z-0 pointer-events-none overflow-hidden select-none" aria-hidden="true">
-			<div class="absolute inset-0 bg-[linear-gradient(to_right,rgba(0,0,0,0.035)_1px,transparent_1px),linear-gradient(to_bottom,rgba(0,0,0,0.035)_1px,transparent_1px)] dark:bg-[linear-gradient(to_right,rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(to_bottom,rgba(255,255,255,0.03)_1px,transparent_1px)] [background-size:28px_28px]"></div>
-			<div class="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-background-custom/40 pointer-events-none"></div>
+	<body class="bg-background-custom text-foreground-custom min-h-screen flex flex-col selection:bg-foreground-custom selection:text-background-custom">
+		<!-- bryl-minimal Halftone Texture (Perimeter frame only; center masked away for reading clarity) -->
+		<div class="fixed inset-0 z-0 pointer-events-none select-none overflow-hidden" aria-hidden="true">
+			<div class="absolute inset-0 halftone-bg"></div>
 		</div>
 
-		<div id="magnify-content" data-vaul-drawer-wrapper class="w-full max-w-full min-h-screen flex flex-col pt-0 md:pl-[var(--sidebar-width)] overflow-x-clip">
+		<div id="magnify-content" data-vaul-drawer-wrapper class="w-full max-w-full min-h-screen flex flex-col pt-[var(--nav-height)] lg:pt-0 lg:pl-[var(--sidebar-width)] overflow-x-clip">
 			<slot />
 		</div>
 

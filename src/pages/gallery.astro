@@ -17,8 +17,8 @@ const socialLinks = await getSocialLinks();
 >
   <Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
-  <main class="flex-1 min-h-screen pt-3 sm:pt-8 pb-16 px-4 sm:px-6">
-    <div class="max-w-6xl mx-auto">
+  <main class="flex-1 min-h-screen pt-4 sm:pt-8 pb-16 px-4 sm:px-6">
+    <div class="max-w-[56rem] mx-auto">
       <PhotoGallery items={galleryItems} client:load />
     </div>
   </main>

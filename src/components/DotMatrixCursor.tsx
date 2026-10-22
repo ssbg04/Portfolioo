@@ -63,7 +63,7 @@ export default function DotMatrixCursor() {
     }
 
     // Render a sprite once per color (no per-frame redrawing)
-    function sprite(color: string, cls: string) {
+    function sprite(color: string, outlineColor: string, cls: string) {
       const dpr = Math.max(window.devicePixelRatio || 1, 2);
       const s = CFG.scale;
       const c = document.createElement('canvas');
@@ -76,8 +76,8 @@ export default function DotMatrixCursor() {
       if (g) {
         g.scale(dpr * s, dpr * s);
         g.translate(PAD, PAD);
-        // Halo outline
-        g.fillStyle = CFG.outline;
+        // Halo outline for high contrast against any surface
+        g.fillStyle = outlineColor;
         for (const [x, y] of pts) {
           g.beginPath();
           g.arc(x, y, CFG.radius + 0.7, 0, Math.PI * 2);
@@ -94,12 +94,36 @@ export default function DotMatrixCursor() {
       return c;
     }
 
-    const idle = sprite(CFG.color, 'idle');
-    const hover = sprite(CFG.hoverColor, 'hover');
-    // Offset so the arrow tip is exactly at the pointer hotspot (0, 0)
-    idle.style.cssText += `top:${-PAD * CFG.scale}px;left:${-PAD * CFG.scale}px`;
-    hover.style.cssText += `top:${-PAD * CFG.scale}px;left:${-PAD * CFG.scale}px`;
-    inner.append(idle, hover);
+    const buildSprites = () => {
+      inner.innerHTML = '';
+      const isDark = document.documentElement.classList.contains('dark');
+      const dotColor = isDark ? '#ffffff' : '#0a0a0a';
+      const hoverColor = isDark ? '#ffffff' : '#000000';
+      const outlineColor = isDark ? 'rgba(0,0,0,0.85)' : 'rgba(255,255,255,0.95)';
+
+      const idle = sprite(dotColor, outlineColor, 'idle');
+      const hover = sprite(hoverColor, outlineColor, 'hover');
+      idle.style.cssText += `top:${-PAD * CFG.scale}px;left:${-PAD * CFG.scale}px`;
+      hover.style.cssText += `top:${-PAD * CFG.scale}px;left:${-PAD * CFG.scale}px`;
+      inner.append(idle, hover);
+    };
+
+    buildSprites();
+
+    // Rebuild sprites whenever theme changes between light & dark
+    const onThemeChange = () => {
+      buildSprites();
+    };
+    window.addEventListener('theme-change', onThemeChange);
+
+    const observer = new MutationObserver((mutations) => {
+      for (const m of mutations) {
+        if (m.type === 'attributes' && m.attributeName === 'class') {
+          buildSprites();
+        }
+      }
+    });
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
     // Move with GPU transform only; one paint per animation frame
     let x = 0;
@@ -155,6 +179,8 @@ export default function DotMatrixCursor() {
     document.documentElement.addEventListener('mouseenter', onMouseEnter);
 
     return () => {
+      window.removeEventListener('theme-change', onThemeChange);
+      observer.disconnect();
       window.removeEventListener('pointermove', onPointerMove);
       document.removeEventListener('mouseover', onMouseOver);
       window.removeEventListener('mousedown', onMouseDown);

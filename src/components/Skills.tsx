@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import type { Skill } from '../lib/data';
-import ScrollReveal from './ScrollReveal';
-import SectionBackground from './SectionBackground';
 import TechIcon from './TechIcon';
 
 interface SkillsProps {
@@ -14,7 +12,7 @@ interface SkillsProps {
 
 export default function Skills({
   skills,
-  sectionTag = 'Tech Stack',
+  sectionTag = '03 — skills',
   limit,
   showSeeAll = false,
   seeAllHref = '/about#skills'
@@ -35,98 +33,85 @@ export default function Skills({
   const displayedSkills = limit ? filteredSkills.slice(0, limit) : filteredSkills;
 
   return (
-    <section id="skills" className="py-20 relative scroll-mt-20">
-      <SectionBackground variant="skills" />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+    <section id="skills" className="py-12 sm:py-16 border-b border-border-custom bryl-entrance stagger-3 scroll-mt-14">
+      <div className="max-w-[56rem] mx-auto px-4 sm:px-6">
 
-        {/* Section Header */}
-        <ScrollReveal variant="fade-up" className="mb-10">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-2">
-            <div>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
-                Technologies &amp; Tools
-              </h2>
-            </div>
-            {!limit && (
-              <span className="text-xs font-mono text-muted-foreground-custom">
-                {skills.length} total technologies
-              </span>
-            )}
+        {/* Section Header (bryl-minimal convention) */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 mb-6 sm:mb-8 border-b border-border-custom">
+          <div>
+            <span className="section-marker mb-1 block">
+              {sectionTag.toLowerCase()}
+            </span>
+            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
+              technologies &amp; tools
+            </h2>
           </div>
 
-          {/* Simple Filter Pills */}
           {categories.length > 1 && !limit && (
-            <div className="flex flex-wrap items-center gap-1.5 mt-5">
-              {filterOptions.map((opt) => (
-                <button
-                  key={opt}
-                  type="button"
-                  aria-pressed={activeFilter === opt}
-                  onClick={() => setActiveFilter(opt)}
-                  className={`px-3 py-1 rounded-md text-xs font-mono tracking-wide border transition-all cursor-pointer ${
-                    activeFilter === opt
-                      ? 'bg-primary-custom text-white border-primary-custom shadow-xs font-medium'
-                      : 'bg-card-custom/80 text-muted-foreground-custom border-border-custom hover:text-foreground-custom hover:border-border-custom/80'
-                  }`}
-                >
-                  {opt}
-                </button>
-              ))}
+            <div className="flex flex-wrap items-center gap-1.5">
+              {filterOptions.map((opt) => {
+                const active = activeFilter === opt;
+                return (
+                  <button
+                    key={opt}
+                    type="button"
+                    onClick={() => setActiveFilter(opt)}
+                    className={`text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full transition-all cursor-pointer ${
+                      active
+                        ? 'bg-foreground-custom text-background-custom font-semibold'
+                        : 'border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-border-strong bg-transparent'
+                    }`}
+                  >
+                    {opt.toLowerCase()}
+                  </button>
+                );
+              })}
             </div>
           )}
-        </ScrollReveal>
+        </div>
 
-        {/* Single Unified Tech Stack Section */}
-        <ScrollReveal variant="fade-up" delay={100}>
-          <div className="bento-card p-6 sm:p-8">
-            <ul
-              role="list"
-              aria-label="Technologies list"
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-3.5 p-0 m-0 list-none"
+        {/* Hairline Grid of Technical Cells (Dividers ARE the design) */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 border-t border-l border-border-custom rounded-2xl overflow-hidden bg-card-custom shadow-sm">
+          {displayedSkills.map((skill) => (
+            <div
+              key={skill.name}
+              className="border-r border-b border-border-custom p-4 flex flex-col justify-between transition-colors hover:bg-elevated-custom group"
             >
-              {displayedSkills.map((skill) => (
-                <li
-                  key={skill.name}
-                  className="flex items-center gap-3 p-3 rounded-lg bg-card-custom/60 border border-border-custom hover:border-primary-custom/40 hover:bg-card-custom text-foreground-custom transition-all group shadow-xs list-none"
-                  aria-label={skill.name}
-                  role="listitem"
-                >
-                  <span className="text-muted-foreground-custom group-hover:text-primary-custom shrink-0 transition-colors">
-                    <TechIcon name={skill.name} icon={skill.icon} className="w-5 h-5" />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <span className="text-xs sm:text-sm font-medium truncate block text-foreground-custom group-hover:text-primary-custom transition-colors">
-                      {skill.name}
-                    </span>
-                    {skill.category && (
-                      <span className="text-[10px] text-muted-foreground-custom truncate block font-mono">
-                        {skill.category}
-                      </span>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            {/* See All Button when limited */}
-            {(showSeeAll || limit) && skills.length > (limit || 0) && (
-              <div className="mt-8 pt-6 border-t border-border-custom flex flex-col sm:flex-row items-center justify-between gap-4">
-                <span className="text-xs font-mono text-muted-foreground-custom">
-                  Showing {displayedSkills.length} of {skills.length} technologies
+              <div className="flex items-center justify-between mb-3">
+                <span className="text-muted-foreground-custom group-hover:text-foreground-custom transition-colors">
+                  <TechIcon name={skill.name} icon={skill.icon} className="w-4 h-4" />
                 </span>
-                <a
-                  href={seeAllHref}
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary-custom text-white border border-primary-custom text-xs font-mono font-medium tracking-wide uppercase hover:bg-primary-custom/90 transition-all shadow-xs group"
-                >
-                  <span>See All Technologies ({skills.length})</span>
-                  <svg className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
-                  </svg>
-                </a>
+                {skill.category && (
+                  <span className="text-[9px] font-mono uppercase tracking-widest text-subtle-custom">
+                    {skill.category.slice(0, 10)}
+                  </span>
+                )}
               </div>
-            )}
+
+              <div>
+                <span className="text-[13px] font-medium text-foreground-custom block truncate group-hover:underline">
+                  {skill.name}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* See All link if on summary view */}
+        {(showSeeAll || limit) && skills.length > (limit || 0) && (
+          <div className="mt-6 pt-3 flex items-center justify-between">
+            <span className="text-[11px] font-mono text-muted-foreground-custom">
+              showing {displayedSkills.length} of {skills.length} skills
+            </span>
+            <a
+              href={seeAllHref}
+              className="text-xs font-mono text-foreground-custom hover:underline transition-all inline-flex items-center gap-1"
+            >
+              <span>view all technologies</span>
+              <span aria-hidden="true">→</span>
+            </a>
           </div>
-        </ScrollReveal>
+        )}
 
       </div>
     </section>

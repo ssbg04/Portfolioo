@@ -18,53 +18,48 @@ const socialLinks = await getSocialLinks();
 >
 	<Navbar fullName={settings.fullName} logoImage={settings.logoImage} currentPath={Astro.url.pathname} client:load transition:persist="main-navbar" />
 
-	<main class="flex-1 pt-4 sm:pt-8 pb-16">
-		<div class="container mx-auto px-4 sm:px-6 max-w-6xl text-center mb-6 sm:mb-10">
-			<div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-mono font-medium tracking-wider bg-primary-custom/10 text-primary-custom border border-primary-custom/20 mb-3">
-				<span>Get In Touch</span>
-			</div>
-			<h1 class="text-3xl sm:text-4xl md:text-5xl font-bold font-heading tracking-tight text-foreground-custom">
-				Contact &amp; Collaboration
+	<main class="flex-1 pt-6 sm:pt-10 pb-16">
+		<div class="max-w-[56rem] mx-auto px-4 sm:px-6 mb-8 pb-5 border-b border-border-custom">
+			<span class="section-marker mb-1 block">06 — communication</span>
+			<h1 class="font-display text-3xl sm:text-4xl tracking-tight text-foreground-custom lowercase">
+				contact &amp; interaction
 			</h1>
-			<p class="text-sm sm:text-base text-muted-foreground-custom mt-3 max-w-xl mx-auto leading-relaxed">
-				Have an upcoming project, software development inquiry, or technical opportunity? Feel free to send a direct message, reach out via email, or connect on my active platforms.
+			<p class="text-xs font-mono text-muted-foreground-custom mt-2">
+				direct engineering inquiries, project discussions, and live visitor telemetry
 			</p>
 			
-			{/* Standalone Quick Details Badges */}
-			<div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mt-5">
-				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono bg-card-custom border border-border-custom shadow-xs text-foreground-custom">
-					<svg class="w-3.5 h-3.5 text-primary-custom" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-					<span>Response: 24–48 Hours</span>
+			{/* Technical Detail Badges */}
+			<div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-border-custom">
+				<span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom px-2.5 py-1 rounded-full border border-border-custom bg-elevated-custom">
+					response: 24–48 hours
 				</span>
-				<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono bg-card-custom border border-border-custom shadow-xs text-foreground-custom">
-					<svg class="w-3.5 h-3.5 text-emerald-500" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 10.5a3 3 0 11-6 0 3 3 0 016 0z" /><path strokeLinecap="round" strokeLinejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1115 0z" /></svg>
-					<span>{settings.location || 'Laguna, Philippines (PHT, UTC+8)'}</span>
+				<span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom px-2.5 py-1 rounded-full border border-border-custom bg-elevated-custom">
+					{settings.location || 'laguna, ph (utc+8)'}
 				</span>
 				{settings.isAvailable !== false && (
-					<span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-mono bg-card-custom border border-border-custom shadow-xs text-foreground-custom font-medium">
-						<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-						<span>{settings.availabilityStatus || 'Open to Opportunities'}</span>
+					<span className="chip-inverted text-[10px] py-0.5 px-2.5">
+						● open to opportunities
 					</span>
 				)}
 			</div>
 		</div>
 
 		{/* ── Real-Time Presence: Full-Width Global Visitor Radar ── */}
-		<div class="container mx-auto px-4 sm:px-6 max-w-6xl mb-10 sm:mb-14">
+		<div class="max-w-[56rem] mx-auto px-4 sm:px-6 mb-10 sm:mb-14">
 			<VisitorWorldMap client:load />
 		</div>
 
 		{/* ── Direct Interaction: Live Telegram Desk ── */}
-		<div class="container mx-auto px-4 sm:px-6 max-w-4xl mb-12 sm:mb-16">
+		<div class="max-w-[56rem] mx-auto px-4 sm:px-6 mb-12 sm:mb-16">
 			<div class="flex items-center justify-between mb-3 px-1">
 				<div class="flex items-center gap-2">
-					<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-					<span class="text-xs font-mono uppercase tracking-wider text-muted-foreground-custom font-semibold">
-						DIRECT LIVE DESK // INSTANT MOBILE PUSH
+					<span class="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse" />
+					<span class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">
+						instant live desk // mobile push
 					</span>
 				</div>
-				<span class="text-[11px] font-mono text-muted-foreground-custom hidden sm:inline">
-					Instant notifications to phone • Replies within minutes
+				<span class="text-[10px] font-mono text-subtle-custom hidden sm:inline">
+					replies directly to visitor session
 				</span>
 			</div>
 			<LiveChatBox client:load />
@@ -75,6 +70,7 @@ const socialLinks = await getSocialLinks();
 			contactHeading={settings.contactHeading}
 			contactSubtitle={settings.contactSubtitle}
 			email={settings.email}
+			sectionTag="direct outreach"
 			client:load 
 		/>
 	</main>

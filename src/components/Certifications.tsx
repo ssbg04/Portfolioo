@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import ScrollReveal from './ScrollReveal';
 import SectionBackground from './SectionBackground';
 import { mockCertifications, isDocumentCertificate, type Certification } from '../lib/data';
@@ -19,6 +20,11 @@ export default function Certifications({ certifications, extraCerts = [], sectio
 
   const [filterMode, setFilterMode] = useState<FilterMode>('all');
   const [selectedCert, setSelectedCert] = useState<Certification | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Separate into Document Certificates and Digital Skill Badges
   const documentCerts = allCerts.filter(isDocumentCertificate);
@@ -319,83 +325,69 @@ export default function Certifications({ certifications, extraCerts = [], sectio
   const hasBothTypes = documentCerts.length > 0 && skillBadges.length > 0;
 
   return (
-    <section id="certifications" className="pt-3 sm:pt-10 pb-16 sm:pb-20 relative">
-      <SectionBackground variant="certifications" />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+    <section id="certifications" className="py-12 sm:py-16 border-b border-border-custom bryl-entrance stagger-5 relative">
+      <div className="max-w-[56rem] mx-auto px-4 sm:px-6 relative z-10">
 
-        {/* Section Header */}
-        <ScrollReveal variant="fade-up" className="mb-4 sm:mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
-            <div>
-              {isPage ? (
-                <h1 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
-                  Verified Credentials &amp; Certifications
-                </h1>
-              ) : (
-                <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
-                  Verified Credentials &amp; Certifications
-                </h2>
-              )}
-            </div>
-          </div>
-        </ScrollReveal>
+        {/* Section Header (bryl-minimal convention) */}
+        <div className="pb-4 mb-6 sm:mb-8 border-b border-border-custom">
+          <span className="section-marker mb-1 block">
+            {sectionTag.toLowerCase().includes('—') ? sectionTag.toLowerCase() : `05 — ${sectionTag.toLowerCase()}`}
+          </span>
+          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
+            verified credentials
+          </h2>
+        </div>
 
-        {/* ─── Category Filter Tabs (Shown when both document certificates and skill badges exist) ─── */}
+        {/* ─── Category Filter Tabs (bryl-minimal mono pills) ─── */}
         {hasBothTypes && (
-          <ScrollReveal variant="fade-up" delay={50} className="mb-5 sm:mb-8">
-            <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-lg bg-card-custom/80 border border-border-custom shadow-xs w-fit">
+          <div className="mb-6 sm:mb-8">
+            <div className="flex flex-wrap items-center gap-1.5">
               <button
+                type="button"
                 onClick={() => {
                   haptic.tap();
                   setFilterMode('all');
                 }}
-                className={`px-3 py-1 rounded-md text-xs font-dot tracking-wider transition-all cursor-pointer flex items-center gap-1.5 border ${
+                className={`text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full transition-all cursor-pointer ${
                   filterMode === 'all'
-                    ? 'bg-primary-custom text-white border-primary-custom font-medium shadow-xs'
-                    : 'bg-transparent text-muted-foreground-custom border-transparent hover:text-foreground-custom'
+                    ? 'bg-foreground-custom text-background-custom font-semibold'
+                    : 'border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-border-strong bg-transparent'
                 }`}
               >
-                <span>All</span>
-                <span className={`text-[11px] px-1.5 py-0.2 rounded font-dot font-bold ${filterMode === 'all' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
-                  {allCerts.length}
-                </span>
+                all ({allCerts.length})
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   haptic.tap();
                   setFilterMode('certificates');
                 }}
-                className={`px-3 py-1 rounded-md text-xs font-dot tracking-wider transition-all cursor-pointer flex items-center gap-1.5 border ${
+                className={`text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full transition-all cursor-pointer ${
                   filterMode === 'certificates'
-                    ? 'bg-primary-custom text-white border-primary-custom font-medium shadow-xs'
-                    : 'bg-transparent text-muted-foreground-custom border-transparent hover:text-foreground-custom'
+                    ? 'bg-foreground-custom text-background-custom font-semibold'
+                    : 'border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-border-strong bg-transparent'
                 }`}
               >
-                <span>Certificates</span>
-                <span className={`text-[11px] px-1.5 py-0.2 rounded font-dot font-bold ${filterMode === 'certificates' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
-                  {documentCerts.length}
-                </span>
+                certificates ({documentCerts.length})
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   haptic.tap();
                   setFilterMode('badges');
                 }}
-                className={`px-3 py-1 rounded-md text-xs font-dot tracking-wider transition-all cursor-pointer flex items-center gap-1.5 border ${
+                className={`text-[10px] font-mono uppercase tracking-widest px-2.5 py-1 rounded-full transition-all cursor-pointer ${
                   filterMode === 'badges'
-                    ? 'bg-primary-custom text-white border-primary-custom font-medium shadow-xs'
-                    : 'bg-transparent text-muted-foreground-custom border-transparent hover:text-foreground-custom'
+                    ? 'bg-foreground-custom text-background-custom font-semibold'
+                    : 'border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-border-strong bg-transparent'
                 }`}
               >
-                <span>Badges</span>
-                <span className={`text-[11px] px-1.5 py-0.2 rounded font-dot font-bold ${filterMode === 'badges' ? 'bg-white/20 text-white' : 'bg-foreground-custom/10 text-muted-foreground-custom'}`}>
-                  {skillBadges.length}
-                </span>
+                badges ({skillBadges.length})
               </button>
             </div>
-          </ScrollReveal>
+          </div>
         )}
 
         {/* ─── SECTION 1: Formal Document Certificates & Diplomas ─── */}
@@ -611,16 +603,16 @@ export default function Certifications({ certifications, extraCerts = [], sectio
       </div>
 
       {/* ─── Detail Modal (Responsive 2-Column Desktop, Scrollable Mobile) ─── */}
-      {selectedCert && (
+      {mounted && typeof document !== 'undefined' && selectedCert && createPortal(
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/75 backdrop-blur-md animate-modal-fade select-none overscroll-contain"
+          className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-5 md:p-6 bg-black/80 backdrop-blur-md animate-modal-fade select-none overscroll-contain overflow-y-auto"
           style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)' }}
           onClick={() => setSelectedCert(null)}
           role="dialog"
           aria-modal="true"
         >
           <div
-            className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-card-custom border border-border-custom rounded-2xl shadow-xl flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto overscroll-contain touch-pan-y animate-modal-scale"
+            className="relative w-full max-w-2xl md:max-w-4xl lg:max-w-5xl bento-card p-4 sm:p-6 md:p-8 bg-card-custom border border-border-custom rounded-2xl shadow-2xl flex flex-col gap-4 text-foreground-custom max-h-[90dvh] overflow-y-auto overscroll-contain touch-pan-y animate-modal-scale m-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Top Navigation Bar: Clean separation so close button never overlaps image preview */}
@@ -753,7 +745,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                       href={selectedCert.badgeUrl}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex-1 py-2 px-4 rounded-lg bg-primary-custom text-white font-medium text-xs font-mono text-center border border-primary-custom hover:bg-primary-custom/90 transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider shadow-xs"
+                      className="flex-1 py-2 px-4 rounded-lg bg-foreground-custom text-background-custom font-medium text-xs font-mono text-center border border-foreground-custom hover:opacity-90 transition-all flex items-center justify-center gap-1.5 uppercase tracking-wider shadow-xs"
                     >
                       {getVerifyButtonLabel(selectedCert)}
                     </a>
@@ -772,13 +764,14 @@ export default function Certifications({ certifications, extraCerts = [], sectio
 
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ─── Fullscreen Zoom & Drag Lightbox Modal ─── */}
-      {isZoomOpen && selectedCert?.badgeImage && (
+      {mounted && typeof document !== 'undefined' && isZoomOpen && selectedCert?.badgeImage && createPortal(
         <div
-          className="fixed inset-0 z-[60] bg-black/80 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-6 overflow-hidden select-none animate-modal-fade touch-none overscroll-none"
+          className="fixed inset-0 z-[60] bg-black/85 backdrop-blur-md flex flex-col items-center justify-between p-3 sm:p-6 overflow-hidden select-none animate-modal-fade touch-none overscroll-none"
           style={{ touchAction: 'none', overscrollBehavior: 'none' }}
           onClick={() => setIsZoomOpen(false)}
         >
@@ -904,7 +897,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                   setZoom(1);
                   setPan({ x: 0, y: 0 });
                 }}
-                className="px-2.5 py-1 rounded-md bg-primary-custom hover:bg-primary-custom/90 text-white text-xs font-mono font-medium transition-all cursor-pointer flex items-center gap-1 shadow-xs"
+                className="px-2.5 py-1 rounded-md bg-foreground-custom hover:opacity-90 text-background-custom text-xs font-mono font-medium transition-all cursor-pointer flex items-center gap-1 shadow-xs"
                 title="Reset zoom & position (0)"
               >
                 <svg className="w-3 h-3 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -918,7 +911,8 @@ export default function Certifications({ certifications, extraCerts = [], sectio
               Pinch or double-tap to zoom • Drag to pan
             </p>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </section>
   );

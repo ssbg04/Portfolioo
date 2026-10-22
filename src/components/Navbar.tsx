@@ -3,12 +3,12 @@ import haptic from '../lib/haptics';
 import ControlsDropdown from './ControlsDropdown';
 
 const navItems = [
-  { label: 'Home',           href: '/' },
-  { label: 'Projects',       href: '/projects' },
-  { label: 'About',          href: '/about' },
-  { label: 'Certifications', href: '/certifications' },
-  { label: 'Gallery',        href: '/gallery' },
-  { label: 'Contact',        href: '/contact' },
+  { label: 'home',           href: '/' },
+  { label: 'projects',       href: '/projects' },
+  { label: 'about',          href: '/about' },
+  { label: 'certifications', href: '/certifications' },
+  { label: 'gallery',        href: '/gallery' },
+  { label: 'contact',        href: '/contact' },
 ];
 
 interface NavbarProps {
@@ -17,14 +17,13 @@ interface NavbarProps {
   currentPath?: string;
 }
 
-export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.png', currentPath }: NavbarProps) {
+export default function Navbar({ fullName = 'cris charles', currentPath }: NavbarProps) {
   const [activePath, setActivePath] = useState<string>(() => {
     if (currentPath) return currentPath;
     if (typeof window !== 'undefined') return window.location.pathname;
     return '/';
   });
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const [isNavHidden, setIsNavHidden] = useState(false);
   const drawerOpenRef = useRef(false);
   const justClosedDrawerRef = useRef(false);
@@ -62,41 +61,25 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
         window.requestAnimationFrame(() => {
           const currentY = window.scrollY;
 
-          // Always show at top of page or negative iOS bounce
           if (currentY <= 20) {
-            setScrolled((prev) => (prev ? false : prev));
-            setIsNavHidden((prev) => (prev ? false : prev));
+            setIsNavHidden(false);
             lastY = currentY;
             ticking = false;
             return;
           }
 
-          const isOver = currentY > 8;
-          setScrolled((prev) => (prev !== isOver ? isOver : prev));
-
-          // If drawer is open, keep navbar visible and sync lastY
-          if (drawerOpenRef.current) {
-            setIsNavHidden((prev) => (prev ? false : prev));
-            lastY = currentY;
-            ticking = false;
-            return;
-          }
-
-          // Prevent hiding if drawer was just closed
-          if (justClosedDrawerRef.current) {
+          if (drawerOpenRef.current || justClosedDrawerRef.current) {
+            setIsNavHidden(false);
             lastY = currentY;
             ticking = false;
             return;
           }
 
           const diff = currentY - lastY;
-
-          // Scrolling down: hide when moved down past header
           if (diff > 8 && currentY > 60) {
-            setIsNavHidden((prev) => (prev ? prev : true));
+            setIsNavHidden(true);
           } else if (diff < -8) {
-            // Scrolling up: reveal navbar
-            setIsNavHidden((prev) => (!prev ? prev : false));
+            setIsNavHidden(false);
           }
 
           lastY = currentY;
@@ -112,7 +95,7 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
   useEffect(() => {
     const onResize = () => {
-      if (window.innerWidth >= 768) {
+      if (window.innerWidth >= 1024) {
         setDrawerOpen(false);
         setIsNavHidden(false);
       }
@@ -123,68 +106,54 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
 
   useEffect(() => {
     drawerOpenRef.current = drawerOpen;
-
     if (drawerOpen) {
       justClosedDrawerRef.current = false;
-      setIsNavHidden(false);
       document.body.style.overflow = 'hidden';
-    } else if (!drawerOpen && drawerOpenRef.current) {
-      // Drawer was just closed
+    } else {
+      document.body.style.overflow = '';
       justClosedDrawerRef.current = true;
-      setIsNavHidden(false);
-      document.body.style.overflow = 'unset';
-      
       const timer = setTimeout(() => {
         justClosedDrawerRef.current = false;
-      }, 1000);
-      return () => {
-        clearTimeout(timer);
-        document.body.style.overflow = 'unset';
-      };
+      }, 500);
+      return () => clearTimeout(timer);
     }
-    return () => { document.body.style.overflow = 'unset'; };
   }, [drawerOpen]);
 
   const isActive = (href: string) => {
-    const current = (activePath || '').replace(/\/+$/, '') || '/';
+    const current = (activePath || '/').replace(/\/+$/, '') || '/';
     const target = (href || '').replace(/\/+$/, '') || '/';
     if (target === '/') return current === '/';
     return current === target || current.startsWith(target + '/');
   };
 
-
   return (
     <>
       {/* ══════════════════════════════════════════════════════ */}
-      {/* DESKTOP — Neo-Brutalist Fixed Left Sidebar            */}
+      {/* DESKTOP — bryl-minimal Fixed Left Sidebar (14rem)      */}
       {/* ══════════════════════════════════════════════════════ */}
       <aside
-        className="hidden md:flex fixed top-0 left-0 bottom-0 z-40 w-[var(--sidebar-width)] h-full flex-col select-none overflow-hidden overscroll-contain"
-        style={{
-          background: 'var(--nav-bg)',
-          borderRight: '1px solid var(--border-color)',
-        }}
-        aria-label="Desktop sidebar navigation"
+        className="hidden lg:flex fixed top-0 left-0 bottom-0 z-40 w-[var(--sidebar-width)] h-full flex-col select-none overflow-hidden bg-background-custom border-r border-border-custom"
+        aria-label="Sidebar navigation"
       >
         {/* ── Brand ── */}
-        <div className="shrink-0 px-5 pt-6 pb-4 flex flex-col border-b border-border-custom">
+        <div className="shrink-0 px-6 pt-7 pb-5 flex flex-col border-b border-border-custom">
           <a
             href="/"
             onClick={() => setActivePath('/')}
-            className="flex flex-col group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
+            className="flex flex-col group focus:outline-none focus-visible:underline"
           >
-            <span className="font-heading font-bold text-base tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors truncate leading-tight">
-              {fullName}
+            <span className="font-mono text-sm font-medium tracking-tight text-foreground-custom lowercase truncate">
+              {fullName.toLowerCase()}
             </span>
-            <span className="text-[11px] font-dot font-semibold uppercase tracking-widest text-muted-foreground-custom mt-0.5 truncate">
-              DEV_PORTFOLIO.2026
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom mt-1 truncate">
+              systems &amp; apps
             </span>
           </a>
         </div>
 
-        {/* ── Navigation Links ── */}
+        {/* ── Navigation Links (Arrow leading indicator) ── */}
         <nav
-          className="flex-1 min-h-0 overflow-y-auto px-3 py-4 flex flex-col gap-2"
+          className="flex-1 min-h-0 overflow-y-auto px-4 py-6 flex flex-col gap-1.5"
           aria-label="Sidebar main links"
         >
           {navItems.map((item) => {
@@ -195,38 +164,30 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                 href={item.href}
                 onClick={() => setActivePath(item.href)}
                 aria-current={active ? 'page' : undefined}
-                className={`group flex items-center justify-between px-3.5 py-2.5 rounded-lg text-sm transition-all duration-150 ${
+                className={`group flex items-center gap-2 px-2.5 py-1.5 rounded-md text-[13px] font-mono transition-colors ${
                   active
-                    ? 'text-foreground-custom bg-elevated-custom font-semibold border border-border-custom shadow-xs'
-                    : 'text-muted-foreground-custom hover:bg-elevated-custom/70 hover:text-foreground-custom border border-transparent font-medium'
+                    ? 'text-foreground-custom font-medium'
+                    : 'text-muted-foreground-custom hover:text-foreground-custom'
                 }`}
               >
-                <div className="flex items-center gap-2.5 truncate">
-                  <span
-                    className={`w-1.5 h-1.5 rounded-full transition-all duration-200 ${
-                      active
-                        ? 'bg-primary-custom shadow-[0_0_8px_var(--primary-color)] scale-100'
-                        : 'bg-muted-foreground-custom/30 group-hover:bg-muted-foreground-custom/60 scale-75'
-                    }`}
-                  />
-                  <span className="truncate font-heading">{item.label}</span>
-                </div>
-                {active && (
-                  <span className="text-[10px] font-mono text-primary-custom opacity-80">
-                    ACTIVE
-                  </span>
-                )}
+                <span
+                  className={`text-xs transition-opacity duration-150 ${
+                    active ? 'opacity-100 text-foreground-custom' : 'opacity-0 -translate-x-1 group-hover:opacity-40 group-hover:translate-x-0'
+                  }`}
+                  aria-hidden="true"
+                >
+                  →
+                </span>
+                <span className="truncate">{item.label}</span>
               </a>
             );
           })}
         </nav>
 
-        {/* ── Bottom Controls & CTA ── */}
-        <div
-          className="shrink-0 px-4 py-4 flex flex-col gap-3 mt-auto border-t border-border-custom"
-          >
-          <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-dot font-bold uppercase tracking-wider text-muted-foreground-custom">Preferences</span>
+        {/* ── Bottom Controls & Resume ── */}
+        <div className="shrink-0 px-5 py-5 flex flex-col gap-3 mt-auto border-t border-border-custom">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">Theme</span>
             <ControlsDropdown />
           </div>
 
@@ -234,101 +195,60 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
             href="/CV-Cris-Charles-Garcia.pdf"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 w-full px-4 py-2.5 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none shadow-xs"
+            className="bryl-btn-primary w-full justify-center text-center text-xs"
           >
-            <span>Resume / CV</span>
-            <span className="text-xs font-mono">↗</span>
+            <span>resume / cv</span>
+            <span className="text-[11px]" aria-hidden="true">↗</span>
           </a>
         </div>
       </aside>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/* MOBILE — Neo-Brutalist Top Header                     */}
+      {/* MOBILE — bryl-minimal Sticky Top Header (< 1024px)     */}
       {/* ══════════════════════════════════════════════════════ */}
       <header
-        className="md:hidden fixed top-0 inset-x-0 z-50 glass-nav touch-manipulation"
+        className="lg:hidden fixed top-0 inset-x-0 z-50 bg-background-custom/90 backdrop-blur-md border-b border-border-custom transition-transform duration-200"
         style={{
           height: 'var(--nav-height)',
           transform: isNavHidden && !drawerOpen ? 'translateY(-100%)' : 'translateY(0)',
-          borderBottom: '1px solid var(--border-color)',
-          transition: 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
-          willChange: 'transform',
-          pointerEvents: 'auto',
         }}
       >
-        <div className="px-4 h-full flex items-center justify-between gap-3">
-          {/* Brand */}
+        <div className="px-5 h-full flex items-center justify-between gap-3">
           <a
             href="/"
-            className="flex items-center group focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom"
+            onClick={() => { setActivePath('/'); setDrawerOpen(false); }}
+            className="font-mono text-sm font-medium tracking-tight text-foreground-custom lowercase"
           >
-            <span className="font-heading font-black text-sm tracking-tight text-foreground-custom group-hover:text-primary-custom transition-colors">
-              {fullName}
-            </span>
+            {fullName.toLowerCase()}
           </a>
 
-          {/* Neo-Brutalist Capsule Hamburger Toggle */}
           <button
-            className="tap-target relative flex items-center gap-2 px-3 py-1.5 rounded-lg cursor-pointer shrink-0 transition-all duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary-custom select-none border border-border-custom active:opacity-75"
-            style={{
-              background: 'var(--card-bg)',
-              color: 'var(--fg-color)',
-            }}
+            type="button"
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border-custom bg-background-custom text-[11px] font-mono uppercase tracking-wider text-foreground-custom active:opacity-70 cursor-pointer"
             onClick={() => { haptic.tap(); setDrawerOpen(prev => !prev); }}
-            aria-label={drawerOpen ? 'Close navigation menu' : 'Open navigation menu'}
+            aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={drawerOpen}
-            aria-controls="mobile-nav-drawer"
           >
-            <span
-              className="text-[11px] font-dot font-black tracking-wider uppercase"
-              style={{ color: 'var(--fg-color)' }}
-            >
-              {drawerOpen ? 'Close' : 'Menu'}
-            </span>
-            <div className="w-4 h-3.5 relative flex flex-col justify-center items-center">
-              <span
-                className={`block h-0.5 rounded-full transition-all duration-200 absolute bg-foreground-custom ${
-                  drawerOpen
-                    ? 'w-3.5 rotate-45'
-                    : 'w-4 -translate-y-1'
-                }`}
-              />
-              <span
-                className={`block h-0.5 rounded-full transition-all duration-200 absolute bg-foreground-custom ${
-                  drawerOpen
-                    ? 'w-3.5 -rotate-45'
-                    : 'w-2.5 translate-y-1 right-0'
-                }`}
-              />
-            </div>
+            <span>{drawerOpen ? 'close' : 'menu'}</span>
+            <span className="text-xs" aria-hidden="true">{drawerOpen ? '✕' : '☰'}</span>
           </button>
         </div>
       </header>
 
       {/* ══════════════════════════════════════════════════════ */}
-      {/* MOBILE — Full-Screen Glassmorphism Drawer             */}
+      {/* MOBILE — Fullscreen Minimal Drawer                     */}
       {/* ══════════════════════════════════════════════════════ */}
       {drawerOpen && (
         <div
           id="mobile-nav-drawer"
-          className="md:hidden fixed inset-x-0 bottom-0 z-40 flex flex-col justify-between overflow-hidden animate-drawer-slide select-none"
+          className="lg:hidden fixed inset-x-0 bottom-0 z-40 flex flex-col justify-between bg-background-custom/98 backdrop-blur-xl border-t border-border-custom select-none"
           style={{ top: 'var(--nav-height)', height: 'calc(100dvh - var(--nav-height))' }}
         >
-          {/* Refined high-opacity frosted glass base */}
-          <div
-            className="absolute inset-0"
-            style={{
-              background: 'var(--nav-drawer-bg)',
-              borderTop: '1px solid var(--border-color)',
-            }}
-          />
-
-          {/* ── Nav Links ── */}
           <nav
-            className="relative flex-1 overflow-y-auto px-5 py-8 flex flex-col gap-2.5"
+            className="flex-1 overflow-y-auto px-6 py-8 flex flex-col gap-3"
             aria-label="Mobile navigation links"
           >
-            {navItems.map((item, i) => {
+            {navItems.map((item) => {
               const active = isActive(item.href);
               return (
                 <a
@@ -336,63 +256,41 @@ export default function Navbar({ fullName = 'Cris Charles', logoImage = '/logo.p
                   href={item.href}
                   onClick={() => { setActivePath(item.href); setDrawerOpen(false); }}
                   aria-current={active ? 'page' : undefined}
-                  className={`group relative flex items-center justify-between px-4 py-3.5 rounded-xl text-base transition-all duration-150 ${
+                  className={`flex items-center gap-3 py-2.5 text-base font-mono transition-colors ${
                     active
-                      ? 'bg-elevated-custom text-foreground-custom font-semibold border border-primary-custom/40 shadow-xs'
-                      : 'bg-card-custom/60 text-muted-foreground-custom border border-border-custom hover:bg-elevated-custom hover:text-foreground-custom font-medium'
+                      ? 'text-foreground-custom font-medium'
+                      : 'text-muted-foreground-custom hover:text-foreground-custom'
                   }`}
-                  style={{ animationDelay: `${i * 30}ms` }}
                 >
-                  <div className="flex items-center gap-3">
-                    <span
-                      className={`w-2 h-2 rounded-full transition-all duration-200 ${
-                        active
-                          ? 'bg-primary-custom shadow-[0_0_8px_var(--primary-color)] scale-100'
-                          : 'bg-muted-foreground-custom/30 group-hover:bg-muted-foreground-custom/60 scale-75'
-                      }`}
-                    />
-                    <span className="font-heading">{item.label}</span>
-                  </div>
-
-                  {active ? (
-                    <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-primary-custom/10 text-primary-custom border border-primary-custom/20">
-                      ACTIVE
-                    </span>
-                  ) : (
-                    <span className="text-xs font-mono text-muted-foreground-custom/60 group-hover:text-foreground-custom group-hover:translate-x-0.5 transition-all">
-                      →
-                    </span>
-                  )}
+                  <span className={`text-sm ${active ? 'opacity-100' : 'opacity-0'}`}>→</span>
+                  <span>{item.label}</span>
                 </a>
               );
             })}
           </nav>
 
-          {/* ── Bottom Footer ── */}
-          <div
-            className="relative px-5 py-5 flex flex-col gap-3.5 shrink-0 pb-safe border-t border-border-custom bg-card-custom"
-          >
-            <div className="flex items-center justify-between px-1">
-              <span className="text-xs font-mono font-bold uppercase tracking-wider text-foreground-custom">Preferences</span>
+          <div className="px-6 py-6 border-t border-border-custom flex flex-col gap-4 bg-background-custom">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">Preferences</span>
               <ControlsDropdown />
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <a
                 href="/CV-Cris-Charles-Garcia.pdf"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="tap-target relative flex items-center justify-center gap-1.5 px-3 py-3 rounded-lg text-sm font-semibold bg-elevated-custom text-foreground-custom border border-border-custom hover:border-primary-custom/40 active:opacity-70 transition-all"
+                className="bryl-btn-secondary justify-center text-center text-xs"
               >
-                <span>Resume / CV</span>
-                <span className="text-xs font-mono">↗</span>
+                <span>resume</span>
+                <span className="text-[10px]">↗</span>
               </a>
               <a
                 href="/contact"
                 onClick={() => { setActivePath('/contact'); setDrawerOpen(false); }}
-                className="tap-target relative flex items-center justify-center px-3 py-3 rounded-lg text-sm font-semibold bg-foreground-custom text-background-custom border border-foreground-custom hover:opacity-85 active:opacity-70 transition-all focus-visible:ring-2 focus-visible:ring-primary-custom focus-visible:outline-none text-center"
+                className="bryl-btn-primary justify-center text-center text-xs"
               >
-                Get in Touch
+                contact ↗
               </a>
             </div>
           </div>

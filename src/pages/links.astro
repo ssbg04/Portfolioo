@@ -82,35 +82,32 @@ const getIconSvg = (platform: string) => {
   </style>
 
   {/* True Linktree Style: No Header Nav and No Footer */}
-  <main class="min-h-screen py-6 sm:py-8 px-4 sm:px-6 flex flex-col items-center justify-start md:justify-center relative links-main-container">
+  <main class="min-h-screen py-8 px-4 sm:px-6 flex flex-col items-center justify-start md:justify-center relative links-main-container">
     
     {/* Return to Main Portfolio Pill & Status */}
-    <div class="w-full max-w-md md:max-w-4xl lg:max-w-5xl flex justify-between items-center mb-4 sm:mb-6 links-header-pills">
+    <div class="w-full max-w-[42rem] flex justify-between items-center mb-6 links-header-pills">
       <a
         href="https://crischarles.com"
-        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-foreground-custom/5 hover:bg-foreground-custom/10 text-muted-foreground-custom hover:text-foreground-custom text-xs font-mono border border-border-custom transition-all"
+        class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-card-custom hover:bg-muted-custom/40 text-muted-foreground-custom hover:text-foreground-custom text-xs font-mono border border-border-custom transition-all"
       >
         <span>←</span>
-        <span>Back to Portfolio</span>
+        <span>portfolio</span>
       </a>
 
       {settings.isAvailable !== false && (
-        <span class="text-[10px] font-mono text-emerald-700 dark:text-emerald-300 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 font-bold">
-          <span class="flex h-1.5 w-1.5 relative">
-            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span class="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
-          </span>
-          {settings.availabilityStatus || 'Available for opportunities'}
+        <span class="text-[10px] font-mono text-foreground-custom flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border-custom bg-card-custom">
+          <span class="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse" />
+          {settings.availabilityStatus || 'available for work'}
         </span>
       )}
     </div>
 
-    {/* Content Container: Single Column on Portrait, Responsive 2-Column Grid on Landscape & Desktop */}
-    <div class="w-full max-w-md md:max-w-4xl lg:max-w-5xl grid grid-cols-1 md:grid-cols-12 landscape:grid-cols-12 gap-4 sm:gap-6 items-start relative z-10">
+    {/* Content Container */}
+    <div class="w-full max-w-[42rem] flex flex-col gap-4 relative z-10">
       
-      {/* Left Column: Profile Header Bento Card */}
-      <div class="w-full md:col-span-5 landscape:col-span-5 md:sticky md:top-6 landscape:sticky landscape:top-3 bento-card p-5 sm:p-6 text-center flex flex-col items-center links-profile-card">
-        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full overflow-hidden border-2 border-border-custom shadow-xs mb-3 bg-muted-custom/20 links-avatar">
+      {/* Profile Header Card */}
+      <div class="bryl-card p-6 text-center flex flex-col items-center links-profile-card">
+        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-border-custom mb-3 bg-muted-custom/20 links-avatar">
           <img
             src={profileAvatar}
             alt={settings.fullName}
@@ -120,32 +117,32 @@ const getIconSvg = (platform: string) => {
           />
         </div>
 
-        <h1 class="text-lg sm:text-xl md:text-2xl font-bold font-heading text-foreground-custom tracking-tight">
+        <h1 class="text-xl sm:text-2xl font-mono lowercase font-bold text-foreground-custom tracking-tight">
           {settings.fullName}
         </h1>
         
-        <p class="text-xs font-mono text-primary-custom mt-1 font-medium">
-          {settings.title} • {settings.location}
+        <p class="text-xs font-mono text-muted-foreground-custom mt-1">
+          {settings.title} // {settings.location}
         </p>
 
-        <p class="text-xs text-muted-foreground-custom max-w-xs mt-2 leading-relaxed">
+        <p class="text-xs font-mono text-muted-foreground-custom max-w-sm mt-2 leading-relaxed">
           {settings.valueProposition || 'Direct links to my official profiles, repositories, and credentials.'}
         </p>
       </div>
 
-      {/* Right Column: Social Links List */}
-      <div class="w-full md:col-span-7 landscape:col-span-7 flex flex-col gap-2.5">
+      {/* Social Links List */}
+      <div class="flex flex-col gap-2">
         {links.map((link) => (
           <a
             href={link.url}
             target="_blank"
             rel="noopener noreferrer"
-            class="bento-card p-3 sm:p-3.5 md:p-4 flex items-center justify-between group hover:border-primary-custom/40 active:scale-[0.99] transition-all cursor-pointer"
+            class="bryl-card p-3.5 sm:p-4 flex items-center justify-between group cursor-pointer"
           >
             <div class="flex items-center gap-3.5 min-w-0">
-              <div class="w-9 h-9 rounded-xl bg-foreground-custom/5 border border-border-custom flex items-center justify-center text-primary-custom shrink-0 group-hover:scale-105 transition-transform" set:html={getIconSvg(link.platform)}></div>
+              <div class="w-8 h-8 rounded-lg bg-foreground-custom/5 border border-border-custom flex items-center justify-center text-foreground-custom shrink-0" set:html={getIconSvg(link.platform)}></div>
               <div class="flex flex-col min-w-0">
-                <span class="text-xs sm:text-sm font-bold font-heading text-foreground-custom group-hover:text-primary-custom transition-colors leading-tight">
+                <span class="text-xs sm:text-sm font-mono lowercase font-bold text-foreground-custom leading-tight">
                   {link.platform}
                 </span>
                 <span class="text-[10px] sm:text-[11px] font-mono text-muted-foreground-custom truncate leading-tight mt-0.5" title={link.url}>
@@ -154,15 +151,15 @@ const getIconSvg = (platform: string) => {
               </div>
             </div>
 
-            <span class="text-xs text-muted-foreground-custom group-hover:text-primary-custom group-hover:translate-x-0.5 transition-all shrink-0 ml-3">
+            <span class="text-xs font-mono text-muted-foreground-custom group-hover:text-foreground-custom group-hover:translate-x-0.5 transition-all shrink-0 ml-3">
               ↗
             </span>
           </a>
         ))}
 
         {/* Minimal Footer Stamp */}
-        <p class="text-[10px] font-mono text-muted-foreground-custom text-center md:text-left mt-3 pt-2">
-          &copy; {new Date().getFullYear()} {settings.fullName} • Official Directory
+        <p class="text-[10px] font-mono text-muted-foreground-custom text-center mt-4">
+          &copy; {new Date().getFullYear()} {settings.fullName} // directory
         </p>
       </div>
 

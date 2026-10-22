@@ -11,23 +11,23 @@ const downloadUrl = resumeUrl.includes('cdn.sanity.io')
 ---
 
 <Layout title={`Under Development | ${settings.fullName}`} description="Cris Charles Garcia — Portfolio currently under development. Please check back later.">
-  <main class="min-h-screen flex flex-col items-center justify-center p-6 bg-background-custom text-foreground-custom selection:bg-primary-custom/20">
-    <div class="w-full max-w-md">
+  <main class="min-h-screen flex flex-col items-center justify-center p-4 relative z-10">
+    <div class="w-full max-w-[28rem]">
       
       {/* Clean Minimalist Container */}
-      <div class="p-8 sm:p-10 rounded-2xl border border-border-custom bg-card-custom/60 shadow-sm flex flex-col gap-6">
+      <div class="bryl-card p-6 sm:p-8 flex flex-col gap-6">
         
         {/* Header: Logo + Identity */}
-        <div class="flex items-center gap-3.5 pb-6 border-b border-border-custom/60">
+        <div class="flex items-center gap-3 pb-5 border-b border-border-custom">
           <img
             src={settings.logoImage || settings.heroImage || '/logo.png'}
             alt={settings.fullName}
-            class="w-10 h-10 rounded-full object-cover ring-1 ring-border-custom shadow-xs"
+            class="w-10 h-10 rounded-xl object-cover border border-border-custom"
             loading="eager"
             decoding="async"
           />
           <div>
-            <h1 class="text-base font-bold text-foreground-custom tracking-tight">
+            <h1 class="text-sm font-mono lowercase font-bold text-foreground-custom tracking-tight">
               {settings.fullName}
             </h1>
             <p class="text-xs font-mono text-muted-foreground-custom">
@@ -38,68 +38,61 @@ const downloadUrl = resumeUrl.includes('cdn.sanity.io')
 
         {/* Status + Core Message */}
         <div class="flex flex-col gap-3">
-          <div class="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground-custom">
-            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-            <span>status: maintenance / under development</span>
+          <div class="inline-flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider text-muted-foreground-custom">
+            <span class="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse"></span>
+            <span>status // maintenance</span>
           </div>
 
-          <h2 class="text-2xl font-bold font-heading text-foreground-custom tracking-tight">
-            {settings.maintenanceTitle || 'Please come back later.'}
+          <h2 class="text-xl font-mono lowercase font-bold text-foreground-custom tracking-tight">
+            {settings.maintenanceTitle || 'system refinement in progress.'}
           </h2>
 
-          <p class="text-sm text-foreground-custom/80 leading-relaxed font-normal">
-            {settings.maintenanceMessage || 'The website is currently being refined and updated. You can still reach me directly through my channels below.'}
+          <p class="text-xs font-mono text-muted-foreground-custom leading-relaxed">
+            {settings.maintenanceMessage || 'The registry is currently being refined and updated. Direct channels and credentials remain active below.'}
           </p>
         </div>
 
         {/* Minimal Social Links */}
-        <div class="pt-4 border-t border-border-custom/60 flex flex-col gap-3">
-          <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground-custom">
-            Direct Contact & Socials
+        <div class="pt-4 border-t border-border-custom flex flex-col gap-2.5">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">
+            direct channels
           </span>
 
-          <div class="flex flex-wrap gap-2">
+          <div class="flex flex-wrap gap-1.5">
             {socialLinks.map((link) => (
               <a
                 key={link.platform}
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="px-3 py-1.5 rounded-lg text-xs font-medium border border-border-custom text-foreground-custom hover:border-primary-custom hover:text-primary-custom transition-colors"
+                class="px-2.5 py-1 rounded-md text-[11px] font-mono border border-border-custom text-foreground-custom hover:border-foreground-custom transition-colors"
               >
-                {link.platform} ↗
+                {link.platform.toLowerCase()} ↗
               </a>
             ))}
           </div>
         </div>
 
         {/* Resume / CV Section */}
-        <div class="pt-4 border-t border-border-custom/60 flex flex-col gap-2.5">
-          <span class="text-xs font-mono uppercase tracking-wider text-muted-foreground-custom">
-            Resume / Curriculum Vitae
+        <div class="pt-4 border-t border-border-custom flex flex-col gap-2.5">
+          <span class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">
+            curriculum vitae
           </span>
           <div class="grid grid-cols-2 gap-2">
             <a
               href={resumeUrl}
               target="_blank"
               rel="noopener noreferrer"
-              class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-primary-custom text-white text-xs font-medium hover:bg-primary-custom/90 transition-all text-center"
+              class="bryl-btn-primary text-center"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
-              </svg>
-              View CV
+              view cv ↗
             </a>
             <a
               href={downloadUrl}
               download="CV-Cris-Charles-Garcia.pdf"
-              class="inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl border border-border-custom hover:border-primary-custom/40 text-foreground-custom text-xs font-medium hover:bg-primary-custom/5 transition-all text-center"
+              class="bryl-btn-secondary text-center"
             >
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5M16.5 12 12 16.5m0 0L7.5 12m4.5 4.5V3" />
-              </svg>
-              Download PDF
+              download ↓
             </a>
           </div>
         </div>
@@ -107,8 +100,8 @@ const downloadUrl = resumeUrl.includes('cdn.sanity.io')
       </div>
 
       {/* Understated footer */}
-      <p class="text-center text-xs font-mono text-muted-foreground-custom/70 mt-6">
-        &copy; {new Date().getFullYear()} {settings.fullName}
+      <p class="text-center text-[10px] font-mono text-muted-foreground-custom mt-6">
+        &copy; {new Date().getFullYear()} {settings.fullName} // maintenance
       </p>
 
     </div>

@@ -1,57 +1,20 @@
 import React, { useState } from 'react';
-import ScrollReveal from './ScrollReveal';
-import SectionBackground from './SectionBackground';
 import type { SocialLink } from '../lib/data';
-
-const getContactIcon = (platform: string) => {
-  const p = platform.toLowerCase();
-  if (p.includes('github')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
-      </svg>
-    );
-  }
-  if (p.includes('facebook')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-      </svg>
-    );
-  }
-  if (p.includes('linkedin')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/>
-      </svg>
-    );
-  }
-  if (p.includes('tiktok')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.09-1.03-1.87-1.09-2.93-3.16-2.61-5.25.38-2.52 2.5-4.46 5.04-4.46.73 0 1.43.16 2.07.46.06.03.11.05.16.08v4.18c-1.38-.24-2.81-.19-4.16.14-1.12.28-2.12 1.05-2.67 2.06-.55 1.01-.58 2.22-.09 3.25.48 1.01 1.41 1.72 2.49 2.03 1.1.32 2.27.32 3.37.01.69-.2 1.34-.55 1.87-.99.53-.44.97-.99 1.25-1.61.28-.62.43-1.28.46-1.95.06-2.69.02-5.38.02-8.07z"/>
-      </svg>
-    );
-  }
-  return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-    </svg>
-  );
-};
 
 interface ContactFormProps {
   socialLinks?: SocialLink[];
   contactHeading?: string;
   contactSubtitle?: string;
   email?: string;
+  sectionTag?: string;
 }
 
 export default function ContactForm({
   socialLinks = [],
-  contactHeading = "Let's create something amazing.",
-  contactSubtitle = "Whether you have a question, a project idea, or just want to say hi, my inbox is always open. I'll try my best to get back to you!",
-  email = "crischarlesgarcia345@gmail.com"
+  contactHeading = "let's talk.",
+  contactSubtitle = "Whether you have a software engineering opportunity, a technical collaboration, or an architecture inquiry, my inbox is open.",
+  email = "crischarlesgarcia345@gmail.com",
+  sectionTag = "06 — contact"
 }: ContactFormProps) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '', _hp_website: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -59,17 +22,10 @@ export default function ContactForm({
   const [deviceId, setDeviceId] = useState('');
   const [dailySentCount, setDailySentCount] = useState(0);
   const [isDailyLimitReached, setIsDailyLimitReached] = useState(false);
-  const [isLowTier, setIsLowTier] = useState(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true';
-    }
-    return false;
-  });
 
   const refreshRateLimitState = () => {
     if (typeof window === 'undefined') return;
 
-    // Get or initialize persistent client device UUID
     let storedId = localStorage.getItem('portfolio_device_id');
     if (!storedId) {
       storedId = typeof crypto !== 'undefined' && crypto.randomUUID
@@ -79,7 +35,6 @@ export default function ContactForm({
     }
     setDeviceId(storedId);
 
-    // Read contact submission history from the last 24h
     try {
       const storedLog = localStorage.getItem('portfolio_contact_log');
       const timestamps: number[] = storedLog ? JSON.parse(storedLog) : [];
@@ -95,23 +50,17 @@ export default function ContactForm({
   };
 
   React.useEffect(() => {
-    const checkTier = () => {
-      setIsLowTier(document.documentElement.dataset.tier === 'low' || localStorage.getItem('liteMode') === 'true');
-    };
-    checkTier();
     refreshRateLimitState();
-    window.addEventListener('tier-change', checkTier);
-    return () => window.removeEventListener('tier-change', checkTier);
   }, []);
 
-  const linksToRender = socialLinks.length > 0
+  const linksToRender = (socialLinks.length > 0
     ? socialLinks.filter(l => l.url && l.url !== '#' && !l.url.includes('/N/A'))
     : [
         { platform: 'Email', url: `mailto:${email}`, icon: 'mail', order: 1 },
         { platform: 'GitHub', url: 'https://github.com/ssbg04', icon: 'github', order: 2 },
-        { platform: 'Facebook', url: 'https://www.facebook.com/kristyarls345/', icon: 'facebook', order: 3 },
-        { platform: 'TikTok', url: 'https://www.tiktok.com/@sisibigi', icon: 'tiktok', order: 4 }
-      ];
+        { platform: 'LinkedIn', url: 'https://www.linkedin.com/in/cris-charles-garcia/', icon: 'linkedin', order: 3 },
+      ]
+  ).filter(l => !['facebook', 'tiktok'].includes(l.platform.toLowerCase()));
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -119,24 +68,14 @@ export default function ContactForm({
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (isDailyLimitReached) {
-      setStatus('error');
-      setErrorMessage('Failed: Limit reached');
-      return;
-    }
-
-    if (!formData.name || !formData.email || !formData.message) {
-      setStatus('error');
-      setErrorMessage('Please fill in all fields.');
-      return;
-    }
+    if (formData._hp_website) return;
+    if (isDailyLimitReached) return;
 
     setStatus('sending');
     setErrorMessage('');
 
     try {
-      const response = await fetch('/api/contact', {
+      const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -145,221 +84,206 @@ export default function ContactForm({
         })
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        // Record successful transmission timestamp locally
-        try {
-          const storedLog = localStorage.getItem('portfolio_contact_log');
-          const timestamps: number[] = storedLog ? JSON.parse(storedLog) : [];
-          timestamps.push(Date.now());
-          localStorage.setItem('portfolio_contact_log', JSON.stringify(timestamps));
-          refreshRateLimitState();
-        } catch {
-          // ignore storage error
-        }
-
-        setStatus('success');
-        setFormData({ name: '', email: '', message: '', _hp_website: '' });
-      } else {
-        if (response.status === 429 || data.limitReached) {
-          setIsDailyLimitReached(true);
-          setErrorMessage(data.message || 'Failed: Limit reached');
-        } else {
-          setErrorMessage(data.message || 'Something went wrong. Please try again.');
-        }
-        setStatus('error');
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to dispatch message.');
       }
-    } catch (err) {
+
+      setStatus('success');
+      setFormData({ name: '', email: '', message: '', _hp_website: '' });
+
+      // Record timestamp
+      try {
+        const storedLog = localStorage.getItem('portfolio_contact_log');
+        const timestamps: number[] = storedLog ? JSON.parse(storedLog) : [];
+        timestamps.push(Date.now());
+        localStorage.setItem('portfolio_contact_log', JSON.stringify(timestamps));
+        refreshRateLimitState();
+      } catch (e) {
+        console.error('Failed to update contact log:', e);
+      }
+    } catch (err: any) {
       setStatus('error');
-      setErrorMessage('Network error. Please check your connection.');
+      setErrorMessage(err.message || 'An error occurred. Please try again.');
     }
   };
 
   return (
-    <section id="contact" className="pt-2 sm:pt-12 md:pt-16 pb-16 sm:pb-24 relative overflow-hidden">
-      <SectionBackground variant="contact" />
-      <div className="container mx-auto px-4 sm:px-6 max-w-6xl relative z-10">
-        
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-8 lg:gap-8 items-start">
+    <section id="contact" className="py-12 sm:py-16 border-b border-border-custom bryl-entrance">
+      <div className="max-w-[56rem] mx-auto px-4 sm:px-6">
+
+        {/* Section Header */}
+        <div className="pb-4 mb-6 sm:mb-8 border-b border-border-custom">
+          <span className="section-marker mb-1 block">
+            {sectionTag.toLowerCase()}
+          </span>
+          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
+            direct outreach
+          </h2>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-start">
           
-          {/* Left Side: Info */}
-          <div className="lg:col-span-2 flex flex-col justify-center h-full">
-            <ScrollReveal variant="fade-right">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold font-heading mb-3 sm:mb-5 leading-tight tracking-tight text-foreground-custom block">
-                {contactHeading}
-              </h2>
-              <p className="text-muted-foreground-custom text-base md:text-lg mb-5 sm:mb-8 leading-relaxed">
+          {/* Left Column: Context & Direct Channels */}
+          <div className="md:col-span-5 flex flex-col justify-between h-full">
+            <div>
+              <h3 className="font-display text-xl sm:text-2xl text-foreground-custom lowercase mb-3">
+                {contactHeading.toLowerCase()}
+              </h3>
+              <p className="text-muted-foreground-custom text-[14px] leading-relaxed mb-6 font-normal">
                 {contactSubtitle}
               </p>
-              
-              <div className="flex flex-col gap-4">
-                <p className="text-xs font-mono font-medium uppercase tracking-widest text-muted-foreground-custom mb-1">Connect with me</p>
-                <div className="flex flex-wrap gap-2.5">
+
+              <div className="flex flex-col gap-2 pt-2 border-t border-border-custom">
+                <span className="text-[10px] font-mono uppercase tracking-widest text-subtle-custom mb-1">
+                  direct channels:
+                </span>
+                <div className="flex flex-col gap-2">
+                  <a
+                    href={`mailto:${email}`}
+                    className="text-xs font-mono text-foreground-custom hover:underline transition-all inline-flex items-center gap-1.5"
+                  >
+                    <span>{email}</span>
+                    <span className="text-[10px] opacity-60">↗</span>
+                  </a>
                   {linksToRender.map((link) => (
                     <a
                       key={link.platform}
                       href={link.url}
                       target={link.url.startsWith('http') ? '_blank' : undefined}
                       rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                      className="tap-target group flex items-center justify-center w-11 h-11 rounded-lg bg-card-custom border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-primary-custom/40 hover:bg-foreground-custom/[0.03] transition-all shadow-xs"
-                      aria-label={link.platform}
-                      title={link.platform}
+                      className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors inline-flex items-center gap-1.5"
                     >
-                      {getContactIcon(link.platform)}
+                      <span>{link.platform.toLowerCase()}</span>
+                      <span className="text-[10px] opacity-60">↗</span>
                     </a>
                   ))}
                 </div>
               </div>
-            </ScrollReveal>
+            </div>
+
+            <div className="mt-8 pt-4 border-t border-border-custom">
+              <span className="text-[10px] font-mono text-subtle-custom block">
+                laguna, philippines · utc+8
+              </span>
+            </div>
           </div>
 
-          {/* Right Side: Form */}
-          <div className="lg:col-span-3">
-            <ScrollReveal variant="fade-left" delay={150}>
-              <div className="bento-card p-6 sm:p-8 md:p-10 rounded-xl border border-border-custom shadow-sm relative overflow-hidden bg-card-custom">
-                {status === 'success' ? (
-                  <div
-                    key="success"
-                    className="text-center py-12 flex flex-col items-center justify-center min-h-[400px]"
+          {/* Right Column: Form (bryl-minimal input styling) */}
+          <div className="md:col-span-7">
+            <div className="bryl-card p-6 sm:p-7">
+              {status === 'success' ? (
+                <div className="text-center py-10 flex flex-col items-center justify-center">
+                  <span className="chip-inverted text-[10px] mb-4">
+                    message dispatched
+                  </span>
+                  <h4 className="font-display text-xl text-foreground-custom lowercase mb-2">
+                    received.
+                  </h4>
+                  <p className="text-xs text-muted-foreground-custom max-w-xs mb-6 font-mono">
+                    Thanks for reaching out. I will respond to your note within 24 to 48 hours.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => setStatus('idle')}
+                    className="bryl-btn-secondary text-xs cursor-pointer"
                   >
-                      <div className="w-14 h-14 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex items-center justify-center mb-5">
-                        <svg className="w-7 h-7" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                        </svg>
-                      </div>
-                      <h3 className="text-2xl font-bold font-heading text-foreground-custom mb-3">
-                        Message Received
-                      </h3>
-                      <p className="text-sm sm:text-base text-muted-foreground-custom leading-relaxed max-w-sm mb-6">
-                        Thanks for reaching out! I've received your note and will get back to you promptly.
-                      </p>
-                      {isDailyLimitReached ? (
-                        <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/30 text-xs text-rose-600 dark:text-rose-400 text-center max-w-xs font-mono">
-                          Failed: Limit reached
-                        </div>
-                      ) : (
-                        <button
-                          onClick={() => setStatus('idle')}
-                          className="px-5 py-2.5 rounded-lg bg-primary-custom text-white text-xs font-mono font-medium uppercase tracking-wider hover:bg-primary-custom/90 transition-all cursor-pointer shadow-sm"
-                        >
-                          Send Another ({5 - dailySentCount} remaining)
-                        </button>
-                      )}
+                    send another
+                  </button>
+                </div>
+              ) : (
+                <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+                  {/* Honeypot */}
+                  <div className="opacity-0 absolute -z-50 pointer-events-none w-0 h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
+                    <input
+                      type="text"
+                      name="_hp_website"
+                      id="_hp_website"
+                      tabIndex={-1}
+                      autoComplete="off"
+                      value={formData._hp_website}
+                      onChange={handleChange}
+                    />
                   </div>
-                ) : (
-                  <form
-                    onSubmit={handleSubmit} 
-                    className="flex flex-col gap-5"
-                  >
-                      {/* Invisible honeypot field for bot trapping */}
-                      <div className="opacity-0 absolute -z-50 pointer-events-none w-0 h-0 overflow-hidden" aria-hidden="true" tabIndex={-1}>
-                        <label htmlFor="_hp_website">Leave this field blank</label>
-                        <input
-                          type="text"
-                          name="_hp_website"
-                          id="_hp_website"
-                          tabIndex={-1}
-                          autoComplete="off"
-                          value={formData._hp_website}
-                          onChange={handleChange}
-                        />
-                      </div>
 
-                      {(status === 'error' || isDailyLimitReached) && (
-                        <div className="p-3.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs sm:text-sm font-medium">
-                          {errorMessage || 'Failed: Limit reached'}
-                        </div>
-                      )}
-
-                      <div className="flex flex-col gap-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Full Name */}
-                          <div className="flex flex-col gap-1.5 w-full">
-                            <label htmlFor="name" className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground-custom">
-                              Full Name
-                            </label>
-                            <input
-                              type="text"
-                              name="name"
-                              id="name"
-                              className="block py-2.5 px-3.5 w-full text-sm font-normal text-foreground-custom bg-background-custom border border-border-custom rounded-lg focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom transition-all shadow-xs"
-                              placeholder="Your full name"
-                              required
-                              value={formData.name}
-                              onChange={handleChange}
-                              disabled={status === 'sending'}
-                            />
-                          </div>
-
-                          {/* Email */}
-                          <div className="flex flex-col gap-1.5 w-full">
-                            <label htmlFor="email" className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground-custom">
-                              Email Address
-                            </label>
-                            <input
-                              type="email"
-                              name="email"
-                              id="email"
-                              className="block py-2.5 px-3.5 w-full text-sm font-normal text-foreground-custom bg-background-custom border border-border-custom rounded-lg focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom transition-all shadow-xs"
-                              placeholder="you@example.com"
-                              required
-                              value={formData.email}
-                              onChange={handleChange}
-                              disabled={status === 'sending'}
-                            />
-                          </div>
-                        </div>
-
-                        {/* Message */}
-                        <div className="flex flex-col gap-1.5 w-full">
-                          <label htmlFor="message" className="text-xs font-mono font-medium uppercase tracking-wider text-muted-foreground-custom">
-                            How can I help you?
-                          </label>
-                          <textarea
-                            name="message"
-                            id="message"
-                            rows={4}
-                            className="block py-2.5 px-3.5 w-full text-sm font-normal text-foreground-custom bg-background-custom border border-border-custom rounded-lg focus:outline-none focus:border-primary-custom focus:ring-1 focus:ring-primary-custom transition-all resize-none shadow-xs"
-                            placeholder="Your message or project inquiry..."
-                            required
-                            value={formData.message}
-                            onChange={handleChange}
-                            disabled={status === 'sending'}
-                          />
-                        </div>
-                      </div>
-
-                      {/* Submit Button */}
-                      <button
-                        type="submit"
-                        disabled={status === 'sending' || isDailyLimitReached}
-                        className="group relative w-full sm:w-auto self-end mt-1 px-6 py-2.5 rounded-lg bg-primary-custom text-white font-medium text-xs font-mono uppercase tracking-wider hover:bg-primary-custom/90 active:scale-[0.98] transition-all duration-150 overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed flex items-center justify-center gap-2 cursor-pointer shadow-sm"
-                      >
-                        <span className="relative z-10 flex items-center gap-2">
-                          {status === 'sending'
-                            ? 'Sending...'
-                            : isDailyLimitReached
-                            ? 'Failed: Limit reached'
-                            : 'Send Message'}
-                          {status !== 'sending' && !isDailyLimitReached && (
-                            <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-                            </svg>
-                          )}
-                          {status === 'sending' && (
-                            <svg className="animate-spin w-3.5 h-3.5 text-white" fill="none" viewBox="0 0 24 24">
-                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                            </svg>
-                          )}
-                        </span>
-                      </button>
-                    </form>
+                  {(status === 'error' || isDailyLimitReached) && (
+                    <div className="p-3 rounded-md bg-elevated-custom border border-border-strong text-foreground-custom text-xs font-mono">
+                      {errorMessage || 'Notice: Daily message limit reached for this session.'}
+                    </div>
                   )}
-              </div>
-            </ScrollReveal>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="name" className="micro-label">
+                        name
+                      </label>
+                      <input
+                        type="text"
+                        name="name"
+                        id="name"
+                        required
+                        placeholder="your name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        disabled={status === 'sending'}
+                        className="bryl-input"
+                      />
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <label htmlFor="email" className="micro-label">
+                        email
+                      </label>
+                      <input
+                        type="email"
+                        name="email"
+                        id="email"
+                        required
+                        placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={handleChange}
+                        disabled={status === 'sending'}
+                        className="bryl-input"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-1.5">
+                    <label htmlFor="message" className="micro-label">
+                      message
+                    </label>
+                    <textarea
+                      name="message"
+                      id="message"
+                      rows={4}
+                      required
+                      placeholder="write your message..."
+                      value={formData.message}
+                      onChange={handleChange}
+                      disabled={status === 'sending'}
+                      className="bryl-input resize-y min-h-[100px]"
+                    />
+                  </div>
+
+                  <div className="flex items-center justify-between pt-2">
+                    <span className="text-[10px] font-mono text-subtle-custom">
+                      {isDailyLimitReached ? 'limit reached' : `${5 - dailySentCount} remaining today`}
+                    </span>
+
+                    <button
+                      type="submit"
+                      disabled={status === 'sending' || isDailyLimitReached}
+                      className="bryl-btn-primary cursor-pointer disabled:opacity-50"
+                    >
+                      <span>{status === 'sending' ? 'dispatching...' : 'send message'}</span>
+                      <span aria-hidden="true">↗</span>
+                    </button>
+                  </div>
+                </form>
+              )}
+            </div>
           </div>
+
         </div>
       </div>
     </section>

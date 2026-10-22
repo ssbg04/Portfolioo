@@ -1,189 +1,156 @@
 @import "tailwindcss";
-@import "@fontsource-variable/inter/wght.css";
-@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "@fontsource-variable/geist/wght.css";
+@import "@fontsource-variable/geist-mono/wght.css";
+@import "@fontsource-variable/source-serif-4/wght.css";
 @import "@fontsource/dotgothic16/latin.css";
+
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('/fonts/GeistPixel-Square.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
 
 @layer base {
   :root {
-    --font-heading: 'Inter', system-ui, sans-serif;
-    --font-body:    'Inter', system-ui, sans-serif;
-    --font-mono:    'JetBrains Mono', monospace;
-    --font-dot:     'DotGothic16', 'JetBrains Mono', monospace;
+    /* ─── bryl-minimal Typography System ─── */
+    --font-heading: 'Geist Variable', 'Geist', system-ui, -apple-system, sans-serif;
+    --font-body:    'Geist Variable', 'Geist', system-ui, -apple-system, sans-serif;
+    --font-mono:    'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
+    --font-dot:     'Geist Pixel', 'Geist Mono Variable', monospace;
+    --font-display: 'Geist Pixel', 'Geist Mono Variable', monospace;
+    --font-serif:   'Source Serif 4 Variable', 'Source Serif 4', Georgia, serif;
 
-    /* Layout */
-    --sidebar-width: 256px;
-    --nav-height: 60px;
+    /* Layout (14rem sidebar) */
+    --sidebar-width: 224px;
+    --nav-height: 56px;
 
-    /* ─── Minimal Executive Design Tokens (Light Palette) ─── */
-    --bg-color:         #FAFAFA;
-    --bg-surface:       #FFFFFF;
-    --bg-elevated:      #F4F4F5;
+    /* ─── bryl-minimal Palette (Light Theme) ─── */
+    --bg-color:          #ffffff;
+    --bg-surface:        #ffffff;
+    --bg-elevated:       #fafafa; /* Gray 50 */
+    --bg-subtle:         #f5f5f5; /* Gray 100 */
 
-    --fg-color:         #0A0A0A;
-    --muted-fg-color:   #525252;
-    --subtle-fg-color:  #A1A1AA;
+    --fg-color:          #0a0a0a; /* True Black Ink */
+    --muted-fg-color:    #737373; /* Gray 500 */
+    --subtle-fg-color:   #a3a3a3; /* Gray 400 */
 
-    --border-color:      #E4E4E7;
-    --border-strong:     #D4D4D8;
-    --border-hover-color:#A1A1AA;
+    --border-color:      #e9e9e9; /* Gray 200 hairline */
+    --border-strong:     #d4d4d4; /* Gray 300 */
+    --border-hover-color:#a3a3a3; /* Gray 400 */
 
-    --primary-color:    #1d4ed8;
-    --primary-fg-color: #FFFFFF;
+    /* Monochrome Emphasis: No accent colors — inversion is king */
+    --primary-color:     #0a0a0a;
+    --primary-fg-color:  #ffffff;
+    --secondary-color:   #737373;
+    --accent-pink:       #0a0a0a;
+    --accent-green:      #0a0a0a;
+    --muted-color:       rgba(10, 10, 10, 0.04);
 
-    /* Legacy compat aliases — kept so existing component classes don't break */
-    --primary-neo:    #1d4ed8;
-    --secondary-color:#3b82f6;
-    --accent-pink:    #6366f1;
-    --accent-green:   #10b981;
-    --muted-color:    rgba(0, 0, 0, 0.04);
+    --nav-bg:            rgba(255, 255, 255, 0.92);
+    --nav-drawer-bg:     #ffffff;
+    --card-bg:           #ffffff;
 
-    --nav-bg:          #FFFFFF;
-    --nav-drawer-bg:   #FAFAFA;
-    --card-bg:         #FFFFFF;
+    /* ─── Low-Alpha Ground-Contact Shadows ─── */
+    --shadow-sm:         0 2px 6px -2px rgba(0, 0, 0, 0.12);
+    --shadow-md:         0 8px 22px -14px rgba(0, 0, 0, 0.25);
+    --shadow-lg:         0 18px 36px -20px rgba(0, 0, 0, 0.40);
+    --shadow-hover:      0 18px 36px -20px rgba(0, 0, 0, 0.35);
 
-    /* ─── Soft Shadow System (replaces neo hard offset) ─── */
-    --shadow-sm:       0 1px 2px rgba(0,0,0,0.06);
-    --shadow-md:       0 4px 12px rgba(0,0,0,0.08);
-    --shadow-lg:       0 12px 32px rgba(0,0,0,0.10);
-    --shadow-hover:    0 8px 24px rgba(0,0,0,0.12);
+    --neo-border:        1px solid var(--border-color);
+    --neo-shadow:        var(--shadow-sm);
+    --neo-shadow-hover:  var(--shadow-hover);
+    --neo-shadow-active: var(--shadow-sm);
+    --neo-shadow-sm:     var(--shadow-sm);
 
-    /* Legacy neo-shadow aliases → mapped to soft equivalents */
-    --neo-border:       1px solid var(--border-color);
-    --neo-shadow:       var(--shadow-sm);
-    --neo-shadow-hover: var(--shadow-hover);
-    --neo-shadow-active:var(--shadow-sm);
-    --neo-shadow-sm:    var(--shadow-sm);
+    /* ─── Glass & Surface ─── */
+    --glass-bg:          rgba(255, 255, 255, 0.85);
+    --glass-border:      var(--border-color);
+    --glass-blur:        14px;
+    --glass-saturate:    160%;
+    --glass-shadow:      var(--shadow-md);
+    --glass-shadow-hover:var(--shadow-hover);
 
-    /* ─── Glass System ─── */
-    --glass-bg:        rgba(255,255,255,0.80);
-    --glass-border:    var(--border-color);
-    --glass-blur:      12px;
-    --glass-saturate:  160%;
-    --glass-shadow:    var(--shadow-md);
-    --glass-shadow-hover: var(--shadow-hover);
-    --glass-highlight: none;
+    /* ─── Radii Ladder: 16px / 12px / 8px / 6px / full ─── */
+    --bento-radius:      16px;
+    --card-radius:       16px;
+    --radius-lg:         16px;
+    --radius-md:         12px;
+    --radius-sm:         8px;
+    --radius-xs:         6px;
+    --bento-gap:         1.25rem;
 
-    /* ─── Border Radius ─── */
-    --bento-gap:    1.25rem;
-    --bento-radius: 14px;
+    /* Halftone dot color channels - subtle refined cyan/blue tint */
+    --halftone-color:    59, 130, 246;
+    --halftone-opacity:  0.22;
 
-    /* Tailwind theme compat */
-    --primary:    220 85% 57%;
-    --background: 0 0% 98%;
-    --foreground: 0 0% 4%;
+    /* Tailwind theme tokens */
+    --primary:           0 0% 4%;
+    --background:        0 0% 100%;
+    --foreground:        0 0% 4%;
   }
 
   .dark {
-    /* ─── AMOLED Pure Black Dark Palette (#000000) ─── */
-    --bg-color:         #000000;
-    --bg-surface:       #08080a;
-    --bg-elevated:      #121216;
+    /* ─── bryl-minimal Palette (Dark Theme) ─── */
+    --bg-color:          #0c0c0f; /* Near-black with blue cast */
+    --bg-surface:        #121216;
+    --bg-elevated:       #18181b; /* Gray 50 */
+    --bg-subtle:         #1e1e22; /* Gray 100 */
 
-    --fg-color:         #FAFAFA;
-    --muted-fg-color:   #A1A1AA;
-    --subtle-fg-color:  #52525B;
+    --fg-color:          #f4f4f5; /* Off-white Ink */
+    --muted-fg-color:    #a0a0a8; /* Gray 500 */
+    --subtle-fg-color:   #8a8a92; /* Gray 400 */
 
-    --border-color:      #1c1c22;
-    --border-strong:     #2b2b34;
-    --border-hover-color:#3f3f4a;
+    --border-color:      #2a2a30; /* Gray 200 hairline */
+    --border-strong:     #3a3a42; /* Gray 300 */
+    --border-hover-color:#8a8a92; /* Gray 400 */
 
-    --primary-color:    #3b82f6;
-    --primary-fg-color: #FFFFFF;
+    --primary-color:     #f4f4f5;
+    --primary-fg-color:  #0c0c0f;
+    --secondary-color:   #a0a0a8;
+    --accent-pink:       #f4f4f5;
+    --accent-green:      #f4f4f5;
+    --muted-color:       rgba(244, 244, 245, 0.05);
 
-    /* Legacy compat aliases */
-    --primary-neo:    #3b82f6;
-    --secondary-color:#6366f1;
-    --accent-pink:    #818cf8;
-    --accent-green:   #34d399;
-    --muted-color:    rgba(255, 255, 255, 0.03);
+    --nav-bg:            rgba(12, 12, 15, 0.92);
+    --nav-drawer-bg:     #0c0c0f;
+    --card-bg:           #141418;
 
-    --nav-bg:          #000000;
-    --nav-drawer-bg:   #000000;
-    --card-bg:         #08080a;
+    /* In dark mode, rely primarily on hairline borders */
+    --shadow-sm:         0 2px 4px rgba(0, 0, 0, 0.40);
+    --shadow-md:         0 4px 16px -8px rgba(0, 0, 0, 0.50);
+    --shadow-lg:         0 8px 24px -10px rgba(0, 0, 0, 0.65);
+    --shadow-hover:      0 8px 24px -10px rgba(0, 0, 0, 0.60);
 
-    /* ─── Soft Shadow System (dark) ─── */
-    --shadow-sm:       0 1px 2px rgba(0,0,0,0.70);
-    --shadow-md:       0 4px 12px rgba(0,0,0,0.80);
-    --shadow-lg:       0 12px 32px rgba(0,0,0,0.90);
-    --shadow-hover:    0 8px 24px rgba(0,0,0,0.85);
+    --neo-border:        1px solid var(--border-color);
+    --neo-shadow:        var(--shadow-sm);
+    --neo-shadow-hover:  var(--shadow-hover);
+    --neo-shadow-active: var(--shadow-sm);
+    --neo-shadow-sm:     var(--shadow-sm);
 
-    /* Legacy neo-shadow aliases */
-    --neo-border:       1px solid var(--border-color);
-    --neo-shadow:       var(--shadow-sm);
-    --neo-shadow-hover: var(--shadow-hover);
-    --neo-shadow-active:var(--shadow-sm);
-    --neo-shadow-sm:    var(--shadow-sm);
+    --glass-bg:          rgba(18, 18, 22, 0.85);
+    --glass-border:      var(--border-color);
+    --glass-blur:        14px;
+    --glass-saturate:    140%;
+    --glass-shadow:      var(--shadow-md);
+    --glass-shadow-hover:var(--shadow-hover);
 
-    /* ─── Glass System (dark AMOLED) ─── */
-    --glass-bg:        rgba(0,0,0,0.88);
-    --glass-border:    var(--border-color);
-    --glass-blur:      12px;
-    --glass-saturate:  140%;
-    --glass-shadow:    var(--shadow-md);
-    --glass-shadow-hover: var(--shadow-hover);
-    --glass-highlight: none;
+    --halftone-color:    96, 165, 250;
+    --halftone-opacity:  0.30;
 
-    /* Tailwind theme compat */
-    --primary:    221 83% 61%;
-    --background: 0 0% 0%;
-    --foreground: 0 0% 98%;
+    --primary:           0 0% 96%;
+    --background:        240 11% 5%;
+    --foreground:        240 5% 96%;
   }
 
-  /* ─── Device-Tiered Sizing ─── */
-  @media (max-width: 767px) {
-    :root {
-      --bento-radius: 10px;
-      --shadow-hover: 0 6px 18px rgba(0,0,0,0.10);
-    }
-    .dark {
-      --bento-radius: 10px;
-      --shadow-hover: 0 6px 18px rgba(0,0,0,0.40);
-    }
-  }
-
-  @media (min-width: 768px) and (max-width: 1023px) {
-    :root {
-      --glass-blur: 16px;
-      --glass-saturate: 160%;
-      --glass-bg: rgba(255,255,255,0.75);
-    }
-    .dark {
-      --glass-blur: 16px;
-      --glass-saturate: 140%;
-      --glass-bg: rgba(26,26,26,0.80);
-    }
-  }
-
-html {
-  scrollbar-gutter: stable;
-  overflow-y: scroll;
-  scroll-behavior: smooth;
-  background-color: var(--bg-color);
-  scrollbar-width: thin;
-  scrollbar-color: rgba(0, 0, 0, 0.25) transparent;
-}
-
-html.dark {
-  scrollbar-color: rgba(255, 255, 255, 0.25) transparent;
-}
-
-  /* Smooth, hardware-accelerated View Transitions (Astro navigation & theme cross-fade) */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 0.22s;
-    animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  }
-
-  /* Zero-lag theme transition suppression (instant 60fps switch) */
-  html.disable-transitions,
-  html.disable-transitions *,
-  html.disable-transitions *::before,
-  html.disable-transitions *::after {
-    -webkit-transition: none !important;
-    -moz-transition: none !important;
-    -o-transition: none !important;
-    -ms-transition: none !important;
-    transition: none !important;
+  html {
+    scrollbar-gutter: stable;
+    overflow-y: scroll;
+    scroll-behavior: smooth;
+    background-color: var(--bg-color);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
   }
 
   html, body {
@@ -191,7 +158,6 @@ html.dark {
     max-width: 100vw;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
-    touch-action: manipulation;
   }
 
   body {
@@ -200,176 +166,309 @@ html.dark {
     font-family: var(--font-body);
     font-size: 15px;
     line-height: 1.65;
-    transition: background-color 0.25s ease, color 0.25s ease;
-    /* iOS safe area bottom padding */
+    transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
     padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  /* Text selection inverts per bryl-minimal spec */
+  ::selection {
+    background-color: var(--fg-color);
+    color: var(--bg-color);
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-heading);
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    line-height: 1.15;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--fg-color);
   }
 
-  code, pre, .font-mono { font-family: var(--font-mono); }
+  code, pre, .font-mono {
+    font-family: var(--font-mono);
+  }
+
+  /* Editorial Serif for Long-Form Case Studies / Reading */
+  .font-serif, .prose-serif {
+    font-family: var(--font-serif);
+    line-height: 1.75;
+  }
+
+  /* Display / Pixel Heading */
+  .font-display, .font-pixel {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
+  }
 }
 
 @theme {
   --color-background-custom: var(--bg-color);
   --color-foreground-custom: var(--fg-color);
-  --color-card-custom: var(--glass-bg);
+  --color-card-custom: var(--card-bg);
   --color-elevated-custom: var(--bg-elevated);
   --color-primary-custom: var(--primary-color);
   --color-primary-foreground: var(--primary-fg-color);
   --color-secondary-custom: var(--secondary-color);
   --color-muted-custom: var(--muted-color);
   --color-muted-foreground-custom: var(--muted-fg-color);
+  --color-subtle-custom: var(--subtle-fg-color);
   --color-border-custom: var(--border-color);
+  --color-border-strong: var(--border-strong);
   --color-border-hover: var(--border-hover-color);
   --font-heading: var(--font-heading);
   --font-body: var(--font-body);
   --font-mono: var(--font-mono);
+  --font-serif: var(--font-serif);
+  --font-display: var(--font-display);
 }
 
 @variant dark (&:where(.dark, .dark *));
 
-/* ─── Minimal Executive Ambient — ultra-subtle, no aurora ─── */
-.dark .bg-gradient-mesh {
-  background-image:
-    radial-gradient(ellipse 70% 40% at 15% -5%, rgba(59,130,246,0.04) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 30% at 85% 5%,  rgba(99,102,241,0.03) 0%, transparent 50%);
-  background-attachment: fixed;
-}
-.bg-gradient-mesh {
-  background-image:
-    radial-gradient(ellipse 70% 40% at 15% -5%, rgba(29,78,216,0.03) 0%, transparent 55%),
-    radial-gradient(ellipse 50% 30% at 85% 5%,  rgba(59,130,246,0.02) 0%, transparent 50%);
-  background-attachment: fixed;
+/* ─── bryl-minimal Halftone Dot Motif ─── */
+.halftone-bg {
+  background-image: radial-gradient(circle, rgba(var(--halftone-color), var(--halftone-opacity)) 1px, transparent 1px);
+  background-size: 11px 11px;
+  /* Mask out the center/middle where text and information live so it remains clean and readable */
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, transparent 32%, black 92%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 45%, transparent 32%, black 92%);
+  pointer-events: none;
 }
 
-/* ─── Minimal Executive Cards ─── */
-.bento-card, .glass-card {
-  background: var(--card-bg, #ffffff);
-  border: 1px solid var(--border-color);
-  border-radius: var(--bento-radius);
-  box-shadow: var(--shadow-sm);
-  position: relative;
-  transition: transform 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.2s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.2s ease;
-  will-change: transform, box-shadow;
+.halftone-accent {
+  background-image: radial-gradient(circle, rgba(var(--halftone-color), var(--halftone-opacity)) 1px, transparent 1px);
+  background-size: 6px 6px;
+  mask-image: linear-gradient(to bottom, black 0%, transparent 90%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 90%);
+  pointer-events: none;
 }
 
-/* Subtle lift on hover — no mechanical offset */
-@media (hover: hover) and (pointer: fine) {
-  .bento-card:hover, .glass-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--border-hover-color);
-  }
-
-  .dark .bento-card:hover, .dark .glass-card:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-hover);
-    border-color: var(--border-hover-color);
-  }
-}
-
-/* Press feedback */
-.bento-card:active, .glass-card:active {
-  transform: translateY(0px);
-  box-shadow: var(--shadow-sm);
-  transition: transform 0.08s ease, box-shadow 0.08s ease;
-}
-
-/* ─── Minimal Executive Navigation Bar ─── */
-.glass-nav {
-  background: var(--nav-bg);
-  border-bottom: 1px solid var(--border-color);
-  box-shadow: var(--shadow-sm);
-  isolation: isolate;
-  transform: translate3d(0, 0, 0);
-  -webkit-transform: translate3d(0, 0, 0);
-}
-
-/* Fallback for Browsers Without Backdrop-Filter Support */
-@supports not ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .bento-card, .glass-card {
-    background: #ffffff !important;
-  }
-  .dark .bento-card, .dark .glass-card {
-    background: #08080a !important;
-  }
-  .glass-nav {
-    background: #FAFAFA !important;
-  }
-  .dark .glass-nav {
-    background: #000000 !important;
-  }
-}
-
-/* Accessibility: User Prefers Reduced Transparency */
-@media (prefers-reduced-transparency: reduce) {
-  .bento-card, .glass-card, .glass-nav {
-    -webkit-backdrop-filter: none !important;
-    backdrop-filter: none !important;
-    background: var(--bg-color) !important;
-  }
-}
-
-.bento-grid {
-  display: grid;
-  gap: var(--bento-gap);
-}
-
-/* ─── Text Glow Effect (used on hero name & accent text) ─── */
-.text-glow {
-  text-shadow:
-    0 0 20px var(--primary-glow),
-    0 0 40px rgba(59, 130, 246, 0.15);
-}
-
-/* ─── Element Glow (generic glow wrapper) ─── */
-.glow-effect {
-  filter: drop-shadow(0 0 8px var(--primary-glow));
-}
-
-/* ─── Minimal Executive Chips & Badges ─── */
-.tech-tag {
+/* ─── bryl-minimal Section Header convention ("01 — about") ─── */
+.section-marker {
   font-family: var(--font-mono);
   font-size: 11px;
-  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--subtle-fg-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ─── bryl-minimal Inverted Chip (Highest Emphasis) ─── */
+.chip-inverted {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
   padding: 3px 10px;
-  border-radius: 5px;
-  background: var(--bg-elevated, #F4F4F5);
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+}
+
+/* ─── Micro-labels: 9–11px mono, UPPERCASE, tracked ─── */
+.micro-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--subtle-fg-color);
+}
+
+/* ─── Understated Hairline Card ─── */
+.bento-card, .glass-card, .bryl-card {
+  background: var(--card-bg);
   border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-sm);
+  position: relative;
+  transition: transform 0.42s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .bento-card:hover, .glass-card:hover, .bryl-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+    border-color: var(--border-strong);
+  }
+}
+
+/* ─── Hairline Grid Dividers (dividers ARE the design) ─── */
+.hairline-grid {
+  display: grid;
+  border: 1px solid var(--border-color);
+  border-radius: var(--card-radius);
+  overflow: hidden;
+}
+
+.hairline-cell {
+  border-bottom: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  padding: 1.25rem;
+  background: var(--card-bg);
+}
+
+/* ─── bryl-minimal Underline Links ─── */
+.bryl-link {
+  color: var(--fg-color);
+  text-decoration: underline;
+  text-decoration-color: rgba(var(--halftone-color), 0.25);
+  text-underline-offset: 3px;
+  transition: text-decoration-color 0.2s ease, opacity 0.2s ease;
+}
+
+.bryl-link:hover {
+  text-decoration-color: var(--fg-color);
+}
+
+/* ─── Mono Pills & Tags ─── */
+.tech-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  background: transparent;
+  border: 1px solid var(--border-strong);
   color: var(--muted-fg-color);
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 
 .tech-tag:hover {
-  background: var(--bg-surface, #ffffff);
-  border-color: var(--border-strong);
+  background: var(--bg-elevated);
+  border-color: var(--fg-color);
   color: var(--fg-color);
 }
 
-.dark .tech-tag {
-  background: var(--bg-elevated, #121216);
-  border-color: var(--border-color);
+.tech-tag-featured {
+  background: var(--fg-color) !important;
+  color: var(--bg-color) !important;
+  border-color: var(--fg-color) !important;
 }
 
-.dark .tech-tag:hover {
-  background: var(--bg-surface, #08080a);
-  border-color: var(--border-strong);
+/* ─── Understated Button ─── */
+.bryl-btn-primary {
+  background-color: var(--fg-color);
+  color: var(--bg-color);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--fg-color);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: opacity 0.2s ease, transform 0.15s ease;
 }
 
-/* ─── Dot-Matrix Typography System ─── */
-.font-dot,
-.font-dot-matrix {
-  font-family: var(--font-dot), ui-monospace, monospace !important;
-  letter-spacing: 0.05em;
+.bryl-btn-primary:hover {
+  opacity: 0.88;
+  transform: translateY(-1px);
 }
 
-/* ─── Dot-Matrix Sprite Cursor System ─── */
+.bryl-btn-primary:active {
+  transform: translateY(0);
+}
+
+.bryl-btn-secondary {
+  background-color: transparent;
+  color: var(--fg-color);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--border-strong);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.bryl-btn-secondary:hover {
+  background-color: var(--bg-elevated);
+  border-color: var(--fg-color);
+}
+
+/* ─── Minimal Inputs ─── */
+.bryl-input {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--fg-color);
+  padding: 10px 14px;
+  width: 100%;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.bryl-input:focus {
+  outline: none;
+  border-color: var(--fg-color);
+  background: var(--bg-surface);
+}
+
+.bryl-input::placeholder {
+  color: var(--subtle-fg-color);
+}
+
+/* ─── Page Entrance Stagger Animations ─── */
+@keyframes brylFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.bryl-entrance {
+  animation: brylFadeUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.stagger-1 { animation-delay: 50ms; }
+.stagger-2 { animation-delay: 120ms; }
+.stagger-3 { animation-delay: 190ms; }
+.stagger-4 { animation-delay: 260ms; }
+.stagger-5 { animation-delay: 330ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .bryl-entrance,
+  .bento-card,
+  .glass-card,
+  .bryl-card {
+    animation: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ─── Slim Scrollbar ─── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { 
+  background: var(--border-strong); 
+  border-radius: 9999px; 
+}
+::-webkit-scrollbar-thumb:hover { 
+  background: var(--subtle-fg-color); 
+}
+
+/* ─── Dot-Matrix Sprite Cursor System (Desktop Pointer Only) ─── */
 @media (hover: hover) and (pointer: fine) {
   *,
   *::before,
@@ -377,10 +476,9 @@ html.dark {
     cursor: none !important;
   }
 
-  input[type="text"],
-  input[type="email"],
-  input[type="search"],
-  textarea {
+  input,
+  textarea,
+  [contenteditable="true"] {
     cursor: text !important;
   }
 
@@ -430,454 +528,11 @@ html.dark {
   }
 }
 
-.section-tag {
-  font-family: var(--font-dot), var(--font-mono), monospace;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 10px;
-  border-radius: 5px;
-  border: 1px solid var(--primary-color);
-  background: transparent;
-  color: var(--primary-color);
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+@media (hover: none), (pointer: coarse) {
+  #dot-cursor {
+    display: none !important;
+  }
+  *, *::before, *::after {
+    cursor: auto !important;
+  }
 }
-
-/* ─── Page Reveal Animations ─── */
-@keyframes bentoReveal {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes navSlideDown {
-  from { opacity: 0; transform: translateY(-100%); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes drawerSlideDown {
-  from { opacity: 0; transform: translateY(-8px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-.nav-enter { animation: navSlideDown 0.35s cubic-bezier(0.16, 1, 0.3, 1) both; }
-.bento-enter { opacity: 0; animation: bentoReveal 0.4s cubic-bezier(0.16, 1, 0.3, 1) both; }
-
-html[data-tier='low'] .bento-enter,
-html[data-tier='low'] .nav-enter { animation: none; opacity: 1; transform: none; }
-
-@media (prefers-reduced-motion: reduce) {
-  .bento-enter, .nav-enter { animation: none !important; opacity: 1 !important; transform: none !important; }
-}
-
-/* ─── Scroll Reveal Variants (Immediate, zero delay, optimized) ─── */
-.reveal-fade-up,
-.reveal-fade-down,
-.reveal-fade-left,
-.reveal-fade-right,
-.reveal-scale-up,
-.will-change-transform-opacity,
-.will-change-transform {
-  opacity: 1 !important;
-  transform: none !important;
-  transition: none !important;
-  will-change: auto !important;
-}
-
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { 
-  background: rgba(0, 0, 0, 0.22); 
-  border-radius: 9999px; 
-}
-::-webkit-scrollbar-thumb:hover { 
-  background: rgba(0, 0, 0, 0.38); 
-}
-
-.dark ::-webkit-scrollbar-thumb { 
-  background: rgba(255, 255, 255, 0.22); 
-}
-.dark ::-webkit-scrollbar-thumb:hover { 
-  background: rgba(255, 255, 255, 0.40); 
-}
-
-.no-scrollbar { scrollbar-width: none; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-
-/* Mobile top nav height offset */
-body { padding-top: var(--nav-height); }
-@media (min-width: 768px) { body { padding-top: 0; } }
-
-/* iOS safe area bottom */
-.pb-safe { padding-bottom: max(1rem, env(safe-area-inset-bottom)); }
-
-/* ─── ULTRA-FAST STANDARD CSS RETRO/CLASSIC DESIGN (Active when Ultra-Fast / Lite Mode is ON) ─── */
-html[data-tier='low'] {
-  --font-heading: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-  --font-body: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif !important;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace !important;
-  --bento-radius: 4px !important;
-  --glass-blur: 0px !important;
-  --glass-shadow: none !important;
-}
-
-html[data-tier='low'] canvas {
-  display: none !important;
-}
-
-/* 1. Global Performance & Complete Animation/Transition Stripping */
-html[data-tier='low'] *,
-html[data-tier='low'] *::before,
-html[data-tier='low'] *::after {
-  animation: none !important;
-  transition: none !important;
-  scroll-behavior: auto !important;
-  text-shadow: none !important;
-  box-shadow: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  filter: none !important;
-  text-rendering: optimizeSpeed !important;
-}
-
-/* Ensure all scroll reveal, lazy load & bento elements are immediately 100% visible */
-html[data-tier='low'] .reveal-fade-up,
-html[data-tier='low'] .reveal-fade-down,
-html[data-tier='low'] .reveal-fade-left,
-html[data-tier='low'] .reveal-fade-right,
-html[data-tier='low'] .reveal-scale-up,
-html[data-tier='low'] .bento-enter,
-html[data-tier='low'] .nav-enter,
-html[data-tier='low'] [data-scroll-reveal],
-html[data-tier='low'] .will-change-transform,
-html[data-tier='low'] .will-change-transform-opacity {
-  opacity: 1 !important;
-  transform: none !important;
-  will-change: auto !important;
-}
-
-/* 2. Classic High-Contrast Color Variables */
-html[data-tier='low']:not(.dark) {
-  --bg-color: #ffffff;
-  --fg-color: #111827;
-  --border-color: #d1d5db;
-  --border-hover-color: #9ca3af;
-  --muted-color: #f3f4f6;
-  --muted-fg-color: #4b5563;
-  --primary-color: #0056b3;
-  --nav-bg: #ffffff;
-}
-
-html[data-tier='low'].dark {
-  --bg-color: #000000;
-  --fg-color: #f1f5f9;
-  --border-color: #1a1a20;
-  --border-hover-color: #3f3f4a;
-  --muted-color: #0d0d10;
-  --muted-fg-color: #94a3b8;
-  --primary-color: #3b82f6;
-  --nav-bg: #000000;
-}
-
-html[data-tier='low'] body {
-  background-color: var(--bg-color) !important;
-  background-image: none !important;
-  color: var(--fg-color) !important;
-  font-family: var(--font-body) !important;
-}
-
-/* Remove all ambient blobs and blurred glow spheres in Ultra Fast Design mode */
-html[data-tier='low'] [class*="blur-"],
-html[data-tier='low'] [class*="blur-["] {
-  display: none !important;
-}
-
-/* 3. Old-Site Standard Boxes, Bento & Cards (Simple 1px Borders, Flat Solid Backgrounds) */
-html[data-tier='low'] .bento-card,
-html[data-tier='low'] .glass-card,
-html[data-tier='low'] .browser-frame {
-  border-radius: 4px !important;
-  transform: none !important;
-  transition: none !important;
-  box-shadow: none !important;
-  -webkit-backdrop-filter: none !important;
-  backdrop-filter: none !important;
-}
-
-html[data-tier='low']:not(.dark) .bento-card,
-html[data-tier='low']:not(.dark) .glass-card,
-html[data-tier='low']:not(.dark) .browser-frame {
-  background-color: #ffffff !important;
-  border: 1px solid #d1d5db !important;
-}
-
-html[data-tier='low']:not(.dark) .bento-card:hover,
-html[data-tier='low']:not(.dark) .glass-card:hover,
-html[data-tier='low']:not(.dark) .browser-frame:hover {
-  background-color: #f9fafb !important;
-  border-color: #9ca3af !important;
-  transform: none !important;
-}
-
-html[data-tier='low'].dark .bento-card,
-html[data-tier='low'].dark .glass-card,
-html[data-tier='low'].dark .browser-frame {
-  background-color: #08080a !important;
-  border: 1px solid #1a1a20 !important;
-}
-
-html[data-tier='low'].dark .bento-card:hover,
-html[data-tier='low'].dark .glass-card:hover,
-html[data-tier='low'].dark .browser-frame:hover {
-  background-color: #121216 !important;
-  border-color: #2b2b34 !important;
-  transform: none !important;
-}
-
-/* 4. Old-Site Standard Navbar */
-html[data-tier='low']:not(.dark) .glass-nav {
-  background-color: #ffffff !important;
-  border-bottom: 1px solid #d1d5db !important;
-}
-
-html[data-tier='low'].dark .glass-nav {
-  background-color: #000000 !important;
-  border-bottom: 1px solid #1a1a20 !important;
-}
-
-/* 5. Classic Standard Links & Interactive Elements */
-html[data-tier='low'] a:hover {
-  text-decoration: underline;
-}
-
-html[data-tier='low'] button {
-  border-radius: 4px !important;
-  box-shadow: none !important;
-}
-
-/* 6. Standard Tags, Chips & Impact Pills */
-html[data-tier='low'] .tech-tag,
-html[data-tier='low'] .impact-pill,
-html[data-tier='low'] .section-tag {
-  border-radius: 3px !important;
-  box-shadow: none !important;
-  font-family: var(--font-mono) !important;
-}
-
-html[data-tier='low']:not(.dark) .tech-tag,
-html[data-tier='low']:not(.dark) .impact-pill {
-  background-color: #f3f4f6 !important;
-  border: 1px solid #d1d5db !important;
-  color: #374151 !important;
-}
-
-html[data-tier='low'].dark .tech-tag,
-html[data-tier='low'].dark .impact-pill {
-  background-color: #1f2432 !important;
-  border: 1px solid #374151 !important;
-  color: #e5e7eb !important;
-}
-
-/* 7. Classic Form Inputs & Static Labels (No floating animations in low tier) */
-html[data-tier='low'] input,
-html[data-tier='low'] textarea,
-html[data-tier='low'] select {
-  border-radius: 4px !important;
-  box-shadow: none !important;
-}
-
-html[data-tier='low'] #contact label {
-  position: static !important;
-  transform: none !important;
-  display: block !important;
-  margin-bottom: 6px !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  color: var(--fg-color) !important;
-  opacity: 1 !important;
-  z-index: auto !important;
-  animation: none !important;
-  transition: none !important;
-}
-
-html[data-tier='low'] #contact .peer-focus\:-translate-y-6,
-html[data-tier='low'] #contact [class*="translate-y"] {
-  transform: none !important;
-}
-
-html[data-tier='low']:not(.dark) input,
-html[data-tier='low']:not(.dark) textarea,
-html[data-tier='low']:not(.dark) select {
-  background-color: #ffffff !important;
-  border: 1px solid #9ca3af !important;
-  color: #111827 !important;
-}
-
-html[data-tier='low'].dark input,
-html[data-tier='low'].dark textarea,
-html[data-tier='low'].dark select {
-  background-color: #141721 !important;
-  border: 1px solid #4b5563 !important;
-  color: #f3f4f6 !important;
-}
-
-/* 8. Text Glow & Special Effects Suppression */
-html[data-tier='low'] .text-glow,
-html[data-tier='low'] .glow-effect {
-  text-shadow: none !important;
-  filter: none !important;
-}
-
-html[data-tier='low'] .bg-gradient-mesh {
-  background-image: none !important;
-}
-
-/* ─── Projects Section Mockup & Impact Tokens ─── */
-.browser-frame {
-  background: var(--glass-bg);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease;
-}
-
-.browser-frame:hover {
-  border-color: var(--border-hover-color);
-}
-
-.browser-header {
-  background: rgba(0, 0, 0, 0.04);
-  border-bottom: 1px solid var(--border-color);
-  padding: 8px 14px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.dark .browser-header {
-  background: rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-.impact-pill {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 3px 10px;
-  border-radius: 5px;
-  background: var(--bg-elevated, #F4F4F5);
-  border: 1px solid var(--border-color);
-  color: var(--muted-fg-color);
-  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
-}
-
-.impact-pill:hover {
-  background: var(--bg-surface, #ffffff);
-  border-color: var(--border-strong);
-  color: var(--fg-color);
-}
-
-/* ─── Minimal Executive Button & Input Utilities ─── */
-.neo-btn {
-  font-family: var(--font-heading);
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  box-shadow: none;
-  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  user-select: none;
-}
-
-.neo-btn:hover {
-  box-shadow: var(--shadow-sm);
-}
-
-.neo-btn:active {
-  opacity: 0.85;
-  box-shadow: none;
-}
-
-.neo-btn-primary {
-  background-color: var(--fg-color);
-  color: var(--bg-color);
-  border-color: var(--fg-color);
-}
-
-.neo-btn-primary:hover {
-  opacity: 0.88;
-}
-
-.neo-btn-secondary {
-  background-color: transparent;
-  color: var(--fg-color);
-  border-color: var(--border-strong);
-}
-
-.neo-btn-secondary:hover {
-  background-color: var(--bg-elevated);
-  border-color: var(--border-hover-color);
-}
-
-.neo-input {
-  border: 1px solid var(--border-strong);
-  background-color: var(--bg-surface, #ffffff);
-  color: var(--fg-color);
-  border-radius: 6px;
-  box-shadow: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.neo-input:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(29, 78, 216, 0.12);
-}
-
-/* ─── Modal Animations ─── */
-@keyframes modalFadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes modalScaleUp {
-  from { opacity: 0; transform: scale(0.96) translateY(8px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-.animate-modal-fade {
-  animation: modalFadeIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-modal-scale {
-  animation: modalScaleUp 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.animate-drawer-slide {
-  animation: drawerSlideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-html[data-tier='low'] .animate-modal-fade,
-html[data-tier='low'] .animate-modal-scale,
-html[data-tier='low'] .animate-drawer-slide {
-  animation: none !important;
-}
-
-/* ─── Responsive Utilities ─── */
-/* Fluid section spacing */
-.section-py { padding-top: clamp(3rem, 6vw, 5rem); padding-bottom: clamp(3rem, 6vw, 5rem); }
-
-/* Touch-friendly minimum tap target */
-.tap-target { min-height: 44px; min-width: 44px; }
-

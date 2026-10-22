@@ -6,30 +6,29 @@ const settings = await getSiteSettings();
 ---
 
 <Layout title={`404 - Not Found | ${settings.fullName}`} description="The page you are looking for does not exist.">
-	<main class="min-h-screen flex flex-col items-center justify-center relative overflow-hidden bg-gradient-mesh text-center px-6">
-		<div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
-			<div class="absolute top-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-primary-custom/5 blur-3xl"></div>
-		</div>
-
-		<div class="glass-card p-12 rounded-[32px] border border-border/20 shadow-2xl relative z-10 max-w-md">
-			<h1 class="text-8xl font-black font-heading bg-clip-text text-transparent bg-gradient-to-r from-primary-custom to-secondary-custom mb-4 animate-float">
+	<main class="min-h-screen flex flex-col items-center justify-center text-center px-4 relative z-10">
+		<div class="bryl-card p-8 sm:p-12 max-w-[28rem] w-full text-center space-y-4">
+			<div class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">
+				route_error // 0x404
+			</div>
+			<div class="text-6xl sm:text-7xl font-mono font-bold tracking-tight text-foreground-custom">
 				404
+			</div>
+			<h1 class="text-sm font-mono uppercase tracking-wider text-foreground-custom">
+				page not found
 			</h1>
-			<h2 class="text-xl font-bold font-heading text-foreground-custom mb-4">
-				Page Not Found
-			</h2>
-			<p class="text-sm text-muted-foreground-custom/90 leading-relaxed mb-8">
-				The route you tried to access does not exist, or has been moved to another location.
+			<p class="text-xs font-mono text-muted-foreground-custom leading-relaxed">
+				the requested route does not exist in this registry or has been archived.
 			</p>
-			<a
-				href="/"
-				class="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary-custom text-primary-foreground font-semibold text-xs shadow-md hover:scale-[1.02] active:scale-[0.98] transition-transform"
-			>
-				<svg class="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-					<path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
-				</svg>
-				Return Home
-			</a>
+			<div class="pt-2">
+				<a
+					href="/"
+					class="bryl-btn-primary inline-flex items-center gap-2"
+				>
+					<span>←</span>
+					<span>return home</span>
+				</a>
+			</div>
 		</div>
 	</main>
 </Layout>

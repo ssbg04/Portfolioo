@@ -73,17 +73,20 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
   };
 
   return (
-    <section id="testimonials" className="py-20 relative overflow-hidden">
-      <SectionBackground variant="testimonials" />
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 relative z-10">
+    <section id="testimonials" className="py-20 relative">
+      <div className="max-w-[56rem] mx-auto px-4 sm:px-6 relative z-10">
 
         {/* Section Header */}
         <ScrollReveal variant="fade-up" className="mb-10">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-border-custom">
             <div>
-              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-foreground-custom tracking-tight">
-                Client &amp; Peer Testimonials
-              </h2>
+              <div className="section-marker">
+                <span className="section-marker-num">06 —</span>
+                <h2 className="section-marker-title">testimonials</h2>
+              </div>
+              <p className="text-xs font-mono text-muted-foreground-custom mt-1">
+                peer &amp; client endorsements // verified feedback
+              </p>
             </div>
 
             <div className="flex items-center gap-3">
@@ -93,20 +96,16 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                   <button
                     onClick={handlePrev}
                     aria-label="Previous testimonial"
-                    className="w-9 h-9 rounded-lg border border-border-custom bg-card-custom hover:border-primary-custom/40 text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+                    className="w-8 h-8 rounded-md border border-border-custom bg-card-custom hover:border-foreground-custom text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-all cursor-pointer font-mono text-xs"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                    </svg>
+                    ←
                   </button>
                   <button
                     onClick={handleNext}
                     aria-label="Next testimonial"
-                    className="w-9 h-9 rounded-lg border border-border-custom bg-card-custom hover:border-primary-custom/40 text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-all cursor-pointer shadow-xs active:scale-95"
+                    className="w-8 h-8 rounded-md border border-border-custom bg-card-custom hover:border-foreground-custom text-muted-foreground-custom hover:text-foreground-custom flex items-center justify-center transition-all cursor-pointer font-mono text-xs"
                   >
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                    </svg>
+                    →
                   </button>
                 </div>
               )}
@@ -116,61 +115,57 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
 
         {/* ─── Static 3-Card Grid (When <= 3) ─── */}
         {!isCarousel ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {testimonials.map((test, index) => (
               <ScrollReveal key={index} variant="fade-up" delay={index * 80}>
-                <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group border border-border-custom shadow-xs hover:border-primary-custom/30 transition-all">
+                <div className="bryl-card p-5 sm:p-6 flex flex-col justify-between h-full">
                   <div>
                     {/* Stars / Quote Header */}
                     <div className="flex items-center justify-between pb-3 mb-4 border-b border-border-custom">
-                      <div className="flex items-center gap-1 text-xs" aria-label={`${test.rating ?? 5} out of 5 stars`}>
+                      <div className="flex items-center gap-0.5 text-xs text-foreground-custom font-mono" aria-label={`${test.rating ?? 5} out of 5 stars`}>
                         {Array.from({ length: 5 }).map((_, s) => {
                           const isFilled = s < (test.rating ?? 5);
                           return (
-                            <svg
-                              key={s}
-                              className={`w-3.5 h-3.5 ${isFilled ? 'text-amber-500 fill-current' : 'text-foreground-custom/15 fill-current'}`}
-                              viewBox="0 0 20 20"
-                            >
-                              <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                            </svg>
+                            <span key={s} className={isFilled ? 'text-foreground-custom' : 'text-foreground-custom/20'}>
+                              ★
+                            </span>
                           );
                         })}
                       </div>
 
                       {test.relationship && (
-                        <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-primary-custom bg-primary-custom/10 px-2 py-0.5 rounded-full border border-primary-custom/20">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground-custom border border-border-custom bg-muted-custom/30 px-2 py-0.5 rounded-md">
                           {test.relationship}
                         </span>
                       )}
                     </div>
 
-                    <p className="text-sm text-foreground-custom/90 leading-relaxed font-normal italic mb-6">
+                    <p className="font-serif text-sm text-foreground-custom leading-relaxed mb-6 italic">
                       "{test.quote}"
                     </p>
                   </div>
 
                   {/* Profile Foot */}
-                  <div className="pt-4 border-t border-border-custom flex items-center gap-3">
+                  <div className="pt-3 border-t border-border-custom flex items-center gap-3">
                     {test.avatar ? (
                       <img
                         src={test.avatar}
                         alt={test.name}
                         loading="lazy"
                         decoding="async"
-                        className="w-10 h-10 rounded-full object-cover border border-border-custom"
+                        className="w-9 h-9 rounded-xl object-cover border border-border-custom"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-primary-custom/10 text-primary-custom border border-primary-custom/20 flex items-center justify-center font-semibold text-xs">
+                      <div className="w-9 h-9 rounded-xl bg-card-custom text-foreground-custom border border-border-custom flex items-center justify-center font-mono font-bold text-xs">
                         {test.name ? test.name.charAt(0) : 'T'}
                       </div>
                     )}
                     <div className="min-w-0">
-                      <h4 className="font-semibold text-xs text-foreground-custom truncate">
+                      <h4 className="font-mono text-xs font-bold text-foreground-custom truncate lowercase">
                         {test.name}
                       </h4>
-                      <p className="text-[11px] font-mono text-muted-foreground-custom truncate">
-                        {test.role} {test.company ? `• ${test.company}` : ''}
+                      <p className="text-[10px] font-mono text-muted-foreground-custom truncate">
+                        {test.role} {test.company ? `// ${test.company}` : ''}
                       </p>
                     </div>
                   </div>
@@ -197,61 +192,57 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                 {testimonials.map((test, index) => (
                   <div
                     key={index}
-                    className="shrink-0 px-2.5 box-border"
+                    className="shrink-0 px-2 box-border"
                     style={{ width: `${100 / visibleCount}%` }}
                   >
-                    <div className="bento-card p-6 sm:p-7 flex flex-col justify-between h-full group border border-border-custom shadow-xs hover:border-primary-custom/30 transition-all">
+                    <div className="bryl-card p-5 sm:p-6 flex flex-col justify-between h-full">
                       <div>
                         {/* Rating & Tag */}
                         <div className="flex items-center justify-between pb-3 mb-4 border-b border-border-custom">
-                          <div className="flex items-center gap-1 text-xs" aria-label={`${test.rating ?? 5} out of 5 stars`}>
+                          <div className="flex items-center gap-0.5 text-xs text-foreground-custom font-mono" aria-label={`${test.rating ?? 5} out of 5 stars`}>
                             {Array.from({ length: 5 }).map((_, s) => {
                               const isFilled = s < (test.rating ?? 5);
                               return (
-                                <svg
-                                  key={s}
-                                  className={`w-3.5 h-3.5 ${isFilled ? 'text-amber-500 fill-current' : 'text-foreground-custom/15 fill-current'}`}
-                                  viewBox="0 0 20 20"
-                                >
-                                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                </svg>
+                                <span key={s} className={isFilled ? 'text-foreground-custom' : 'text-foreground-custom/20'}>
+                                  ★
+                                </span>
                               );
                             })}
                           </div>
 
                           {test.relationship && (
-                            <span className="text-[10px] font-mono font-medium uppercase tracking-wider text-primary-custom bg-primary-custom/10 px-2 py-0.5 rounded-full border border-primary-custom/20">
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground-custom border border-border-custom bg-muted-custom/30 px-2 py-0.5 rounded-md">
                               {test.relationship}
                             </span>
                           )}
                         </div>
 
-                        <p className="text-sm text-foreground-custom/90 leading-relaxed font-normal italic mb-6">
+                        <p className="font-serif text-sm text-foreground-custom leading-relaxed mb-6 italic">
                           "{test.quote}"
                         </p>
                       </div>
 
                       {/* Author Profile */}
-                      <div className="pt-4 border-t border-border-custom flex items-center gap-3">
+                      <div className="pt-3 border-t border-border-custom flex items-center gap-3">
                         {test.avatar ? (
                           <img
                             src={test.avatar}
                             alt={test.name}
                             loading="lazy"
                             decoding="async"
-                            className="w-10 h-10 rounded-full object-cover border border-border-custom"
+                            className="w-9 h-9 rounded-xl object-cover border border-border-custom"
                           />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-primary-custom/10 text-primary-custom border border-primary-custom/20 flex items-center justify-center font-semibold text-xs">
+                          <div className="w-9 h-9 rounded-xl bg-card-custom text-foreground-custom border border-border-custom flex items-center justify-center font-mono font-bold text-xs">
                             {test.name ? test.name.charAt(0) : 'T'}
                           </div>
                         )}
                         <div className="min-w-0">
-                          <h4 className="font-semibold text-xs text-foreground-custom truncate">
+                          <h4 className="font-mono text-xs font-bold text-foreground-custom truncate lowercase">
                             {test.name}
                           </h4>
-                          <p className="text-[11px] font-mono text-muted-foreground-custom truncate">
-                            {test.role} {test.company ? `• ${test.company}` : ''}
+                          <p className="text-[10px] font-mono text-muted-foreground-custom truncate">
+                            {test.role} {test.company ? `// ${test.company}` : ''}
                           </p>
                         </div>
                       </div>
@@ -270,7 +261,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                   aria-label={`Go to slide ${dotIdx + 1}`}
                   className={`h-1.5 rounded-full transition-all cursor-pointer ${
                     currentIndex === dotIdx
-                      ? 'w-6 bg-primary-custom'
+                      ? 'w-6 bg-foreground-custom'
                       : 'w-1.5 bg-foreground-custom/20 hover:bg-foreground-custom/40'
                   }`}
                 />

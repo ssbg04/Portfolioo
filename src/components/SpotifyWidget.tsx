@@ -206,15 +206,15 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
           <div className="flex items-center gap-1.5">
             {isPlaying ? (
               <div className="flex items-end gap-0.5 h-3">
-                <span className="w-1 h-2.5 bg-[#1DB954]" />
-                <span className="w-1 h-3.5 bg-[#1DB954]" />
-                <span className="w-1 h-1.5 bg-[#1DB954]" />
+                <span className="w-1 h-2.5 bg-foreground-custom" />
+                <span className="w-1 h-3.5 bg-foreground-custom" />
+                <span className="w-1 h-1.5 bg-foreground-custom" />
               </div>
             ) : (
               <span className="w-2 h-2 rounded-full bg-muted-foreground-custom border border-border-custom" />
             )}
-            <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-[#1DB954]">
-              {isPlaying ? (isLivePlaying ? 'Now Playing' : 'Recently Played') : 'Paused'}
+            <span className="text-[10px] font-mono font-semibold uppercase tracking-wider text-foreground-custom">
+              {isPlaying ? (isLivePlaying ? 'now playing' : 'recently played') : 'paused'}
             </span>
           </div>
 
@@ -223,19 +223,16 @@ export default function SpotifyWidget({ isOpen = true }: SpotifyWidgetProps) {
             target="_blank"
             rel="noopener noreferrer"
             onClick={() => haptic.tap()}
-            className="flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-lg border border-border-custom shadow-xs bg-card-custom text-foreground-custom hover:border-[#1DB954]/50 hover:bg-[#1DB954]/10 hover:text-[#1DB954] active:translate-y-px transition-all"
+            className="flex items-center gap-1.5 text-xs font-mono font-medium px-2.5 py-1 rounded-md border border-border-custom bg-card-custom text-foreground-custom hover:border-foreground-custom active:translate-y-px transition-all"
           >
-            <span>Open on Spotify</span>
-            <svg className="w-3 h-3 fill-current" viewBox="0 0 24 24">
-              <path d="M12 .007c-6.627 0-12 5.371-12 12s5.373 12 12 12 12-5.371 12-12-5.373-12-12-12zm5.49 17.31c-.22.361-.69.479-1.05.261-2.91-1.781-6.57-2.181-10.89-1.191-.41.09-.82-.17-.91-.58-.09-.41.17-.82.58-.91 4.73-1.08 8.77-.63 12.01 1.35.36.21.48.68.26 1.04zm1.04-3.261c-.28.45-.87.6-1.32.32-3.33-2.04-8.41-2.64-12.35-1.45-.51.15-1.04-.14-1.2-.65-.15-.51.14-1.04.65-1.2 4.51-1.37 10.11-.7 13.9 1.62.45.28.6.87.32 1.32zm.09-3.38c-3.99-2.37-10.58-2.59-14.39-1.43-.61.19-1.26-.14-1.45-.75-.19-.61.14-1.26.75-1.45 4.38-1.33 11.64-1.08 16.23 1.65.55.33.73 1.04.4 1.59-.33.55-1.04.73-1.59.4z" />
-            </svg>
+            <span>spotify ↗</span>
           </a>
         </div>
 
         {/* Progress Bar */}
-        <div className="w-full h-1.5 bg-muted-custom border border-border-custom rounded-full overflow-hidden">
+        <div className="w-full h-1 bg-muted-custom border border-border-custom rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#1DB954] transition-all duration-700"
+            className="h-full bg-foreground-custom transition-all duration-700"
             style={{ width: `${progress}%` }}
           />
         </div>

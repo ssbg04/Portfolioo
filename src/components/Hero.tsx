@@ -2,7 +2,6 @@ import React from 'react';
 import type { SocialLink } from '../lib/data';
 import ppDay from '../assets/pp-day.webp';
 import ppNight from '../assets/pp-night.webp';
-import SectionBackground from './SectionBackground';
 
 interface HeroProps {
   fullName: string;
@@ -16,50 +15,6 @@ interface HeroProps {
   resumeFile?: string;
 }
 
-const getPlatformIcon = (platform: string) => {
-  const p = platform.toLowerCase();
-  if (p.includes('github')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z" />
-      </svg>
-    );
-  }
-  if (p.includes('facebook')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874V12h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-      </svg>
-    );
-  }
-  if (p.includes('tiktok')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M12.53.02C13.84 0 15.14.01 16.44 0c.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.09-1.03-1.87-1.09-2.93-3.16-2.61-5.25.38-2.52 2.5-4.46 5.04-4.46.73 0 1.43.16 2.07.46.06.03.11.05.16.08v4.18c-1.38-.24-2.81-.19-4.16.14-1.12.28-2.12 1.05-2.67 2.06-.55 1.01-.58 2.22-.09 3.25.48 1.01 1.41 1.72 2.49 2.03 1.1.32 2.27.32 3.37.01.69-.2 1.34-.55 1.87-.99.53-.44.97-.99 1.25-1.61.28-.62.43-1.28.46-1.95.06-2.69.02-5.38.02-8.07z" />
-      </svg>
-    );
-  }
-  if (p.includes('linkedin')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.779-1.75-1.75s.784-1.75 1.75-1.75 1.75.779 1.75 1.75-.784 1.75-1.75 1.75zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-      </svg>
-    );
-  }
-  if (p.includes('twitter') || p.includes('x.com')) {
-    return (
-      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-      </svg>
-    );
-  }
-  return (
-    <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-    </svg>
-  );
-};
-
 export default function Hero({
   fullName,
   title,
@@ -67,7 +22,7 @@ export default function Hero({
   heroImage,
   heroImageNight,
   isAvailable = true,
-  availabilityStatus = 'Available for new projects',
+  availabilityStatus = 'Available for opportunities',
   socialLinks = [],
   resumeFile = '/CV-Cris-Charles-Garcia.pdf'
 }: HeroProps) {
@@ -95,147 +50,135 @@ export default function Hero({
   return (
     <section
       id="home"
-      className="relative min-h-[calc(100vh-60px)] flex flex-col md:flex-row items-center justify-start md:justify-center pt-2 sm:pt-4 md:pt-8 pb-10 md:pb-12 overflow-x-clip"
+      className="relative pt-6 sm:pt-10 md:pt-14 pb-14 border-b border-border-custom bryl-entrance stagger-1"
     >
-      <SectionBackground variant="hero" />
-      <div className="container mx-auto px-6 max-w-5xl relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 md:gap-12 items-center">
-        {/* Left Column: Text & Actions */}
-        <div className="md:col-span-7 flex flex-col items-center md:items-start text-center md:text-left order-2 md:order-1">
-          {/* Status Badge */}
-          {isAvailable !== false && (
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-md bg-card-custom text-xs font-dot font-medium text-muted-foreground-custom border border-border-custom mb-4 sm:mb-6 tracking-wide shadow-xs">
-              <span className="flex h-2 w-2 relative">
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              {availabilityStatus}
+      <div className="max-w-[56rem] mx-auto px-4 sm:px-6">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 sm:gap-8 md:gap-10 items-start">
+          
+          {/* Main Editorial Bio */}
+          <div className="md:col-span-8 flex flex-col items-start text-left order-2 md:order-1">
+            
+            {/* Live Availability Status Indicator */}
+            {isAvailable !== false && (
+              <div className="inline-flex items-center gap-2 mb-3 sm:mb-4">
+                <span className="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse opacity-80" />
+                <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">
+                  {availabilityStatus.toLowerCase()}
+                </span>
+              </div>
+            )}
+
+            {/* Display Page Title (Lowercase, technical scale, mobile friendly) */}
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.08] tracking-tight text-foreground-custom lowercase break-words mb-2 sm:mb-3">
+              {fullName.toLowerCase()}
+            </h1>
+
+            {/* Technical Sub-Role */}
+            <p className="text-xs sm:text-sm font-mono uppercase tracking-widest text-muted-foreground-custom mb-4 sm:mb-5">
+              {title.toLowerCase()}
+            </p>
+
+            {/* Value Proposition Body */}
+            <p className="text-sm sm:text-base leading-relaxed text-foreground-custom/90 mb-6 max-w-xl font-normal">
+              {valueProposition}
+            </p>
+
+            {/* Action Bar (Monochrome Inversion & Hairline Text Links) */}
+            <div className="flex flex-wrap items-center gap-3 sm:gap-5 pt-1">
+              <a
+                href={resumeFile}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bryl-btn-primary"
+              >
+                <span>download cv</span>
+                <span className="text-[10px]" aria-hidden="true">↗</span>
+              </a>
+
+              <a
+                href="#projects"
+                onClick={(e) => handleSmoothScroll(e, 'projects')}
+                className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors flex items-center gap-1.5 py-1"
+              >
+                <span>view projects</span>
+                <span aria-hidden="true">↓</span>
+              </a>
+
+              <a
+                href="#contact"
+                onClick={(e) => handleSmoothScroll(e, 'contact')}
+                className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors flex items-center gap-1.5 py-1"
+              >
+                <span>contact</span>
+                <span aria-hidden="true">↗</span>
+              </a>
             </div>
-          )}
 
-          {/* Heading */}
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight mb-3 sm:mb-4 text-foreground-custom leading-tight">
-            Hi, I'm{' '}
-            <span className="text-primary-custom">{fullName}</span>
-          </h1>
-
-          {/* Title */}
-          <p className="text-lg sm:text-xl md:text-2xl font-bold text-foreground-custom mb-3 font-heading">
-            {title}
-          </p>
-
-          {/* Value Proposition */}
-          <p className="text-sm sm:text-base md:text-lg text-foreground-custom/85 dark:text-foreground-custom/90 mb-6 sm:mb-8 max-w-xl leading-relaxed font-normal">
-            {valueProposition}
-          </p>
-
-          {/* Actions & Social Links */}
-          <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mt-1 w-full justify-center md:justify-start">
-            {/* Social Icons */}
-            <div className="flex items-center gap-4 sm:gap-6">
-              <div className="flex items-center gap-2.5">
+            {/* Social Links (Clean Micro-Labels with Trailing Arrow) */}
+            <div className="flex items-center gap-4 sm:gap-5 mt-6 pt-4 border-t border-border-custom w-full max-w-md">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-subtle-custom">
+                links:
+              </span>
+              <div className="flex items-center gap-3.5 sm:gap-4 flex-wrap">
                 {linksToRender.map((link) => (
                   <a
                     key={link.platform}
                     href={link.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="tap-target w-10 h-10 rounded-lg bg-card-custom border border-border-custom text-muted-foreground-custom hover:text-primary-custom hover:border-primary-custom/40 transition-colors duration-150 flex items-center justify-center shadow-xs"
-                    aria-label={`Visit Cris on ${link.platform}`}
-                    title={link.platform}
+                    className="text-xs font-mono text-foreground-custom/80 hover:text-foreground-custom transition-colors inline-flex items-center gap-1"
                   >
-                    {getPlatformIcon(link.platform)}
+                    <span>{link.platform.toLowerCase()}</span>
+                    <span className="text-[10px] opacity-60" aria-hidden="true">↗</span>
                   </a>
                 ))}
               </div>
-              <div className="hidden sm:block w-px h-8 bg-border-custom" />
-            </div>
-
-            {/* CTA Buttons */}
-            <div className="flex flex-wrap sm:flex-nowrap items-center gap-2.5 sm:gap-3 w-full sm:w-auto justify-center">
-              <a
-                href="#projects"
-                onClick={(e) => handleSmoothScroll(e, 'projects')}
-                aria-label="Jump to projects section"
-                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 rounded-lg bg-foreground-custom text-background-custom font-semibold text-sm border border-foreground-custom hover:opacity-90 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs group whitespace-nowrap"
-              >
-                Projects
-                <svg className="w-3.5 h-3.5 transform group-hover:translate-x-0.5 transition-transform duration-150" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-                </svg>
-              </a>
-              <a
-                href={resumeFile}
-                target="_blank"
-                rel="noopener noreferrer"
-                download="CV-Cris-Charles-Garcia.pdf"
-                aria-label="Download CV"
-                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2.5 rounded-lg bg-card-custom text-primary-custom font-semibold text-sm border border-primary-custom/30 hover:border-primary-custom hover:bg-primary-custom/5 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs whitespace-nowrap"
-              >
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-                </svg>
-                Download CV
-              </a>
-              <a
-                href="#contact"
-                onClick={(e) => handleSmoothScroll(e, 'contact')}
-                aria-label="Jump to contact section"
-                className="w-full sm:w-auto px-4 sm:px-5 py-2.5 rounded-lg bg-card-custom text-foreground-custom font-semibold text-sm border border-border-custom hover:bg-muted-custom/60 active:scale-[0.98] transition-all duration-150 text-center cursor-pointer flex items-center justify-center gap-2 shadow-xs whitespace-nowrap"
-              >
-                Contact
-                <svg className="w-3.5 h-3.5 opacity-70" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
-                </svg>
-              </a>
             </div>
           </div>
-        </div>
 
-        {/* Right Column: Profile Image Frame (Zero-lag, clean executive portrait) */}
-        <div className="md:col-span-5 flex justify-center order-1 md:order-2">
-          <div className="relative w-52 h-52 sm:w-64 sm:h-64 md:w-72 md:h-72 lg:w-80 lg:h-80 flex items-center justify-center p-2 rounded-2xl border border-border-custom bg-card-custom shadow-md">
-            {/* Version Stamp */}
-            <div className="absolute -top-3 -right-2 z-20 px-2.5 py-0.5 rounded-md bg-card-custom text-primary-custom text-[10px] font-dot font-semibold border border-border-custom select-none cursor-default shadow-xs">
-              DEV // 01
-            </div>
-
-            <div className="w-full h-full rounded-xl overflow-hidden relative bg-muted-custom/30">
-              {nightImg && nightImg !== dayImg ? (
-                <>
+          {/* Portrait Column (Full natural color photo, 16px radius, hairline border, subtle image zoom on hover) */}
+          <div className="md:col-span-4 flex justify-start md:justify-end order-1 md:order-2 mb-2 md:mb-0">
+            <div className="group relative w-28 h-28 sm:w-36 sm:h-36 md:w-52 md:h-52 rounded-2xl border border-border-custom p-1.5 bg-card-custom shadow-sm overflow-hidden transition-all duration-300">
+              <div className="w-full h-full rounded-[12px] overflow-hidden relative bg-elevated-custom">
+                {nightImg && nightImg !== dayImg ? (
+                  <>
+                    <img
+                      src={dayImg}
+                      alt={fullName}
+                      width="240"
+                      height="240"
+                      loading="eager"
+                      fetchPriority="high"
+                      decoding="async"
+                      className="w-full h-full object-cover dark:hidden transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                    />
+                    <img
+                      src={nightImg}
+                      alt={fullName}
+                      width="240"
+                      height="240"
+                      loading="lazy"
+                      fetchPriority="auto"
+                      decoding="async"
+                      className="w-full h-full object-cover hidden dark:block transition-transform duration-500 ease-out group-hover:scale-[1.04]"
+                    />
+                  </>
+                ) : (
                   <img
                     src={dayImg}
                     alt={fullName}
-                    width="320"
-                    height="320"
+                    width="240"
+                    height="240"
                     loading="eager"
                     fetchPriority="high"
                     decoding="async"
-                    className="w-full h-full object-cover dark:hidden"
+                    className="w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.04]"
                   />
-                  <img
-                    src={nightImg}
-                    alt={fullName}
-                    width="320"
-                    height="320"
-                    loading="lazy"
-                    fetchPriority="auto"
-                    decoding="async"
-                    className="w-full h-full object-cover hidden dark:block"
-                  />
-                </>
-              ) : (
-                <img
-                  src={dayImg}
-                  alt={fullName}
-                  width="320"
-                  height="320"
-                  loading="eager"
-                  fetchPriority="high"
-                  decoding="async"
-                  className="w-full h-full object-cover"
-                />
-              )}
+                )}
+              </div>
             </div>
           </div>
+
         </div>
       </div>
     </section>

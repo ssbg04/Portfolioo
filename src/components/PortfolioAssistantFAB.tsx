@@ -400,7 +400,7 @@ export default function PortfolioAssistantFAB() {
           }}
           aria-label={isOpen ? "Close Portfolio Assistant" : "Open Portfolio Assistant"}
           aria-expanded={isOpen}
-          className="relative group p-3 sm:px-4 sm:py-3 rounded-full bg-primary-custom/95 backdrop-blur-md text-white shadow-lg hover:bg-primary-custom hover:shadow-xl active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-primary-custom/80 font-medium"
+          className="relative group p-3 sm:px-4 sm:py-3 rounded-full bg-foreground-custom text-background-custom shadow-lg hover:opacity-90 active:scale-95 transition-all flex items-center gap-2 cursor-pointer border border-border-custom font-medium"
         >
           {/* Animated ping badge */}
           {!isOpen && (
@@ -450,7 +450,7 @@ export default function PortfolioAssistantFAB() {
           {/* Header with Quick Theme Switcher */}
           <div className="p-3.5 border-b border-border-custom/70 bg-muted-custom/20 backdrop-blur-md flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-7 h-7 rounded-lg bg-primary-custom/15 text-primary-custom border border-primary-custom/30 flex items-center justify-center font-mono font-bold text-xs shadow-xs">
+              <div className="w-7 h-7 rounded-lg bg-foreground-custom text-background-custom flex items-center justify-center font-mono font-bold text-xs shadow-xs">
                 PA
               </div>
               <div>
@@ -533,7 +533,7 @@ export default function PortfolioAssistantFAB() {
                   <div
                     className={`p-3 rounded-xl max-w-[88%] text-xs backdrop-blur-sm ${
                       isUser
-                        ? 'bg-primary-custom text-white font-normal rounded-br-xs shadow-xs'
+                        ? 'bg-foreground-custom text-background-custom font-normal rounded-br-xs shadow-xs'
                         : 'bg-card-custom/90 dark:bg-card-custom/75 text-foreground-custom border border-border-custom/70 rounded-bl-xs shadow-xs'
                     }`}
                   >
@@ -646,7 +646,7 @@ export default function PortfolioAssistantFAB() {
                 type="submit"
                 disabled={!input.trim() || loading || cooldown > 0}
                 aria-label="Send query"
-                className="p-2 rounded-lg bg-primary-custom text-white border border-primary-custom hover:bg-primary-custom/90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs"
+                className="p-2 rounded-lg bg-foreground-custom text-background-custom hover:opacity-90 active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer shadow-xs"
               >
                 <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 12 3.269 3.125A59.769 59.769 0 0 1 21.485 12 59.768 59.768 0 0 1 3.27 20.875L5.999 12Zm0 0h7.5" />

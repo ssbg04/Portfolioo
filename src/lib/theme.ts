@@ -29,10 +29,10 @@ export function switchTheme(nextTheme: ResolvedTheme): ResolvedTheme {
     const metaThemeColor = document.querySelector('meta[name="theme-color"]');
     if (nextTheme === 'dark') {
       root.classList.add('dark');
-      metaThemeColor?.setAttribute('content', '#000000');
+      metaThemeColor?.setAttribute('content', '#0c0c0f');
     } else {
       root.classList.remove('dark');
-      metaThemeColor?.setAttribute('content', '#fafafa');
+      metaThemeColor?.setAttribute('content', '#ffffff');
     }
 
     // 4. Force synchronous style recalculation while transitions are disabled

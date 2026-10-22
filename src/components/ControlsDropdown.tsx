@@ -23,7 +23,7 @@ export default function ControlsDropdown() {
 
     setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches);
 
-    // Detect theme preferences: Light default or manual stored
+    // Detect theme preferences: System default or manual stored
     const stored = localStorage.getItem('theme') as ThemeMode | null;
     const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
 
@@ -31,24 +31,24 @@ export default function ControlsDropdown() {
       setThemeMode('dark');
       setResolvedTheme('dark');
       document.documentElement.classList.add('dark');
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#000000');
-    } else if (stored === 'system') {
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#0c0c0f');
+    } else if (stored === 'light') {
+      setThemeMode('light');
+      setResolvedTheme('light');
+      document.documentElement.classList.remove('dark');
+      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
+    } else {
+      // Default: System Mode
       setThemeMode('system');
       const detectedTheme = systemDark ? 'dark' : 'light';
       setResolvedTheme(detectedTheme);
       if (detectedTheme === 'dark') {
         document.documentElement.classList.add('dark');
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#000000');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#0c0c0f');
       } else {
         document.documentElement.classList.remove('dark');
-        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#faf6f0');
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#ffffff');
       }
-    } else {
-      // Default: light mode signature theme
-      setThemeMode('light');
-      setResolvedTheme('light');
-      document.documentElement.classList.remove('dark');
-      document.querySelector('meta[name="theme-color"]')?.setAttribute('content', '#faf6f0');
     }
 
     const savedMag = localStorage.getItem('magnifierEnabled');
@@ -255,7 +255,7 @@ export default function ControlsDropdown() {
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground-custom">
                   Appearance Mode
                 </span>
-                <span className="text-[11px] font-mono font-medium text-primary-600 dark:text-primary-400 capitalize flex items-center gap-1">
+                <span className="text-[11px] font-mono font-semibold text-foreground-custom capitalize flex items-center gap-1">
                   {themeMode === 'system' ? `Auto (${resolvedTheme})` : themeMode}
                 </span>
               </div>
@@ -267,7 +267,7 @@ export default function ControlsDropdown() {
                   onClick={() => toggleTheme('system')}
                   className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer ${
                     themeMode === 'system'
-                      ? 'bg-card-custom text-foreground-custom border border-border-custom shadow-xs font-semibold'
+                      ? 'bg-foreground-custom text-background-custom border border-foreground-custom shadow-xs font-semibold'
                       : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-card-custom/50 border border-transparent font-medium'
                   }`}
                   title="Detect and match your device system theme"
@@ -284,7 +284,7 @@ export default function ControlsDropdown() {
                   onClick={() => toggleTheme('light')}
                   className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer ${
                     themeMode === 'light'
-                      ? 'bg-card-custom text-foreground-custom border border-border-custom shadow-xs font-semibold'
+                      ? 'bg-foreground-custom text-background-custom border border-foreground-custom shadow-xs font-semibold'
                       : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-card-custom/50 border border-transparent font-medium'
                   }`}
                 >
@@ -301,7 +301,7 @@ export default function ControlsDropdown() {
                   onClick={() => toggleTheme('dark')}
                   className={`flex items-center justify-center gap-1.5 py-1.5 px-2 rounded-lg text-xs transition-all cursor-pointer ${
                     themeMode === 'dark'
-                      ? 'bg-card-custom text-foreground-custom border border-border-custom shadow-xs font-semibold'
+                      ? 'bg-foreground-custom text-background-custom border border-foreground-custom shadow-xs font-semibold'
                       : 'text-muted-foreground-custom hover:text-foreground-custom hover:bg-card-custom/50 border border-transparent font-medium'
                   }`}
                 >
@@ -324,7 +324,7 @@ export default function ControlsDropdown() {
                       Magnifier Lens (Key 'R')
                     </span>
                     <span className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-full border ${
-                      magnifierEnabled ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/30' : 'bg-muted-custom text-muted-foreground-custom border-border-custom'
+                      magnifierEnabled ? 'bg-foreground-custom text-background-custom border-foreground-custom' : 'bg-muted-custom text-muted-foreground-custom border-border-custom'
                     }`}>
                       {magnifierEnabled ? 'ENABLED' : 'DISABLED'}
                     </span>
@@ -343,14 +343,14 @@ export default function ControlsDropdown() {
                     <button
                       type="button"
                       onClick={toggleMagnifier}
-                      className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors cursor-pointer border border-border-custom ${
-                        magnifierEnabled ? 'bg-primary-600' : 'bg-zinc-300 dark:bg-zinc-700'
+                      className={`relative inline-flex h-5 w-10 items-center rounded-full transition-colors cursor-pointer border ${
+                        magnifierEnabled ? 'bg-foreground-custom border-foreground-custom' : 'bg-muted-custom border-border-custom'
                       }`}
                       aria-label="Toggle magnifier"
                     >
                       <span
-                        className={`inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow-xs transition-transform ${
-                          magnifierEnabled ? 'translate-x-5' : 'translate-x-0.5'
+                        className={`inline-block h-3.5 w-3.5 transform rounded-full shadow-xs transition-transform ${
+                          magnifierEnabled ? 'bg-background-custom translate-x-5' : 'bg-muted-foreground-custom translate-x-0.5'
                         }`}
                       />
                     </button>
@@ -360,7 +360,7 @@ export default function ControlsDropdown() {
                     <button
                       type="button"
                       onClick={triggerInstantMagnify}
-                      className="w-full py-2 px-3 rounded-xl text-xs font-medium bg-primary-600 hover:bg-primary-500 text-white border border-primary-500 shadow-xs hover:shadow transition-all flex items-center justify-center gap-1.5 cursor-pointer active:translate-y-px"
+                      className="w-full py-2 px-3 rounded-xl text-xs font-mono font-medium bg-foreground-custom text-background-custom border border-foreground-custom shadow-xs hover:opacity-90 transition-all flex items-center justify-center gap-1.5 cursor-pointer active:translate-y-px"
                     >
                       <svg className="w-3.5 h-3.5 stroke-[2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607zM10.5 7.5v6m3-3h-6" />
@@ -380,7 +380,7 @@ export default function ControlsDropdown() {
                 <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-muted-foreground-custom">
                   Page Text Zoom
                 </span>
-                <span className="text-[11px] font-mono font-semibold text-primary-600 dark:text-primary-400">
+                <span className="text-[11px] font-mono font-semibold text-foreground-custom">
                   {zoom}%
                 </span>
               </div>
@@ -391,10 +391,10 @@ export default function ControlsDropdown() {
                     key={level}
                     type="button"
                     onClick={() => changeZoom(level)}
-                    className={`py-1.5 px-2 rounded-lg text-xs font-medium transition-all border cursor-pointer active:translate-y-px ${
+                    className={`py-1.5 px-2 rounded-lg text-xs font-mono font-medium transition-all border cursor-pointer active:translate-y-px ${
                       zoom === level
-                        ? 'bg-primary-600 text-white border-primary-500 shadow-xs font-semibold'
-                        : 'bg-card-custom text-foreground-custom border-border-custom shadow-xs hover:bg-muted-custom'
+                        ? 'bg-foreground-custom text-background-custom border-foreground-custom shadow-xs font-semibold'
+                        : 'bg-card-custom text-foreground-custom border-border-custom shadow-xs hover:bg-elevated-custom'
                     }`}
                   >
                     {level === 100 ? '100% (Def)' : `${level}%`}
@@ -407,7 +407,7 @@ export default function ControlsDropdown() {
                   type="button"
                   onClick={() => changeZoom(zoom - 5)}
                   disabled={zoom <= 80}
-                  className="flex-1 py-1.5 rounded-lg bg-card-custom hover:bg-muted-custom text-foreground-custom font-semibold text-sm disabled:opacity-40 transition-all flex items-center justify-center cursor-pointer border border-border-custom shadow-xs active:translate-y-px"
+                  className="flex-1 py-1.5 rounded-lg bg-card-custom hover:bg-elevated-custom text-foreground-custom font-semibold text-sm disabled:opacity-40 transition-all flex items-center justify-center cursor-pointer border border-border-custom shadow-xs active:translate-y-px"
                   aria-label="Decrease text zoom"
                 >
                   -
@@ -415,7 +415,7 @@ export default function ControlsDropdown() {
                 <button
                   type="button"
                   onClick={() => changeZoom(100)}
-                  className="px-3 py-1.5 text-xs font-mono font-medium text-muted-foreground-custom hover:text-primary-600 dark:hover:text-primary-400 cursor-pointer"
+                  className="px-3 py-1.5 text-xs font-mono font-medium text-muted-foreground-custom hover:text-foreground-custom cursor-pointer"
                 >
                   Reset
                 </button>
@@ -423,7 +423,7 @@ export default function ControlsDropdown() {
                   type="button"
                   onClick={() => changeZoom(zoom + 5)}
                   disabled={zoom >= 130}
-                  className="flex-1 py-1.5 rounded-lg bg-card-custom hover:bg-muted-custom text-foreground-custom font-semibold text-sm disabled:opacity-40 transition-all flex items-center justify-center cursor-pointer border border-border-custom shadow-xs active:translate-y-px"
+                  className="flex-1 py-1.5 rounded-lg bg-card-custom hover:bg-elevated-custom text-foreground-custom font-semibold text-sm disabled:opacity-40 transition-all flex items-center justify-center cursor-pointer border border-border-custom shadow-xs active:translate-y-px"
                   aria-label="Increase text zoom"
                 >
                   +
