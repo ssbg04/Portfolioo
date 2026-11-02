@@ -1,26 +1,18 @@
 ---
-export const prerender = true;
 import Layout from '../../layouts/Layout.astro';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { getProjects, getSiteSettings, getSocialLinks } from '../../lib/data';
 
-export async function getStaticPaths() {
-	const projects = await getProjects();
-
-	return projects.map((project) => ({
-		params: {
-			slug: project.slug
-		},
-		props: {
-			project
-		}
-	}));
-}
-
-const { project } = Astro.props;
+const { slug } = Astro.params;
 
 const allProjects = await getProjects();
+const project = allProjects.find((p) => p.slug === slug);
+
+if (!project) {
+	return Astro.redirect('/404');
+}
+
 const currentIndex = allProjects.findIndex((p) => p.slug === project.slug);
 
 const settings = await getSiteSettings();
