@@ -6,3 +6,6 @@
 
 /images/cert*
   X-Robots-Tag: noindex, noimageindex, nofollow, nosnippet
+
+/api/cert-image*
+  X-Robots-Tag: noindex, noimageindex, nofollow, nosnippet

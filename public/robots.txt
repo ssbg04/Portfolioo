@@ -14,6 +14,8 @@ Disallow: /images/cert_*
 # Disallow image indexing specifically for Google Images crawler
 User-agent: Googlebot-Image
 Disallow: /
+Disallow: /api/
+Disallow: /api/cert-image*
 Disallow: /gallery
 Disallow: /gallery/
 Disallow: /images/cert*

@@ -596,25 +596,33 @@ export async function getCertifications(featuredOnly = false): Promise<Certifica
 
     if (!certs || certs.length === 0) return featuredOnly ? mockCertifications.filter(c => c.featured) : mockCertifications;
 
-    return certs.map((c: any, idx: number) => ({
-      id: c._id || `cert-${idx}`,
-      code: c.code || (idx + 1 < 10 ? `0${idx + 1}` : `${idx + 1}`),
-      title: c.title || 'Certification',
-      issuer: c.issuer || 'Credential Issuer',
-      description: c.description || '',
-      badgeImage: c.badgeImage ? urlFor(c.badgeImage, { width: 480, quality: 80 }) : cleanBadgeUrl(c.badgeImageUrl || ''),
-      badgeUrl: c.badgeUrl || '#',
-      category: c.category || 'General',
-      skills: Array.isArray(c.skills) ? c.skills : [],
-      issueDate: c.issueDate,
-      featured: c.featured === true,
-      order: typeof c.order === 'number' ? c.order : idx + 1,
-      type: c.type || (
-        c.badgeUrl?.includes('credly.com')
-          ? 'badge'
-          : (c.title?.toLowerCase().includes('badge') ? 'badge' : 'certificate')
-      )
-    }));
+    return certs.map((c: any, idx: number) => {
+      const rawBadgeImage = c.badgeImage ? urlFor(c.badgeImage, { width: 720, quality: 85 }) : cleanBadgeUrl(c.badgeImageUrl || '');
+      // Shield certification images from search engine crawlers (Googlebot-Image) via noindex proxy
+      const protectedBadgeImage = (rawBadgeImage && rawBadgeImage.startsWith('http'))
+        ? `/api/cert-image?url=${encodeURIComponent(rawBadgeImage)}`
+        : rawBadgeImage;
+
+      return {
+        id: c._id || `cert-${idx}`,
+        code: c.code || (idx + 1 < 10 ? `0${idx + 1}` : `${idx + 1}`),
+        title: c.title || 'Certification',
+        issuer: c.issuer || 'Credential Issuer',
+        description: c.description || '',
+        badgeImage: protectedBadgeImage,
+        badgeUrl: c.badgeUrl || '#',
+        category: c.category || 'General',
+        skills: Array.isArray(c.skills) ? c.skills : [],
+        issueDate: c.issueDate,
+        featured: c.featured === true,
+        order: typeof c.order === 'number' ? c.order : idx + 1,
+        type: c.type || (
+          c.badgeUrl?.includes('credly.com')
+            ? 'badge'
+            : (c.title?.toLowerCase().includes('badge') ? 'badge' : 'certificate')
+        )
+      };
+    });
   } catch (error) {
     console.error('Error fetching certification from Sanity:', error);
     return featuredOnly ? mockCertifications.filter(c => c.featured) : mockCertifications;
