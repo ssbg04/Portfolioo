@@ -8,11 +8,18 @@ Disallow: /.astro/
 Disallow: /maintenance
 Disallow: /gallery
 Disallow: /gallery/
+Disallow: /images/cert*
+Disallow: /images/cert_*
 
 # Disallow image indexing specifically for Google Images crawler
 User-agent: Googlebot-Image
+Disallow: /
 Disallow: /gallery
 Disallow: /gallery/
+Disallow: /images/cert*
+Disallow: /images/cert_*
+Disallow: /images/cert_nc2.jpg
+Disallow: /images/cert_cisco_itn.jpg
 
 # Reference to sitemap
 Sitemap: https://crischarles.com/sitemap-index.xml

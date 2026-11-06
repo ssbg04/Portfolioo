@@ -666,6 +666,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
                         loading="lazy"
                         decoding="async"
                         referrerPolicy="no-referrer"
+                        data-nosnippet="true"
                         className={`max-h-[38vh] md:max-h-[52vh] w-auto max-w-full object-contain rounded-lg border border-border-custom shadow-xs transition-transform duration-300 group-hover/preview:scale-[1.01] bg-white`}
                       />
                     ) : null}
@@ -827,6 +828,7 @@ export default function Certifications({ certifications, extraCerts = [], sectio
               loading="eager"
               decoding="async"
               referrerPolicy="no-referrer"
+              data-nosnippet="true"
               draggable={false}
               className="max-w-[92vw] max-h-[72vh] object-contain border border-border-custom shadow-2xl pointer-events-none select-none rounded-lg touch-none bg-white p-2"
               style={{
