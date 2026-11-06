@@ -74,7 +74,7 @@ export default function Projects({
             return (
               <article
                 key={project.slug}
-                className={`bryl-card p-5 sm:p-6 flex flex-col justify-between group ${
+                className={`bryl-card p-4 sm:p-6 flex flex-col justify-between group ${
                   isFeatured ? 'md:col-span-2' : ''
                 }`}
               >
@@ -83,7 +83,7 @@ export default function Projects({
                   {project.coverImage && (
                     <a
                       href={`/projects/${project.slug}`}
-                      className={`relative aspect-[16/10] w-full rounded-xl overflow-hidden border border-border-custom bg-elevated-custom mb-4 block ${
+                      className={`relative aspect-[16/10] w-full rounded-xl overflow-hidden border border-border-custom bg-elevated-custom mb-3 sm:mb-4 block ${
                         isFeatured ? 'md:aspect-[21/9]' : ''
                       }`}
                       aria-label={`View ${project.title}`}
@@ -97,7 +97,7 @@ export default function Projects({
                       />
 
                       {/* Status / Category tag inside screenshot */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                      <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 flex items-center gap-1.5">
                         <span className="text-[9px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full bg-background-custom/95 text-foreground-custom border border-border-custom backdrop-blur-sm">
                           {formattedIndex} / {project.category?.toLowerCase() || 'project'}
                         </span>
@@ -106,30 +106,30 @@ export default function Projects({
                   )}
 
                   {/* Metadata Eyebrow */}
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">
+                  <div className="flex items-center justify-between gap-2 mb-1.5 sm:mb-2">
+                    <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom truncate">
                       {project.category?.toLowerCase() || 'application'}
                     </span>
-                    <span className="text-[10px] font-mono text-subtle-custom">
+                    <span className="text-[10px] font-mono text-subtle-custom shrink-0">
                       {project.publishedAt || '2026'}
                     </span>
                   </div>
 
                   {/* Title */}
                   <a href={`/projects/${project.slug}`} className="block group/title">
-                    <h3 className="text-lg sm:text-xl font-semibold tracking-tight text-foreground-custom group-hover/title:underline transition-all">
+                    <h3 className="text-base sm:text-xl font-semibold tracking-tight text-foreground-custom group-hover/title:underline transition-all">
                       {project.title}
                     </h3>
                   </a>
 
-                  {/* Summary */}
-                  <p className="text-[14px] leading-relaxed text-foreground-custom/80 mt-2 mb-3.5 font-normal">
+                  {/* Summary (Hidden on mobile to save vertical measure, expanded on desktop) */}
+                  <p className="hidden sm:block text-[14px] leading-relaxed text-foreground-custom/80 mt-2 mb-3.5 font-normal">
                     {project.summary || project.description}
                   </p>
 
-                  {/* Key Highlights */}
+                  {/* Key Highlights (Hidden on mobile, prominent on desktop & dedicated page) */}
                   {project.highlights && project.highlights.length > 0 && (
-                    <div className="mb-4">
+                    <div className="hidden sm:block mb-4">
                       <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom block mb-1.5 font-medium">
                         Key Highlights
                       </span>
@@ -144,15 +144,25 @@ export default function Projects({
                     </div>
                   )}
 
-                  {/* Technologies Pill Row */}
-                  <div className="flex flex-wrap items-center gap-1.5 mb-5">
-                    {project.technologies.slice(0, 5).map((tech) => (
-                      <span key={tech} className="tech-tag">
+                  {/* Technologies Pill Row (Top 3 on mobile, up to 5 on desktop) */}
+                  <div className="flex flex-wrap items-center gap-1.5 mt-2.5 sm:mt-0 mb-3.5 sm:mb-5">
+                    {project.technologies.slice(0, 3).map((tech) => (
+                      <span key={tech} className="tech-tag text-[10px] sm:text-xs">
                         {tech}
                       </span>
                     ))}
+                    {project.technologies.slice(3, 5).map((tech) => (
+                      <span key={tech} className="tech-tag text-[10px] sm:text-xs hidden sm:inline-flex">
+                        {tech}
+                      </span>
+                    ))}
+                    {project.technologies.length > 3 && (
+                      <span className="text-[9px] font-mono text-subtle-custom sm:hidden">
+                        +{project.technologies.length - 3}
+                      </span>
+                    )}
                     {project.technologies.length > 5 && (
-                      <span className="text-[9px] font-mono text-subtle-custom">
+                      <span className="text-[9px] font-mono text-subtle-custom hidden sm:inline-block">
                         +{project.technologies.length - 5}
                       </span>
                     )}
@@ -160,7 +170,7 @@ export default function Projects({
                 </div>
 
                 {/* Card Actions Footer */}
-                <div className="flex items-center justify-between pt-4 border-t border-border-custom mt-auto">
+                <div className="flex items-center justify-between pt-3 sm:pt-4 border-t border-border-custom mt-auto">
                   <a
                     href={`/projects/${project.slug}`}
                     className="text-xs font-mono text-foreground-custom hover:underline transition-all inline-flex items-center gap-1"
