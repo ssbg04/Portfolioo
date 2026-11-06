@@ -3,12 +3,12 @@ import haptic from '../lib/haptics';
 import ControlsDropdown from './ControlsDropdown';
 
 const navItems = [
-  { label: 'home',           href: '/' },
-  { label: 'projects',       href: '/projects' },
-  { label: 'about',          href: '/about' },
-  { label: 'certifications', href: '/certifications' },
-  { label: 'contact',        href: '/contact' },
-  { label: 'gallery',        href: '/gallery' },
+  { label: 'Home',           href: '/' },
+  { label: 'Projects',       href: '/projects' },
+  { label: 'About',          href: '/about' },
+  { label: 'Certifications', href: '/certifications' },
+  { label: 'Contact',        href: '/contact' },
+  { label: 'Gallery',        href: '/gallery' },
 ];
 
 interface NavbarProps {
@@ -17,7 +17,7 @@ interface NavbarProps {
   currentPath?: string;
 }
 
-export default function Navbar({ fullName = 'cris charles', currentPath }: NavbarProps) {
+export default function Navbar({ fullName = 'Cris Charles', currentPath }: NavbarProps) {
   const [activePath, setActivePath] = useState<string>(() => {
     if (currentPath) return currentPath;
     if (typeof window !== 'undefined') return window.location.pathname;
@@ -197,7 +197,7 @@ export default function Navbar({ fullName = 'cris charles', currentPath }: Navba
             rel="noopener noreferrer"
             className="bryl-btn-primary w-full justify-center text-center text-xs"
           >
-            <span>resume / cv</span>
+            <span>Resume / CV</span>
             <span className="text-[11px]" aria-hidden="true">↗</span>
           </a>
         </div>
@@ -229,7 +229,7 @@ export default function Navbar({ fullName = 'cris charles', currentPath }: Navba
             aria-label={drawerOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={drawerOpen}
           >
-            <span>{drawerOpen ? 'close' : 'menu'}</span>
+            <span>{drawerOpen ? 'Close' : 'Menu'}</span>
             <span className="text-xs" aria-hidden="true">{drawerOpen ? '✕' : '☰'}</span>
           </button>
         </div>
@@ -258,11 +258,11 @@ export default function Navbar({ fullName = 'cris charles', currentPath }: Navba
                   aria-current={active ? 'page' : undefined}
                   className={`flex items-center gap-3 py-2.5 text-base font-mono transition-colors ${
                     active
-                      ? 'text-foreground-custom font-medium'
-                      : 'text-muted-foreground-custom hover:text-foreground-custom'
+                      ? 'text-foreground-custom font-semibold'
+                      : 'text-muted-foreground-custom hover:text-foreground-custom font-normal'
                   }`}
                 >
-                  <span className={`text-sm ${active ? 'opacity-100' : 'opacity-0'}`}>→</span>
+                  <span className={`text-sm ${active ? 'opacity-100 text-foreground-custom' : 'opacity-0'}`}>→</span>
                   <span>{item.label}</span>
                 </a>
               );
@@ -282,7 +282,7 @@ export default function Navbar({ fullName = 'cris charles', currentPath }: Navba
                 rel="noopener noreferrer"
                 className="bryl-btn-secondary justify-center text-center text-xs"
               >
-                <span>resume</span>
+                <span>Resume</span>
                 <span className="text-[10px]">↗</span>
               </a>
               <a
@@ -290,7 +290,8 @@ export default function Navbar({ fullName = 'cris charles', currentPath }: Navba
                 onClick={() => { setActivePath('/contact'); setDrawerOpen(false); }}
                 className="bryl-btn-primary justify-center text-center text-xs"
               >
-                contact ↗
+                <span>Contact</span>
+                <span className="text-[10px]" aria-hidden="true">↗</span>
               </a>
             </div>
           </div>

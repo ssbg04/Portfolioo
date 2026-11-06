@@ -46,7 +46,7 @@ const nextProject =
 					class="inline-flex items-center gap-2 text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors group"
 				>
 					<span class="group-hover:-translate-x-1 transition-transform">←</span>
-					<span>back to archive</span>
+					<span>Back to Projects</span>
 				</a>
 
 				<div class="flex items-center gap-2">
@@ -67,7 +67,7 @@ const nextProject =
 			{/* Project Hero Header */}
 			<header class="mb-10 max-w-[42rem]">
 				<div class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom mb-3">
-					case study // {project.category || 'engineering'}
+					Case Study // {project.category || 'Engineering'}
 				</div>
 				<h1 class="text-3xl sm:text-5xl font-mono font-bold text-foreground-custom tracking-tight leading-[1.1] mb-6">
 					{project.title}
@@ -248,7 +248,7 @@ const nextProject =
 						class="inline-flex items-center gap-2 text-muted-foreground-custom hover:text-foreground-custom transition-colors group"
 					>
 						<span class="group-hover:-translate-x-1 transition-transform">←</span>
-						<span>prev: <span class="text-foreground-custom font-semibold">{prevProject.title}</span></span>
+						<span>Previous: <span class="text-foreground-custom font-semibold">{prevProject.title}</span></span>
 					</a>
 				) : (
 					<div />
@@ -258,7 +258,7 @@ const nextProject =
 					href="/projects"
 					class="px-3 py-1.5 rounded-md border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-foreground-custom transition-all"
 				>
-					archive
+					All Projects
 				</a>
 
 				{nextProject ? (
@@ -266,7 +266,7 @@ const nextProject =
 						href={`/projects/${nextProject.slug}`}
 						class="inline-flex items-center gap-2 text-muted-foreground-custom hover:text-foreground-custom transition-colors group sm:ml-auto"
 					>
-						<span>next: <span class="text-foreground-custom font-semibold">{nextProject.title}</span></span>
+						<span>Next: <span class="text-foreground-custom font-semibold">{nextProject.title}</span></span>
 						<span class="group-hover:translate-x-1 transition-transform">→</span>
 					</a>
 				) : (

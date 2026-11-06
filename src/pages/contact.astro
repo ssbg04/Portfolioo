@@ -29,16 +29,16 @@ const socialLinks = await getSocialLinks();
 			</p>
 			
 			{/* Technical Detail Badges */}
-			<div className="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-border-custom">
-				<span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom px-2.5 py-1 rounded-full border border-border-custom bg-elevated-custom">
+			<div class="flex flex-wrap items-center gap-2 mt-4 pt-3 border-t border-border-custom">
+				<span class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom px-2.5 py-1 rounded-full border border-border-custom bg-elevated-custom">
 					response: 24–48 hours
 				</span>
-				<span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom px-2.5 py-1 rounded-full border border-border-custom bg-elevated-custom">
-					{settings.location || 'laguna, ph (utc+8)'}
+				<span class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom px-2.5 py-1 rounded-full border border-border-custom bg-elevated-custom">
+					{settings.location || 'Laguna, PH (UTC+8)'}
 				</span>
 				{settings.isAvailable !== false && (
-					<span className="chip-inverted text-[10px] py-0.5 px-2.5">
-						● open to opportunities
+					<span class="chip-inverted text-[10px] py-0.5 px-2.5 font-mono">
+						● Open to Opportunities
 					</span>
 				)}
 			</div>

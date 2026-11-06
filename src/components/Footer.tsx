@@ -10,7 +10,7 @@ interface FooterProps {
   socialLinks?: SocialLink[];
 }
 
-export default function Footer({ fullName = 'cris charles garcia', socialLinks = [] }: FooterProps) {
+export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks = [] }: FooterProps) {
   const [isSpotifyModalOpen, setIsSpotifyModalOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -43,7 +43,7 @@ export default function Footer({ fullName = 'cris charles garcia', socialLinks =
               {fullName}
             </span>
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom mt-0.5">
-              software developer · technical portfolio
+              Software Developer · Technical Portfolio
             </span>
           </div>
 
@@ -56,7 +56,7 @@ export default function Footer({ fullName = 'cris charles garcia', socialLinks =
               className="px-2.5 py-1 rounded-md border border-border-custom text-[11px] font-mono text-muted-foreground-custom hover:text-foreground-custom hover:border-border-strong transition-colors inline-flex items-center gap-2 cursor-pointer bg-elevated-custom"
             >
               <span className="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse" />
-              <span>spotify now playing</span>
+              <span>Spotify Now Playing</span>
               <span className="text-[10px]">↗</span>
             </button>
           </div>
@@ -64,19 +64,19 @@ export default function Footer({ fullName = 'cris charles garcia', socialLinks =
 
         {/* Middle Row: Navigation Links with bryl underline offset */}
         <div className="flex flex-wrap items-center gap-x-5 gap-y-2 py-3 border-y border-border-custom text-xs font-mono text-muted-foreground-custom">
-          <a href="/" className="hover:text-foreground-custom transition-colors">home</a>
+          <a href="/" className="hover:text-foreground-custom transition-colors">Home</a>
           <span className="text-border-strong">/</span>
-          <a href="/projects" className="hover:text-foreground-custom transition-colors">projects</a>
+          <a href="/projects" className="hover:text-foreground-custom transition-colors">Projects</a>
           <span className="text-border-strong">/</span>
-          <a href="/about" className="hover:text-foreground-custom transition-colors">about</a>
+          <a href="/about" className="hover:text-foreground-custom transition-colors">About</a>
           <span className="text-border-strong">/</span>
-          <a href="/certifications" className="hover:text-foreground-custom transition-colors">certifications</a>
+          <a href="/certifications" className="hover:text-foreground-custom transition-colors">Certifications</a>
           <span className="text-border-strong">/</span>
-          <a href="/gallery" className="hover:text-foreground-custom transition-colors">gallery</a>
+          <a href="/gallery" className="hover:text-foreground-custom transition-colors">Gallery</a>
           <span className="text-border-strong">/</span>
-          <a href="/contact" className="hover:text-foreground-custom transition-colors">contact</a>
+          <a href="/contact" className="hover:text-foreground-custom transition-colors">Contact</a>
           <span className="text-border-strong">/</span>
-          <a href="https://links.crischarles.com" className="hover:text-foreground-custom transition-colors">links ↗</a>
+          <a href="https://links.crischarles.com" className="hover:text-foreground-custom transition-colors">Links ↗</a>
         </div>
 
         {/* Bottom Row: Copyright & Colophon */}
@@ -113,14 +113,14 @@ export default function Footer({ fullName = 'cris charles garcia', socialLinks =
           >
             <div className="flex items-center justify-between pb-3 border-b border-border-custom">
               <span className="text-xs font-mono uppercase tracking-widest text-foreground-custom">
-                spotify status
+                Spotify Status
               </span>
               <button
                 type="button"
                 onClick={() => setIsSpotifyModalOpen(false)}
                 className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom px-1.5 py-0.5"
               >
-                close [esc]
+                Close [Esc]
               </button>
             </div>
 
