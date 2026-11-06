@@ -196,7 +196,7 @@ const isRootPage = Astro.url.pathname === '/';
 		</div>
 
 		<!-- Back to Top Button (Zero-React Vanilla) -->
-		<div id="back-to-top-container" class="fixed bottom-6 left-5 sm:left-7 md:left-72 z-30 pointer-events-none opacity-0 transition-opacity duration-200">
+		<div id="back-to-top-container" class="fixed bottom-6 left-5 sm:left-7 md:left-72 z-20 pointer-events-none opacity-0 transition-opacity duration-200">
 			<button
 				id="back-to-top-btn"
 				class="pointer-events-auto p-2.5 rounded-full bg-card-custom/95 hover:bg-card-custom text-foreground-custom border border-border-custom shadow-md hover:border-primary-custom/40 active:scale-95 transition-all duration-150 cursor-pointer group"
@@ -234,7 +234,12 @@ const isRootPage = Astro.url.pathname === '/';
 					function onScroll() {
 						if (!ticking) {
 							window.requestAnimationFrame(function() {
-								if (window.scrollY > 400) {
+								var scrollY = window.scrollY;
+								var scrollHeight = document.documentElement.scrollHeight;
+								var innerHeight = window.innerHeight;
+								var nearBottom = (scrollHeight - (scrollY + innerHeight)) < 220;
+
+								if (scrollY > 400 && !nearBottom) {
 									btnContainer.classList.remove('opacity-0', 'pointer-events-none');
 								} else {
 									btnContainer.classList.add('opacity-0', 'pointer-events-none');

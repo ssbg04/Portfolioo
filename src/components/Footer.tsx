@@ -33,7 +33,7 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
   ).filter(l => !['facebook', 'tiktok'].includes(l.platform.toLowerCase()));
 
   return (
-    <footer className="relative z-10 py-10 border-t border-border-custom bg-background-custom">
+    <footer className="relative z-30 pt-10 pb-24 sm:pb-14 border-t border-border-custom bg-background-custom">
       <div className="max-w-[56rem] mx-auto px-4 sm:px-6 flex flex-col gap-6">
 
         {/* Top Row: Brand & Status Pill */}
@@ -79,23 +79,36 @@ export default function Footer({ fullName = 'Cris Charles Garcia', socialLinks =
           <a href="https://links.crischarles.com" className="hover:text-foreground-custom transition-colors">Links ↗</a>
         </div>
 
-        {/* Bottom Row: Copyright & Colophon */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-[11px] font-mono text-subtle-custom">
-          <p>
-            &copy; {new Date().getFullYear()} {fullName.toLowerCase()} · no rights reserved
+        {/* Bottom Row: Copyright, Socials & Back to Top */}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 text-xs font-mono">
+          <p className="text-[11px] text-subtle-custom">
+            &copy; {new Date().getFullYear()} {fullName} · All rights reserved
           </p>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 sm:gap-5 flex-wrap">
             {linksToRender.map((link) => (
               <a
                 key={link.platform}
                 href={link.url}
                 target={link.url.startsWith('http') ? '_blank' : undefined}
                 rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
-                className="hover:text-foreground-custom transition-colors"
+                className="text-[12px] text-muted-foreground-custom hover:text-foreground-custom transition-colors inline-flex items-center gap-1 font-medium py-1"
               >
-                {link.platform.toLowerCase()} ↗
+                <span>{link.platform}</span>
+                <span className="text-[10px]" aria-hidden="true">↗</span>
               </a>
             ))}
+            <button
+              type="button"
+              onClick={() => {
+                haptic.tap();
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              aria-label="Scroll back to top"
+              className="text-[11px] text-muted-foreground-custom hover:text-foreground-custom transition-colors inline-flex items-center gap-1 font-mono uppercase tracking-wider cursor-pointer border border-border-custom px-2 py-0.5 rounded hover:border-border-strong bg-elevated-custom/50 active:scale-95"
+            >
+              <span>Top</span>
+              <span aria-hidden="true">↑</span>
+            </button>
           </div>
         </div>
 
