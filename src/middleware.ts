@@ -48,8 +48,12 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   if (isCardSubdomain) {
+    // Direct /card or already rewritten to /card: render the page immediately
+    if (pathname === '/card') {
+      return next();
+    }
     // Root on card subdomain renders the /card page seamlessly via internal rewrite
-    if (pathname === '/' || pathname === '/card') {
+    if (pathname === '/') {
       return context.rewrite('/card');
     }
     // Any other path on card subdomain redirects to main portfolio
