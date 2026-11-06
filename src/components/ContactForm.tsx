@@ -11,10 +11,10 @@ interface ContactFormProps {
 
 export default function ContactForm({
   socialLinks = [],
-  contactHeading = "let's talk.",
+  contactHeading = "Let's Talk.",
   contactSubtitle = "Whether you have a software engineering opportunity, a technical collaboration, or an architecture inquiry, my inbox is open.",
   email = "crischarlesgarcia345@gmail.com",
-  sectionTag = "06 — contact"
+  sectionTag = "06 — Contact"
 }: ContactFormProps) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '', _hp_website: '' });
   const [status, setStatus] = useState<'idle' | 'sending' | 'success' | 'error'>('idle');
@@ -136,7 +136,7 @@ export default function ContactForm({
 
               <div className="flex flex-col gap-2 pt-2 border-t border-border-custom">
                 <span className="text-[10px] font-mono uppercase tracking-widest text-subtle-custom mb-1">
-                  direct channels:
+                  Direct Channels:
                 </span>
                 <div className="flex flex-col gap-2">
                   <a
@@ -154,7 +154,7 @@ export default function ContactForm({
                       rel={link.url.startsWith('http') ? 'noopener noreferrer' : undefined}
                       className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors inline-flex items-center gap-1.5"
                     >
-                      <span>{link.platform.toLowerCase()}</span>
+                      <span>{link.platform}</span>
                       <span className="text-[10px] opacity-60">↗</span>
                     </a>
                   ))}
@@ -163,8 +163,8 @@ export default function ContactForm({
             </div>
 
             <div className="mt-8 pt-4 border-t border-border-custom">
-              <span className="text-[10px] font-mono text-subtle-custom block">
-                laguna, philippines · utc+8
+              <span className="text-[10px] font-mono uppercase tracking-wider text-subtle-custom block">
+                Laguna, Philippines · UTC+8
               </span>
             </div>
           </div>
@@ -175,7 +175,7 @@ export default function ContactForm({
               {status === 'success' ? (
                 <div className="text-center py-10 flex flex-col items-center justify-center">
                   <span className="chip-inverted text-[10px] mb-4">
-                    message dispatched
+                    Message Dispatched
                   </span>
                   <h4 className="font-display text-xl text-foreground-custom mb-2">
                     Received.
@@ -188,7 +188,7 @@ export default function ContactForm({
                     onClick={() => setStatus('idle')}
                     className="bryl-btn-secondary text-xs cursor-pointer"
                   >
-                    send another
+                    Send Another
                   </button>
                 </div>
               ) : (
@@ -215,14 +215,14 @@ export default function ContactForm({
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="name" className="micro-label">
-                        name
+                        Name
                       </label>
                       <input
                         type="text"
                         name="name"
                         id="name"
                         required
-                        placeholder="your name"
+                        placeholder="Your full name"
                         value={formData.name}
                         onChange={handleChange}
                         disabled={status === 'sending'}
@@ -232,14 +232,14 @@ export default function ContactForm({
 
                     <div className="flex flex-col gap-1.5">
                       <label htmlFor="email" className="micro-label">
-                        email
+                        Email
                       </label>
                       <input
                         type="email"
                         name="email"
                         id="email"
                         required
-                        placeholder="your@email.com"
+                        placeholder="you@example.com"
                         value={formData.email}
                         onChange={handleChange}
                         disabled={status === 'sending'}
@@ -250,14 +250,14 @@ export default function ContactForm({
 
                   <div className="flex flex-col gap-1.5">
                     <label htmlFor="message" className="micro-label">
-                      message
+                      Message
                     </label>
                     <textarea
                       name="message"
                       id="message"
                       rows={4}
                       required
-                      placeholder="write your message..."
+                      placeholder="Write your message here..."
                       value={formData.message}
                       onChange={handleChange}
                       disabled={status === 'sending'}
@@ -267,7 +267,7 @@ export default function ContactForm({
 
                   <div className="flex items-center justify-between pt-2">
                     <span className="text-[10px] font-mono text-subtle-custom">
-                      {isDailyLimitReached ? 'limit reached' : `${5 - dailySentCount} remaining today`}
+                      {isDailyLimitReached ? 'Daily limit reached' : `${5 - dailySentCount} of 5 messages remaining today`}
                     </span>
 
                     <button
@@ -275,7 +275,7 @@ export default function ContactForm({
                       disabled={status === 'sending' || isDailyLimitReached}
                       className="bryl-btn-primary cursor-pointer disabled:opacity-50"
                     >
-                      <span>{status === 'sending' ? 'dispatching...' : 'send message'}</span>
+                      <span>{status === 'sending' ? 'Dispatching...' : 'Send Message'}</span>
                       <span aria-hidden="true">↗</span>
                     </button>
                   </div>
