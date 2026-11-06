@@ -390,176 +390,206 @@ export default function Certifications({ certifications, extraCerts = [], sectio
           </div>
         )}
 
-        {/* ─── SECTION 1: Formal Document Certificates & Diplomas ─── */}
-        {(filterMode === 'all' || filterMode === 'certificates') && documentCerts.length > 0 && (
-          <div className="mb-12">
-            {filterMode === 'all' && hasBothTypes && (
-              <div className="flex items-center gap-2.5 mb-5">
-                <span className="w-2.5 h-2.5 rounded-full bg-primary-custom" />
-                <h3 className="text-xl sm:text-2xl font-bold font-heading text-foreground-custom tracking-tight">
-                  Certificates
-                </h3>
-                <span className="text-xs font-dot px-2.5 py-0.5 rounded-full bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom font-medium">
+        {/* ─── Category Container Cards with Clickable Subcard Sections ─── */}
+        <div className="space-y-6 sm:space-y-8">
+          {/* CATEGORY CARD 1: Formal Document Certificates & Diplomas */}
+          {(filterMode === 'all' || filterMode === 'certificates') && documentCerts.length > 0 && (
+            <div className="bryl-card overflow-hidden divide-y divide-border-custom">
+              {/* Category Header Bar */}
+              <div className="px-4 sm:px-6 py-3.5 bg-surface-custom/50 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 rounded-full bg-foreground-custom" />
+                  <h3 className="text-xs sm:text-sm font-mono font-semibold uppercase tracking-wider text-foreground-custom">
+                    Certificates
+                  </h3>
+                </div>
+                <span className="text-[10px] font-mono text-muted-foreground-custom">
                   {documentCerts.length} Document{documentCerts.length > 1 ? 's' : ''}
                 </span>
               </div>
-            )}
 
-            {/* Document Certificates Grid (Compact 3-column label-first cards, zero upfront image downloads) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {/* Clickable Subcard Sections */}
               {documentCerts.map((cert, idx) => (
-                <ScrollReveal key={cert.id || idx} variant="fade-up" delay={idx * 40} className="h-full">
-                  <div
-                    onClick={() => {
+                <div
+                  key={cert.id || idx}
+                  onClick={() => {
+                    haptic.openModal();
+                    setSelectedCert(cert);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
                       haptic.openModal();
                       setSelectedCert(cert);
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedCert(cert); }}
-                    aria-label={`View full certificate document for ${cert.title}`}
-                    className="bryl-card p-4 sm:p-5 flex flex-col justify-between h-full group cursor-pointer hover:border-foreground-custom transition-all"
-                  >
-                    <div>
-                      {/* Top Bar: Code & Issuer */}
-                      <div className="w-full flex items-center justify-between pb-2.5 mb-3 border-b border-border-custom text-xs">
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse opacity-75" />
-                          <span>CERT // {cert.code}</span>
+                    }
+                  }}
+                  aria-label={`Inspect certificate proof for ${cert.title}`}
+                  className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 transition-colors hover:bg-elevated-custom/60 cursor-pointer group focus-visible:outline-none focus-visible:bg-elevated-custom/60"
+                >
+                  <div className="flex-1 min-w-0">
+                    {/* Micro Tagline: Code & Issuer */}
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                      <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-foreground-custom opacity-75" />
+                        <span>CERT // {cert.code}</span>
+                      </span>
+                      <span className="text-xs font-mono font-semibold text-foreground-custom">
+                        {cert.issuer}
+                      </span>
+                      {cert.category && (
+                        <span className="text-[10px] font-mono text-muted-foreground-custom">
+                          · {cert.category}
                         </span>
-                        <span className="text-xs font-mono font-semibold text-foreground-custom">
-                          {cert.issuer}
-                        </span>
+                      )}
+                    </div>
+
+                    {/* Subcard Title */}
+                    <h4 className="text-sm sm:text-base font-semibold text-foreground-custom group-hover:underline leading-snug">
+                      {cert.title}
+                    </h4>
+
+                    {/* Description preview */}
+                    {cert.description && (
+                      <p className="text-xs text-muted-foreground-custom line-clamp-1 mt-1 font-normal max-w-2xl">
+                        {cert.description}
+                      </p>
+                    )}
+
+                    {/* Skills pills preview */}
+                    {cert.skills && cert.skills.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                        {cert.skills.slice(0, 4).map((skill) => (
+                          <span key={skill} className="tech-tag text-[9px] py-0.5 px-2">
+                            {skill}
+                          </span>
+                        ))}
+                        {cert.skills.length > 4 && (
+                          <span className="text-[9px] font-mono text-muted-foreground-custom">
+                            +{cert.skills.length - 4}
+                          </span>
+                        )}
                       </div>
-
-                      {/* Title & Metadata */}
-                      <h4 className="text-sm sm:text-base font-semibold text-foreground-custom group-hover:underline leading-snug mb-2">
-                        {cert.title}
-                      </h4>
-                      {cert.description && (
-                        <p className="text-xs text-muted-foreground-custom line-clamp-2 leading-relaxed mb-3 font-normal">
-                          {cert.description}
-                        </p>
-                      )}
-
-                      {/* Skills Preview */}
-                      {cert.skills && cert.skills.length > 0 && (
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {cert.skills.slice(0, 3).map((s) => (
-                            <span key={s} className="tech-tag text-[9px]">
-                              {s}
-                            </span>
-                          ))}
-                          {cert.skills.length > 3 && (
-                            <span className="text-[9px] font-mono text-subtle-custom">
-                              +{cert.skills.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Card Footer: Issue date and View action */}
-                    <div className="pt-3 border-t border-border-custom flex items-center justify-between text-xs font-mono mt-auto">
-                      <span className="text-[11px] text-muted-foreground-custom">
-                        {cert.issueDate ? `Issued ${cert.issueDate}` : 'Verified Credential'}
-                      </span>
-                      <span className="text-[11px] text-foreground-custom font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
-                        <span>Inspect Proof</span>
-                        <span aria-hidden="true">↗</span>
-                      </span>
-                    </div>
+                    )}
                   </div>
-                </ScrollReveal>
+
+                  {/* Trailing Column: Date & Inspect Action */}
+                  <div className="md:shrink-0 flex items-center justify-between md:flex-col md:items-end md:justify-center gap-1.5 pt-2 md:pt-0 border-t md:border-t-0 border-border-custom/50 text-xs font-mono">
+                    {cert.issueDate && (
+                      <span className="text-[11px] text-muted-foreground-custom">
+                        Issued {cert.issueDate}
+                      </span>
+                    )}
+                    <span className="text-xs text-foreground-custom font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                      <span>Inspect Proof</span>
+                      <span aria-hidden="true">↗</span>
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
 
-        {/* ─── SECTION 2: Verified Digital Skill Badges ─── */}
-        {(filterMode === 'all' || filterMode === 'badges') && skillBadges.length > 0 && (
-          <div>
-            {filterMode === 'all' && hasBothTypes && (
-              <div className="flex items-center gap-2.5 mb-5 pt-4">
-                <span className="w-2.5 h-2.5 rounded-full bg-foreground-custom" />
-                <h3 className="text-xl sm:text-2xl font-bold font-heading text-foreground-custom tracking-tight">
-                  Badges
-                </h3>
-                <span className="text-xs font-mono px-2.5 py-0.5 rounded-full bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom font-medium">
+          {/* CATEGORY CARD 2: Verified Digital Skill Badges */}
+          {(filterMode === 'all' || filterMode === 'badges') && skillBadges.length > 0 && (
+            <div className="bryl-card overflow-hidden divide-y divide-border-custom">
+              {/* Category Header Bar */}
+              <div className="px-4 sm:px-6 py-3.5 bg-surface-custom/50 flex items-center justify-between">
+                <div className="flex items-center gap-2.5">
+                  <span className="w-2 h-2 rounded-full bg-foreground-custom" />
+                  <h3 className="text-xs sm:text-sm font-mono font-semibold uppercase tracking-wider text-foreground-custom">
+                    Badges
+                  </h3>
+                </div>
+                <span className="text-[10px] font-mono text-muted-foreground-custom">
                   {skillBadges.length} Badge{skillBadges.length > 1 ? 's' : ''}
                 </span>
               </div>
-            )}
 
-            {/* Skill Badges Grid (Compact 3-column label-first cards, zero upfront image downloads) */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+              {/* Clickable Subcard Sections */}
               {skillBadges.map((badge, idx) => (
-                <ScrollReveal key={badge.id || idx} variant="fade-up" delay={idx * 30} className="h-full">
-                  <div
-                    onClick={() => {
+                <div
+                  key={badge.id || idx}
+                  onClick={() => {
+                    haptic.openModal();
+                    setSelectedCert(badge);
+                  }}
+                  role="button"
+                  tabIndex={0}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
                       haptic.openModal();
                       setSelectedCert(badge);
-                    }}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setSelectedCert(badge); }}
-                    aria-label={`View details for badge ${badge.title}`}
-                    className="bryl-card p-4 sm:p-5 flex flex-col justify-between h-full group cursor-pointer hover:border-foreground-custom transition-all"
-                  >
-                    <div>
-                      {/* Top Bar: Code & Issuer */}
-                      <div className="w-full flex items-center justify-between pb-2.5 mb-3 border-b border-border-custom text-xs">
-                        <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse opacity-75" />
-                          <span>BADGE // {badge.code}</span>
+                    }
+                  }}
+                  aria-label={`Inspect badge proof for ${badge.title}`}
+                  className="p-4 sm:p-5 flex flex-col md:flex-row md:items-center justify-between gap-3 sm:gap-4 transition-colors hover:bg-elevated-custom/60 cursor-pointer group focus-visible:outline-none focus-visible:bg-elevated-custom/60"
+                >
+                  <div className="flex-1 min-w-0">
+                    {/* Micro Tagline: Code & Issuer */}
+                    <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                      <span className="text-[10px] font-mono font-medium px-2 py-0.5 rounded-md bg-foreground-custom/[0.04] text-muted-foreground-custom border border-border-custom flex items-center gap-1.5">
+                        <span className="w-1.5 h-1.5 rounded-full bg-foreground-custom opacity-75" />
+                        <span>BADGE // {badge.code}</span>
+                      </span>
+                      <span className="text-xs font-mono font-semibold text-foreground-custom">
+                        {badge.issuer}
+                      </span>
+                      {badge.category && (
+                        <span className="text-[10px] font-mono text-muted-foreground-custom">
+                          · {badge.category}
                         </span>
-                        <span className="text-xs font-mono font-semibold text-foreground-custom truncate max-w-[120px] text-right">
-                          {badge.issuer}
-                        </span>
-                      </div>
-
-                      {/* Badge Title */}
-                      <h4 className="text-sm sm:text-base font-semibold text-foreground-custom group-hover:underline leading-snug mb-2">
-                        {badge.title}
-                      </h4>
-
-                      {/* Skills / Category */}
-                      {badge.skills && badge.skills.length > 0 ? (
-                        <div className="flex flex-wrap gap-1 mb-3">
-                          {badge.skills.slice(0, 3).map((s) => (
-                            <span key={s} className="tech-tag text-[9px]">
-                              {s}
-                            </span>
-                          ))}
-                          {badge.skills.length > 3 && (
-                            <span className="text-[9px] font-mono text-subtle-custom">
-                              +{badge.skills.length - 3}
-                            </span>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-xs text-muted-foreground-custom mb-3 font-normal">
-                          {badge.category}
-                        </p>
                       )}
                     </div>
 
-                    {/* Footer: Date + Inspect Proof */}
-                    <div className="pt-3 border-t border-border-custom flex items-center justify-between text-xs font-mono mt-auto">
-                      <span className="text-[11px] text-muted-foreground-custom">
-                        {badge.issueDate ? `Issued ${badge.issueDate}` : 'Digital Badge'}
-                      </span>
-                      <span className="text-[11px] text-foreground-custom font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
-                        <span>Inspect Proof</span>
-                        <span aria-hidden="true">↗</span>
-                      </span>
-                    </div>
+                    {/* Subcard Title */}
+                    <h4 className="text-sm sm:text-base font-semibold text-foreground-custom group-hover:underline leading-snug">
+                      {badge.title}
+                    </h4>
+
+                    {/* Description preview */}
+                    {badge.description && (
+                      <p className="text-xs text-muted-foreground-custom line-clamp-1 mt-1 font-normal max-w-2xl">
+                        {badge.description}
+                      </p>
+                    )}
+
+                    {/* Skills pills preview */}
+                    {badge.skills && badge.skills.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+                        {badge.skills.slice(0, 4).map((skill) => (
+                          <span key={skill} className="tech-tag text-[9px] py-0.5 px-2">
+                            {skill}
+                          </span>
+                        ))}
+                        {badge.skills.length > 4 && (
+                          <span className="text-[9px] font-mono text-muted-foreground-custom">
+                            +{badge.skills.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
-                </ScrollReveal>
+
+                  {/* Trailing Column: Date & Inspect Action */}
+                  <div className="md:shrink-0 flex items-center justify-between md:flex-col md:items-end md:justify-center gap-1.5 pt-2 md:pt-0 border-t md:border-t-0 border-border-custom/50 text-xs font-mono">
+                    {badge.issueDate && (
+                      <span className="text-[11px] text-muted-foreground-custom">
+                        Issued {badge.issueDate}
+                      </span>
+                    )}
+                    <span className="text-xs text-foreground-custom font-medium group-hover:translate-x-0.5 transition-transform inline-flex items-center gap-1">
+                      <span>Inspect Proof</span>
+                      <span aria-hidden="true">↗</span>
+                    </span>
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
       {/* ─── Detail Modal (Responsive 2-Column Desktop, Scrollable Mobile) ─── */}
