@@ -39,14 +39,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
     hostname === 'card.crischarles.com' ||
     (hostname.startsWith('card.') && (hostname.includes('localhost') || hostname.includes('127.0.0.1')));
 
-  const isLegacyLinksSubdomain =
-    hostname === 'links.crischarles.com' ||
-    (hostname.startsWith('links.') && (hostname.includes('localhost') || hostname.includes('127.0.0.1')));
-
-  if (isLegacyLinksSubdomain) {
-    return context.redirect(`https://card.crischarles.com${pathname === '/links' ? '' : pathname}`, 301);
-  }
-
   if (isCardSubdomain) {
     // Direct /card or already rewritten to /card: render the page immediately
     if (pathname === '/card') {
@@ -60,12 +52,9 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return context.redirect(`https://crischarles.com${pathname}`, 302);
   }
 
-  // Main domain: redirect legacy /links to dedicated card.crischarles.com subdomain (in production)
+  // Redirect legacy /links route to /card or card.crischarles.com
   if (pathname === '/links') {
-    if (hostname === 'crischarles.com' || hostname === 'www.crischarles.com') {
-      return context.redirect('https://card.crischarles.com', 301);
-    }
-    return context.rewrite('/card');
+    return context.redirect('/card', 301);
   }
 
   return next();
