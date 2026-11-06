@@ -331,10 +331,10 @@ export default function Certifications({ certifications, extraCerts = [], sectio
         {/* Section Header (bryl-minimal convention) */}
         <div className="pb-4 mb-6 sm:mb-8 border-b border-border-custom">
           <span className="section-marker mb-1 block">
-            {sectionTag.toLowerCase().includes('—') ? sectionTag.toLowerCase() : `05 — ${sectionTag.toLowerCase()}`}
+            {sectionTag.includes('—') ? sectionTag : `05 — ${sectionTag}`}
           </span>
-          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
-            verified credentials
+          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom">
+            Verified Credentials
           </h2>
         </div>
 

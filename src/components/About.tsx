@@ -114,10 +114,10 @@ export default function About({
         {/* Section Header */}
         <div className="pb-4 mb-6 sm:mb-8 border-b border-border-custom">
           <span className="section-marker mb-1 block">
-            {sectionTag.toLowerCase()}
+            {sectionTag}
           </span>
-          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
-            experience &amp; background
+          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom">
+            Experience &amp; Background
           </h2>
         </div>
 

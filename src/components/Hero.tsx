@@ -68,14 +68,14 @@ export default function Hero({
               </div>
             )}
 
-            {/* Display Page Title (Lowercase, technical scale, mobile friendly) */}
-            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.08] tracking-tight text-foreground-custom lowercase break-words mb-2 sm:mb-3">
-              {fullName.toLowerCase()}
+            {/* Display Page Title (First letter capital, editorial scale) */}
+            <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[3.25rem] leading-[1.08] tracking-tight text-foreground-custom break-words mb-2 sm:mb-3">
+              {fullName}
             </h1>
 
             {/* Technical Sub-Role */}
-            <p className="text-xs sm:text-sm font-mono uppercase tracking-widest text-muted-foreground-custom mb-4 sm:mb-5">
-              {title.toLowerCase()}
+            <p className="text-xs sm:text-sm font-mono tracking-widest text-muted-foreground-custom mb-4 sm:mb-5">
+              {title}
             </p>
 
             {/* Value Proposition Body */}
@@ -91,7 +91,7 @@ export default function Hero({
                 rel="noopener noreferrer"
                 className="bryl-btn-primary"
               >
-                <span>download cv</span>
+                <span>Download CV</span>
                 <span className="text-[10px]" aria-hidden="true">↗</span>
               </a>
 
@@ -100,7 +100,7 @@ export default function Hero({
                 onClick={(e) => handleSmoothScroll(e, 'projects')}
                 className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors flex items-center gap-1.5 py-1"
               >
-                <span>view projects</span>
+                <span>View Projects</span>
                 <span aria-hidden="true">↓</span>
               </a>
 
@@ -109,7 +109,7 @@ export default function Hero({
                 onClick={(e) => handleSmoothScroll(e, 'contact')}
                 className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors flex items-center gap-1.5 py-1"
               >
-                <span>contact</span>
+                <span>Contact</span>
                 <span aria-hidden="true">↗</span>
               </a>
             </div>
@@ -128,7 +128,7 @@ export default function Hero({
                     rel="noopener noreferrer"
                     className="text-xs font-mono text-foreground-custom/80 hover:text-foreground-custom transition-colors inline-flex items-center gap-1"
                   >
-                    <span>{link.platform.toLowerCase()}</span>
+                    <span>{link.platform}</span>
                     <span className="text-[10px] opacity-60" aria-hidden="true">↗</span>
                   </a>
                 ))}

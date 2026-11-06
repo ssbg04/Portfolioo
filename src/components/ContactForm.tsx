@@ -115,10 +115,10 @@ export default function ContactForm({
         {/* Section Header */}
         <div className="pb-4 mb-6 sm:mb-8 border-b border-border-custom">
           <span className="section-marker mb-1 block">
-            {sectionTag.toLowerCase()}
+            {sectionTag}
           </span>
-          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
-            direct outreach
+          <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom">
+            Direct Outreach
           </h2>
         </div>
 
@@ -127,8 +127,8 @@ export default function ContactForm({
           {/* Left Column: Context & Direct Channels */}
           <div className="md:col-span-5 flex flex-col justify-between h-full">
             <div>
-              <h3 className="font-display text-xl sm:text-2xl text-foreground-custom lowercase mb-3">
-                {contactHeading.toLowerCase()}
+              <h3 className="font-display text-xl sm:text-2xl text-foreground-custom mb-3">
+                {contactHeading}
               </h3>
               <p className="text-muted-foreground-custom text-[14px] leading-relaxed mb-6 font-normal">
                 {contactSubtitle}
@@ -177,8 +177,8 @@ export default function ContactForm({
                   <span className="chip-inverted text-[10px] mb-4">
                     message dispatched
                   </span>
-                  <h4 className="font-display text-xl text-foreground-custom lowercase mb-2">
-                    received.
+                  <h4 className="font-display text-xl text-foreground-custom mb-2">
+                    Received.
                   </h4>
                   <p className="text-xs text-muted-foreground-custom max-w-xs mb-6 font-mono">
                     Thanks for reaching out. I will respond to your note within 24 to 48 hours.

@@ -19,16 +19,16 @@ const socialLinks = await getSocialLinks();
 
 	<main class="flex-1 pt-6 sm:pt-10 pb-16">
 		<div class="max-w-[56rem] mx-auto px-4 sm:px-6 mb-8 pb-5 border-b border-border-custom">
-			<span class="section-marker mb-1 block">02 — archive</span>
-			<h1 class="font-display text-3xl sm:text-4xl tracking-tight text-foreground-custom lowercase">
-				software &amp; projects
+			<span class="section-marker mb-1 block">02 — Archive</span>
+			<h1 class="font-display text-3xl sm:text-4xl tracking-tight text-foreground-custom">
+				Software &amp; Projects
 			</h1>
 			<p class="text-xs font-mono text-muted-foreground-custom mt-2">
-				collection of institutional systems, developer utilities, and web applications
+				Collection of institutional systems, developer utilities, and web applications
 			</p>
 		</div>
 
-		<ProjectsList initialProjects={allProjects} showArchiveLink={false} sectionTag="all work" client:load />
+		<ProjectsList initialProjects={allProjects} showArchiveLink={false} sectionTag="02 — All Work" client:load />
 	</main>
 
 	<Footer fullName={settings.fullName} socialLinks={socialLinks} client:load />

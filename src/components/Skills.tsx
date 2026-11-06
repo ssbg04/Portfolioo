@@ -40,10 +40,10 @@ export default function Skills({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 mb-6 sm:mb-8 border-b border-border-custom">
           <div>
             <span className="section-marker mb-1 block">
-              {sectionTag.toLowerCase()}
+              {sectionTag}
             </span>
-            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
-              technologies &amp; tools
+            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom">
+              Technologies &amp; Tools
             </h2>
           </div>
 

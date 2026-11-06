@@ -208,7 +208,7 @@ export default function PhotoGallery({ items }: PhotoGalleryProps) {
           <div>
             <div className="section-marker">
               <span className="section-marker-num">07 —</span>
-              <h1 className="section-marker-title text-xl sm:text-2xl font-mono lowercase font-bold">gallery</h1>
+              <h1 className="section-marker-title text-xl sm:text-2xl font-mono font-bold">Gallery</h1>
             </div>
             <p className="text-xs font-mono text-muted-foreground-custom mt-1">
               visual records // project milestones // symposium archive

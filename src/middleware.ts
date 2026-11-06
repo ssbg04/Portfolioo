@@ -4,6 +4,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   const isMaintenanceMode = import.meta.env.MAINTENANCE_MODE === 'true';
   const pathname = context.url.pathname;
   const hostname = context.url.hostname.toLowerCase();
+  const search = context.url.search || '';
 
   // Static assets and internal Astro assets pass through immediately
   const isStaticOrInternal =
@@ -14,6 +15,18 @@ export const onRequest = defineMiddleware(async (context, next) => {
 
   if (isStaticOrInternal) {
     return next();
+  }
+
+  // Canonical query parameter cleanup: redirect crawler-discovered search template placeholders
+  if (search.includes('{search_term_string}') || (context.url.searchParams.has('q') && context.url.searchParams.get('q') === '{search_term_string}')) {
+    return context.redirect(pathname, 301);
+  }
+
+  // Canonical URL enforcement (trailingSlash: 'never')
+  // Strip trailing slashes with permanent 301 redirect (e.g. /projects/tis-rms/ -> /projects/tis-rms)
+  if (pathname.length > 1 && pathname.endsWith('/')) {
+    const cleanPath = pathname.replace(/\/+$/, '');
+    return context.redirect(`${cleanPath}${search}`, 301);
   }
 
   // Maintenance mode handling
@@ -35,7 +48,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
       return context.rewrite('/links');
     }
     // Direct /links access or internal rewrite to /links: render the page
-    if (pathname === '/links' || pathname === '/links/') {
+    if (pathname === '/links') {
       return next();
     }
     // Any other path on links subdomain redirects to main portfolio
@@ -43,7 +56,7 @@ export const onRequest = defineMiddleware(async (context, next) => {
   }
 
   // Main domain: redirect /links to dedicated links.crischarles.com subdomain (in production)
-  if (pathname === '/links' || pathname === '/links/') {
+  if (pathname === '/links') {
     if (hostname === 'crischarles.com' || hostname === 'www.crischarles.com') {
       return context.redirect('https://links.crischarles.com', 302);
     }

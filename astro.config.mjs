@@ -14,7 +14,8 @@ export default defineConfig({
   output: 'server',
   adapter: cloudflare(),
   redirects: {
-    '/projects/tis-record-management-system': '/projects/tis-rms'
+    '/projects/tis-record-management-system': '/projects/tis-rms',
+    '/projects/tis-rms/': '/projects/tis-rms'
   },
   integrations: [
     react(),
@@ -26,6 +27,14 @@ export default defineConfig({
         !page.includes('/gallery') &&
         !page.includes('/links') &&
         !page.includes('/_image'),
+      customPages: [
+        'https://crischarles.com/projects/tis-rms',
+        'https://crischarles.com/projects/isalin',
+        'https://crischarles.com/projects/tindagrid',
+        'https://crischarles.com/projects/glimpse',
+        'https://crischarles.com/projects/susi',
+        'https://crischarles.com/projects/icis-inventory'
+      ],
       serialize(item) {
         if (item.url === 'https://crischarles.com' || item.url === 'https://crischarles.com/') {
           item.priority = 1.0;

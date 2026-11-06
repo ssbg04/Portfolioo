@@ -39,8 +39,8 @@ export default function Footer({ fullName = 'cris charles garcia', socialLinks =
         {/* Top Row: Brand & Status Pill */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
           <div className="flex flex-col">
-            <span className="font-mono text-sm font-medium text-foreground-custom lowercase">
-              {fullName.toLowerCase()}
+            <span className="font-mono text-sm font-medium text-foreground-custom">
+              {fullName}
             </span>
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom mt-0.5">
               software developer · technical portfolio

@@ -69,7 +69,7 @@ const nextProject =
 				<div class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom mb-3">
 					case study // {project.category || 'engineering'}
 				</div>
-				<h1 class="text-3xl sm:text-5xl font-mono lowercase font-bold text-foreground-custom tracking-tight leading-[1.1] mb-6">
+				<h1 class="text-3xl sm:text-5xl font-mono font-bold text-foreground-custom tracking-tight leading-[1.1] mb-6">
 					{project.title}
 				</h1>
 
@@ -127,19 +127,37 @@ const nextProject =
 					<section class="max-w-[42rem]">
 						<div class="section-marker mb-4">
 							<span class="section-marker-num">01 —</span>
-							<span class="section-marker-title">overview</span>
+							<span class="section-marker-title">Overview</span>
 						</div>
 						<div class="font-serif text-base sm:text-lg text-muted-foreground-custom leading-relaxed space-y-4">
 							<p>{project.description || project.summary}</p>
 						</div>
 					</section>
 
+					{/* Section: Key Highlights */}
+					{project.highlights && project.highlights.length > 0 && (
+						<section class="max-w-[42rem]">
+							<div class="section-marker mb-4">
+								<span class="section-marker-num">02 —</span>
+								<span class="section-marker-title">Key Highlights</span>
+							</div>
+							<div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+								{project.highlights.map((highlight: string) => (
+									<div class="bryl-card p-3.5 flex items-start gap-2.5">
+										<span class="text-xs font-mono text-muted-foreground-custom mt-0.5 select-none">▸</span>
+										<span class="text-xs sm:text-sm font-sans text-foreground-custom leading-snug">{highlight}</span>
+									</div>
+								))}
+							</div>
+						</section>
+					)}
+
 					{/* Section: Gallery Previews */}
 					{project.gallery && project.gallery.length > 0 && (
 						<section>
 							<div class="section-marker mb-4">
-								<span class="section-marker-num">02 —</span>
-								<span class="section-marker-title">gallery</span>
+								<span class="section-marker-num">{project.highlights && project.highlights.length > 0 ? '03 —' : '02 —'}</span>
+								<span class="section-marker-title">Gallery</span>
 							</div>
 							<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 								{project.gallery.map((imgUrl, i) => (
@@ -169,34 +187,34 @@ const nextProject =
 					{/* Project Details Specifications Card */}
 					<div class="bryl-card p-5 space-y-4">
 						<h3 class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom font-semibold">
-							specifications
+							Specifications
 						</h3>
 
 						<div class="divide-y divide-border-custom text-xs font-mono">
 							{project.category && (
 								<div class="flex items-center justify-between py-2">
-									<span class="text-muted-foreground-custom">category</span>
+									<span class="text-muted-foreground-custom">Category</span>
 									<span class="text-foreground-custom font-medium text-right">{project.category}</span>
 								</div>
 							)}
 
 							{project.status && (
 								<div class="flex items-center justify-between py-2">
-									<span class="text-muted-foreground-custom">status</span>
+									<span class="text-muted-foreground-custom">Status</span>
 									<span class="text-foreground-custom font-semibold">{project.status}</span>
 								</div>
 							)}
 
 							{project.publishedAt && (
 								<div class="flex items-center justify-between py-2">
-									<span class="text-muted-foreground-custom">year</span>
+									<span class="text-muted-foreground-custom">Year</span>
 									<span class="text-foreground-custom">{project.publishedAt}</span>
 								</div>
 							)}
 
 							<div class="flex items-center justify-between py-2">
-								<span class="text-muted-foreground-custom">deployment</span>
-								<span class="text-foreground-custom">production</span>
+								<span class="text-muted-foreground-custom">Deployment</span>
+								<span class="text-foreground-custom">Production</span>
 							</div>
 						</div>
 					</div>
@@ -204,7 +222,7 @@ const nextProject =
 					{/* Technologies Used Card */}
 					<div class="bryl-card p-5 space-y-3">
 						<h3 class="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom font-semibold">
-							stack
+							Tech Stack
 						</h3>
 						<div class="flex flex-wrap gap-1.5">
 							{project.technologies.map((t) => (

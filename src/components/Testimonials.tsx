@@ -161,7 +161,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                       </div>
                     )}
                     <div className="min-w-0">
-                      <h4 className="font-mono text-xs font-bold text-foreground-custom truncate lowercase">
+                      <h4 className="font-mono text-xs font-bold text-foreground-custom truncate">
                         {test.name}
                       </h4>
                       <p className="text-[10px] font-mono text-muted-foreground-custom truncate">
@@ -238,7 +238,7 @@ export default function Testimonials({ testimonials }: TestimonialsProps) {
                           </div>
                         )}
                         <div className="min-w-0">
-                          <h4 className="font-mono text-xs font-bold text-foreground-custom truncate lowercase">
+                          <h4 className="font-mono text-xs font-bold text-foreground-custom truncate">
                             {test.name}
                           </h4>
                           <p className="text-[10px] font-mono text-muted-foreground-custom truncate">

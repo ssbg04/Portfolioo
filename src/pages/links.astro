@@ -162,7 +162,7 @@ const getIconSvg = (platform: string) => {
           {settings.isAvailable !== false && (
             <span class="text-[10px] font-mono text-foreground-custom inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-border-custom bg-card-custom shadow-xs">
               <span class="w-1.5 h-1.5 rounded-full bg-foreground-custom animate-pulse opacity-80" />
-              <span class="hidden sm:inline lowercase">{settings.availabilityStatus || 'available for work'}</span>
+              <span class="hidden sm:inline">{settings.availabilityStatus || 'Available for work'}</span>
               <span class="sm:hidden">available</span>
             </span>
           )}
@@ -207,8 +207,8 @@ const getIconSvg = (platform: string) => {
         </div>
 
         {/* Name — Geist Pixel Square with clean kerning */}
-        <h1 class="font-display text-2xl sm:text-3xl font-bold lowercase text-foreground-custom tracking-tight mb-1.5">
-          {settings.fullName.toLowerCase()}
+        <h1 class="font-display text-2xl sm:text-3xl font-bold text-foreground-custom tracking-tight mb-1.5">
+          {settings.fullName}
         </h1>
 
         {/* Micro-label Role & Location */}
@@ -259,7 +259,7 @@ const getIconSvg = (platform: string) => {
               </div>
 
               <div class="flex flex-col min-w-0">
-                <span class="text-xs sm:text-sm font-mono lowercase font-semibold text-foreground-custom leading-tight group-hover:underline">
+                <span class="text-xs sm:text-sm font-mono font-semibold text-foreground-custom leading-tight group-hover:underline">
                   {link.platform}
                 </span>
                 <span class="text-[10px] sm:text-[11px] font-mono text-muted-foreground-custom truncate leading-tight mt-0.5" title={link.url}>

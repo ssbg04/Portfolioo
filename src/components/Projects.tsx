@@ -36,10 +36,10 @@ export default function Projects({
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 mb-6 sm:mb-8 border-b border-border-custom">
           <div>
             <span className="section-marker mb-1 block">
-              {sectionTag.toLowerCase()}
+              {sectionTag}
             </span>
-            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom lowercase">
-              featured work
+            <h2 className="font-display text-2xl sm:text-3xl tracking-tight text-foreground-custom">
+              Featured Work
             </h2>
           </div>
 
@@ -58,7 +58,7 @@ export default function Projects({
                       : 'border border-border-custom text-muted-foreground-custom hover:text-foreground-custom hover:border-border-strong bg-transparent'
                   }`}
                 >
-                  {opt.toLowerCase()}
+                  {opt}
                 </button>
               );
             })}
@@ -123,9 +123,26 @@ export default function Projects({
                   </a>
 
                   {/* Summary */}
-                  <p className="text-[14px] leading-relaxed text-foreground-custom/80 mt-2 mb-4 font-normal">
+                  <p className="text-[14px] leading-relaxed text-foreground-custom/80 mt-2 mb-3.5 font-normal">
                     {project.summary || project.description}
                   </p>
+
+                  {/* Key Highlights */}
+                  {project.highlights && project.highlights.length > 0 && (
+                    <div className="mb-4">
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom block mb-1.5 font-medium">
+                        Key Highlights
+                      </span>
+                      <ul className="space-y-1">
+                        {project.highlights.slice(0, 3).map((h) => (
+                          <li key={h} className="text-xs font-mono text-foreground-custom/90 flex items-start gap-1.5">
+                            <span className="text-muted-foreground-custom select-none text-[10px] mt-0.5">▸</span>
+                            <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   {/* Technologies Pill Row */}
                   <div className="flex flex-wrap items-center gap-1.5 mb-5">
@@ -148,7 +165,7 @@ export default function Projects({
                     href={`/projects/${project.slug}`}
                     className="text-xs font-mono text-foreground-custom hover:underline transition-all inline-flex items-center gap-1"
                   >
-                    <span>case study</span>
+                    <span>Case Study</span>
                     <span aria-hidden="true">→</span>
                   </a>
 
@@ -160,7 +177,7 @@ export default function Projects({
                         rel="noopener noreferrer"
                         className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors inline-flex items-center gap-1"
                       >
-                        <span>source</span>
+                        <span>Source</span>
                         <span className="text-[10px]" aria-hidden="true">↗</span>
                       </a>
                     )}
@@ -171,7 +188,7 @@ export default function Projects({
                         rel="noopener noreferrer"
                         className="text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors inline-flex items-center gap-1"
                       >
-                        <span>live</span>
+                        <span>Live</span>
                         <span className="text-[10px]" aria-hidden="true">↗</span>
                       </a>
                     )}
@@ -189,7 +206,7 @@ export default function Projects({
               href="/projects"
               className="inline-flex items-center gap-1.5 text-xs font-mono text-muted-foreground-custom hover:text-foreground-custom transition-colors bryl-link"
             >
-              <span>view complete project archive</span>
+              <span>View Complete Project Archive</span>
               <span aria-hidden="true">→</span>
             </a>
           </div>

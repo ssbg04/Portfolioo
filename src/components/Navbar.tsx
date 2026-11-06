@@ -142,8 +142,8 @@ export default function Navbar({ fullName = 'cris charles', currentPath }: Navba
             onClick={() => setActivePath('/')}
             className="flex flex-col group focus:outline-none focus-visible:underline"
           >
-            <span className="font-mono text-sm font-medium tracking-tight text-foreground-custom lowercase truncate">
-              {fullName.toLowerCase()}
+            <span className="font-mono text-sm font-medium tracking-tight text-foreground-custom truncate">
+              {fullName}
             </span>
             <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom mt-1 truncate">
               systems &amp; apps
@@ -217,9 +217,9 @@ export default function Navbar({ fullName = 'cris charles', currentPath }: Navba
           <a
             href="/"
             onClick={() => { setActivePath('/'); setDrawerOpen(false); }}
-            className="font-mono text-sm font-medium tracking-tight text-foreground-custom lowercase"
+            className="font-mono text-sm font-medium tracking-tight text-foreground-custom"
           >
-            {fullName.toLowerCase()}
+            {fullName}
           </a>
 
           <button
