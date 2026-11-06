@@ -13,10 +13,6 @@ export default defineConfig({
   trailingSlash: 'never',
   output: 'server',
   adapter: cloudflare(),
-  redirects: {
-    '/projects/tis-record-management-system': '/projects/tis-rms',
-    '/projects/tis-rms/': '/projects/tis-rms'
-  },
   integrations: [
     react(),
     sitemap({

@@ -22,13 +22,6 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return context.redirect(pathname, 301);
   }
 
-  // Canonical URL enforcement (trailingSlash: 'never')
-  // Strip trailing slashes with permanent 301 redirect (e.g. /projects/tis-rms/ -> /projects/tis-rms)
-  if (pathname.length > 1 && pathname.endsWith('/')) {
-    const cleanPath = pathname.replace(/\/+$/, '');
-    return context.redirect(`${cleanPath}${search}`, 301);
-  }
-
   // Maintenance mode handling
   if (isMaintenanceMode) {
     if (pathname === '/maintenance') {
