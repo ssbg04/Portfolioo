@@ -17,9 +17,13 @@ export const onRequest = defineMiddleware(async (context, next) => {
     return next();
   }
 
-  // Canonical query parameter cleanup: redirect crawler-discovered search template placeholders
-  if (search.includes('{search_term_string}') || (context.url.searchParams.has('q') && context.url.searchParams.get('q') === '{search_term_string}')) {
-    return context.redirect(pathname, 301);
+  // Canonical query parameter cleanup: redirect crawler-discovered search template placeholders directly to clean path
+  if (
+    search.includes('{search_term_string}') ||
+    search.includes('%7Bsearch_term_string%7D') ||
+    (context.url.searchParams.has('q') && context.url.searchParams.get('q') === '{search_term_string}')
+  ) {
+    return context.redirect(pathname || '/', 301);
   }
 
   // Maintenance mode handling
