@@ -44,13 +44,7 @@ const isRootPage = Astro.url.pathname === '/';
 		<link rel="dns-prefetch" href="https://cdn.sanity.io" />
 		<link rel="icon" type="image/png" href="/logo.png" />
 		<link rel="apple-touch-icon" href="/logo.png" />
-		<!-- PWA & Mobile Web App Manifest -->
-		<link rel="manifest" href="/manifest.webmanifest" />
 		<meta name="theme-color" content="#faf6f0" />
-		<meta name="mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-capable" content="yes" />
-		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-		<meta name="apple-mobile-web-app-title" content="Cris Charles" />
 
 		<!-- SEO & Structured Data -->
 		<SEO title={title} description={description} image={image} type={type} canonicalURL={canonicalURL} />
@@ -174,14 +168,14 @@ const isRootPage = Astro.url.pathname === '/';
 			})();
 		</script>
 
-		<!-- Service Worker Registration for PWA & Offline E-Business Card -->
+		<!-- Ensure root domain does not hold stale Service Worker caches -->
 		<script is:inline>
 			if ('serviceWorker' in navigator) {
-				window.addEventListener('load', function() {
-					navigator.serviceWorker.register('/sw.js').catch(function(err) {
-						console.log('SW registration error:', err);
-					});
-				});
+				navigator.serviceWorker.getRegistrations().then(function(registrations) {
+					for (var reg of registrations) {
+						reg.unregister();
+					}
+				}).catch(function() {});
 			}
 		</script>
 	</head>

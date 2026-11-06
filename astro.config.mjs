@@ -22,6 +22,7 @@ export default defineConfig({
         !page.includes('/chat') &&
         !page.includes('/gallery') &&
         !page.includes('/links') &&
+        !page.includes('/card') &&
         !page.includes('/_image'),
       customPages: [
         'https://crischarles.com/projects/tis-rms',
