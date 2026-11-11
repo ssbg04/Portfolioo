@@ -178,6 +178,42 @@ const isRootPage = Astro.url.pathname === '/';
 				}).catch(function() {});
 			}
 		</script>
+
+		<!-- Multi-Language Support Powered by translate.zvo.cn -->
+		<script is:inline src="https://res.zvo.cn/translate/translate.js" onload="window.__initTranslate && window.__initTranslate()"></script>
+		<script is:inline>
+			(function() {
+				window.__initTranslate = function() {
+					if (typeof window.translate === 'undefined') return;
+					// Hide default unstyled floating dropdown
+					window.translate.selectLanguageTag.show = false;
+					// Use client edge translation service (fast, free, no API key required)
+					window.translate.service.use('client.edge');
+					// Base local language is English
+					window.translate.language.setLocal('english');
+					// Dynamically observe DOM changes for client-side rendered / React components
+					window.translate.listener.start();
+					// Execute translation
+					window.translate.execute();
+				};
+
+				if (typeof window.translate !== 'undefined') {
+					window.__initTranslate();
+				}
+
+				// Seamless SPA page transitions with Astro ClientRouter
+				document.addEventListener('astro:page-load', function() {
+					if (typeof window.translate !== 'undefined') {
+						var cur = (window.translate.language && window.translate.language.getCurrent)
+							? window.translate.language.getCurrent()
+							: window.translate.to;
+						if (cur && cur !== 'english') {
+							window.translate.execute();
+						}
+					}
+				});
+			})();
+		</script>
 	</head>
 	<body class="bg-background-custom text-foreground-custom min-h-screen flex flex-col selection:bg-foreground-custom selection:text-background-custom">
 		<!-- bryl-minimal Halftone Texture (Perimeter frame only; center masked away for reading clarity) -->

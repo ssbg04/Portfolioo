@@ -3,6 +3,8 @@ import { createPortal } from 'react-dom';
 import haptic from '../lib/haptics';
 import { useIsMobile } from '../lib/hooks';
 import { switchTheme } from '../lib/theme';
+import LanguageSelector from './LanguageSelector';
+import { getCurrentLanguage, getLanguageById } from '../lib/translate';
 
 type ThemeMode = 'system' | 'light' | 'dark';
 
@@ -13,6 +15,7 @@ export default function ControlsDropdown() {
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('light');
   const [magnifierEnabled, setMagnifierEnabled] = useState<boolean>(false);
   const [zoom, setZoom] = useState<number>(100);
+  const [currentLang, setCurrentLang] = useState<string>('english');
   const [isTouchDevice, setIsTouchDevice] = useState<boolean>(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile(768);
@@ -20,6 +23,17 @@ export default function ControlsDropdown() {
   useEffect(() => {
     setMounted(true);
     if (typeof window === 'undefined') return;
+
+    setCurrentLang(getCurrentLanguage());
+    const handleLangChange = (e: Event) => {
+      const customEvent = e as CustomEvent<{ language: string }>;
+      if (customEvent.detail?.language) {
+        setCurrentLang(customEvent.detail.language);
+      } else {
+        setCurrentLang(getCurrentLanguage());
+      }
+    };
+    window.addEventListener('language-change', handleLangChange);
 
     setIsTouchDevice(window.matchMedia('(hover: none) and (pointer: coarse)').matches);
 
@@ -94,6 +108,7 @@ export default function ControlsDropdown() {
         darkQuery.removeEventListener('change', handleSystemThemeChange);
       }
       window.removeEventListener('theme-change', handleCustomThemeChange as EventListener);
+      window.removeEventListener('language-change', handleLangChange);
     };
   }, []);
 
@@ -187,6 +202,12 @@ export default function ControlsDropdown() {
         <span className="hidden sm:inline text-[11px] font-mono font-medium">
           Settings
         </span>
+
+        {currentLang !== 'english' && (
+          <span className="text-[9px] font-mono font-semibold px-1.5 py-0.5 rounded-sm bg-foreground-custom text-background-custom truncate max-w-[50px] ignore">
+            {getLanguageById(currentLang).nativeName || currentLang}
+          </span>
+        )}
 
         <svg
           className="w-3 h-3 shrink-0 stroke-[2] opacity-70"
@@ -315,7 +336,12 @@ export default function ControlsDropdown() {
 
             <div className="h-px bg-border-custom" />
 
-            {/* Section 2: Magnifier Feature (Hold 'R' / Toggle) - Hidden on Mobile */}
+            {/* Section 2: Multi-Language Translation (translate.zvo.cn) */}
+            <LanguageSelector />
+
+            <div className="h-px bg-border-custom" />
+
+            {/* Section 3: Magnifier Feature (Hold 'R' / Toggle) - Hidden on Mobile */}
             {!isMobile && !isTouchDevice && (
               <>
                 <div className="flex flex-col gap-2">

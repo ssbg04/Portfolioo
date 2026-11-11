@@ -187,7 +187,7 @@ export default function Navbar({ fullName = 'Cris Charles', currentPath }: Navba
         {/* ── Bottom Controls & Resume ── */}
         <div className="shrink-0 px-5 py-5 flex flex-col gap-3 mt-auto border-t border-border-custom">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">Theme</span>
+            <span className="text-[10px] font-mono uppercase tracking-widest text-muted-foreground-custom">Preferences</span>
             <ControlsDropdown />
           </div>
 
